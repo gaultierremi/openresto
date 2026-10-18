@@ -432,6 +432,23 @@
       "unsupported_image_type": "Only JPEG, PNG, and WebP images are accepted.",
       "unsupported_menu_type": "Only PDF menu files are accepted."
     },
+    "menu": {
+      "allergen_invalid": "Allergens must be names from the 14 EU allergens, e.g. \"Gluten\".",
+      "availability_invalid": "Availability must be one of: Available, SoldOut, Hidden.",
+      "category_name_required": "Category name cannot be empty.",
+      "category_name_too_long": "Category name cannot exceed {{max}} characters.",
+      "currency_invalid": "Currency must be a three-letter ISO 4217 code, e.g. EUR.",
+      "description_too_long": "Description cannot exceed {{max}} characters.",
+      "dietary_tag_invalid": "Dietary tags must be one of: Vegetarian, Vegan, GlutenFree.",
+      "item_image_too_large": "Dish photo must be under 2 MB.",
+      "item_name_required": "Item name cannot be empty.",
+      "item_name_too_long": "Item name cannot exceed {{max}} characters.",
+      "name_required": "Menu name cannot be empty.",
+      "name_too_long": "Menu name cannot exceed {{max}} characters.",
+      "not_found": "Menu not found.",
+      "price_invalid": "Price must be zero or more (at most {{max}} in the currency's smallest unit), or left empty for \"price on request\".",
+      "reorder_ids_mismatch": "The new order must list every entry exactly once, with no additions."
+    },
     "restaurant": {
       "archive_before_delete": "Archive this location before deleting it. Archiving takes it off the public site and can be undone; deleting cannot.",
       "booking_ref_format_invalid": "BookingRefFormat must be one of: {{allowed}}.",
@@ -1815,7 +1832,8 @@
           "users": "Users",
           "audit": "Activity log",
           "guests": "Guests",
-          "email": "Email status"
+          "email": "Email status",
+          "menus": "Menus"
         },
         "scopeLevel": {
           "none": "None"
@@ -1828,7 +1846,8 @@
           "users": "List admin accounts; Write activates and deactivates them. Creating accounts, changing roles and resetting passwords are never reachable with a key.",
           "audit": "The admin activity trail",
           "guests": "Customer names and emails on bookings. Without this they come back blank.",
-          "email": "Whether outgoing email is set up and what has failed to send. Never the SMTP credentials."
+          "email": "Whether outgoing email is set up and what has failed to send. Never the SMTP credentials.",
+          "menus": "Menus, their categories, dishes and photos, and the links behind the QR codes. Regenerating a link also needs an Owner's key."
         },
         "expiryLabel": "Expiry",
         "expiryHint": "Defaults to 1 year. Choose \"No expiry\" for a key that never expires.",

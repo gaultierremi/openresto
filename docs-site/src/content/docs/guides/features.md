@@ -130,6 +130,35 @@ week are unaffected, and the message the guest sees names the local time the pau
   confirmation shows how many upcoming bookings are affected.
 - Seat counts are 1–50.
 
+## Menus
+
+Each location can have any number of menus ("Lunch", "Drinks"), each with ordered categories
+and dishes. Guests see a menu only once it is **published**. There is no admin screen yet: the
+menus are managed through the API under `/api/admin/restaurants/{id}/menus`, with an API key
+carrying the `menus` scope (`read` or `write`).
+
+- **Prices** are whole numbers in the currency's smallest unit (`priceMinor`: 1250 is €12.50).
+  Leave the price empty for "price on request"; 0 means free. Each menu has one ISO 4217
+  currency (`EUR` by default).
+- **Allergens** are the 14 the EU requires a menu to declare (`Gluten`, `Crustaceans`, `Eggs`,
+  `Fish`, `Peanuts`, `Soybeans`, `Milk`, `Nuts`, `Celery`, `Mustard`, `Sesame`, `Sulphites`,
+  `Lupin`, `Molluscs`). Dietary tags are `Vegetarian`, `Vegan` and `GlutenFree`.
+- A dish is `Available`, `SoldOut` (shown, marked) or `Hidden` (left out of the public menu). A
+  category can be hidden too.
+- Dish photos are JPEG, PNG or WebP under 2 MB. Deleting a dish, a category or a menu deletes
+  the photos that go with it.
+- Reordering takes the full list of ids in the new order; a list that leaves one out, repeats
+  one or names another menu's is refused with `menu.reorder_ids_mismatch`.
+
+**Public menu links.** Every location and every table has a public token, the value a QR code
+carries. `GET /api/menus/r/{token}` returns the location's published menus and
+`GET /api/menus/t/{token}` the same plus the table's name. No account is needed, and no internal
+id appears in the response. An unknown token, an archived location and a location with nothing
+published all return the same 404 (`menu.not_found`). A token never changes on its own: an
+Owner can regenerate it (`POST .../public-token/regenerate`, or
+`.../tables/{tableId}/public-token/regenerate`), which retires every QR code printed with the
+old one.
+
 ## Booking references
 
 - The **word** format (default) ends in four random digits: `crispy-basil-thyme-0482`. The

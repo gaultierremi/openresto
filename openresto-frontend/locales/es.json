@@ -432,6 +432,23 @@
       "unsupported_image_type": "Solo se aceptan imágenes JPEG, PNG y WebP.",
       "unsupported_menu_type": "Solo se aceptan menús en formato PDF."
     },
+    "menu": {
+      "allergen_invalid": "Los alérgenos deben ser de los 14 alérgenos de declaración obligatoria en la UE, p. ej. «Gluten».",
+      "availability_invalid": "La disponibilidad debe ser Available, SoldOut o Hidden.",
+      "category_name_required": "El nombre de la categoría es obligatorio.",
+      "category_name_too_long": "El nombre de la categoría no puede superar los {{max}} caracteres.",
+      "currency_invalid": "La moneda debe ser un código ISO 4217 de tres letras, p. ej. EUR.",
+      "description_too_long": "La descripción no puede superar los {{max}} caracteres.",
+      "dietary_tag_invalid": "Las etiquetas dietéticas deben ser Vegetarian, Vegan o GlutenFree.",
+      "item_image_too_large": "La foto del plato debe ocupar menos de 2 MB.",
+      "item_name_required": "El nombre del plato es obligatorio.",
+      "item_name_too_long": "El nombre del plato no puede superar los {{max}} caracteres.",
+      "name_required": "El nombre de la carta es obligatorio.",
+      "name_too_long": "El nombre de la carta no puede superar los {{max}} caracteres.",
+      "not_found": "Carta no encontrada.",
+      "price_invalid": "El precio debe ser cero o más (como máximo {{max}} en la unidad mínima de la moneda), o quedar vacío para «precio a consultar».",
+      "reorder_ids_mismatch": "El nuevo orden debe incluir cada elemento una sola vez, sin añadidos."
+    },
     "restaurant": {
       "archive_before_delete": "Archiva este local antes de eliminarlo. Archivarlo lo retira del sitio público y se puede deshacer; eliminarlo no.",
       "booking_ref_format_invalid": "BookingRefFormat debe ser uno de estos valores: {{allowed}}.",
@@ -1815,7 +1832,8 @@
           "users": "Usuarios",
           "audit": "Registro de actividad",
           "guests": "Comensales",
-          "email": "Estado del correo"
+          "email": "Estado del correo",
+          "menus": "Cartas"
         },
         "scopeLevel": {
           "none": "Ninguno"
@@ -1828,7 +1846,8 @@
           "users": "Listar cuentas de administración; Escritura las activa y desactiva. Crear cuentas, cambiar roles y restablecer contraseñas nunca son accesibles con una clave.",
           "audit": "El registro de actividad de administración",
           "guests": "Nombres y correos de los clientes en las reservas. Sin esto vuelven vacíos.",
-          "email": "Si el envío de correo está configurado y qué no se ha podido enviar. Nunca las credenciales SMTP."
+          "email": "Si el envío de correo está configurado y qué no se ha podido enviar. Nunca las credenciales SMTP.",
+          "menus": "Las cartas, sus categorías, platos y fotos, y los enlaces de los códigos QR. Regenerar un enlace requiere además la clave de un propietario."
         },
         "expiryLabel": "Caducidad",
         "expiryHint": "El valor predeterminado es 1 año. Elige «Sin caducidad» para una clave que nunca expire.",

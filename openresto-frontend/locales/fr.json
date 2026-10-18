@@ -432,6 +432,23 @@
       "unsupported_image_type": "Seules les images JPEG, PNG et WebP sont acceptées.",
       "unsupported_menu_type": "Seuls les menus au format PDF sont acceptés."
     },
+    "menu": {
+      "allergen_invalid": "Les allergènes doivent faire partie des 14 allergènes réglementaires de l'UE, par ex. « Gluten ».",
+      "availability_invalid": "La disponibilité doit être Available, SoldOut ou Hidden.",
+      "category_name_required": "Le nom de la catégorie est obligatoire.",
+      "category_name_too_long": "Le nom de la catégorie ne peut pas dépasser {{max}} caractères.",
+      "currency_invalid": "La devise doit être un code ISO 4217 de trois lettres, par ex. EUR.",
+      "description_too_long": "La description ne peut pas dépasser {{max}} caractères.",
+      "dietary_tag_invalid": "Les régimes alimentaires doivent être Vegetarian, Vegan ou GlutenFree.",
+      "item_image_too_large": "La photo du plat doit faire moins de 2 Mo.",
+      "item_name_required": "Le nom du plat est obligatoire.",
+      "item_name_too_long": "Le nom du plat ne peut pas dépasser {{max}} caractères.",
+      "name_required": "Le nom de la carte est obligatoire.",
+      "name_too_long": "Le nom de la carte ne peut pas dépasser {{max}} caractères.",
+      "not_found": "Carte introuvable.",
+      "price_invalid": "Le prix doit être positif ou nul (au plus {{max}} dans la plus petite unité de la devise), ou laissé vide pour « prix sur demande ».",
+      "reorder_ids_mismatch": "Le nouvel ordre doit reprendre chaque élément une seule fois, sans ajout."
+    },
     "restaurant": {
       "archive_before_delete": "Archivez cet établissement avant de le supprimer. L'archivage le retire du site public et peut être annulé ; la suppression non.",
       "booking_ref_format_invalid": "BookingRefFormat doit être l'une des valeurs suivantes : {{allowed}}.",
@@ -1815,7 +1832,8 @@
           "users": "Utilisateurs",
           "audit": "Journal d'activité",
           "guests": "Clients",
-          "email": "État des e-mails"
+          "email": "État des e-mails",
+          "menus": "Cartes"
         },
         "scopeLevel": {
           "none": "Aucun"
@@ -1828,7 +1846,8 @@
           "users": "Lister les comptes d'administration ; Écriture les active et les désactive. La création de comptes, le changement de rôle et la réinitialisation des mots de passe ne sont jamais accessibles avec une clé.",
           "audit": "Le journal d'activité de l'administration",
           "guests": "Les noms et e-mails des clients sur les réservations. Sans ceci, ils reviennent vides.",
-          "email": "Si l'envoi d'e-mails est configuré et ce qui n'a pas pu partir. Jamais les identifiants SMTP."
+          "email": "Si l'envoi d'e-mails est configuré et ce qui n'a pas pu partir. Jamais les identifiants SMTP.",
+          "menus": "Les cartes, leurs catégories, plats et photos, et les liens derrière les QR codes. Régénérer un lien demande en plus la clé d'un propriétaire."
         },
         "expiryLabel": "Expiration",
         "expiryHint": "Par défaut, 1 an. Choisissez « Sans expiration » pour une clé qui n'expire jamais.",

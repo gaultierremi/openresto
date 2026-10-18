@@ -432,6 +432,23 @@
       "unsupported_image_type": "Es werden nur JPEG-, PNG- und WebP-Bilder akzeptiert.",
       "unsupported_menu_type": "Es werden nur Menüdateien im PDF-Format akzeptiert."
     },
+    "menu": {
+      "allergen_invalid": "Allergene müssen zu den 14 EU-Hauptallergenen gehören, z. B. „Gluten“.",
+      "availability_invalid": "Die Verfügbarkeit muss Available, SoldOut oder Hidden sein.",
+      "category_name_required": "Der Kategoriename darf nicht leer sein.",
+      "category_name_too_long": "Der Kategoriename darf höchstens {{max}} Zeichen lang sein.",
+      "currency_invalid": "Die Währung muss ein dreistelliger ISO-4217-Code sein, z. B. EUR.",
+      "description_too_long": "Die Beschreibung darf höchstens {{max}} Zeichen lang sein.",
+      "dietary_tag_invalid": "Ernährungshinweise müssen Vegetarian, Vegan oder GlutenFree sein.",
+      "item_image_too_large": "Das Foto des Gerichts muss kleiner als 2 MB sein.",
+      "item_name_required": "Der Name des Gerichts darf nicht leer sein.",
+      "item_name_too_long": "Der Name des Gerichts darf höchstens {{max}} Zeichen lang sein.",
+      "name_required": "Der Name der Speisekarte darf nicht leer sein.",
+      "name_too_long": "Der Name der Speisekarte darf höchstens {{max}} Zeichen lang sein.",
+      "not_found": "Speisekarte nicht gefunden.",
+      "price_invalid": "Der Preis muss null oder höher sein (höchstens {{max}} in der kleinsten Währungseinheit) oder leer bleiben für „Preis auf Anfrage“.",
+      "reorder_ids_mismatch": "Die neue Reihenfolge muss jeden Eintrag genau einmal enthalten, ohne Ergänzungen."
+    },
     "restaurant": {
       "archive_before_delete": "Archivieren Sie diesen Standort, bevor Sie ihn löschen. Das Archivieren nimmt ihn von der öffentlichen Website und lässt sich rückgängig machen – das Löschen nicht.",
       "booking_ref_format_invalid": "BookingRefFormat muss einer dieser Werte sein: {{allowed}}.",
@@ -1815,7 +1832,8 @@
           "users": "Benutzer",
           "audit": "Aktivitätsprotokoll",
           "guests": "Gäste",
-          "email": "E-Mail-Status"
+          "email": "E-Mail-Status",
+          "menus": "Speisekarten"
         },
         "scopeLevel": {
           "none": "Keine"
@@ -1828,7 +1846,8 @@
           "users": "Administratorkonten auflisten; Schreiben aktiviert und deaktiviert sie. Konten anlegen, Rollen ändern und Passwörter zurücksetzen sind mit einem Schlüssel nie erreichbar.",
           "audit": "Das Administrations-Aktivitätsprotokoll",
           "guests": "Kundennamen und E-Mails auf Reservierungen. Ohne dies kommen sie leer zurück.",
-          "email": "Ob der E-Mail-Versand eingerichtet ist und was nicht zugestellt werden konnte. Niemals die SMTP-Zugangsdaten."
+          "email": "Ob der E-Mail-Versand eingerichtet ist und was nicht zugestellt werden konnte. Niemals die SMTP-Zugangsdaten.",
+          "menus": "Speisekarten, ihre Kategorien, Gerichte und Fotos sowie die Links hinter den QR-Codes. Einen Link neu zu erzeugen erfordert zusätzlich den Schlüssel eines Inhabers."
         },
         "expiryLabel": "Ablauf",
         "expiryHint": "Standardmäßig 1 Jahr. Wähle „Kein Ablauf“ für einen Schlüssel, der nie abläuft.",

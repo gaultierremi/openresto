@@ -146,10 +146,24 @@ public class MediaService(
         return true;
     }
 
+    /// <summary>
+    /// Writes a dish photo into the item's slot and returns the URL to store on it. The caller
+    /// (<see cref="MenuService"/>) owns the item, its persistence and its audit entry.
+    /// </summary>
+    public virtual async Task<string> StoreDishPhotoAsync(int menuItemId, Stream fileStream, string contentType)
+    {
+        string filename = await _media.ReplaceAsync(DishSlot(menuItemId), GetExtension(contentType), fileStream);
+        return $"/media/{filename}?v={DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    }
+
+    /// <summary>Best-effort removal of a stored dish photo URL. Never throws.</summary>
+    public virtual void DeleteDishPhoto(string url) => TryDeleteFile(url);
+
     /// <summary>The <see cref="IMediaStore"/> slots an upload writes into, also used as audit target ids.</summary>
     private const string HeroSlot = "hero";
     private static string LocationSlot(int restaurantId) => $"location-{restaurantId}";
     private static string MenuSlot(int restaurantId) => $"menu-{restaurantId}";
+    private static string DishSlot(int menuItemId) => $"dish-{menuItemId}";
 
     private void DescribeMedia(string action, string slot, string label, int? restaurantId, string summary)
         => _audit.Describe(action, AuditTargets.Media, slot, label, restaurantId, summary);
