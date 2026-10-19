@@ -30,8 +30,22 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
 
     private sealed class InMemoryMediaStore : IMediaStore
     {
-        public Task<string> ReplaceAsync(string slot, string extension, Stream content) => Task.FromResult($"{slot}.{extension}");
-        public void TryDelete(string fileName) { }
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, byte> _files = new();
+
+        public IReadOnlyCollection<string> Files => _files.Keys.ToList();
+
+        public Task<string> ReplaceAsync(string slot, string extension, Stream content)
+        {
+            foreach (string old in _files.Keys.Where(f => f.StartsWith($"{slot}.", StringComparison.Ordinal)))
+            {
+                _files.TryRemove(old, out _);
+            }
+            string name = $"{slot}.{extension}";
+            _files[name] = 0;
+            return Task.FromResult(name);
+        }
+
+        public void TryDelete(string fileName) => _files.TryRemove(Path.GetFileName(fileName), out _);
     }
 
     private sealed record Seeded(int RestaurantId, string RestaurantToken, int TableId, string TableToken);
@@ -185,6 +199,46 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal(ErrorCodes.MenuCurrencyInvalid, (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString());
         Assert.Equal(0, await MenuCountAsync(r.RestaurantId));
+    }
+
+    [Fact]
+    public async Task ANonIsoCurrency_IsRefusedOnCreateAndUpdate_AndWritesNothing()
+    {
+        Seeded r = await SeedRestaurantAsync();
+        HttpClient owner = Owner();
+
+        HttpResponseMessage create = await owner.PostAsJsonAsync($"{Base(r.RestaurantId)}/menus", new { name = "Lunch", currency = "ZZZ" });
+        Assert.Equal(HttpStatusCode.BadRequest, create.StatusCode);
+        Assert.Equal(ErrorCodes.MenuCurrencyInvalid, (await create.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString());
+        Assert.Equal(0, await MenuCountAsync(r.RestaurantId));
+
+        int menuId = await IdOf(await owner.PostAsJsonAsync($"{Base(r.RestaurantId)}/menus", new { name = "Lunch", currency = "USD" }));
+        HttpResponseMessage update = await owner.PutAsJsonAsync($"{Base(r.RestaurantId)}/menus/{menuId}", new { name = "Renamed", currency = "ZZZ" });
+        Assert.Equal(HttpStatusCode.BadRequest, update.StatusCode);
+        Assert.Equal(ErrorCodes.MenuCurrencyInvalid, (await update.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString());
+        Assert.Equal("Lunch|USD", await InDbAsync(db =>
+            db.Menus.Where(m => m.Id == menuId).Select(m => m.Name + "|" + m.Currency).SingleAsync()));
+
+        HttpResponseMessage euro = await owner.PutAsJsonAsync($"{Base(r.RestaurantId)}/menus/{menuId}", new { name = "Lunch", currency = "EUR" });
+        Assert.Equal(HttpStatusCode.OK, euro.StatusCode);
+    }
+
+    [Fact]
+    public async Task RestaurantPurge_RemovesCascadedDishPhotos()
+    {
+        Seeded r = await SeedRestaurantAsync();
+        Tree tree = await CreateTreeAsync(r.RestaurantId);
+        HttpClient owner = Owner();
+        var store = (InMemoryMediaStore)_app.Services.GetRequiredService<IMediaStore>();
+        (await owner.PostAsync($"{Base(r.RestaurantId)}/menu-items/{tree.ItemId}/photo", Photo("image/png", 16))).EnsureSuccessStatusCode();
+        Assert.Contains($"dish-{tree.ItemId}.png", store.Files);
+
+        (await owner.PatchAsJsonAsync($"/api/admin/restaurants/{r.RestaurantId}", new { isArchived = true })).EnsureSuccessStatusCode();
+        HttpResponseMessage purge = await owner.DeleteAsync($"/api/admin/restaurants/{r.RestaurantId}");
+
+        Assert.Equal(HttpStatusCode.NoContent, purge.StatusCode);
+        Assert.False(await InDbAsync(db => db.MenuItems.AnyAsync(i => i.Id == tree.ItemId)));
+        Assert.DoesNotContain(store.Files, f => f.StartsWith($"dish-{tree.ItemId}.", StringComparison.Ordinal));
     }
 
     // ── Another restaurant's rows ────────────────────────────────────────────

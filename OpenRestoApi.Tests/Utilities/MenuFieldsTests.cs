@@ -7,11 +7,17 @@ public class MenuFieldsTests
 {
     [Theory]
     [InlineData("EUR")]
+    [InlineData("USD")]
     [InlineData("JPY")]
-    public void IsValidCurrency_AcceptsThreeUpperCaseLetters(string code)
+    [InlineData("XOF")]
+    public void IsValidCurrency_AcceptsActiveIsoCodes(string code)
         => Assert.True(MenuFields.IsValidCurrency(code));
 
     [Theory]
+    [InlineData("ZZZ")]
+    [InlineData("XTS")]
+    [InlineData("XAU")]
+    [InlineData("HRK")]
     [InlineData("eur")]
     [InlineData("EU")]
     [InlineData("EURO")]

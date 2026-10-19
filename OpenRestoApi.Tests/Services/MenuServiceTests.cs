@@ -122,14 +122,17 @@ public class MenuServiceTests : IDisposable
 
     [Theory]
     [InlineData("USD", "USD")]
+    [InlineData("EUR", "EUR")]
     [InlineData(" gbp ", "GBP")]
-    public async Task CreateMenu_AcceptsAThreeLetterCurrency(string given, string stored)
+    public async Task CreateMenu_AcceptsAnActiveIsoCurrency(string given, string stored)
     {
         MenuDto menu = await _svc.CreateMenuAsync(RestaurantA, new SaveMenuRequest { Name = "Lunch", Currency = given });
         Assert.Equal(stored, menu.Currency);
     }
 
     [Theory]
+    [InlineData("ZZZ")]
+    [InlineData("XTS")]
     [InlineData("EURO")]
     [InlineData("EU")]
     [InlineData("E1R")]
@@ -154,14 +157,17 @@ public class MenuServiceTests : IDisposable
         Assert.Equal("CHF", updated.Currency);
     }
 
-    [Fact]
-    public async Task UpdateMenu_RejectsAnInvalidCurrency_AndChangesNothing()
+    [Theory]
+    [InlineData("XX")]
+    [InlineData("ZZZ")]
+    public async Task UpdateMenu_RejectsAnInvalidCurrency_AndChangesNothing(string currency)
     {
         MenuDto menu = await CreateMenuAsync();
 
-        await Assert.ThrowsAsync<ValidationException>(
-            () => _svc.UpdateMenuAsync(RestaurantA, menu.Id, new SaveMenuRequest { Name = "Renamed", Currency = "XX" }));
+        ValidationException ex = await Assert.ThrowsAsync<ValidationException>(
+            () => _svc.UpdateMenuAsync(RestaurantA, menu.Id, new SaveMenuRequest { Name = "Renamed", Currency = currency }));
 
+        Assert.Equal(ErrorCodes.MenuCurrencyInvalid, ex.Code);
         Menu stored = await _db.Menus.AsNoTracking().SingleAsync();
         Assert.Equal("Lunch", stored.Name);
         Assert.Equal("EUR", stored.Currency);

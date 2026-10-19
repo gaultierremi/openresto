@@ -10,17 +10,20 @@ namespace OpenRestoApi.Migrations
     {
         /// <summary>
         /// A SQLite expression yielding a fresh 22-character base64url token each time it is
-        /// evaluated, the shape <c>PublicTokenGenerator</c> mints. A migration emits SQL, so the
-        /// .NET CSPRNG cannot reach the rows; <c>random()</c> is SQLite's own ChaCha20 generator,
-        /// seeded by the VFS from OS entropy (<c>/dev/urandom</c> on the Linux images). It is
-        /// evaluated per row and per occurrence, so every row gets its own value. It must never be
-        /// wrapped in a subquery: SQLite may evaluate an uncorrelated subquery once and hand every
-        /// row the same token.
+        /// evaluated, the alphabet and length <c>PublicTokenGenerator</c> mints. A migration emits
+        /// SQL, so the .NET CSPRNG cannot reach the rows; the randomness is <c>randomblob()</c>.
+        /// SQLite has no base64, so each character is built from two fresh random bytes: two bits
+        /// from one and four from the other give a uniform index into the 64-letter alphabet. Every
+        /// call is evaluated per row and per occurrence, so every row gets its own value. It must
+        /// never be wrapped in a subquery: SQLite may evaluate an uncorrelated subquery once and
+        /// hand every row the same token.
         /// </summary>
         private static readonly string RandomTokenSql = string.Join(
             " || ",
             Enumerable.Repeat(
-                "substr('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_', (random() & 63) + 1, 1)",
+                "substr('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_', 1"
+                + " + 16 * ((instr('0123456789ABCDEF', substr(hex(randomblob(1)), 2, 1)) - 1) % 4)"
+                + " + (instr('0123456789ABCDEF', substr(hex(randomblob(1)), 2, 1)) - 1), 1)",
                 22));
 
         /// <inheritdoc />

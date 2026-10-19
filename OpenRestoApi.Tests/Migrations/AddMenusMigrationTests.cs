@@ -1,10 +1,13 @@
 using System.Globalization;
+using System.Net;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using OpenRestoApi.Infrastructure.Persistence;
+using OpenRestoApi.Tests.Integration;
 
 namespace OpenRestoApi.Tests.Migrations;
 
@@ -136,6 +139,48 @@ public class AddMenusMigrationTests : IDisposable
         Assert.Equal("0", Scalar(_connection, "SELECT COUNT(*) FROM Restaurants WHERE Name = 'NoToken';"));
     }
 
+    /// <summary>
+    /// The tokens the migration writes come from SQL, not from <c>PublicTokenGenerator</c>, so
+    /// this proves they are tokens the public endpoints actually accept, end to end.
+    /// </summary>
+    [Fact]
+    public async Task Upgrade_TokensFilledByTheMigration_ResolveThroughThePublicEndpoints()
+    {
+        await SeedAtBaselineAsync();
+        using (AppDbContext db = CreateContext(_connection))
+        {
+            await db.Database.MigrateAsync();
+        }
+        string restaurantToken = Scalar(_connection, "SELECT PublicToken FROM Restaurants WHERE Id = 1;");
+        string tableToken = Scalar(_connection, "SELECT PublicToken FROM Tables WHERE Id = 1;");
+        Insert("Menus", new() { ["Id"] = 1, ["RestaurantId"] = 1, ["Name"] = "Migrated lunch", ["Currency"] = "EUR", ["IsPublished"] = 1 });
+        Insert("MenuCategories", new() { ["Id"] = 1, ["MenuId"] = 1, ["Name"] = "Mains", ["IsVisible"] = 1 });
+        Insert("MenuItems", new() { ["Id"] = 1, ["CategoryId"] = 1, ["Name"] = "Soup", ["Availability"] = "Available" });
+
+        using var factory = new TestWebAppFactory();
+        using WebApplicationFactory<Program> app = factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
+        {
+            foreach (ServiceDescriptor descriptor in services.Where(d =>
+                d.ServiceType == typeof(DbContextOptions<AppDbContext>) ||
+                d.ServiceType == typeof(DbContextOptions) ||
+                d.ServiceType == typeof(AppDbContext) ||
+                d.ServiceType == typeof(IDbContextOptionsConfiguration<AppDbContext>)).ToList())
+            {
+                services.Remove(descriptor);
+            }
+            services.AddDbContext<AppDbContext>(options => options.UseSqlite(_connection));
+        }));
+        HttpClient guest = app.CreateClient();
+
+        HttpResponseMessage byRestaurant = await guest.GetAsync($"/api/menus/r/{restaurantToken}");
+        HttpResponseMessage byTable = await guest.GetAsync($"/api/menus/t/{tableToken}");
+
+        Assert.Equal(HttpStatusCode.OK, byRestaurant.StatusCode);
+        Assert.Contains("Migrated lunch", await byRestaurant.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+        Assert.Equal(HttpStatusCode.OK, byTable.StatusCode);
+        Assert.Contains("\"name\":\"T1\"", await byTable.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task FreshInstall_MakesBothTokenColumnsRequiredAndUnique()
     {
@@ -182,10 +227,14 @@ public class AddMenusMigrationTests : IDisposable
 
         for (int id = 1; id <= RowsPerTable; id++)
         {
-            Insert("Restaurants", new() { ["Id"] = id, ["Name"] = $"R{id}" });
+            Insert("Restaurants", new()
+            {
+                ["Id"] = id, ["Name"] = $"R{id}", ["OpenTime"] = "09:00", ["CloseTime"] = "22:00",
+                ["OpenDays"] = "1,2,3,4,5,6,7", ["Timezone"] = "UTC",
+            });
             Insert("Sections", new() { ["Id"] = id, ["Name"] = $"S{id}", ["RestaurantId"] = id });
-            Insert("Tables", new() { ["Id"] = id, ["Seats"] = 4, ["SectionId"] = id });
-            Insert("Bookings", new() { ["Id"] = id, ["RestaurantId"] = id, ["SectionId"] = id, ["TableId"] = id });
+            Insert("Tables", new() { ["Id"] = id, ["Name"] = $"T{id}", ["Seats"] = 4, ["SectionId"] = id });
+            Insert("Bookings", new() { ["Id"] = id, ["RestaurantId"] = id, ["SectionId"] = id, ["TableId"] = id, ["Status"] = "Booked" });
         }
     }
 

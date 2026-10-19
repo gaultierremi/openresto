@@ -283,6 +283,29 @@ public class MenuService(
         DescribeItem(AuditActions.MenuItemPhotoDelete, item, restaurantId, $"Removed the photo of \"{item.Name}\"");
     }
 
+    /// <summary>
+    /// The photo of every dish the restaurant holds. Purging the restaurant removes the dishes
+    /// through the database cascade, which never reaches this service's own photo cleanup, so
+    /// the purge collects these first and hands them to <see cref="DeleteDishPhotos"/> once the
+    /// rows are gone.
+    /// </summary>
+    /// <seealso>MenusControllerTests.RestaurantPurge_RemovesCascadedDishPhotos</seealso>
+    public async Task<List<string>> GetDishPhotoUrlsAsync(int restaurantId)
+        => (await _repo.GetMenusWithContentAsync(restaurantId))
+            .SelectMany(m => m.Categories)
+            .SelectMany(c => c.Items)
+            .Select(i => i.ImageUrl)
+            .OfType<string>()
+            .ToList();
+
+    public void DeleteDishPhotos(IEnumerable<string> urls)
+    {
+        foreach (string url in urls)
+        {
+            _media.DeleteDishPhoto(url);
+        }
+    }
+
     // ── Public tokens ────────────────────────────────────────────────────────
 
     public async Task<MenuPublicTokensDto> GetPublicTokensAsync(int restaurantId)
