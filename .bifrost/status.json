@@ -9,8 +9,8 @@
       "agent": "Claude",
       "branche": "chore/bifrost",
       "statut": "Prête à merger",
-      "pr": "https://github.com/gaultierremi/openresto/pull/3",
-      "maj": "2026-10-20T07:02:17+00:00"
+      "pr": 3,
+      "maj": "2026-10-20T08:15:17+00:00"
     },
     {
       "id": "menu-api",
@@ -18,7 +18,7 @@
       "agent": "Claude",
       "branche": "feat/menu-api",
       "statut": "En cours",
-      "pr": "https://github.com/gaultierremi/openresto/pull/2",
+      "pr": 2,
       "etape": "Corrections d'Astra 1 poussées (9e124080), contre-vérification en attente.",
       "maj": "2026-10-19T06:30:17+00:00"
     }
@@ -32,7 +32,7 @@
     }
   ],
   "maj": {
-    "at": "2026-10-20T07:02:17+00:00",
+    "at": "2026-10-20T08:15:17+00:00",
     "by": "Claude"
   }
 }
