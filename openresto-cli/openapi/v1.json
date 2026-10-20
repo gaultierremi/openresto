@@ -3712,11 +3712,19 @@
         "tags": [
           "PublicSites"
         ],
+        "summary": "The restaurant\u0027s public page, in French or Dutch: \u0060?lang=fr|nl\u0060 first, then the browser\u0027s\n\u0060Accept-Language\u0060, then French.",
         "parameters": [
           {
             "name": "slug",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -3745,11 +3753,19 @@
         "tags": [
           "PublicSites"
         ],
+        "summary": "The restaurant\u0027s public page, in French or Dutch: \u0060?lang=fr|nl\u0060 first, then the browser\u0027s\n\u0060Accept-Language\u0060, then French.",
         "parameters": [
           {
             "name": "slug",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -3780,12 +3796,19 @@
         "tags": [
           "PublicSites"
         ],
-        "summary": "The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.",
+        "summary": "The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.\n\u0060?lang=fr|nl\u0060 is passed on to the booking page; any other value is dropped.",
         "parameters": [
           {
             "name": "slug",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -3821,12 +3844,19 @@
         "tags": [
           "PublicSites"
         ],
-        "summary": "The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.",
+        "summary": "The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.\n\u0060?lang=fr|nl\u0060 is passed on to the booking page; any other value is dropped.",
         "parameters": [
           {
             "name": "slug",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -6194,6 +6224,13 @@
               "string"
             ],
             "description": "Optional hold ID obtained from POST /api/holds.\nProvide this when creating a booking to validate and consume the hold.\nNot returned in responses."
+          },
+          "locale": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The language the guest was using when booking, one of SupportedLocales. Chooses\nthe language of the confirmation email; an unsupported value is ignored rather than refused."
           }
         }
       },

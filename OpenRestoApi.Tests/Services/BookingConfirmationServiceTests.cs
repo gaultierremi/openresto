@@ -270,4 +270,66 @@ public class BookingConfirmationServiceTests
 
         Assert.Empty(await db.Set<EmailFailure>().ToListAsync());
     }
+
+    // ── Language ────────────────────────────────────────────────────────────────
+
+    private static async Task<(string Subject, string Body)> SendInAsync(string testName, string? bookingLocale, string instanceDefault)
+    {
+        using AppDbContext db = TestDbFactory.Create(testName);
+        (Booking booking, Restaurant restaurant) = MakeBookingAndRestaurant(db, restaurantName: "Testaurant", customerName: "Alice");
+        booking.Locale = bookingLocale;
+        string? subject = null;
+        string? body = null;
+        var emailServiceMock = new Mock<IEmailService>();
+        emailServiceMock
+            .Setup(e => e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Callback<string, string, string>((_, s, b) => (subject, body) = (s, b))
+            .Returns(Task.CompletedTask);
+        var config = new Mock<IConfiguration>();
+        config.Setup(c => c["Locale:Default"]).Returns(instanceDefault);
+        var svc = new BookingConfirmationService(
+            MockSettingsService(new EmailSettings { SendBookingConfirmations = true }),
+            emailServiceMock.Object,
+            null,
+            new EmailTemplateService(),
+            new BrandService(new BrandSettingsRepository(db), config.Object));
+
+        await svc.SendConfirmationAsync(booking, restaurant);
+
+        return (subject!, body!);
+    }
+
+    [Theory]
+    [InlineData("nl", "fr", "Reservatie bevestigd – Testaurant", "Referentie")]
+    [InlineData("fr", "nl", "Réservation confirmée – Testaurant", "Référence")]
+    public async Task SendConfirmationAsync_WritesTheSubjectInTheLanguageTheGuestBookedIn(string bookingLocale, string instanceDefault, string subject, string bodyWord)
+    {
+        (string sent, string body) = await SendInAsync(nameof(SendConfirmationAsync_WritesTheSubjectInTheLanguageTheGuestBookedIn) + bookingLocale, bookingLocale, instanceDefault);
+
+        Assert.Equal(subject, sent);
+        Assert.Contains(bodyWord, body, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("nl", "Reservatie bevestigd – Testaurant")]
+    [InlineData("fr", "Réservation confirmée – Testaurant")]
+    [InlineData("en", "Booking confirmed – Testaurant")]
+    public async Task SendConfirmationAsync_UsesTheInstanceDefaultLanguage_WhenTheBookingHasNone(string instanceDefault, string subject)
+    {
+        (string sent, _) = await SendInAsync(nameof(SendConfirmationAsync_UsesTheInstanceDefaultLanguage_WhenTheBookingHasNone) + instanceDefault, null, instanceDefault);
+
+        Assert.Equal(subject, sent);
+    }
+
+    [Theory]
+    [InlineData("es", "nl")]
+    [InlineData("de", "fr")]
+    [InlineData("en", "nl")]
+    public async Task SendConfirmationAsync_WritesEnglish_ForALanguageWithoutCopy(string bookingLocale, string instanceDefault)
+    {
+        (string sent, string body) = await SendInAsync(nameof(SendConfirmationAsync_WritesEnglish_ForALanguageWithoutCopy) + bookingLocale, bookingLocale, instanceDefault);
+
+        Assert.Equal("Booking confirmed – Testaurant", sent);
+        Assert.Contains("Reference", body, StringComparison.Ordinal);
+    }
 }

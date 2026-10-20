@@ -1,4 +1,5 @@
 using OpenRestoApi.Core.Application.Interfaces;
+using OpenRestoApi.Core.Application.Utilities;
 using OpenRestoApi.Core.Domain;
 
 namespace OpenRestoApi.Core.Application.Services;
@@ -17,6 +18,13 @@ public sealed class BookingConfirmationService(
     private readonly IEmailTemplateService _templateService = templateService;
     private readonly BrandService _brandService = brandService;
 
+    /// <summary>
+    /// Written in the language the guest booked in; a booking with none (admin-recorded, or taken
+    /// before the language was kept) gets the instance default.
+    /// </summary>
+    /// <seealso>BookingConfirmationServiceTests.SendConfirmationAsync_WritesTheSubjectInTheLanguageTheGuestBookedIn</seealso>
+    /// <seealso>BookingConfirmationServiceTests.SendConfirmationAsync_UsesTheInstanceDefaultLanguage_WhenTheBookingHasNone</seealso>
+    /// <seealso>BookingConfirmationServiceTests.SendConfirmationAsync_WritesEnglish_ForALanguageWithoutCopy</seealso>
     public async Task SendConfirmationAsync(Booking booking, Restaurant restaurant)
     {
         // Same null-guard chain as the original BookingService block: short-circuits when any
@@ -36,8 +44,9 @@ public sealed class BookingConfirmationService(
 
             var brand = await _brandService.GetAsync();
             string websiteUrl = _brandService.GetWebsiteUrl(brand);
-            string subject = _templateService.BuildConfirmationSubject(restaurant);
-            string body = _templateService.BuildConfirmationEmail(booking, restaurant, brand, websiteUrl);
+            string language = GuestLanguage.ForEmail(booking.Locale, _brandService.GetDefaultLocale(brand));
+            string subject = _templateService.BuildConfirmationSubject(restaurant, language);
+            string body = _templateService.BuildConfirmationEmail(booking, restaurant, brand, websiteUrl, language);
             await _emailService.SendEmailAsync(booking.CustomerEmail, subject, body);
         }
         catch (Exception ex)

@@ -109,8 +109,8 @@ public static class SiteStructuredData
         return new Dictionary<string, object?>
         {
             ["@type"] = "Menu",
-            ["name"] = $"Carte de {m.Name}",
-            ["inLanguage"] = "fr",
+            ["name"] = SiteCopy.For(m.Language).MenuName(m.Name),
+            ["inLanguage"] = SiteCopy.For(m.Language).Language,
             ["hasMenuSection"] = m.Menus.SelectMany(menu => menu.Categories
                 .Where(c => c.Items.Count > 0)
                 .Select(c => new Dictionary<string, object?>
@@ -160,12 +160,12 @@ public static class SiteStructuredData
     private static Dictionary<string, object?> Reserve(SitePageModel m, string bookPath) => new()
     {
         ["@type"] = "ReserveAction",
-        ["name"] = "Réserver une table",
+        ["name"] = SiteCopy.For(m.Language).BookTable,
         ["target"] = new Dictionary<string, object?>
         {
             ["@type"] = "EntryPoint",
             ["urlTemplate"] = SiteFormat.AbsoluteUrl(m.BaseUrl, bookPath),
-            ["inLanguage"] = "fr",
+            ["inLanguage"] = SiteCopy.For(m.Language).Language,
         },
     };
 
