@@ -25,4 +25,27 @@ public class SupportedLocalesTests
     {
         Assert.False(SupportedLocales.IsSupported(locale));
     }
+
+    [Theory]
+    [InlineData("nl", "nl")]
+    [InlineData(" NL ", "nl")]
+    [InlineData("Fr", "fr")]
+    [InlineData("es", "es")]
+    public void Normalise_KeepsASupportedLocaleTrimmedAndLowerCase(string locale, string expected)
+    {
+        Assert.Equal(expected, SupportedLocales.Normalise(locale));
+    }
+
+    [Theory]
+    [InlineData("nl-BE")]
+    [InlineData("pt")]
+    [InlineData("nlnlnlnlnl")]
+    [InlineData("<script>")]
+    [InlineData("  ")]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Normalise_DropsAnythingElse(string? locale)
+    {
+        Assert.Null(SupportedLocales.Normalise(locale));
+    }
 }
