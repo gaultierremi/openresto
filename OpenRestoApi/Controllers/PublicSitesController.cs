@@ -25,22 +25,27 @@ public class PublicSitesController(SiteService siteService) : ControllerBase
     /// <summary>One minute: an unpublish, a sold-out dish or a new tagline shows up almost at once, while a busy page is not rebuilt per visitor.</summary>
     private const string PageCaching = "public, max-age=60";
 
-    private const string NotFoundPage =
-        "<!doctype html><html lang=\"fr\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
-        + "<meta name=\"robots\" content=\"noindex\"><title>Page introuvable</title></head>"
-        + "<body style=\"font:1.1rem/1.6 system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1rem\">"
-        + "<h1>Page introuvable</h1><p>Cette adresse ne correspond à aucun site.</p></body></html>";
+    private const string VaryOnLanguage = "Accept-Language";
 
+    /// <summary>
+    /// The restaurant's public page, in French or Dutch: <c>?lang=fr|nl</c> first, then the browser's
+    /// <c>Accept-Language</c>, then French.
+    /// </summary>
+    /// <seealso>SitesControllerTests.ThePublicPage_IsWrittenInTheLanguageTheVisitorAsksFor</seealso>
+    /// <seealso>SitesControllerTests.ThePublicPage_VariesOnTheLanguageHeader_AndStaysCacheable</seealso>
+    /// <seealso>SitesControllerTests.AnUnknownAddress_IsA404InTheVisitorsLanguage_ThatNamesNoSite</seealso>
     [HttpGet("/r/{slug}")]
     [HttpHead("/r/{slug}")]
     [Produces("text/html")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetSite(string slug)
+    public async Task<IActionResult> GetSite(string slug, [FromQuery(Name = SiteLanguage.QueryKey)] string? lang)
     {
+        string language = RequestLanguage(lang);
+        Response.Headers.Vary = VaryOnLanguage;
         try
         {
-            RenderedSitePage page = await _sites.RenderPublishedAsync(slug);
+            RenderedSitePage page = (await _sites.RenderPublishedAsync(slug)).In(language);
             Response.Headers.CacheControl = PageCaching;
             Response.Headers.ContentSecurityPolicy = page.ContentSecurityPolicy;
             Response.Headers.XContentTypeOptions = "nosniff";
@@ -49,24 +54,30 @@ public class PublicSitesController(SiteService siteService) : ControllerBase
         }
         catch (NotFoundException)
         {
-            return NotFoundHtml();
+            return NotFoundHtml(language);
         }
     }
 
-    /// <summary>The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.</summary>
+    /// <summary>
+    /// The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.
+    /// <c>?lang=fr|nl</c> is passed on to the booking page; any other value is dropped.
+    /// </summary>
+    /// <seealso>SitesControllerTests.Reserve_ForwardsASupportedLanguageToTheBookingPage</seealso>
+    /// <seealso>SitesControllerTests.Reserve_DropsAnyOtherLanguageValue_AndKeepsThePathTheServiceReturned</seealso>
     [HttpGet("/r/{slug}/reserver")]
     [HttpHead("/r/{slug}/reserver")]
     [ProducesResponseType(StatusCodes.Status302Found)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Reserve(string slug)
+    public async Task<IActionResult> Reserve(string slug, [FromQuery(Name = SiteLanguage.QueryKey)] string? lang)
     {
+        Response.Headers.Vary = VaryOnLanguage;
         try
         {
-            return Redirect(await _sites.GetBookingPathAsync(slug));
+            return Redirect(SiteLanguage.WithLanguage(await _sites.GetBookingPathAsync(slug), lang));
         }
         catch (NotFoundException)
         {
-            return NotFoundHtml();
+            return NotFoundHtml(RequestLanguage(lang));
         }
     }
 
@@ -88,10 +99,13 @@ public class PublicSitesController(SiteService siteService) : ControllerBase
         return Content(await _sites.BuildRobotsAsync(), "text/plain; charset=utf-8");
     }
 
-    private ContentResult NotFoundHtml() => new()
+    private string RequestLanguage(string? queryLanguage)
+        => SiteLanguage.Negotiate(queryLanguage, Request.Headers.AcceptLanguage.ToString());
+
+    private static ContentResult NotFoundHtml(string language) => new()
     {
         StatusCode = StatusCodes.Status404NotFound,
         ContentType = Html,
-        Content = NotFoundPage,
+        Content = SitePageRenderer.NotFoundPage(language),
     };
 }

@@ -20,6 +20,30 @@ public class SiteFormatTests
         => Assert.Equal(expected, SiteFormat.Price(minor, currency));
 
     [Theory]
+    [InlineData(900L, "EUR", "€" + Nbsp + "9,00")]
+    [InlineData(1250L, "EUR", "€" + Nbsp + "12,50")]
+    [InlineData(0L, "EUR", "€" + Nbsp + "0,00")]
+    [InlineData(5L, "EUR", "€" + Nbsp + "0,05")]
+    [InlineData(125000L, "EUR", "€" + Nbsp + "1.250,00")]
+    [InlineData(500L, "JPY", "JPY" + Nbsp + "500")]
+    [InlineData(1234L, "KWD", "KWD" + Nbsp + "1,234")]
+    [InlineData(1250L, "USD", "USD" + Nbsp + "12,50")]
+    public void Price_PrintsEurosTheDutchSpeakingBelgianWay(long minor, string currency, string expected)
+        => Assert.Equal(expected, SiteFormat.Price(minor, currency, SiteCopy.Dutch));
+
+    [Fact]
+    public void Price_StaysFrenchWhenNoLanguageIsGiven()
+        => Assert.Equal(SiteFormat.Price(125000L, "EUR", SiteCopy.French), SiteFormat.Price(125000L, "EUR"));
+
+    [Fact]
+    public void Days_AreNamedInDutchWhenAskedTo()
+    {
+        Assert.Equal("Maandag", SiteFormat.DayName(1, SiteCopy.Dutch));
+        Assert.Equal("Lundi", SiteFormat.DayName(1));
+        Assert.Equal("Monday", SiteFormat.SchemaDay(1));
+    }
+
+    [Theory]
     [InlineData(900L, "EUR", "9.00")]
     [InlineData(125000L, "EUR", "1250.00")]
     [InlineData(500L, "JPY", "500")]
