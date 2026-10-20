@@ -7916,6 +7916,15 @@
             "type": "string",
             "format": "date-time"
           },
+          "totalBookings": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "All the restaurant\u0027s bookings; List\u0026lt;PlatformGuestBookingDto\u0026gt; GuestDataAccessDto.Bookings holds only the most recent ones.",
+            "format": "int32"
+          },
           "bookings": {
             "type": "array",
             "items": {
@@ -7925,16 +7934,14 @@
         }
       },
       "GuestDataAccessRequest": {
-        "required": [
-          "reason"
-        ],
         "type": "object",
         "properties": {
           "reason": {
-            "maxLength": 300,
-            "minLength": 0,
-            "type": "string",
-            "description": "Why the platform needs to read this restaurant\u0027s guests. Recorded in the audit trail."
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why the platform needs to read this restaurant\u0027s guests. Recorded in the audit trail.\nBounded by the service rather than by model validation, so a refusal carries its code."
           }
         }
       },

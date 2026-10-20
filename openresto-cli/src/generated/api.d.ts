@@ -7053,11 +7053,19 @@ export interface components {
             restaurantName?: string;
             /** Format: date-time */
             grantedAt?: string;
+            /**
+             * Format: int32
+             * @description All the restaurant's bookings; List&lt;PlatformGuestBookingDto&gt; GuestDataAccessDto.Bookings holds only the most recent ones.
+             */
+            totalBookings?: number | string;
             bookings?: components["schemas"]["PlatformGuestBookingDto"][];
         };
         GuestDataAccessRequest: {
-            /** @description Why the platform needs to read this restaurant's guests. Recorded in the audit trail. */
-            reason: string;
+            /**
+             * @description Why the platform needs to read this restaurant's guests. Recorded in the audit trail.
+             *     Bounded by the service rather than by model validation, so a refusal carries its code.
+             */
+            reason?: null | string;
         };
         /**
          * @description A guest asking to be reminded about a booking. `Email` is the second half of the
