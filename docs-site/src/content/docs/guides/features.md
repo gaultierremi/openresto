@@ -279,9 +279,12 @@ changes, booking edits and deletes need an explicit press.
 
 ## Language
 
-OpenResto speaks English, French, Spanish and German. It uses the visitor's own choice first,
-then the instance default (`OPENRESTO_DEFAULT_LOCALE` or `Locale:Default`), then English. The
-native app also follows the phone's language.
+OpenResto speaks English, French, Spanish, German and Dutch. Dutch covers the guest pages (home,
+locations, booking, confirmation and lookup) but not the admin, which shows French, then English,
+for a Dutch visitor. It uses the visitor's own choice first, then the language the visitor's
+browser asks for, then the instance default (`OPENRESTO_DEFAULT_LOCALE` or `Locale:Default`),
+then English. The native app follows the phone's language instead of the browser's, and the
+admin ignores the browser's language and follows the instance default.
 
 ## Configuration reference
 

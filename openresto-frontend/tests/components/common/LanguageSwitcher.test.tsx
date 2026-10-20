@@ -37,6 +37,7 @@ describe("LanguageSwitcher", () => {
     expect(screen.getByText("Français")).toBeTruthy();
     expect(screen.getByText("Español")).toBeTruthy();
     expect(screen.getByText("Deutsch")).toBeTruthy();
+    expect(screen.getByText("Nederlands")).toBeTruthy();
   });
 
   it("calls setLocale with the picked locale code", () => {

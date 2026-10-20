@@ -27,6 +27,7 @@ import { haptics } from "@/utils/haptics";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useAppTheme } from "@/hooks/use-app-theme";
+import { useLocale } from "@/context/LocaleContext";
 import { theme } from "@/theme/theme";
 import { RestaurantDto } from "@/api/restaurants";
 import { createBooking } from "@/api/bookings";
@@ -130,6 +131,7 @@ export default function BookingDrawer({
 }) {
   const router = useRouter();
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const { colors, isDark } = useAppTheme();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -263,6 +265,7 @@ export default function BookingDrawer({
         sectionId: resolvedSectionId,
         date: dateTime,
         specialRequests: data.specialRequests || null,
+        locale,
       });
       const email = encodeURIComponent(data.customerEmail);
       // Only once the booking is real: an error has to stay readable in the sheet it was
