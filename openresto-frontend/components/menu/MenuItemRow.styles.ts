@@ -8,9 +8,6 @@ export const styles = StyleSheet.create({
     paddingVertical: theme.spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  soldOut: {
-    opacity: 0.5,
-  },
   body: {
     flex: 1,
     gap: theme.spacing.xs,

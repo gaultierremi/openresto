@@ -155,6 +155,7 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
                     onPress={() => setMenuIndex(index)}
                     accessibilityRole="tab"
                     accessibilityState={{ selected }}
+                    aria-selected={selected}
                     style={[
                       styles.menuTab,
                       { borderColor: selected ? primaryColor : colors.borderStrong },

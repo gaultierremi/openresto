@@ -18,6 +18,17 @@ function Harness({ initial = NO_FILTER }: { initial?: MenuFilter }) {
   );
 }
 
+/**
+ * What react-native-web is handed. It reads the `aria-*` prop and ignores `accessibilityState`,
+ * while the native Pressable folds the prop into the state and drops it from the host node, so
+ * the prop is only visible on the component element, not on the node `getByTestId` returns.
+ */
+const ariaProp = (testID: string, name: string) =>
+  screen
+    .UNSAFE_getAllByProps({ testID })
+    .map((node) => node.props[name])
+    .find((value) => value !== undefined);
+
 describe("FilterChip", () => {
   it("is a checkbox by default and reports its state", () => {
     const onPress = jest.fn();
@@ -26,6 +37,16 @@ describe("FilterChip", () => {
     expect(chip.props.accessibilityRole).toBe("checkbox");
     expect(chip.props.accessibilityState).toEqual({ checked: true });
     expect(chip.props.accessibilityLabel).toBe("Vegan");
+  });
+
+  it("also states its checked state through aria-checked, which is what the web reads", () => {
+    const { rerender } = render(
+      <FilterChip label="Vegan" selected onPress={jest.fn()} testID="chip" />
+    );
+    expect(ariaProp("chip", "aria-checked")).toBe(true);
+
+    rerender(<FilterChip label="Vegan" selected={false} onPress={jest.fn()} testID="chip" />);
+    expect(ariaProp("chip", "aria-checked")).toBe(false);
   });
 
   it("can be a radio for one choice out of a few", () => {
@@ -63,6 +84,14 @@ describe("MenuFilters", () => {
     expect(screen.getByTestId("menu-allergens-toggle").props.accessibilityState).toEqual({
       expanded: false,
     });
+  });
+
+  it("states whether the allergen panel is open through aria-expanded, which is what the web reads", () => {
+    render(<Harness />);
+    expect(ariaProp("menu-allergens-toggle", "aria-expanded")).toBe(false);
+
+    fireEvent.press(screen.getByTestId("menu-allergens-toggle"));
+    expect(ariaProp("menu-allergens-toggle", "aria-expanded")).toBe(true);
   });
 
   it("selects a diet, and a second press unselects it", () => {

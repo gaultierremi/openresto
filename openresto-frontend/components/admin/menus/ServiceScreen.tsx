@@ -231,6 +231,7 @@ export function ServiceScreen() {
                               accessibilityRole="switch"
                               accessibilityLabel={item.name}
                               accessibilityState={{ checked: soldOut }}
+                              aria-checked={soldOut}
                               style={[
                                 styles.row,
                                 {

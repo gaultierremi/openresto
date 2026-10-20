@@ -1,4 +1,5 @@
 import React from "react";
+import { StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 import { act, render, renderHook, screen } from "@testing-library/react-native";
 import { MenuItemRow, usePriceLabel } from "@/components/menu/MenuItemRow";
 import type { PublicMenuItem } from "@/api/menus";
@@ -89,6 +90,47 @@ describe("MenuItemRow", () => {
       render(<MenuItemRow item={dish({ availability: "SoldOut" })} currency="EUR" />);
       expect(screen.getByText("Soupe à l’oignon")).toBeTruthy();
       expect(screen.getByText("Sold out")).toBeTruthy();
+    });
+
+    const colorOf = (text: string | RegExp) =>
+      StyleSheet.flatten(screen.getByText(text).props.style)?.color;
+
+    it("greys the name and the price in the muted colour, not with opacity", () => {
+      const { rerender } = render(<MenuItemRow item={dish()} currency="EUR" />);
+      const availableName = colorOf("Soupe à l’oignon");
+
+      rerender(<MenuItemRow item={dish({ availability: "SoldOut" })} currency="EUR" />);
+      const muted = colorOf("Sold out");
+      expect(muted).toBeTruthy();
+      expect(colorOf("Soupe à l’oignon")).toBe(muted);
+      expect(colorOf(/€\s?12\.50/)).toBe(muted);
+      expect(colorOf("Soupe à l’oignon")).not.toBe(availableName);
+    });
+
+    it("never dims the row: opacity would halve the contrast of the allergen line", () => {
+      render(
+        <MenuItemRow
+          item={dish({ availability: "SoldOut", allergens: ["Milk"], description: "Gratinée" })}
+          currency="EUR"
+        />
+      );
+      const opacityOf = (node: { props: { style?: StyleProp<ViewStyle> } }) =>
+        StyleSheet.flatten(node.props.style)?.opacity;
+      expect(opacityOf(screen.getByTestId("menu-item"))).toBeUndefined();
+      expect(opacityOf(screen.getByText("Contains: Milk"))).toBeUndefined();
+      expect(opacityOf(screen.getByText("Gratinée"))).toBeUndefined();
+    });
+
+    it("keeps the allergen line as readable on a sold-out dish as on an available one", () => {
+      const { rerender } = render(
+        <MenuItemRow item={dish({ allergens: ["Milk"] })} currency="EUR" />
+      );
+      const available = colorOf("Contains: Milk");
+
+      rerender(
+        <MenuItemRow item={dish({ availability: "SoldOut", allergens: ["Milk"] })} currency="EUR" />
+      );
+      expect(colorOf("Contains: Milk")).toBe(available);
     });
 
     it("does not mark an available dish", () => {
