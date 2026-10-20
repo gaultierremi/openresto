@@ -257,9 +257,14 @@ public class MenuService(
     public async Task<MenuItemDto> UploadItemPhotoAsync(int restaurantId, int itemId, Stream content, string contentType)
     {
         MenuItem item = await RequireItemAsync(restaurantId, itemId);
-        item.ImageUrl = await _media.StoreDishPhotoAsync(item.Id, content, contentType);
+        string? replaced = item.ImageUrl;
+        item.ImageUrl = await _media.StoreDishPhotoAsync(content, contentType);
         item.Category!.Menu!.UpdatedAt = _clock.UtcNow;
         await _repo.SaveChangesAsync();
+        if (replaced != null)
+        {
+            _media.DeleteDishPhoto(replaced);
+        }
 
         DescribeItem(AuditActions.MenuItemPhotoUpload, item, restaurantId, $"Uploaded a photo for \"{item.Name}\"");
         return ToDto(item);
@@ -554,7 +559,7 @@ public class MenuService(
         return description;
     }
 
-    /// <summary>Blank keeps <paramref name="fallback"/>; anything else must be an ISO 4217-shaped code.</summary>
+    /// <summary>Blank keeps <paramref name="fallback"/>; anything else must be an active ISO 4217 code (<see cref="MenuFields.IsValidCurrency"/>).</summary>
     private static string NormalizeCurrency(string? raw, string fallback)
     {
         if (string.IsNullOrWhiteSpace(raw))

@@ -34,12 +34,18 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
 
         public IReadOnlyCollection<string> Files => _files.Keys.ToList();
 
+        /// <summary>How many bytes the last upload handed over, from wherever the stream was positioned.</summary>
+        public long LengthOfLast { get; private set; }
+
         public Task<string> ReplaceAsync(string slot, string extension, Stream content)
         {
             foreach (string old in _files.Keys.Where(f => f.StartsWith($"{slot}.", StringComparison.Ordinal)))
             {
                 _files.TryRemove(old, out _);
             }
+            using var copy = new MemoryStream();
+            content.CopyTo(copy);
+            LengthOfLast = copy.Length;
             string name = $"{slot}.{extension}";
             _files[name] = 0;
             return Task.FromResult(name);
@@ -231,14 +237,14 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
         HttpClient owner = Owner();
         var store = (InMemoryMediaStore)_app.Services.GetRequiredService<IMediaStore>();
         (await owner.PostAsync($"{Base(r.RestaurantId)}/menu-items/{tree.ItemId}/photo", Photo("image/png", 16))).EnsureSuccessStatusCode();
-        Assert.Contains($"dish-{tree.ItemId}.png", store.Files);
+        Assert.Single(store.Files, f => f.StartsWith("dish-", StringComparison.Ordinal));
 
         (await owner.PatchAsJsonAsync($"/api/admin/restaurants/{r.RestaurantId}", new { isArchived = true })).EnsureSuccessStatusCode();
         HttpResponseMessage purge = await owner.DeleteAsync($"/api/admin/restaurants/{r.RestaurantId}");
 
         Assert.Equal(HttpStatusCode.NoContent, purge.StatusCode);
         Assert.False(await InDbAsync(db => db.MenuItems.AnyAsync(i => i.Id == tree.ItemId)));
-        Assert.DoesNotContain(store.Files, f => f.StartsWith($"dish-{tree.ItemId}.", StringComparison.Ordinal));
+        Assert.DoesNotContain(store.Files, f => f.StartsWith("dish-", StringComparison.Ordinal));
     }
 
     // ── Another restaurant's rows ────────────────────────────────────────────
@@ -250,10 +256,18 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
         Seeded b = await SeedRestaurantAsync();
         Tree tree = await CreateTreeAsync(a.RestaurantId);
         HttpClient owner = Owner();
+        (await owner.PostAsync($"{Base(a.RestaurantId)}/menu-items/{tree.ItemId}/photo", Photo("image/png", 32))).EnsureSuccessStatusCode();
+        string photoUrl = (await InDbAsync(db => db.MenuItems.Where(i => i.Id == tree.ItemId).Select(i => i.ImageUrl).SingleAsync()))!;
+        var store = (InMemoryMediaStore)_app.Services.GetRequiredService<IMediaStore>();
+        IReadOnlyCollection<string> filesBefore = store.Files;
 
         HttpResponseMessage[] responses =
         [
             await owner.GetAsync($"{Base(b.RestaurantId)}/menus/{tree.MenuId}"),
+            await owner.PostAsync($"{Base(b.RestaurantId)}/menu-items/{tree.ItemId}/photo", Photo("image/png", 32)),
+            await owner.DeleteAsync($"{Base(b.RestaurantId)}/menu-items/{tree.ItemId}/photo"),
+            await owner.PatchAsJsonAsync($"{Base(b.RestaurantId)}/menus/{tree.MenuId}/categories/reorder", new { ids = new[] { tree.CategoryId } }),
+            await owner.PatchAsJsonAsync($"{Base(b.RestaurantId)}/menu-categories/{tree.CategoryId}/items/reorder", new { ids = new[] { tree.ItemId } }),
             await owner.PutAsJsonAsync($"{Base(b.RestaurantId)}/menus/{tree.MenuId}", new { name = "Hijacked" }),
             await owner.PostAsync($"{Base(b.RestaurantId)}/menus/{tree.MenuId}/publish", null),
             await owner.PostAsJsonAsync($"{Base(b.RestaurantId)}/menus/{tree.MenuId}/categories", new { name = "Injected" }),
@@ -277,13 +291,39 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
             await db.Tables.Where(t => t.Id == a.TableId).Select(t => t.PublicToken).SingleAsync()));
         Assert.Equal(("Lunch", false, "Mains", "Steak", 1, 1, a.TableToken), (menu, published, category, item, categories, items, tableToken));
         Assert.Equal(0, await MenuCountAsync(b.RestaurantId));
+        Assert.Equal(photoUrl, await InDbAsync(db => db.MenuItems.Where(i => i.Id == tree.ItemId).Select(i => i.ImageUrl).SingleAsync()));
+        Assert.Equal(filesBefore, store.Files);
+
+        // The menu list is scoped the same way: another restaurant's menu id is not a valid sibling.
+        HttpResponseMessage reorderMenus = await owner.PatchAsJsonAsync($"{Base(b.RestaurantId)}/menus/reorder", new { ids = new[] { tree.MenuId } });
+        Assert.Equal(HttpStatusCode.BadRequest, reorderMenus.StatusCode);
+        Assert.Equal(ErrorCodes.MenuReorderIdsMismatch, (await reorderMenus.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString());
+        Assert.Equal(0, await InDbAsync(db => db.Menus.Where(m => m.Id == tree.MenuId).Select(m => m.SortOrder).SingleAsync()));
     }
 
     // ── Photos ───────────────────────────────────────────────────────────────
 
-    private static MultipartFormDataContent Photo(string contentType, int bytes)
+    private static readonly Dictionary<string, byte[]> _magic = new()
     {
-        var file = new ByteArrayContent(new byte[bytes]);
+        ["image/png"] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A],
+        ["image/jpeg"] = [0xFF, 0xD8, 0xFF, 0xE0],
+        ["image/webp"] = [.. "RIFF"u8, 0, 0, 0, 0, .. "WEBP"u8],
+    };
+
+    /// <summary>
+    /// A multipart upload declaring <paramref name="contentType"/>. By default its bytes start with
+    /// that type's real signature; <paramref name="signedAs"/> writes another type's instead, and
+    /// <c>null</c> writes none, so a test can declare one thing and send another.
+    /// </summary>
+    private static MultipartFormDataContent Photo(string contentType, int bytes, string? signedAs = "")
+    {
+        byte[] content = new byte[bytes];
+        string? signature = signedAs == "" ? contentType : signedAs;
+        if (signature != null && _magic.TryGetValue(signature, out byte[]? head))
+        {
+            head.AsSpan(0, Math.Min(head.Length, content.Length)).CopyTo(content);
+        }
+        var file = new ByteArrayContent(content);
         file.Headers.ContentType = new MediaTypeHeaderValue(contentType);
         return new MultipartFormDataContent { { file, "file", "dish.bin" } };
     }
@@ -306,10 +346,57 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
 
         HttpResponseMessage ok = await owner.PostAsync(url, Photo("image/png", 2 * 1024 * 1024));
         Assert.Equal(HttpStatusCode.OK, ok.StatusCode);
-        Assert.StartsWith($"/media/dish-{tree.ItemId}.png", (await ok.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("imageUrl").GetString(), StringComparison.Ordinal);
+        string imageUrl = (await ok.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("imageUrl").GetString()!;
+        Assert.Matches(@"^/media/dish-[A-Za-z0-9_-]{22}\.png\?v=\d+$", imageUrl);
+        Assert.DoesNotContain($"dish-{tree.ItemId}.", imageUrl, StringComparison.Ordinal);
 
         Assert.Equal(HttpStatusCode.NoContent, (await owner.DeleteAsync(url)).StatusCode);
         Assert.Null(await InDbAsync(db => db.MenuItems.Where(i => i.Id == tree.ItemId).Select(i => i.ImageUrl).SingleAsync()));
+    }
+
+    [Fact]
+    public async Task ItemPhoto_IsRefusedWhenItsBytesAreNotTheImageItDeclares_AndWritesNothing()
+    {
+        Seeded r = await SeedRestaurantAsync();
+        Tree tree = await CreateTreeAsync(r.RestaurantId);
+        HttpClient owner = Owner();
+        var store = (InMemoryMediaStore)_app.Services.GetRequiredService<IMediaStore>();
+        string url = $"{Base(r.RestaurantId)}/menu-items/{tree.ItemId}/photo";
+
+        HttpResponseMessage[] refused =
+        [
+            await owner.PostAsync(url, Photo("image/png", 64, signedAs: null)),
+            await owner.PostAsync(url, Photo("image/png", 64, signedAs: "image/jpeg")),
+            await owner.PostAsync(url, Photo("image/jpeg", 64, signedAs: "image/webp")),
+            await owner.PostAsync(url, Photo("image/webp", 64, signedAs: "image/png")),
+            await owner.PostAsync(url, Photo("image/webp", 8)),
+        ];
+
+        foreach (HttpResponseMessage response in refused)
+        {
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(ErrorCodes.MediaUnsupportedImageType, (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString());
+        }
+        Assert.Empty(store.Files);
+        Assert.Null(await InDbAsync(db => db.MenuItems.Where(i => i.Id == tree.ItemId).Select(i => i.ImageUrl).SingleAsync()));
+
+        foreach (string type in new[] { "image/png", "image/jpeg", "image/webp" })
+        {
+            Assert.Equal(HttpStatusCode.OK, (await owner.PostAsync(url, Photo(type, 64))).StatusCode);
+        }
+        Assert.Single(store.Files);
+    }
+
+    [Fact]
+    public async Task ItemPhoto_IsStoredAsTheCheckedBytes_NotTheEmptyRemainderOfTheStream()
+    {
+        Seeded r = await SeedRestaurantAsync();
+        Tree tree = await CreateTreeAsync(r.RestaurantId);
+
+        HttpResponseMessage response = await Owner().PostAsync($"{Base(r.RestaurantId)}/menu-items/{tree.ItemId}/photo", Photo("image/png", 64));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(64, ((InMemoryMediaStore)_app.Services.GetRequiredService<IMediaStore>()).LengthOfLast);
     }
 
     // ── Tokens ───────────────────────────────────────────────────────────────

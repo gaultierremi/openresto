@@ -147,12 +147,16 @@ public class MediaService(
     }
 
     /// <summary>
-    /// Writes a dish photo into the item's slot and returns the URL to store on it. The caller
+    /// Writes a dish photo and returns the URL to store on the item. The file is named after a
+    /// fresh random token, never the item's id: this URL is served to guests on the public menu,
+    /// and an id in it would tell them how many dishes the restaurant has ever created. Each upload
+    /// takes a new name, so the caller deletes the photo it replaces. The caller
     /// (<see cref="MenuService"/>) owns the item, its persistence and its audit entry.
     /// </summary>
-    public virtual async Task<string> StoreDishPhotoAsync(int menuItemId, Stream fileStream, string contentType)
+    /// <seealso>MenuServiceTests.UploadItemPhoto_WritesAnOpaqueSlot_NotTheItemId</seealso>
+    public virtual async Task<string> StoreDishPhotoAsync(Stream fileStream, string contentType)
     {
-        string filename = await _media.ReplaceAsync(DishSlot(menuItemId), GetExtension(contentType), fileStream);
+        string filename = await _media.ReplaceAsync(DishSlot(PublicTokenGenerator.New()), GetExtension(contentType), fileStream);
         return $"/media/{filename}?v={DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     }
 
@@ -163,7 +167,7 @@ public class MediaService(
     private const string HeroSlot = "hero";
     private static string LocationSlot(int restaurantId) => $"location-{restaurantId}";
     private static string MenuSlot(int restaurantId) => $"menu-{restaurantId}";
-    private static string DishSlot(int menuItemId) => $"dish-{menuItemId}";
+    private static string DishSlot(string token) => $"dish-{token}";
 
     private void DescribeMedia(string action, string slot, string label, int? restaurantId, string summary)
         => _audit.Describe(action, AuditTargets.Media, slot, label, restaurantId, summary);

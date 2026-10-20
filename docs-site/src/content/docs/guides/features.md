@@ -145,7 +145,9 @@ carrying the `menus` scope (`read` or `write`).
   `Lupin`, `Molluscs`). Dietary tags are `Vegetarian`, `Vegan` and `GlutenFree`.
 - A dish is `Available`, `SoldOut` (shown, marked) or `Hidden` (left out of the public menu). A
   category can be hidden too.
-- Dish photos are JPEG, PNG or WebP under 2 MB. Deleting a dish, a category or a menu deletes
+- Dish photos are JPEG, PNG or WebP under 2 MB, and the file's own bytes have to match the
+  type it declares. Each is stored under a random name, so the public photo URL does not reveal
+  a dish id. Deleting a dish, a category or a menu deletes
   the photos that go with it.
 - Reordering takes the full list of ids in the new order; a list that leaves one out, repeats
   one or names another menu's is refused with `menu.reorder_ids_mismatch`.

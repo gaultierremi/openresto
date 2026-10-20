@@ -400,14 +400,14 @@ public class MenuServiceTests : IDisposable
         MenuDto kept = await CreateMenuAsync(name: "Kept");
         MenuCategoryDto category = await CreateCategoryAsync(menu.Id);
         MenuItemDto item = await CreateItemAsync(category.Id);
-        await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([1]), "image/png");
+        MenuItemDto photographed = await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([1]), "image/png");
 
         await _svc.DeleteMenuAsync(RestaurantA, menu.Id);
 
         Assert.Equal([kept.Id], await _db.Menus.Select(m => m.Id).ToListAsync());
         Assert.Empty(_db.MenuCategories);
         Assert.Empty(_db.MenuItems);
-        _store.Verify(s => s.TryDelete($"/media/dish-{item.Id}.png"), Times.Once);
+        _store.Verify(s => s.TryDelete(FileOf(photographed)), Times.Once);
         Assert.Equal(1, await _db.Bookings.CountAsync());
         Assert.Equal(AuditActions.MenuDelete, _audit.Action);
     }
@@ -420,13 +420,13 @@ public class MenuServiceTests : IDisposable
         MenuCategoryDto sibling = await CreateCategoryAsync(menu.Id, "Sibling");
         MenuItemDto withPhoto = await CreateItemAsync(doomed.Id, "Photo");
         MenuItemDto survivor = await CreateItemAsync(sibling.Id, "Survivor");
-        await _svc.UploadItemPhotoAsync(RestaurantA, withPhoto.Id, new MemoryStream([1]), "image/jpeg");
+        MenuItemDto photographed = await _svc.UploadItemPhotoAsync(RestaurantA, withPhoto.Id, new MemoryStream([1]), "image/jpeg");
 
         await _svc.DeleteCategoryAsync(RestaurantA, doomed.Id);
 
         Assert.Equal([sibling.Id], await _db.MenuCategories.Select(c => c.Id).ToListAsync());
         Assert.Equal([survivor.Id], await _db.MenuItems.Select(i => i.Id).ToListAsync());
-        _store.Verify(s => s.TryDelete($"/media/dish-{withPhoto.Id}.jpg"), Times.Once);
+        _store.Verify(s => s.TryDelete(FileOf(photographed)), Times.Once);
     }
 
     [Fact]
@@ -435,12 +435,12 @@ public class MenuServiceTests : IDisposable
         MenuDto menu = await CreateMenuAsync();
         MenuCategoryDto category = await CreateCategoryAsync(menu.Id);
         MenuItemDto item = await CreateItemAsync(category.Id);
-        await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([1]), "image/webp");
+        MenuItemDto photographed = await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([1]), "image/webp");
 
         await _svc.DeleteItemAsync(RestaurantA, item.Id);
 
         Assert.Empty(_db.MenuItems);
-        _store.Verify(s => s.TryDelete($"/media/dish-{item.Id}.webp"), Times.Once);
+        _store.Verify(s => s.TryDelete(FileOf(photographed)), Times.Once);
     }
 
     [Fact]
@@ -455,8 +455,11 @@ public class MenuServiceTests : IDisposable
         _store.Verify(s => s.TryDelete(It.IsAny<string>()), Times.Never);
     }
 
+    /// <summary>The file a photo URL names: the store is handed the path without its cache-busting query.</summary>
+    private static string FileOf(MenuItemDto item) => item.ImageUrl![..item.ImageUrl!.IndexOf('?')];
+
     [Fact]
-    public async Task UploadItemPhoto_WritesTheDishSlot_AndStoresItsUrl()
+    public async Task UploadItemPhoto_WritesAnOpaqueSlot_NotTheItemId()
     {
         MenuDto menu = await CreateMenuAsync();
         MenuCategoryDto category = await CreateCategoryAsync(menu.Id);
@@ -464,9 +467,26 @@ public class MenuServiceTests : IDisposable
 
         MenuItemDto updated = await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([1]), "image/jpeg");
 
-        _store.Verify(s => s.ReplaceAsync($"dish-{item.Id}", "jpg", It.IsAny<Stream>()), Times.Once);
-        Assert.StartsWith($"/media/dish-{item.Id}.jpg?v=", updated.ImageUrl, StringComparison.Ordinal);
+        Assert.Matches(@"^/media/dish-[A-Za-z0-9_-]{22}\.jpg\?v=\d+$", updated.ImageUrl);
+        Assert.DoesNotContain($"dish-{item.Id}.", updated.ImageUrl, StringComparison.Ordinal);
         Assert.Equal(AuditActions.MenuItemPhotoUpload, _audit.Action);
+    }
+
+    [Fact]
+    public async Task UploadItemPhoto_GivesEachUploadItsOwnName_AndDeletesTheOneItReplaces()
+    {
+        MenuDto menu = await CreateMenuAsync();
+        MenuCategoryDto category = await CreateCategoryAsync(menu.Id);
+        MenuItemDto item = await CreateItemAsync(category.Id);
+
+        MenuItemDto first = await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([1]), "image/png");
+        _store.Verify(s => s.TryDelete(It.IsAny<string>()), Times.Never);
+
+        MenuItemDto second = await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([2]), "image/png");
+
+        Assert.NotEqual(first.ImageUrl, second.ImageUrl);
+        _store.Verify(s => s.TryDelete(FileOf(first)), Times.Once);
+        _store.Verify(s => s.TryDelete(FileOf(second)), Times.Never);
     }
 
     [Fact]
@@ -475,12 +495,12 @@ public class MenuServiceTests : IDisposable
         MenuDto menu = await CreateMenuAsync();
         MenuCategoryDto category = await CreateCategoryAsync(menu.Id);
         MenuItemDto item = await CreateItemAsync(category.Id);
-        await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([1]), "image/png");
+        MenuItemDto photographed = await _svc.UploadItemPhotoAsync(RestaurantA, item.Id, new MemoryStream([1]), "image/png");
 
         await _svc.DeleteItemPhotoAsync(RestaurantA, item.Id);
 
         Assert.Null((await _db.MenuItems.AsNoTracking().SingleAsync()).ImageUrl);
-        _store.Verify(s => s.TryDelete($"/media/dish-{item.Id}.png"), Times.Once);
+        _store.Verify(s => s.TryDelete(FileOf(photographed)), Times.Once);
     }
 
     // ── Another restaurant's rows ────────────────────────────────────────────

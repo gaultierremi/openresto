@@ -148,7 +148,19 @@ public class MenusController(MenuService menuService) : ControllerBase
             return BadRequest(new MessageResponse { Message = "Dish photo must be under 2 MB.", Code = ErrorCodes.MenuItemImageTooLarge });
 
         await using Stream stream = file.OpenReadStream();
+        if (!await HasDeclaredImageSignatureAsync(stream, file.ContentType))
+            return BadRequest(new MessageResponse { Message = "Only JPEG, PNG, and WebP images are accepted.", Code = ErrorCodes.MediaUnsupportedImageType });
+
         return Ok(await _menus.UploadItemPhotoAsync(restaurantId, itemId, stream, file.ContentType));
+    }
+
+    /// <summary>Reads the leading bytes and rewinds, so the stored file is the one that was checked.</summary>
+    private static async Task<bool> HasDeclaredImageSignatureAsync(Stream stream, string contentType)
+    {
+        byte[] header = new byte[ImageSignature.HeaderLength];
+        int read = await stream.ReadAtLeastAsync(header, header.Length, throwOnEndOfStream: false);
+        stream.Position = 0;
+        return ImageSignature.Matches(header.AsSpan(0, read), contentType);
     }
 
     [HttpDelete("menu-items/{itemId:int}/photo")]

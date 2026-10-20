@@ -343,7 +343,9 @@ HIGHLIGHTS = [
 # request" item (PriceMinor NULL), a free one (0), all three dietary tags, and all
 # fourteen EU allergens across the dishes. Toronto has one menu in its own
 # currency. Every other location has none, so its public link answers 404: the
-# "nothing published" state. Dish photos come from the media step (dish-<id>.<ext>).
+# "nothing published" state. Dish photos come from the media step (dish-<id>.<ext>), which
+# is the demo's own convention: a photo uploaded through the API is stored under a random
+# dish-<token> name so the public URL never carries a dish id.
 #
 # Allergens and DietaryTags are stored as the bit flags of the C# enums.
 

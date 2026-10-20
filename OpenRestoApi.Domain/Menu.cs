@@ -56,7 +56,7 @@ public class MenuItem
     /// </summary>
     public long? PriceMinor { get; set; }
 
-    /// <summary>Set only by the photo upload, which writes the <c>dish-{Id}</c> media slot.</summary>
+    /// <summary>Set only by the photo upload, under a random <c>dish-{token}</c> name rather than the item's id, since guests see this URL.</summary>
     public string? ImageUrl { get; set; }
 
     public MenuItemAvailability Availability { get; set; } = MenuItemAvailability.Available;
