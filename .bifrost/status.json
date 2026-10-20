@@ -1,5 +1,5 @@
 {
-  "etat": "Kit d'hébergement production prêt pour relecture : pile testée en local, guide d'hébergement rédigé.",
+  "etat": "Kit d'hébergement prêt pour relecture ; démo Codespaces ajoutée (branche d'aperçu preview/menus-demo).",
   "sante": "actif",
   "prochaine_etape": "Relecture de la PR 4, puis choix du modèle d'hébergement (une instance par client) et des images du fork.",
   "chantiers": [
@@ -10,8 +10,8 @@
       "branche": "chore/deploy-kit",
       "statut": "Prête à merger",
       "pr": 4,
-      "etape": "Pile et sauvegarde/restauration testées en local, CI deploy-kit à observer sur la PR.",
-      "maj": "2026-10-20T13:58:46+00:00"
+      "etape": "Démo Codespaces testée en local (script, identifiants, QR) ; devcontainer non joué dans un vrai Codespace ; CI à observer.",
+      "maj": "2026-10-20T15:44:29+00:00"
     }
   ],
   "decisions": [
@@ -29,7 +29,7 @@
     }
   ],
   "maj": {
-    "at": "2026-10-20T13:58:46+00:00",
+    "at": "2026-10-20T15:44:29+00:00",
     "by": "Claude"
   }
 }
