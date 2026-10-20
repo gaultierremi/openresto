@@ -13,6 +13,7 @@ local ; ce qui ne l'a pas été est listé au [§12](#12-ce-qui-a-été-testé-e
   données, donc **aucun port de base exposé**, par construction.
 - **Sauvegarde quotidienne cohérente** (7 jours + 4 semaines), copie hors VM possible, restauration
   testée.
+- **Voir l'appli avant d'avoir le serveur** : un Codespace GitHub la démarre en un clic avec des données de démo ([§13](#13-voir-lappli-avant-davoir-le-serveur-github-codespaces)).
 - **Un restaurant indépendant = une instance** (voir [§3](#3-plusieurs-restaurants--une-instance-ou-une-par-client)).
   Une instance sait gérer plusieurs _lieux_, mais pas isoler des clients différents.
 
@@ -552,14 +553,108 @@ Ce que le kit **ne fait pas**, volontairement ou faute de temps :
 
 ## 12. Ce qui a été testé, et ce qui ne l'est pas
 
-|                                                                                                                                                                   | Testé                             | Comment                                                                                                |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Pile complète (Caddy → nginx → backend/frontend), 4 conteneurs `healthy`, HTTPS, `/api/health`, `/`, `/api/brand`, `/openapi` fermé                               | Oui                               | `deploy/tests/stack.test.sh` + `smoke.sh`, en local avec `DOMAIN=localhost` (certificat interne Caddy) |
-| Adresse IP du visiteur transmise jusqu'au backend (et non celle de Caddy)                                                                                         | Oui                               | Témoin avec/sans `nginx-realip.conf`                                                                   |
-| SMTP rempli depuis l'environnement, mot de passe jamais renvoyé ni journalisé                                                                                     | Oui                               | Tests unitaires + test de bout en bout                                                                 |
-| Sauvegarde cohérente, rotation 7 + 4, somme de contrôle, échec de copie distante, restauration (ligne de base, média, réglages email), refus d'une archive abîmée | Oui                               | `deploy/tests/stack.test.sh`                                                                           |
-| Copie distante réelle                                                                                                                                             | Oui (remote de type chemin local) | rclone 1.75                                                                                            |
-| Obtention d'un vrai certificat Let's Encrypt                                                                                                                      | **Non**                           | Impossible hors d'un vrai domaine public ; la config Caddy est validée (`caddy validate`)              |
-| Commandes d'installation de la VM (ufw, fail2ban, Docker, systemd), timer systemd                                                                                 | **Non**                           | Aucune VM réelle touchée ; commandes standard à rejouer avec attention                                 |
-| Retour arrière après une mise à jour                                                                                                                              | **Non**                           | Procédure écrite, non rejouée automatiquement                                                          |
-| Healthcheck du frontend avec `curl` (image de prod)                                                                                                               | **Non en local**                  | Dépôts de paquets Alpine bloqués dans l'environnement d'essai ; le job CI `deploy-kit` le couvre       |
+|                                                                                                                                                                   | Testé                             | Comment                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Pile complète (Caddy → nginx → backend/frontend), 4 conteneurs `healthy`, HTTPS, `/api/health`, `/`, `/api/brand`, `/openapi` fermé                               | Oui                               | `deploy/tests/stack.test.sh` + `smoke.sh`, en local avec `DOMAIN=localhost` (certificat interne Caddy)       |
+| Adresse IP du visiteur transmise jusqu'au backend (et non celle de Caddy)                                                                                         | Oui                               | Témoin avec/sans `nginx-realip.conf`                                                                         |
+| SMTP rempli depuis l'environnement, mot de passe jamais renvoyé ni journalisé                                                                                     | Oui                               | Tests unitaires + test de bout en bout                                                                       |
+| Sauvegarde cohérente, rotation 7 + 4, somme de contrôle, échec de copie distante, restauration (ligne de base, média, réglages email), refus d'une archive abîmée | Oui                               | `deploy/tests/stack.test.sh`                                                                                 |
+| Copie distante réelle                                                                                                                                             | Oui (remote de type chemin local) | rclone 1.75                                                                                                  |
+| Script de démo (`.devcontainer/demo.sh`) : identifiants générés, données chargées, connexion admin, carte QR                                                      | Oui (Docker local)                | voir la PR                                                                                                   |
+| `devcontainer.json` dans un vrai Codespace, exécution sous Windows / Docker Desktop                                                                               | **Non**                           | Ni GitHub Codespaces ni Windows ne sont disponibles ici ; les étapes du §13 sont à vérifier au premier essai |
+| Obtention d'un vrai certificat Let's Encrypt                                                                                                                      | **Non**                           | Impossible hors d'un vrai domaine public ; la config Caddy est validée (`caddy validate`)                    |
+| Commandes d'installation de la VM (ufw, fail2ban, Docker, systemd), timer systemd                                                                                 | **Non**                           | Aucune VM réelle touchée ; commandes standard à rejouer avec attention                                       |
+| Retour arrière après une mise à jour                                                                                                                              | **Non**                           | Procédure écrite, non rejouée automatiquement                                                                |
+| Healthcheck du frontend avec `curl` (image de prod)                                                                                                               | **Non en local**                  | Dépôts de paquets Alpine bloqués dans l'environnement d'essai ; le job CI `deploy-kit` le couvre             |
+
+## 13. Voir l'appli avant d'avoir le serveur (GitHub Codespaces)
+
+Un **Codespace** est un petit ordinateur loué chez GitHub, ouvert dans le navigateur. Le dépôt
+contient sa recette (`.devcontainer/`) : il construit l'appli, la démarre, charge des données de
+démo (restaurants, tables, réservations, cartes) et transfère le port. **Rien à installer sur ton PC
+ni sur celui de Chris.**
+
+Les identifiants admin sont **générés à la première ouverture** et affichés dans le terminal. Ils ne
+sont dans aucun fichier du dépôt (`.devcontainer/demo.env` est ignoré par git). L'appli tourne en mode
+développement : c'est un aperçu, pas une production.
+
+### 13.1 Créer le Codespace
+
+1. Sur la page du dépôt GitHub, ouvre le sélecteur de **branche** et choisis celle que tu veux voir.
+   Pour l'appli complète (réservation **et** cartes QR des PR 2 et 5) : **`preview/menus-demo`**
+   (branche jetable qui réunit `main`, la PR 4, la PR 2 et la PR 5 ; sans PR, recréée sur demande).
+2. Bouton vert **Code** → onglet **Codespaces** → **Create codespace on preview/menus-demo**.
+   Pour choisir la taille de machine : **⋯** → _New with options…_ ; 2 cœurs suffisent, 4 cœurs
+   construisent plus vite mais consomment le double d'heures.
+3. **Première ouverture : 10 à 15 minutes** (construction des images). Le journal est visible dans
+   _View logs_ ; le terminal affiche ensuite un encadré avec les adresses et les identifiants. Les
+   ouvertures suivantes prennent 1 à 2 minutes.
+
+### 13.2 Ouvrir l'appli
+
+Le port **5062** est transféré automatiquement et s'ouvre dans un nouvel onglet quand l'appli est
+prête. Sinon : onglet **Ports** (en bas de l'éditeur) → ligne _OpenResto (5062)_ → icône globe
+_Open in Browser_.
+
+- Site public : l'adresse du port. Administration : `…/admin`.
+- Identifiants : l'encadré du terminal, ou `bash .devcontainer/demo.sh banner`. Propriétaire
+  `demo@openresto.test`, gérant `manager@openresto.com`, **même mot de passe généré** pour les deux.
+- Carte QR du premier lieu : l'adresse `…/menu/r/<jeton>` de l'encadré ; les codes à imprimer sont
+  dans l'admin, page _QR codes_.
+
+### 13.3 Montrer l'aperçu à quelqu'un d'autre (Chris)
+
+**Le port est privé par défaut** : seul ton compte GitHub, connecté, peut l'ouvrir. Quelqu'un d'autre
+qui reçoit l'adresse est renvoyé vers une page de connexion GitHub.
+
+Pour le partager : onglet **Ports** → clic droit sur la ligne 5062 → **Port Visibility** :
+
+| Choix                     | Qui peut ouvrir l'adresse                                                                                  |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| _Private_ (défaut)        | Toi seul                                                                                                   |
+| _Private to Organization_ | Les membres de l'organisation GitHub propriétaire du dépôt                                                 |
+| _Public_                  | **Toute personne qui a l'adresse**, sans compte GitHub (nécessaire pour qu'un téléphone scanne un QR code) |
+
+Puis copie l'**adresse transférée** (clic droit → _Copy Local Address_ ou la colonne _Forwarded
+Address_) et envoie-la à Chris.
+
+- En _Public_, la partie publique (réservation, cartes) est visible de tous ; l'admin reste protégée
+  par le mot de passe généré. **Repasse en _Private_ dès que la démo est finie.**
+- N'envoie pas le mot de passe admin par un canal non sûr ; ne le donne que si Chris doit tester l'admin.
+- L'organisation peut interdire le port public (réglage côté GitHub) ; l'option est alors absente.
+
+### 13.4 Arrêter pour ne pas gaspiller les heures gratuites
+
+Un Codespace consomme des **heures-cœur tant qu'il est allumé** (un Codespace 2 cœurs consomme
+2 heures-cœur par heure). Il s'arrête de lui-même après 30 minutes d'inactivité, mais ne compte pas
+dessus. Les quotas gratuits changent : les vérifier sur `github.com/settings/billing`.
+
+- **Arrêter** : <https://github.com/codespaces> → **⋯** à droite du Codespace → **Stop codespace**.
+  Depuis l'éditeur : touche F1 → _Codespaces: Stop Current Codespace_. Les données sont conservées.
+- **Reprendre** : le rouvrir depuis la même page ; la pile redémarre seule (1 à 2 minutes). Les dates
+  des réservations de démo vieillissent ; pour les régénérer : `bash .devcontainer/demo.sh reseed`.
+- **Supprimer** (ce qui libère aussi le stockage) : même menu → _Delete_. À faire quand l'aperçu ne
+  sert plus ; les identifiants générés disparaissent avec lui.
+
+### 13.5 La même chose en local avec Docker Desktop (Windows)
+
+Même recette, sur ton PC. Prérequis : **Docker Desktop** démarré, avec 8 Go de mémoire alloués à WSL 2
+si possible.
+
+**Option A — VS Code.** Installer l'extension _Dev Containers_, cloner le dépôt, ouvrir le dossier, puis
+F1 → _Dev Containers: Reopen in Container_. C'est le Codespace, sur ta machine : même construction,
+même encadré dans le terminal, port 5062 transféré.
+
+**Option B — sans VS Code, dans WSL 2** (Ubuntu), Docker Desktop avec l'intégration WSL activée pour
+cette distribution. Cloner **dans le système de fichiers WSL** (`~/openresto`, pas sous `/mnt/c`) :
+
+```bash
+git clone https://github.com/gaultierremi/openresto.git ~/openresto
+cd ~/openresto
+git checkout preview/menus-demo          # ou la branche voulue
+bash .devcontainer/demo.sh setup         # construit, démarre, charge la démo, affiche les identifiants
+```
+
+Puis ouvrir <http://localhost:5062>. En local le port n'est exposé que sur `127.0.0.1` (pas sur le
+réseau). Autres commandes : `bash .devcontainer/demo.sh stop` (arrêter, données gardées), `… banner`
+(réafficher les identifiants), `… reseed` (régénérer la démo), `… clean` (tout supprimer).
