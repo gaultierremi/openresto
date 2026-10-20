@@ -1,5 +1,5 @@
 {
-  "etat": "Kit d'hébergement prêt pour relecture ; démo Codespaces ajoutée (branche d'aperçu preview/menus-demo).",
+  "etat": "Kit d'hébergement corrigé après relecture ; CI du kit verte sur GitHub, démo Codespaces lancée par Gaultier.",
   "sante": "actif",
   "prochaine_etape": "Relecture de la PR 4, puis choix du modèle d'hébergement (une instance par client) et des images du fork.",
   "chantiers": [
@@ -10,8 +10,8 @@
       "branche": "chore/deploy-kit",
       "statut": "Prête à merger",
       "pr": 4,
-      "etape": "Démo Codespaces testée en local (script, identifiants, QR) ; devcontainer non joué dans un vrai Codespace ; CI à observer.",
-      "maj": "2026-10-20T15:44:29+00:00"
+      "etape": "Corrections P2 et P3 de la relecture poussées ; en attente d'un nouveau verdict.",
+      "maj": "2026-10-20T20:38:22+00:00"
     }
   ],
   "decisions": [
@@ -29,7 +29,7 @@
     }
   ],
   "maj": {
-    "at": "2026-10-20T15:44:29+00:00",
+    "at": "2026-10-20T20:38:22+00:00",
     "by": "Claude"
   }
 }
