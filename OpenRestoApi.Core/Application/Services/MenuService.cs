@@ -386,7 +386,7 @@ public class MenuService(
     /// <seealso>MenuServiceTests.PublicMenu_NotFound_WhenNothingIsPublished</seealso>
     private async Task<PublicMenuResponse> BuildPublicMenuAsync(Restaurant restaurant, Table? table)
     {
-        if (restaurant.IsArchived)
+        if (!restaurant.IsListedPublicly)
         {
             throw NotFound();
         }

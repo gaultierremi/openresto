@@ -22,7 +22,13 @@ public static class AuditRequestClassifier
         new(StringComparer.OrdinalIgnoreCase) { "GET", "HEAD", "OPTIONS", "TRACE" };
 
     private static readonly HashSet<string> AdminPolicies =
-        new(StringComparer.Ordinal) { AuthPolicies.RequireAdmin, AuthPolicies.RequireOwner };
+        new(StringComparer.Ordinal)
+        {
+            AuthPolicies.RequireAdmin,
+            AuthPolicies.RequireOwner,
+            AuthPolicies.RequirePlatform,
+            AuthPolicies.RequireRestaurateur,
+        };
 
     /// <summary>
     /// Reads are out of scope: every dashboard poll would otherwise be a row.

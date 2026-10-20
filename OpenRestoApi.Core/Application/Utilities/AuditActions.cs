@@ -110,6 +110,17 @@ public static class AuditActions
     public const string SocialLinkUpdate = "social_link.update";
     public const string SocialLinkDelete = "social_link.delete";
 
+    // ── Platform & onboarding ────────────────────────────────────────────────
+    public const string PlatformRestaurantCreate = "platform.restaurant_create";
+    public const string PlatformInvitationSend = "platform.invitation_send";
+    public const string PlatformSuspend = "platform.suspend";
+    public const string PlatformReactivate = "platform.reactivate";
+    public const string PlatformGuestDataAccess = "platform.guest_data_access";
+    public const string OnboardingInvitationAccept = "onboarding.invitation_accept";
+    public const string OnboardingSave = "onboarding.save";
+    public const string OnboardingPublish = "onboarding.publish";
+    public const string OnboardingUnpublish = "onboarding.unpublish";
+
     public const string NotificationDelete = "notification.delete";
     public const string PushSubscribe = "push.subscribe";
     public const string PushUnsubscribe = "push.unsubscribe";

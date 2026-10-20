@@ -33,7 +33,7 @@ internal class RestaurantRepository(AppDbContext db) : IRestaurantRepository
             .Include(r => r.Groups)
                 .ThenInclude(g => g.Members)
                     .ThenInclude(m => m.Table)
-            .FirstOrDefaultAsync(r => r.Id == id && !r.IsArchived);
+            .FirstOrDefaultAsync(r => r.Id == id && !r.IsArchived && r.Status == RestaurantStatus.Published);
     }
 
     // ── Bundle 2 additions ─────────────────────────────────────────────────────
@@ -45,13 +45,13 @@ internal class RestaurantRepository(AppDbContext db) : IRestaurantRepository
 
     public async Task<List<Restaurant>> GetAllActiveAsync()
     {
-        return await _db.Restaurants.Where(r => !r.IsArchived).ToListAsync();
+        return await _db.Restaurants.Where(r => !r.IsArchived && r.Status == RestaurantStatus.Published).ToListAsync();
     }
 
     public async Task<List<Restaurant>> GetAllActiveWithSectionsAsync()
     {
         return await _db.Restaurants
-            .Where(r => !r.IsArchived)
+            .Where(r => !r.IsArchived && r.Status == RestaurantStatus.Published)
             .Include(r => r.Sections)
                 .ThenInclude(s => s.Tables)
             .Include(r => r.Groups)

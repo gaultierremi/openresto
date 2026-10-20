@@ -1,5 +1,6 @@
 using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Exceptions;
+using OpenRestoApi.Core.Application.Site;
 using OpenRestoApi.Core.Domain;
 
 namespace OpenRestoApi.Core.Application.Utilities;
@@ -60,6 +61,33 @@ public static class SiteFields
             }
         }
         throw new ValidationException("Unknown theme.") { Code = ErrorCodes.SiteThemeInvalid };
+    }
+
+    /// <summary>
+    /// Null leaves the colour as it is (the brand PATCH contract), a blank value goes back to the
+    /// instance's colour, and anything else must be a plain <c>#rrggbb</c>: it is written into the
+    /// page's stylesheet, so no other shape gets through.
+    /// </summary>
+    /// <seealso>SiteFieldsTests.NormalizePrimaryColor_KeepsAnRrggbb_AndRefusesEverythingElse</seealso>
+    public static (bool Change, string? Color) NormalizePrimaryColor(string? color)
+    {
+        if (color is null)
+        {
+            return (false, null);
+        }
+
+        string? text = Blank(color);
+        if (text is null)
+        {
+            return (true, null);
+        }
+
+        if (text.Length != 7 || !SiteColors.TryParse(text, out _))
+        {
+            throw new ValidationException("The colour must be written #rrggbb.") { Code = ErrorCodes.SiteColorInvalid };
+        }
+
+        return (true, text.ToLowerInvariant());
     }
 
     public static string? NormalizeLegalName(string? value)

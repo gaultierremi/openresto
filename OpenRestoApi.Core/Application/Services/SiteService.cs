@@ -46,6 +46,7 @@ public class SiteService(
 
         SiteTheme theme = SiteFields.ParseTheme(req.Theme);
         string? tagline = SiteFields.NormalizeTagline(req.Tagline);
+        (bool changeColor, string? color) = SiteFields.NormalizePrimaryColor(req.PrimaryColor);
         List<SiteSocialLink> links = SiteFields.NormalizeSocialLinks(req.SocialLinks);
         string? legalName = SiteFields.NormalizeLegalName(req.Legal?.Name);
         string? companyNumber = SiteFields.NormalizeIdentifier(req.Legal?.CompanyNumber, SiteFields.MaxCompanyNumberLength, "Company number");
@@ -75,6 +76,11 @@ public class SiteService(
         site.Slug = slug;
         site.Theme = theme;
         site.Tagline = tagline;
+        if (changeColor)
+        {
+            _audit.RecordChange("primaryColor", site.PrimaryColor, color);
+            site.PrimaryColor = color;
+        }
         site.SocialLinksJson = SiteContent.Write(links);
         site.LegalName = legalName;
         site.CompanyNumber = companyNumber;
@@ -329,7 +335,7 @@ public class SiteService(
             Name = restaurant.Name,
             Tagline = site.Tagline,
             Theme = theme,
-            PrimaryColor = brand?.PrimaryColor ?? SitePageModel.DefaultPrimaryColor,
+            PrimaryColor = site.PrimaryColor ?? brand?.PrimaryColor ?? SitePageModel.DefaultPrimaryColor,
             BaseUrl = _brand.GetWebsiteUrl(brand).TrimEnd('/'),
             LogoUrl = site.LogoUrl,
             CoverUrl = site.CoverUrl,
@@ -359,6 +365,7 @@ public class SiteService(
         IsPublished = site.IsPublished,
         Theme = site.Theme.ToString(),
         Tagline = site.Tagline,
+        PrimaryColor = site.PrimaryColor,
         LogoUrl = site.LogoUrl,
         CoverUrl = site.CoverUrl,
         Photos = SiteContent.ReadPhotos(site.PhotosJson)

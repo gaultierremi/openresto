@@ -20,6 +20,10 @@ public class SiteDto
     public string Theme { get; set; } = null!;
 
     public string? Tagline { get; set; }
+
+    /// <summary>The restaurant's own <c>#rrggbb</c> for this site; null means the instance's brand colour.</summary>
+    public string? PrimaryColor { get; set; }
+
     public string? LogoUrl { get; set; }
     public string? CoverUrl { get; set; }
     public List<SitePhotoDto> Photos { get; set; } = [];
@@ -74,6 +78,10 @@ public class SaveSiteRequest
     public string? Slug { get; set; }
     public string Theme { get; set; } = null!;
     public string? Tagline { get; set; }
+
+    /// <summary><c>#rrggbb</c>. Unlike the other fields, null leaves it unchanged and a blank value clears it.</summary>
+    public string? PrimaryColor { get; set; }
+
     public List<SiteSocialLinkDto>? SocialLinks { get; set; }
     public SiteLegalDto? Legal { get; set; }
 }
