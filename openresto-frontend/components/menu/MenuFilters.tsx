@@ -33,6 +33,9 @@ export function FilterChip({
       testID={testID}
       accessibilityRole={role}
       accessibilityState={{ checked: selected }}
+      // react-native-web reads the `aria-*` prop, not `accessibilityState`, so without this the
+      // rendered element is a checkbox that never says whether it is checked.
+      aria-checked={selected}
       accessibilityLabel={label}
       style={[
         styles.chip,
@@ -110,6 +113,7 @@ export function MenuFilters({
         testID="menu-allergens-toggle"
         accessibilityRole="button"
         accessibilityState={{ expanded: allergensOpen }}
+        aria-expanded={allergensOpen}
         style={styles.toggle}
       >
         <ThemedText style={[styles.heading, styles.toggleText, { color: colors.muted }]}>

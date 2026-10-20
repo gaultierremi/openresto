@@ -296,6 +296,12 @@ describe("PublicMenuScreen", () => {
       expect(within(tabs[0]).getByText("Lunch")).toBeTruthy();
       expect(tabs[0].props.accessibilityState).toEqual({ selected: true });
       expect(tabs[1].props.accessibilityState).toEqual({ selected: false });
+      // react-native-web reads the aria prop, which native folds into the state above.
+      const ariaSelected = screen
+        .UNSAFE_getAllByProps({ testID: "menu-tab" })
+        .map((node) => node.props["aria-selected"])
+        .filter((value) => value !== undefined);
+      expect(ariaSelected).toEqual([true, false]);
       expect(categoryNames()).toEqual(["Starters", "Mains", "Desserts"]);
     });
 

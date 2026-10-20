@@ -21,12 +21,14 @@ export function usePriceLabel() {
 }
 
 /**
- * One dish on the public page. A sold-out dish stays in its place, greyed and marked, so a
- * guest sees it exists and is not offered it; it is still named in full, because dimming alone
- * tells a screen reader nothing.
+ * One dish on the public page. A sold-out dish stays in its place, greyed with the muted text
+ * colour and marked with a badge, so a guest sees it exists and is not offered it. It is never
+ * dimmed with opacity: that halves the contrast of the allergen line, which a guest with an
+ * allergy has to be able to read on a dish they might still ask about.
  *
  * @see [MenuItemRow.test.tsx](../../tests/components/menu/MenuItemRow.test.tsx) — pins the
- * three price states, the sold-out mark, and that allergens and diets are listed.
+ * three price states, the sold-out mark and greying without opacity, and that allergens and
+ * diets are listed.
  */
 export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency: string }) {
   const { t } = useTranslation();
@@ -37,11 +39,13 @@ export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency
   return (
     <View
       testID="menu-item"
-      style={[styles.row, { borderBottomColor: colors.border }, soldOut && styles.soldOut]}
+      style={[styles.row, { borderBottomColor: colors.border }]}
     >
       <View style={styles.body}>
         <View style={styles.titleLine}>
-          <ThemedText style={styles.name}>{item.name}</ThemedText>
+          <ThemedText style={[styles.name, soldOut && { color: colors.muted }]}>
+            {item.name}
+          </ThemedText>
           {soldOut && (
             <View style={[styles.badge, { backgroundColor: colors.surfaceAlt }]}>
               <ThemedText style={[styles.badgeText, { color: colors.muted }]}>
@@ -78,7 +82,9 @@ export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency
         )}
       </View>
       <View style={styles.side}>
-        <ThemedText style={styles.price}>{priceLabel(item.priceMinor, currency)}</ThemedText>
+        <ThemedText style={[styles.price, soldOut && { color: colors.muted }]}>
+          {priceLabel(item.priceMinor, currency)}
+        </ThemedText>
         {item.imageUrl ? <MenuPhoto uri={item.imageUrl} size={PHOTO_SIZE} /> : null}
       </View>
     </View>

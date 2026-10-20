@@ -81,6 +81,16 @@ const renderScreen = async (
 
 const row = (id: number) => screen.getByTestId(`service-item-${id}`);
 const isSoldOut = (id: number) => row(id).props.accessibilityState.checked as boolean;
+/**
+ * What react-native-web is handed. It reads the `aria-*` prop and ignores `accessibilityState`,
+ * while the native Pressable folds the prop into the state and drops it from the host node, so
+ * the prop is only visible on the component element, not on the node `getByTestId` returns.
+ */
+const ariaProp = (testID: string, name: string) =>
+  screen
+    .UNSAFE_getAllByProps({ testID })
+    .map((node) => node.props[name])
+    .find((value) => value !== undefined);
 const listedIds = () =>
   screen
     .queryAllByTestId(/^service-item-\d+$/)
@@ -152,6 +162,12 @@ describe("ServiceScreen listing", () => {
     expect(isSoldOut(2)).toBe(true);
     expect(screen.getAllByText("Available")).toHaveLength(1);
     expect(screen.getAllByText("Sold out").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("also states each dish's state through aria-checked, which is what the web reads", async () => {
+    await renderScreen();
+    expect(ariaProp("service-item-1", "aria-checked")).toBe(false);
+    expect(ariaProp("service-item-2", "aria-checked")).toBe(true);
   });
 
   it("links back to the menu editor", async () => {
