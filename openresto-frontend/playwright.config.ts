@@ -65,6 +65,7 @@ export default defineConfig({
         "**/menu-publish.spec.ts",
         "**/site-public.spec.ts",
         "**/site-admin.spec.ts",
+        "**/platform-space.spec.ts",
       ],
     },
     // ── Admin tests — pre-loaded auth cookie ────────────────────────────────
@@ -97,6 +98,7 @@ export default defineConfig({
         "**/menu-publish.spec.ts",
         "**/site-public.spec.ts",
         "**/site-admin.spec.ts",
+        "**/platform-space.spec.ts",
       ],
     },
   ],
