@@ -2570,6 +2570,777 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/restaurants/{restaurantId}/menus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuDto"][];
+                        "application/json": components["schemas"]["MenuDto"][];
+                        "text/json": components["schemas"]["MenuDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveMenuRequest"];
+                    "text/json": components["schemas"]["SaveMenuRequest"];
+                    "application/*+json": components["schemas"]["SaveMenuRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuDto"];
+                        "application/json": components["schemas"]["MenuDto"];
+                        "text/json": components["schemas"]["MenuDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menus/{menuId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    menuId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuDto"];
+                        "application/json": components["schemas"]["MenuDto"];
+                        "text/json": components["schemas"]["MenuDto"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    menuId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveMenuRequest"];
+                    "text/json": components["schemas"]["SaveMenuRequest"];
+                    "application/*+json": components["schemas"]["SaveMenuRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuDto"];
+                        "application/json": components["schemas"]["MenuDto"];
+                        "text/json": components["schemas"]["MenuDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    menuId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menus/{menuId}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    menuId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuDto"];
+                        "application/json": components["schemas"]["MenuDto"];
+                        "text/json": components["schemas"]["MenuDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menus/{menuId}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    menuId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuDto"];
+                        "application/json": components["schemas"]["MenuDto"];
+                        "text/json": components["schemas"]["MenuDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menus/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReorderMenuEntriesRequest"];
+                    "text/json": components["schemas"]["ReorderMenuEntriesRequest"];
+                    "application/*+json": components["schemas"]["ReorderMenuEntriesRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menus/{menuId}/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    menuId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveMenuCategoryRequest"];
+                    "text/json": components["schemas"]["SaveMenuCategoryRequest"];
+                    "application/*+json": components["schemas"]["SaveMenuCategoryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuCategoryDto"];
+                        "application/json": components["schemas"]["MenuCategoryDto"];
+                        "text/json": components["schemas"]["MenuCategoryDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menus/{menuId}/categories/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    menuId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReorderMenuEntriesRequest"];
+                    "text/json": components["schemas"]["ReorderMenuEntriesRequest"];
+                    "application/*+json": components["schemas"]["ReorderMenuEntriesRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menu-categories/{categoryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    categoryId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveMenuCategoryRequest"];
+                    "text/json": components["schemas"]["SaveMenuCategoryRequest"];
+                    "application/*+json": components["schemas"]["SaveMenuCategoryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuCategoryDto"];
+                        "application/json": components["schemas"]["MenuCategoryDto"];
+                        "text/json": components["schemas"]["MenuCategoryDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    categoryId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menu-categories/{categoryId}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    categoryId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveMenuItemRequest"];
+                    "text/json": components["schemas"]["SaveMenuItemRequest"];
+                    "application/*+json": components["schemas"]["SaveMenuItemRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuItemDto"];
+                        "application/json": components["schemas"]["MenuItemDto"];
+                        "text/json": components["schemas"]["MenuItemDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menu-categories/{categoryId}/items/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    categoryId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReorderMenuEntriesRequest"];
+                    "text/json": components["schemas"]["ReorderMenuEntriesRequest"];
+                    "application/*+json": components["schemas"]["ReorderMenuEntriesRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menu-items/{itemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    itemId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveMenuItemRequest"];
+                    "text/json": components["schemas"]["SaveMenuItemRequest"];
+                    "application/*+json": components["schemas"]["SaveMenuItemRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuItemDto"];
+                        "application/json": components["schemas"]["MenuItemDto"];
+                        "text/json": components["schemas"]["MenuItemDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    itemId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/menu-items/{itemId}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    itemId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file?: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuItemDto"];
+                        "application/json": components["schemas"]["MenuItemDto"];
+                        "text/json": components["schemas"]["MenuItemDto"];
+                    };
+                };
+            };
+        };
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    itemId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/public-tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuPublicTokensDto"];
+                        "application/json": components["schemas"]["MenuPublicTokensDto"];
+                        "text/json": components["schemas"]["MenuPublicTokensDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/public-token/regenerate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RegeneratedTokenDto"];
+                        "application/json": components["schemas"]["RegeneratedTokenDto"];
+                        "text/json": components["schemas"]["RegeneratedTokenDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/tables/{tableId}/public-token/regenerate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    tableId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RegeneratedTokenDto"];
+                        "application/json": components["schemas"]["RegeneratedTokenDto"];
+                        "text/json": components["schemas"]["RegeneratedTokenDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/native-app/status": {
         parameters: {
             query?: never;
@@ -2977,6 +3748,84 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/menus/r/{restaurantToken}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantToken: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PublicMenuResponse"];
+                        "application/json": components["schemas"]["PublicMenuResponse"];
+                        "text/json": components["schemas"]["PublicMenuResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/menus/t/{tableToken}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    tableToken: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PublicMenuResponse"];
+                        "application/json": components["schemas"]["PublicMenuResponse"];
+                        "text/json": components["schemas"]["PublicMenuResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -4444,6 +5293,49 @@ export interface components {
             email?: string;
             password?: string;
         };
+        MenuCategoryDto: {
+            /** Format: int32 */
+            id?: number | string;
+            name?: string;
+            description?: null | string;
+            /** Format: int32 */
+            sortOrder?: number | string;
+            isVisible?: boolean;
+            items?: components["schemas"]["MenuItemDto"][];
+        };
+        MenuDto: {
+            /** Format: int32 */
+            id?: number | string;
+            name?: string;
+            description?: null | string;
+            currency?: string;
+            isPublished?: boolean;
+            /** Format: int32 */
+            sortOrder?: number | string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            categories?: components["schemas"]["MenuCategoryDto"][];
+        };
+        MenuItemDto: {
+            /** Format: int32 */
+            id?: number | string;
+            name?: string;
+            description?: null | string;
+            /** Format: int64 */
+            priceMinor?: null | number | string;
+            imageUrl?: null | string;
+            availability?: string;
+            allergens?: string[];
+            dietaryTags?: string[];
+            /** Format: int32 */
+            sortOrder?: number | string;
+        };
+        MenuPublicTokensDto: {
+            restaurantToken?: string;
+            tables?: components["schemas"]["TablePublicTokenDto"][];
+        };
         PauseRestaurantRequest: {
             /** Format: int32 */
             minutes?: number | string;
@@ -4484,11 +5376,52 @@ export interface components {
             /** @description If the caller already holds this ID, the backend atomically replaces it. */
             currentHoldId?: null | string;
         };
+        PublicMenuCategoryDto: {
+            name?: string;
+            description?: null | string;
+            items?: components["schemas"]["PublicMenuItemDto"][];
+        };
+        PublicMenuDto: {
+            name?: string;
+            description?: null | string;
+            currency?: string;
+            categories?: components["schemas"]["PublicMenuCategoryDto"][];
+        };
+        PublicMenuItemDto: {
+            name?: string;
+            description?: null | string;
+            /** Format: int64 */
+            priceMinor?: null | number | string;
+            imageUrl?: null | string;
+            /** @description `Available` or `SoldOut`; hidden items are never listed. */
+            availability?: string;
+            allergens?: string[];
+            dietaryTags?: string[];
+        };
+        PublicMenuResponse: {
+            restaurant?: components["schemas"]["PublicMenuRestaurantDto"];
+            table?: null | components["schemas"]["PublicMenuTableDto"];
+            menus?: components["schemas"]["PublicMenuDto"][];
+        };
+        PublicMenuRestaurantDto: {
+            name?: string;
+            timezone?: string;
+        };
+        PublicMenuTableDto: {
+            name?: null | string;
+        };
         PushSubscribeRequest: {
             endpoint: string;
             p256dh: string;
             auth: string;
             userAgent?: null | string;
+        };
+        RegeneratedTokenDto: {
+            token?: string;
+        };
+        ReorderMenuEntriesRequest: {
+            /** @description Every sibling's id, in the new order: no additions, removals or duplicates. */
+            ids?: (number | string)[];
         };
         ReorderSectionsRequest: {
             /**
@@ -4555,6 +5488,32 @@ export interface components {
             /** @description Combinable-table groups defined for this restaurant (#271). Empty when none. */
             groups?: components["schemas"]["TableGroupDto"][];
         };
+        SaveMenuCategoryRequest: {
+            name?: null | string;
+            description?: null | string;
+            isVisible?: boolean;
+        };
+        SaveMenuItemRequest: {
+            name?: null | string;
+            description?: null | string;
+            /**
+             * Format: int64
+             * @description Minor units (cents). Null means "price on request".
+             */
+            priceMinor?: null | number | string;
+            /** @description `Available`, `SoldOut` or `Hidden`. Missing means `Available`. */
+            availability?: null | string;
+            /** @description EU allergen names, e.g. `["Gluten","Milk"]`. */
+            allergens?: null | string[];
+            /** @description `Vegetarian`, `Vegan`, `GlutenFree`. */
+            dietaryTags?: null | string[];
+        };
+        /** @description Create and update share one shape. A blank or missing currency on create means EUR. */
+        SaveMenuRequest: {
+            name?: null | string;
+            description?: null | string;
+            currency?: null | string;
+        };
         /** @description Seats a party. With neither id set the smallest free unit that fits is chosen. */
         SeatWaitlistEntryRequest: {
             /** Format: int32 */
@@ -4606,6 +5565,13 @@ export interface components {
             /** Format: int32 */
             combinedSeats?: number | string;
             members?: components["schemas"]["TableDto"][];
+        };
+        TablePublicTokenDto: {
+            /** Format: int32 */
+            tableId?: number | string;
+            tableName?: null | string;
+            sectionName?: string;
+            token?: string;
         };
         /** @description A party of int TurnTimeDto.MinSeats or more holds its table for int TurnTimeDto.Minutes, up to the next rule. */
         TurnTimeDto: {

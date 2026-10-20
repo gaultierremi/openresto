@@ -1,0 +1,9 @@
+{
+  "chantier": "Sprint 2 — écrans de la carte QR (éditeur admin, mode service, page publique, QR codes)",
+  "branche": "feat/menu-screens",
+  "base": "feat/menu-api",
+  "pr": "https://github.com/gaultierremi/openresto/pull/5",
+  "pr_empilee_sur": "https://github.com/gaultierremi/openresto/pull/2",
+  "etat": "en relecture",
+  "mis_a_jour": "2026-10-20"
+}

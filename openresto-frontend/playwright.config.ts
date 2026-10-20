@@ -62,6 +62,7 @@ export default defineConfig({
         "**/brand-identity.spec.ts",
         "**/walk-in-days.spec.ts",
         "**/admin-locale-fr.spec.ts",
+        "**/menu-publish.spec.ts",
       ],
     },
     // ── Admin tests — pre-loaded auth cookie ────────────────────────────────
@@ -91,6 +92,7 @@ export default defineConfig({
         "**/brand-identity.spec.ts",
         "**/walk-in-days.spec.ts",
         "**/admin-locale-fr.spec.ts",
+        "**/menu-publish.spec.ts",
       ],
     },
   ],

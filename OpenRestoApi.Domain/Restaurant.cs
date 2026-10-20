@@ -32,6 +32,11 @@ public class Restaurant
 
     public ICollection<TableGroup> Groups { get; set; } = new List<TableGroup>();
 
+    public ICollection<Menu> Menus { get; set; } = new List<Menu>();
+
+    /// <summary>What the location's QR code carries; see <see cref="PublicTokenGenerator"/>.</summary>
+    public string PublicToken { get; set; } = PublicTokenGenerator.New();
+
     /// <summary>
     /// If set, sittings that start before this instant (UTC) are closed to new bookings.
     /// </summary>
