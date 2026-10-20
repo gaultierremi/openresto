@@ -296,27 +296,27 @@
       "switcherLabel": "Taal"
     },
     "legal": {
-      "reviewBanner": "Template to be validated by a lawyer — do not use as is",
-      "indexTitle": "Legal documents",
-      "indexIntro": "The documents that frame how restaurants and their guests use the platform.",
-      "versionLine": "Version {{version}} · updated {{date}}",
-      "languageNote": "These documents are written in French.",
-      "otherDocuments": "Other documents",
-      "openDocument": "Read",
-      "back": "Back to the legal documents",
-      "notFoundTitle": "Document not found",
-      "notFoundBody": "This legal document does not exist. Pick one from the list.",
-      "loadFailed": "The document could not be loaded.",
+      "reviewBanner": "Modeltekst die door een jurist moet worden nagekeken — niet gebruiken zoals hij is",
+      "indexTitle": "Juridische documenten",
+      "indexIntro": "De documenten die bepalen hoe restaurants en hun gasten het platform gebruiken.",
+      "versionLine": "Versie {{version}} · bijgewerkt op {{date}}",
+      "languageNote": "Deze documenten zijn in het Frans opgesteld.",
+      "otherDocuments": "Andere documenten",
+      "openDocument": "Lezen",
+      "back": "Terug naar de juridische documenten",
+      "notFoundTitle": "Document niet gevonden",
+      "notFoundBody": "Dit juridische document bestaat niet. Kies er een uit de lijst.",
+      "loadFailed": "Het document kon niet worden geladen.",
       "documents": {
-        "terms": "Terms of use",
-        "privacy": "Privacy policy",
-        "dpa": "Data processing agreement",
-        "legalNotice": "Legal notice"
+        "terms": "Gebruiksvoorwaarden",
+        "privacy": "Privacybeleid",
+        "dpa": "Verwerkersovereenkomst",
+        "legalNotice": "Juridische vermeldingen"
       },
       "footer": {
-        "terms": "Terms",
+        "terms": "Voorwaarden",
         "privacy": "Privacy",
-        "legalNotice": "Legal notice"
+        "legalNotice": "Juridische vermeldingen"
       }
     },
     "menu": {
@@ -481,7 +481,7 @@
       "invalid": "De pictogramsleutel moet een van de ondersteunde pictogrammen zijn."
     },
     "legal": {
-      "document_not_found": "Document not found."
+      "document_not_found": "Document niet gevonden."
     },
     "media": {
       "hero_too_large": "De bannerafbeelding moet kleiner zijn dan 5 MB.",
@@ -491,26 +491,26 @@
       "unsupported_menu_type": "Enkel pdf-bestanden worden aanvaard voor de menukaart."
     },
     "onboarding": {
-      "address_required": "The address is required.",
-      "company_number_invalid": "This enterprise number is not valid. Check it (format 0123.456.749).",
-      "company_number_required": "The enterprise number is required.",
-      "consent_outdated": "The documents have been updated since they were shown. Read them again, then tick the boxes again.",
-      "consent_required": "You must accept every document to create your account.",
-      "email_required": "The contact e-mail address is required.",
-      "hours_no_open_day": "Open at least one day of the week.",
-      "layout_empty": "Add at least one table.",
-      "layout_in_use": "A room or table with upcoming bookings ({{bookings}}) cannot be removed. Nothing was changed.",
-      "layout_invalid": "Every room needs a name, and every table between 1 and 50 seats.",
-      "legal_name_required": "The legal name is required.",
-      "menu_invalid": "Every category and every dish needs a name, and a price cannot be negative.",
-      "name_required": "The restaurant name is required.",
-      "not_publishable": "Finish the required steps before publishing.",
-      "phone_required": "The phone number is required.",
-      "retention_invalid": "The retention period must be between {{min}} and {{max}} months.",
-      "step_required": "This step is required: it cannot be skipped.",
-      "step_unknown": "That step does not exist.",
-      "suspended": "This restaurant is suspended by the platform: no change is possible.",
-      "vat_invalid": "This VAT number is not valid. Check it (for example BE0123.456.749) or leave the field empty."
+      "address_required": "Het adres is verplicht.",
+      "company_number_invalid": "Dit ondernemingsnummer is niet geldig. Controleer het (formaat 0123.456.749).",
+      "company_number_required": "Het ondernemingsnummer is verplicht.",
+      "consent_outdated": "De documenten zijn bijgewerkt sinds ze werden getoond. Lees ze opnieuw en vink de vakjes daarna opnieuw aan.",
+      "consent_required": "U moet elk document aanvaarden om uw account aan te maken.",
+      "email_required": "Het e-mailadres voor contact is verplicht.",
+      "hours_no_open_day": "Open minstens één dag van de week.",
+      "layout_empty": "Voeg minstens één tafel toe.",
+      "layout_in_use": "Een zaal of tafel met komende reservaties ({{bookings}}) kan niet worden verwijderd. Er is niets gewijzigd.",
+      "layout_invalid": "Elke zaal moet een naam hebben en elke tafel tussen 1 en 50 plaatsen.",
+      "legal_name_required": "De maatschappelijke benaming is verplicht.",
+      "menu_invalid": "Elke categorie en elk gerecht moet een naam hebben, en een prijs mag niet negatief zijn.",
+      "name_required": "De naam van de vestiging is verplicht.",
+      "not_publishable": "Rond de verplichte stappen af voordat u publiceert.",
+      "phone_required": "Het telefoonnummer is verplicht.",
+      "retention_invalid": "De bewaartermijn moet tussen {{min}} en {{max}} maanden liggen.",
+      "step_required": "Deze stap is verplicht: ze kan niet worden overgeslagen.",
+      "step_unknown": "Die stap bestaat niet.",
+      "suspended": "Deze vestiging is door het platform geschorst: er zijn geen wijzigingen mogelijk.",
+      "vat_invalid": "Dit btw-nummer is niet geldig. Controleer het (bijvoorbeeld BE0123.456.749) of laat het veld leeg."
     },
     "menu": {
       "allergen_invalid": "Allergenen moeten namen zijn uit de 14 EU-allergenen, bijvoorbeeld \"Gluten\".",
@@ -530,15 +530,15 @@
       "reorder_ids_mismatch": "De nieuwe volgorde moet elk item precies één keer bevatten, zonder toevoegingen."
     },
     "platform": {
-      "not_found": "Restaurant not found.",
-      "invitation_invalid": "This invitation link is invalid or has expired. Ask the platform for a new one.",
-      "invitation_email_invalid": "Enter a valid e-mail address for the invitation.",
-      "invitation_already_accepted": "This invitation has already been accepted.",
-      "restaurant_name_required": "A restaurant name is required.",
-      "access_reason_required": "State why the guests’ data is needed, in {{min}} to {{max}} characters.",
-      "suspend_reason_too_long": "The reason cannot exceed {{max}} characters.",
-      "already_suspended": "This restaurant is already suspended.",
-      "not_suspended": "This restaurant is not suspended."
+      "not_found": "Vestiging niet gevonden.",
+      "invitation_invalid": "Deze uitnodigingslink is ongeldig of verlopen. Vraag het platform om een nieuwe.",
+      "invitation_email_invalid": "Voer een geldig e-mailadres in voor de uitnodiging.",
+      "invitation_already_accepted": "Deze uitnodiging is al aanvaard.",
+      "restaurant_name_required": "De naam van de vestiging is verplicht.",
+      "access_reason_required": "Geef aan waarom de gegevens van de gasten nodig zijn, in {{min}} tot {{max}} tekens.",
+      "suspend_reason_too_long": "De reden mag niet langer zijn dan {{max}} tekens.",
+      "already_suspended": "Deze vestiging is al geschorst.",
+      "not_suspended": "Deze vestiging is niet geschorst."
     },
     "restaurant": {
       "archive_before_delete": "Archiveer deze vestiging voordat u ze verwijdert. Archiveren haalt ze van de publieke site en kan ongedaan gemaakt worden; verwijderen niet.",
@@ -567,7 +567,7 @@
       "image_unreadable": "Dat bestand is geen leesbare afbeelding.",
       "legal_invalid": "Dit veld van de juridische vermelding aanvaardt enkel letters, cijfers, spaties, punten, koppeltekens en schuine strepen.",
       "legal_too_long": "Dit veld van de juridische vermelding mag niet langer zijn dan {{max}} tekens.",
-      "color_invalid": "The colour must be written as #rrggbb, for example #b45309.",
+      "color_invalid": "De kleur moet in het formaat #rrggbb worden geschreven, bijvoorbeeld #b45309.",
       "location_archived": "Een gearchiveerde vestiging kan geen live website hebben.",
       "not_found": "Website niet gevonden.",
       "not_publishable": "De website kan pas live gaan als de juridische vermelding en het contact-e-mailadres zijn ingevuld.",
