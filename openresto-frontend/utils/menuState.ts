@@ -1,4 +1,5 @@
 import type { MenuCategoryDto, MenuDto, MenuItemDto } from "@/api/menus";
+import { DEFAULT_CURRENCY } from "@/constants/menu";
 
 /**
  * The admin keeps the restaurant's menus as one tree and patches it as each call lands, rather
@@ -95,3 +96,14 @@ export const reorderItems = (
 
 export const countItems = (menu: MenuDto): number =>
   menu.categories.reduce((total, category) => total + category.items.length, 0);
+
+/**
+ * The currency a new menu starts in: the one the location's first menu already uses, so a
+ * location that prices in another currency is not asked to change every menu it adds, and euros
+ * when it has none. The currency itself is a per-menu field, set in the editor.
+ *
+ * @see [menuState.test.ts](../tests/utils/menuState.test.ts) — pins that the first menu's
+ * currency is inherited and that an empty location starts in euros.
+ */
+export const newMenuCurrency = (menus: readonly MenuDto[]): string =>
+  menus[0]?.currency ?? DEFAULT_CURRENCY;

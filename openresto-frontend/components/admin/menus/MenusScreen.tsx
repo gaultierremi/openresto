@@ -18,11 +18,10 @@ import {
 } from "@/api/menus";
 import { useAdminLocation } from "@/hooks/use-admin-location";
 import { useAppTheme } from "@/hooks/use-app-theme";
-import { DEFAULT_CURRENCY } from "@/constants/menu";
 import { openExternal } from "@/utils/openExternal";
 import { menuUrl } from "@/utils/qrCode";
 import { moveId } from "@/utils/reorder";
-import { reorderMenus } from "@/utils/menuState";
+import { newMenuCurrency, reorderMenus } from "@/utils/menuState";
 import { styles } from "./MenusScreen.styles";
 
 const SERVICE_PATH = "/admin/menus/service" as Href;
@@ -75,11 +74,11 @@ export function MenusScreen() {
     openExternal(menuUrl(window.location.origin, "r", result.value.restaurantToken));
   };
 
-  const addMenu = async (id: number, name: string): Promise<string | null> => {
+  const addMenu = async (id: number, menus: MenuDto[], name: string): Promise<string | null> => {
     const result = await adminCreateMenu(id, {
       name,
       description: null,
-      currency: DEFAULT_CURRENCY,
+      currency: newMenuCurrency(menus),
     });
     if (!result.ok) return result.message;
     setJustAdded(result.value.id);
@@ -179,7 +178,7 @@ export function MenusScreen() {
               <AddEntryForm
                 label={t("admin.menus.addMenu")}
                 placeholder={t("admin.menus.addMenuPlaceholder")}
-                onAdd={(name) => addMenu(selected.id, name)}
+                onAdd={(name) => addMenu(selected.id, load.menus, name)}
                 testID="add-menu"
               />
             </View>

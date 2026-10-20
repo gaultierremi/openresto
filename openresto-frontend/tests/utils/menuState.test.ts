@@ -3,6 +3,7 @@ import {
   addCategory,
   addItem,
   countItems,
+  newMenuCurrency,
   removeCategory,
   removeItem,
   removeMenu,
@@ -149,5 +150,15 @@ describe("countItems", () => {
   it("adds the dishes of every category", () => {
     expect(countItems(tree()[0])).toBe(3);
     expect(countItems(menu(3, []))).toBe(0);
+  });
+});
+
+describe("newMenuCurrency", () => {
+  it("inherits the currency of the location's first menu", () => {
+    expect(newMenuCurrency([{ ...menu(1, []), currency: "CHF" }, menu(2, [])])).toBe("CHF");
+  });
+
+  it("starts a location with no menu in euros", () => {
+    expect(newMenuCurrency([])).toBe("EUR");
   });
 });

@@ -239,6 +239,28 @@ describe("MenusScreen creating a menu", () => {
     expect(screen.queryByTestId("add-menu-name")).toBeNull();
   });
 
+  it("starts a new menu in the currency the location's first menu already uses", async () => {
+    await renderScreen(places(3), [menu({ id: 1, name: "Food", currency: "USD" })]);
+    createMenu.mockResolvedValue(ok(menu({ id: 20, name: "Drinks", currency: "USD" })));
+    await submit("Drinks");
+    expect(createMenu).toHaveBeenCalledWith(3, {
+      name: "Drinks",
+      description: null,
+      currency: "USD",
+    });
+  });
+
+  it("starts the first menu of a location with none in euros", async () => {
+    await renderScreen(places(3), []);
+    createMenu.mockResolvedValue(ok(menu({ id: 20, name: "Carte" })));
+    await submit("Carte");
+    expect(createMenu).toHaveBeenCalledWith(3, {
+      name: "Carte",
+      description: null,
+      currency: "EUR",
+    });
+  });
+
   it("shows the server's message, keeps the form and adds no menu when it is refused", async () => {
     await renderScreen(places(3), []);
     createMenu.mockResolvedValue(refused("Menu name cannot be empty."));

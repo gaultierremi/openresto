@@ -24,6 +24,14 @@ describe("formatPrice", () => {
     expect(formatPrice(1250, "EUR")).toBe("€12.50");
   });
 
+  it("prints euros the Belgian way in French: 9,00 € and 1 234,50 €", () => {
+    setActiveLocale("fr");
+    const belgian = new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" });
+    expect(formatPrice(900, "EUR")).toBe(belgian.format(9));
+    expect(formatPrice(900, "EUR").replace(/\s/g, " ")).toBe("9,00 €");
+    expect(formatPrice(123450, "EUR")).toBe(belgian.format(1234.5));
+  });
+
   it("honours a currency with no decimals", () => {
     setActiveLocale("en");
     expect(formatPrice(1250, "JPY")).toBe("¥1,250");

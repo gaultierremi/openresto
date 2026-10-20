@@ -144,7 +144,8 @@ built for a phone, so it opens below the admin's usual 600px width.
 
 - **Prices** are whole numbers in the currency's smallest unit (`priceMinor`: 1250 is €12.50).
   Leave the price empty for "price on request"; 0 means free. Each menu has one ISO 4217
-  currency (`EUR` by default).
+  currency (`EUR` by default, set per menu in the editor). A new menu in the admin starts in
+  the currency of the location's first menu. In French, euros read `9,00 €`.
 - **Allergens** are the 14 the EU requires a menu to declare (`Gluten`, `Crustaceans`, `Eggs`,
   `Fish`, `Peanuts`, `Soybeans`, `Milk`, `Nuts`, `Celery`, `Mustard`, `Sesame`, `Sulphites`,
   `Lupin`, `Molluscs`). Dietary tags are `Vegetarian`, `Vegan` and `GlutenFree`.

@@ -53,6 +53,14 @@ async function session(viewport, { admin }) {
   return { context, page };
 }
 
+/** The admin screens open on the location last picked; pin it to the one being captured. */
+async function pinLocation(context) {
+  await context.addInitScript(
+    (id) => localStorage.setItem("menus:locationId", String(id)),
+    restaurantId
+  );
+}
+
 async function shot(page, name, options = {}) {
   await page.waitForTimeout(600);
   await page.screenshot({ path: path.join(OUT_DIR, name), ...options });
@@ -61,16 +69,24 @@ async function shot(page, name, options = {}) {
 
 await mkdir(OUT_DIR, { recursive: true });
 
-// What the demo's flagship holds, read through the API so the captures follow the data.
+// What the demo's Belgian brasserie holds, read through the API so the captures follow the data.
+// CAPTURE_RESTAURANT names another location; an unknown name falls back to the first one.
 const { page: api } = await session(DESKTOP, { admin: true });
-const restaurantId = 1;
+const locations = await (await api.request.get("/api/admin/restaurants")).json();
+const restaurantId = (
+  locations.find(
+    (r) => r.name === (process.env.CAPTURE_RESTAURANT ?? "Brasserie de la Senne Dorée")
+  ) ?? locations[0]
+).id;
 const menus = await (await api.request.get(`/api/admin/restaurants/${restaurantId}/menus`)).json();
 const tokens = await (
   await api.request.get(`/api/admin/restaurants/${restaurantId}/public-tokens`)
 ).json();
-const food = menus.find((m) => m.name === "Food") ?? menus[0];
+const food = menus.find((m) => m.isPublished) ?? menus[0];
 const dish =
-  food.categories.flatMap((c) => c.items).find((i) => i.name === "Milk steak") ??
+  food.categories
+    .flatMap((c) => c.items)
+    .find((i) => i.name === "Croquettes aux crevettes grises") ??
   food.categories.flatMap((c) => c.items)[0];
 const publicPath = `/menu/r/${tokens.restaurantToken}`;
 const tablePath = `/menu/t/${tokens.tables[0].token}`;
@@ -78,6 +94,7 @@ const tablePath = `/menu/t/${tokens.tables[0].token}`;
 // ── Desktop: the admin ──────────────────────────────────────────────────────
 {
   const { context, page } = await session(DESKTOP, { admin: true });
+  await pinLocation(context);
 
   await page.goto("/admin/menus");
   await page.getByTestId("menu-card").first().waitFor();
@@ -141,6 +158,7 @@ for (const [suffix, viewport] of [
 // ── Mobile: the service screen, the one admin surface built for a phone ─────
 {
   const { context, page } = await session(MOBILE, { admin: true });
+  await pinLocation(context);
   await page.goto("/admin/menus/service");
   await page
     .getByTestId(/service-item-/)
