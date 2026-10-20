@@ -1,0 +1,38 @@
+{
+  "etat": "Tourne en local : back .NET et front Expo, tests verts.",
+  "sante": "pause",
+  "prochaine_etape": "Choisir le premier chantier (cartes et menus QR).",
+  "chantiers": [
+    {
+      "id": "bifrost-openresto",
+      "titre": "Brancher OpenResto sur Heimdall",
+      "agent": "Claude",
+      "branche": "chore/bifrost",
+      "statut": "En cours",
+      "pr": null,
+      "maj": "2026-10-20T07:01:33+00:00"
+    },
+    {
+      "id": "menu-api",
+      "titre": "feat(menu): native menu module — API",
+      "agent": "Claude",
+      "branche": "feat/menu-api",
+      "statut": "En cours",
+      "pr": "https://github.com/gaultierremi/openresto/pull/2",
+      "etape": "Corrections d'Astra 1 poussées (9e124080), contre-vérification en attente.",
+      "maj": "2026-10-19T06:30:17+00:00"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "premier-chantier",
+      "titre": "Quel premier chantier : cartes et menus QR (AtlasQR) ou autre ?",
+      "pourquoi": "Le dépôt est en pause en attendant ce choix.",
+      "urgence": "Quand tu veux"
+    }
+  ],
+  "maj": {
+    "at": "2026-10-20T07:01:33+00:00",
+    "by": "Claude"
+  }
+}
