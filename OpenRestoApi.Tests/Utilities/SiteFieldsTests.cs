@@ -69,6 +69,46 @@ public class SiteFieldsTests
     public void ParseTheme_RefusesAnythingElse_NumbersIncluded(string? name)
         => Assert.Equal(ErrorCodes.SiteThemeInvalid, Assert.Throws<ValidationException>(() => SiteFields.ParseTheme(name)).Code);
 
+    // ── Primary colour ───────────────────────────────────────────────────────
+
+    [Fact]
+    public void NormalizePrimaryColor_KeepsAnRrggbb_AndRefusesEverythingElse()
+    {
+        Assert.Equal((true, "#a1b2c3"), SiteFields.NormalizePrimaryColor("#A1B2C3"));
+        Assert.Equal((true, "#a1b2c3"), SiteFields.NormalizePrimaryColor("#a1b2c3"));
+
+        foreach (string refused in new[] { "#a1b2c3ff", "red", "#fff", "#12345g", "javascript:alert(1)" })
+        {
+            ValidationException ex = Assert.Throws<ValidationException>(() => SiteFields.NormalizePrimaryColor(refused));
+
+            Assert.Equal(ErrorCodes.SiteColorInvalid, ex.Code);
+        }
+    }
+
+    [Fact]
+    public void NormalizePrimaryColor_LeavesTheColourAlone_WhenNothingIsSent()
+        => Assert.Equal((false, (string?)null), SiteFields.NormalizePrimaryColor(null));
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void NormalizePrimaryColor_ClearsABlank(string blank)
+        => Assert.Equal((true, (string?)null), SiteFields.NormalizePrimaryColor(blank));
+
+    [Fact]
+    public void NormalizePrimaryColor_TrimsBeforeItChecks()
+        => Assert.Equal((true, "#0a7ea4"), SiteFields.NormalizePrimaryColor("  #0A7EA4  "));
+
+    [Theory]
+    [InlineData("#a1b2c")]       // six characters: one short
+    [InlineData("#a1b2c3d")]     // eight characters: one over
+    [InlineData("a1b2c3")]       // no hash
+    [InlineData("#a1b2c3;x")]
+    [InlineData("#a1b 2c3")]
+    public void NormalizePrimaryColor_RefusesAnAnswerOneCharacterOffTheShape(string color)
+        => Assert.Equal(ErrorCodes.SiteColorInvalid,
+            Assert.Throws<ValidationException>(() => SiteFields.NormalizePrimaryColor(color)).Code);
+
     // ── Legal identifiers ────────────────────────────────────────────────────
 
     [Theory]
