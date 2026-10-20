@@ -354,6 +354,15 @@ describe("LocaleContext", () => {
     expect(screen.getByTestId("locale").props.children).toBe("en");
   });
 
+  it("setLocale outside a provider changes nothing and persists nothing", () => {
+    render(<TestConsumer />);
+
+    fireEvent.press(screen.getByTestId("switch-to-fr"));
+
+    expect(screen.getByTestId("locale").props.children).toBe("en");
+    expect(localStorage.getItem("openresto.locale")).toBeNull();
+  });
+
   it("setLocale updates the context live, persists the pick, and re-applies i18next/formatters", async () => {
     render(
       <LocaleProvider>
