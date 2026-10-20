@@ -6339,7 +6339,7 @@ export interface components {
             brandColor?: string;
             /**
              * @description What stops the site going live, as field paths (`legal.name`, `legal.companyNumber`,
-             *     `contact.email`). Empty means it can be published.
+             *     `contact.email`, `instance.publicUrl`). Empty means it can be published.
              */
             missing?: string[];
             /** Format: date-time */

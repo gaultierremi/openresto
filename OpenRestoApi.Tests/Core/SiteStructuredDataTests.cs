@@ -23,7 +23,8 @@ public class SiteStructuredDataTests
         Assert.Equal("Brasserie de la Senne Dorée", ld.GetProperty("name").GetString());
         Assert.Equal(Canonical, ld.GetProperty("url").GetString());
         Assert.Equal("+32 2 555 01 23", ld.GetProperty("telephone").GetString());
-        Assert.Equal("Rue des Fabriques 25, 1000 Bruxelles", ld.GetProperty("address").GetProperty("streetAddress").GetString());
+        Assert.Equal("Rue des Fabriques 25", ld.GetProperty("address").GetProperty("streetAddress").GetString());
+        Assert.Equal("1000", ld.GetProperty("address").GetProperty("postalCode").GetString());
         Assert.Equal("PostalAddress", ld.GetProperty("address").GetProperty("@type").GetString());
         Assert.Equal(["brasserie", "cuisine belge"], ld.GetProperty("servesCuisine").EnumerateArray().Select(e => e.GetString()));
 
@@ -39,6 +40,37 @@ public class SiteStructuredDataTests
         JsonElement section = ld.GetProperty("hasMenu").GetProperty("hasMenuSection").EnumerateArray().Single();
         Assert.Equal("Plats", section.GetProperty("name").GetString());
         Assert.Equal(3, section.GetProperty("hasMenuItem").GetArrayLength());
+    }
+
+    [Theory]
+    [InlineData("Rue des Fabriques 25, 1000 Bruxelles", "Rue des Fabriques 25", "1000", "Bruxelles")]
+    [InlineData("Av. Louise 54, 1050 Ixelles", "Av. Louise 54", "1050", "Ixelles")]
+    [InlineData("Place Saint-Lambert 1, Bte 3, 4000 Liège", "Place Saint-Lambert 1, Bte 3", "4000", "Liège")]
+    [InlineData("12 rue de Rivoli, 75001 Paris", "12 rue de Rivoli", "75001", "Paris")]
+    public void Build_SplitsAStreetAndAPostalCodeAndCityWhenTheAddressHasThem(string address, string street, string code, string city)
+    {
+        JsonElement postal = Parse(SiteSamples.Full(m => m with { Address = address })).GetProperty("address");
+
+        Assert.Equal("PostalAddress", postal.GetProperty("@type").GetString());
+        Assert.Equal(street, postal.GetProperty("streetAddress").GetString());
+        Assert.Equal(code, postal.GetProperty("postalCode").GetString());
+        Assert.Equal(city, postal.GetProperty("addressLocality").GetString());
+        Assert.False(postal.TryGetProperty("addressCountry", out _), "a country is never guessed");
+    }
+
+    [Theory]
+    [InlineData("Rue des Fabriques 25")]
+    [InlineData("Rue des Fabriques 25, Bruxelles")]
+    [InlineData("Rue des Fabriques 25, 100 Bruxelles")]
+    [InlineData("Rue des Fabriques 25, 1000")]
+    [InlineData(", 1000 Bruxelles")]
+    public void Build_KeepsAnAddressItCannotSplitAsOneStreetLine(string address)
+    {
+        JsonElement postal = Parse(SiteSamples.Full(m => m with { Address = address })).GetProperty("address");
+
+        Assert.Equal(address, postal.GetProperty("streetAddress").GetString());
+        Assert.False(postal.TryGetProperty("postalCode", out _));
+        Assert.False(postal.TryGetProperty("addressLocality", out _));
     }
 
     [Fact]

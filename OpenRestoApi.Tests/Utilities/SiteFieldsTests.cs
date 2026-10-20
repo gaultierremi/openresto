@@ -186,6 +186,15 @@ public class SiteFieldsTests
         => Assert.Empty(SiteFields.MissingForPublication(
             new RestaurantSite { LegalName = "Senne Dorée SRL", CompanyNumber = "0123.456.789" }, "bonjour@senne.example"));
 
+    [Fact]
+    public void MissingForPublication_AsksForAPublicAddress_OnlyWhenTheInstanceHasNone()
+    {
+        var site = new RestaurantSite { LegalName = "Senne Dorée SRL", CompanyNumber = "0123.456.789" };
+
+        Assert.Equal([SiteFields.MissingPublicUrl], SiteFields.MissingForPublication(site, "a@b.be", publicUrlConfigured: false));
+        Assert.Empty(SiteFields.MissingForPublication(site, "a@b.be", publicUrlConfigured: true));
+    }
+
     [Theory]
     [InlineData(" ")]
     [InlineData("")]

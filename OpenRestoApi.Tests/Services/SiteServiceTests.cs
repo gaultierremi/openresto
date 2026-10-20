@@ -310,6 +310,51 @@ public class SiteServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Publish_RefusesAnInstanceWithNoPublicAddress_AndNothingGoesLive()
+    {
+        var bare = new ConfigurationBuilder().Build();
+        var service = new SiteService(
+            new SiteRepository(_db), _brandRepo.Object, new BrandService(_brandRepo.Object, bare), _menus, _store.Object, new FakeClock(Now), _audit);
+        await service.UpdateAsync(Alpha, Save());
+
+        BusinessRuleException ex = await Assert.ThrowsAsync<BusinessRuleException>(() => service.SetPublishedAsync(Alpha, published: true));
+
+        Assert.Equal(SiteFields.MissingPublicUrl, ex.Args!["missing"]);
+        Assert.False((await RowAsync()).IsPublished);
+        Assert.Contains(SiteFields.MissingPublicUrl, (await service.GetAsync(Alpha)).Missing);
+    }
+
+    [Fact]
+    public async Task Publish_AcceptsAnInstanceWhosePublicAddressIsSetInTheBrandSettings()
+    {
+        _brand.WebsiteUrl = "https://bookings.example.be";
+        var bare = new ConfigurationBuilder().Build();
+        var service = new SiteService(
+            new SiteRepository(_db), _brandRepo.Object, new BrandService(_brandRepo.Object, bare), _menus, _store.Object, new FakeClock(Now), _audit);
+        await service.UpdateAsync(Alpha, Save());
+
+        SiteDto site = await service.SetPublishedAsync(Alpha, published: true);
+
+        Assert.True(site.IsPublished);
+        Assert.DoesNotContain(SiteFields.MissingPublicUrl, site.Missing);
+    }
+
+    [Fact]
+    public async Task Update_OfALiveSite_IsNotBlockedByTheInstanceLosingItsPublicAddress()
+    {
+        await PublishAsync();
+        _brand.WebsiteUrl = null;
+        var bare = new ConfigurationBuilder().Build();
+        var service = new SiteService(
+            new SiteRepository(_db), _brandRepo.Object, new BrandService(_brandRepo.Object, bare), _menus, _store.Object, new FakeClock(Now), _audit);
+
+        SiteDto site = await service.UpdateAsync(Alpha, Save(r => r.Tagline = "Une nouvelle accroche"));
+
+        Assert.Equal("Une nouvelle accroche", site.Tagline);
+        Assert.True(site.IsPublished);
+    }
+
+    [Fact]
     public async Task Publish_RefusesAnArchivedLocation()
     {
         await _svc.UpdateAsync(Alpha, Save());

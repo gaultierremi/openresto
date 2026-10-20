@@ -104,7 +104,7 @@ public class SiteService(
             {
                 throw new BusinessRuleException("An archived location cannot have a live website.") { Code = ErrorCodes.SiteLocationArchived };
             }
-            RequirePublishable(SiteFields.MissingForPublication(site, EffectiveEmail(restaurant, brand)));
+            RequirePublishable(SiteFields.MissingForPublication(site, EffectiveEmail(restaurant, brand), IsPublicUrlConfigured(brand)));
         }
 
         _audit.RecordChange("isPublished", site.IsPublished, published);
@@ -373,7 +373,7 @@ public class SiteService(
             Address = site.LegalAddress,
         },
         BrandColor = brand?.PrimaryColor ?? SitePageModel.DefaultPrimaryColor,
-        Missing = SiteFields.MissingForPublication(site, EffectiveEmail(restaurant, brand)),
+        Missing = SiteFields.MissingForPublication(site, EffectiveEmail(restaurant, brand), IsPublicUrlConfigured(brand)),
         UpdatedAt = exists ? site.UpdatedAt : null,
     };
 
@@ -484,10 +484,15 @@ public class SiteService(
     {
         if (missing.Count > 0)
         {
-            throw new BusinessRuleException("The website cannot go live until its legal notice and contact address are filled in.")
+            throw new BusinessRuleException("The website cannot go live until its legal notice, a contact e-mail and the instance's public address are filled in.")
             { Code = ErrorCodes.SiteNotPublishable, Args = new Dictionary<string, object> { ["missing"] = string.Join(", ", missing) } };
         }
     }
+
+    /// <summary>False while the instance still falls back to the dev server's address, which a canonical link must never name.</summary>
+    /// <seealso>SiteServiceTests.Publish_RefusesAnInstanceWithNoPublicAddress_AndNothingGoesLive</seealso>
+    private bool IsPublicUrlConfigured(BrandSettings? brand)
+        => !string.Equals(_brand.GetWebsiteUrl(brand).TrimEnd('/'), BrandService.DefaultWebsiteUrl, StringComparison.OrdinalIgnoreCase);
 
     private static string? EffectiveEmail(Restaurant restaurant, BrandSettings? brand)
         => Blank(restaurant.EmailAddress) ?? Blank(brand?.EmailAddress);

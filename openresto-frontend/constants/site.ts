@@ -31,5 +31,10 @@ export const SITE_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as con
 export const PUBLIC_PATH_PREFIX = "/r/";
 
 /** What the server names as standing between a site and its publication. */
-export const MISSING_FIELDS = ["legal.name", "legal.companyNumber", "contact.email"] as const;
+export const MISSING_FIELDS = [
+  "legal.name",
+  "legal.companyNumber",
+  "contact.email",
+  "instance.publicUrl",
+] as const;
 export type MissingField = (typeof MISSING_FIELDS)[number];

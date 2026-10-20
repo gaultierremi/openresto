@@ -2415,7 +2415,8 @@
         "todo": {
           "legalName": "Indiquer la raison sociale (mentions légales)",
           "companyNumber": "Indiquer le numéro d'entreprise (mentions légales)",
-          "contactEmail": "Renseigner une adresse e-mail de contact, sur l'établissement ou dans la marque"
+          "contactEmail": "Renseigner une adresse e-mail de contact, sur l'établissement ou dans la marque",
+          "publicUrl": "Renseigner l'adresse web de l'instance dans les réglages de la marque (les liens du site et sa fiche dans les moteurs de recherche en ont besoin)"
         },
         "blockedHint": "Le bouton se débloque dès que la liste ci-dessus est vide.",
         "publish": "Publier le site",

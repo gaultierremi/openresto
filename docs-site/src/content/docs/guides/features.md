@@ -196,9 +196,11 @@ under `/api/admin/restaurants/{id}/site` with an API key carrying the `sites` sc
 - **Preview** shows the page as it would render now, marked as a draft and kept out of search
   engines, and shows another theme without saving it (`GET .../site/preview?theme=Cafe`).
 - **Publishing** is a switch. A site cannot go live until it has a **legal name**, a **company
-  number** and a **contact e-mail** (the location's, or the brand's); the screen lists what is
-  missing, and the API answers `site.not_publishable`. Clearing those fields on a live site is
-  refused for the same reason; unpublishing always works. An unpublished site, an unknown address
+  number**, a **contact e-mail** (the location's, or the brand's) and a public **website
+  address** for the instance (set under **Brand** or `WEBSITE_URL`), because the page's canonical
+  link, Open Graph tags and sitemap must not name `localhost`. The screen lists what is missing,
+  and the API answers `site.not_publishable`. Clearing the legal fields on a live site is refused
+  for the same reason; unpublishing always works. An unpublished site, an unknown address
   and an archived location all answer the same 404 page.
 - **The address** is derived from the location's name (`Brasserie de la Senne Dorée` becomes
   `brasserie-de-la-senne-doree`) and can be changed: lower-case letters, digits and single
@@ -214,8 +216,10 @@ under `/api/admin/restaurants/{id}/site` with an API key carrying the `sites` sc
 - **No cookie, no tracker, no third-party request.** The page is a single HTML document with an
   inline stylesheet, system fonts and no script (the one exception is a data block for search
   engines, which is not executable). A `Content-Security-Policy` allows only this origin's images
-  and that one stylesheet, so there is no cookie banner to show. The map link is a plain link to
-  OpenStreetMap that the visitor follows; nothing is loaded from it.
+  and that one stylesheet, so there is no cookie banner to show. Like any web server, yours still
+  keeps technical access logs (IP address and time of each request), and the page's legal notice
+  says so. The map link is a plain link to OpenStreetMap that the visitor follows; nothing is
+  loaded from it.
 - **Search engines** get a title and description, a canonical address, Open Graph tags, a
   schema.org `Restaurant` description (hours, address, menu with prices and allergen-related
   diets, reservation action), and a `/sitemap.xml` of the live sites. `/robots.txt` keeps
@@ -225,7 +229,9 @@ under `/api/admin/restaurants/{id}/site` with an API key carrying the `sites` sc
   booking flow, so the page itself holds no internal id. A walk-in-only location has no button
   and says so.
 - **The menu** on the page is the published menus exactly as the QR page shows them: unpublished
-  menus, hidden categories and hidden dishes never appear, sold-out dishes are marked.
+  menus, hidden categories and hidden dishes never appear, sold-out dishes are marked and greyed
+  with the theme's muted text colour (never by fading the row, which would drop the allergen line
+  below readable contrast).
 
 If you run your own reverse proxy instead of the bundled nginx, send `/r/*`, `/sitemap.xml` and
 `/robots.txt` to the backend, next to `/api/`.

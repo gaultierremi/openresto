@@ -7698,7 +7698,7 @@
             "items": {
               "type": "string"
             },
-            "description": "What stops the site going live, as field paths (\u0060legal.name\u0060, \u0060legal.companyNumber\u0060,\n\u0060contact.email\u0060). Empty means it can be published."
+            "description": "What stops the site going live, as field paths (\u0060legal.name\u0060, \u0060legal.companyNumber\u0060,\n\u0060contact.email\u0060, \u0060instance.publicUrl\u0060). Empty means it can be published."
           },
           "updatedAt": {
             "type": [

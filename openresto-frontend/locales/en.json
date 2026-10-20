@@ -2415,7 +2415,8 @@
         "todo": {
           "legalName": "Enter the legal name (legal notice)",
           "companyNumber": "Enter the company number (legal notice)",
-          "contactEmail": "Set a contact e-mail address, on the location or in the brand"
+          "contactEmail": "Set a contact e-mail address, on the location or in the brand",
+          "publicUrl": "Set the website address of this instance in Brand settings (the site's links and search listing need it)"
         },
         "blockedHint": "The button unlocks as soon as the list above is empty.",
         "publish": "Publish the website",

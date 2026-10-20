@@ -31,7 +31,7 @@ public class SiteDto
 
     /// <summary>
     /// What stops the site going live, as field paths (<c>legal.name</c>, <c>legal.companyNumber</c>,
-    /// <c>contact.email</c>). Empty means it can be published.
+    /// <c>contact.email</c>, <c>instance.publicUrl</c>). Empty means it can be published.
     /// </summary>
     public List<string> Missing { get; set; } = [];
 

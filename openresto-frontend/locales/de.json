@@ -2415,7 +2415,8 @@
         "todo": {
           "legalName": "Firmennamen angeben (Impressum)",
           "companyNumber": "Unternehmensnummer angeben (Impressum)",
-          "contactEmail": "Eine Kontakt-E-Mail-Adresse hinterlegen, am Standort oder in der Marke"
+          "contactEmail": "Eine Kontakt-E-Mail-Adresse hinterlegen, am Standort oder in der Marke",
+          "publicUrl": "Die Webadresse der Instanz in den Markeneinstellungen eintragen (Links der Seite und ihr Suchmaschineneintrag brauchen sie)"
         },
         "blockedHint": "Die Schaltfläche wird freigeschaltet, sobald die Liste oben leer ist.",
         "publish": "Webseite veröffentlichen",

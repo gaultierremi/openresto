@@ -72,6 +72,9 @@ export function SiteThemePicker({
             accessibilityLabel={copy[theme].name}
             accessibilityHint={copy[theme].description}
             accessibilityState={{ checked }}
+            // react-native-web reads the `aria-*` prop, not `accessibilityState`, so without this
+            // the rendered radio never says whether it is the chosen theme.
+            aria-checked={checked}
             style={[
               styles.option,
               {

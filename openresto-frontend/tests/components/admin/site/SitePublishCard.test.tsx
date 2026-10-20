@@ -87,7 +87,14 @@ describe("SitePublishCard", () => {
 
   describe("a draft with something missing", () => {
     it("lists each missing item as something to do", () => {
-      renderCard({ missing: ["legal.name", "legal.companyNumber", "contact.email"] });
+      renderCard({
+        missing: ["legal.name", "legal.companyNumber", "contact.email", "instance.publicUrl"],
+      });
+      expect(
+        screen.getByText(
+          "Set the website address of this instance in Brand settings (the site's links and search listing need it)"
+        )
+      ).toBeTruthy();
       expect(screen.getByText("Enter the legal name (legal notice)")).toBeTruthy();
       expect(screen.getByText("Enter the company number (legal notice)")).toBeTruthy();
       expect(
@@ -95,7 +102,7 @@ describe("SitePublishCard", () => {
       ).toBeTruthy();
     });
 
-    it.each(["legal.name", "legal.companyNumber", "contact.email"] as const)(
+    it.each(["legal.name", "legal.companyNumber", "contact.email", "instance.publicUrl"] as const)(
       "disables publishing while only %s is missing, and says why",
       async (field) => {
         renderCard({ missing: [field] });
