@@ -295,8 +295,12 @@ il faut le modifier dans l'admin. Ce choix évite qu'un redémarrage écrase ce 
 
 Port 587 = STARTTLS (quel que soit `SMTP_ENABLE_SSL`) ; 465 = TLS implicite si `SMTP_ENABLE_SSL=true`.
 
-> Avant ce chantier, le backend **ne lisait pas** ces variables (SMTP uniquement en base, via
-> l'admin) ; c'est la partie de code ajoutée par ce chantier (`EmailSettingsBootstrap`).
+> **Attention : cela ne fonctionne qu'avec une image qui contient ce changement.** Avant, le
+> backend **ne lisait pas** ces variables (SMTP uniquement en base, via l'admin) ; la lecture a été
+> ajoutée par ce chantier (`EmailSettingsBootstrap`). Les images amont `ghcr.io/karanshukla/…:2.4.1`
+> (celles que le kit tire par défaut) ne l'ont **pas** : avec elles, `SMTP_*` est sans effet et il
+> faut régler le mail dans l'admin. Pour que les variables servent, construire les images depuis ce
+> dépôt (`docker-compose.build.yml`) ou publier celles du fork ([§11](#11-limites-et-décisions-ouvertes)).
 
 ### 6.2 SPF, DKIM, DMARC : à demander pour le domaine d'expédition
 
@@ -534,7 +538,8 @@ Ce que le kit **ne fait pas**, volontairement ou faute de temps :
 1. **Plusieurs instances sur une même VM** : non livré (un Caddy partagé qui route par domaine est à
    écrire). À traiter avant le 2ᵉ client si les clients partagent une VM.
 2. **Images Docker du fork** : le kit tire par défaut les images amont `ghcr.io/karanshukla/…` à une
-   version précise. Dès que le fork diverge (module de menus, etc.), il faut publier ses propres
+   version précise (la 2.4.1 existe, vérifié). Ces images n'ont **pas** la lecture de `SMTP_*`
+   (§6.1) ni le module de menus à venir : dès que le fork diverge, il faut publier ses propres
    images (workflow de publication à ajouter) et pointer `OPENRESTO_REGISTRY` dessus.
 3. **Purge automatique des réservations** : absente de l'application (voir §10.2).
 4. **Supervision** : sondes externes à brancher par toi ; aucune alerte n'est envoyée par la VM
