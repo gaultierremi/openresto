@@ -24,6 +24,27 @@ public class WaitlistReadyCopyTests
         Assert.Equal("Número 12: Su mesa está lista. Acérquese a recepción, por favor.", body);
     }
 
+    [Fact]
+    public void Build_WritesDutchForADutchSpeakingGuest()
+    {
+        (string subject, string html) = WaitlistReadyCopy.Build("nl", "Chez Nous", "Ada", 12, "https://x.test/waitlist/abc");
+
+        Assert.Equal("Uw tafel bij Chez Nous is klaar", subject);
+        Assert.Contains("Goedendag Ada,", html);
+        Assert.Contains("Gelieve u aan te melden bij de ontvangst.", html);
+        Assert.Contains("Ticket nr. 12", html);
+        Assert.Contains("Uw plaats in de wachtrij bekijken", html);
+    }
+
+    [Fact]
+    public void BuildPush_WritesDutchForADutchSpeakingGuest()
+    {
+        (string title, string body) = WaitlistReadyCopy.BuildPush("nl", "Chez Nous", 12);
+
+        Assert.Equal("Uw tafel bij Chez Nous is klaar", title);
+        Assert.Equal("Ticket nr. 12: Uw tafel is klaar. Gelieve u aan te melden bij de ontvangst.", body);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("xx")]
