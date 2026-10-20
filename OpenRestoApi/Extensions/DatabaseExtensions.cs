@@ -416,6 +416,8 @@ public static partial class DatabaseExtensions
                             db,
                             configuration,
                             seedScope.ServiceProvider.GetRequiredService<OpenRestoApi.Core.Application.Interfaces.IPasswordService>());
+
+                        EmailSettingsBootstrap.SeedFromConfiguration(db, configuration, seedScope.ServiceProvider);
                     }
 
                     success = true;
