@@ -79,6 +79,14 @@ function getNavSections(t: TFunction): { heading: string; items: NavItem[] }[] {
           match: (p: string) => p === "/admin/qr-codes" || p.startsWith("/admin/qr-codes/"),
         },
         {
+          id: "site",
+          label: t("admin.sidebar.nav.items.site"),
+          icon: "globe-outline" as const,
+          href: "/admin/site" as const,
+          match: (p: string) => p === "/admin/site" || p.startsWith("/admin/site/"),
+          capability: "manage:site" as const,
+        },
+        {
           id: "notifications",
           label: t("admin.sidebar.nav.items.notifications"),
           icon: "notifications-outline" as const,

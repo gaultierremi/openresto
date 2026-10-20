@@ -22,7 +22,12 @@ export type AssignableRole = (typeof ASSIGNABLE_ROLES)[number];
 
 /** Things a role may or may not do. One entry per gated capability. */
 export type Capability =
-  "manage:users" | "delete:location" | "view:audit" | "manage:api-keys" | "regenerate:qr-token";
+  | "manage:users"
+  | "delete:location"
+  | "view:audit"
+  | "manage:api-keys"
+  | "regenerate:qr-token"
+  | "manage:site";
 
 const CAPABILITY_ROLES: Record<Capability, readonly string[]> = {
   "manage:users": [ROLES.owner, ROLES.legacyAdmin],
@@ -32,6 +37,7 @@ const CAPABILITY_ROLES: Record<Capability, readonly string[]> = {
   // Replacing a QR code's token breaks every printed copy, so the server holds it to Owners
   // (`RequireOwner` on the regenerate endpoints) and the Managers never see the button.
   "regenerate:qr-token": [ROLES.owner, ROLES.legacyAdmin],
+  "manage:site": [ROLES.owner, ROLES.manager, ROLES.legacyAdmin],
 };
 
 export function roleCan(role: string | null | undefined, capability: Capability): boolean {
