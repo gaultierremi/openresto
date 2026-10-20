@@ -96,6 +96,7 @@ function AdminLayoutInner() {
       "/admin/menus/service": "Service mode",
       "/admin/qr-codes": "QR codes",
       "/admin/qr-codes/print": "QR sheet",
+      "/admin/site": "My website",
       "/admin/waitlist": "Waitlist",
       "/admin/notifications": "Notifications",
       "/admin/activity": "Activity",

@@ -501,6 +501,26 @@
       "walk_in_days_invalid": "WalkInDays doit être une liste de numéros de jour ISO de 1 (lundi) à 7 (dimanche), séparés par des virgules.",
       "max_covers_invalid": "Le nombre maximal de convives par créneau doit être d'au moins 1, ou vide pour aucune limite."
     },
+    "site": {
+      "not_found": "Site introuvable.",
+      "slug_invalid": "L'adresse du site doit faire de 3 à 60 caractères : minuscules, chiffres et tirets simples.",
+      "slug_taken": "Un autre site utilise déjà cette adresse.",
+      "theme_invalid": "Ce thème n'existe pas.",
+      "tagline_too_long": "L'accroche ne peut pas dépasser {{max}} caractères.",
+      "social_invalid": "Un lien de réseau doit avoir un réseau connu, une adresse en https://, et n'apparaître qu'une fois.",
+      "social_too_many": "Il y a trop de liens de réseaux sociaux.",
+      "legal_too_long": "Ce champ des mentions légales ne peut pas dépasser {{max}} caractères.",
+      "legal_invalid": "Ce champ des mentions légales n'accepte que des lettres, des chiffres, des espaces, des points, des tirets et des barres obliques.",
+      "photo_alt_required": "Chaque photo doit avoir une description.",
+      "photo_alt_too_long": "La description de la photo ne peut pas dépasser {{max}} caractères.",
+      "photos_full": "La galerie contient au plus {{max}} photos.",
+      "reorder_ids_mismatch": "La liste doit nommer chaque photo une seule fois, sans en ajouter.",
+      "image_too_large": "L'image doit faire moins de 6 Mo.",
+      "image_dimensions_too_large": "L'image est trop grande en pixels (au plus {{maxSide}} pixels de côté).",
+      "image_unreadable": "Ce fichier n'est pas une image lisible.",
+      "not_publishable": "Le site ne peut pas être publié tant que ses mentions légales et son adresse e-mail de contact ne sont pas renseignées.",
+      "location_archived": "Un établissement archivé ne peut pas avoir de site en ligne."
+    },
     "social_link": {
       "label_required": "Le libellé du lien social ne peut pas être vide.",
       "label_too_long": "Le libellé du lien social ne peut pas dépasser {{max}} caractères.",
@@ -2023,7 +2043,8 @@
           "audit": "Journal d'activité",
           "guests": "Clients",
           "email": "État des e-mails",
-          "menus": "Cartes"
+          "menus": "Cartes",
+          "sites": "Site vitrine"
         },
         "scopeLevel": {
           "none": "Aucun"
@@ -2037,7 +2058,8 @@
           "audit": "Le journal d'activité de l'administration",
           "guests": "Les noms et e-mails des clients sur les réservations. Sans ceci, ils reviennent vides.",
           "email": "Si l'envoi d'e-mails est configuré et ce qui n'a pas pu partir. Jamais les identifiants SMTP.",
-          "menus": "Les cartes, leurs catégories, plats et photos, et les liens derrière les QR codes. Régénérer un lien demande en plus la clé d'un propriétaire."
+          "menus": "Les cartes, leurs catégories, plats et photos, et les liens derrière les QR codes. Régénérer un lien demande en plus la clé d'un propriétaire.",
+          "sites": "Le site web d'un établissement : thème, accroche, photos, mentions légales, publication et aperçu."
         },
         "expiryLabel": "Expiration",
         "expiryHint": "Par défaut, 1 an. Choisissez « Sans expiration » pour une clé qui n'expire jamais.",
@@ -2283,6 +2305,134 @@
         "serverUnreachable": "Impossible de joindre le serveur."
       }
     },
+    "site": {
+      "title": "Mon site",
+      "subtitle": "Un petit site web pour chaque établissement, créé à partir de vos horaires, de votre carte et de vos coordonnées.",
+      "noLocations": "Ajoutez un établissement pour créer son site.",
+      "couldntLoad": "Impossible de charger le site. Vérifiez votre connexion et réessayez.",
+      "themes": {
+        "label": "Thème du site",
+        "brasserie": {
+          "name": "Brasserie",
+          "description": "Chaleureux et convivial : papier crème, titres à empattements."
+        },
+        "gastronomique": {
+          "name": "Gastronomique",
+          "description": "Sobre et élégant : fond sombre, lettres espacées."
+        },
+        "cafe": {
+          "name": "Café",
+          "description": "Clair et arrondi : touches de votre couleur, très lisible."
+        }
+      },
+      "social": {
+        "kindLabel": "Réseau",
+        "urlPlaceholder": "https://…",
+        "urlLabel": "Adresse de la page {{network}}",
+        "remove": "Retirer",
+        "removeNamed": "Retirer {{network}}",
+        "add": "Ajouter un réseau"
+      },
+      "settings": {
+        "problem": {
+          "slug": "L'adresse du site doit faire de 3 à 60 caractères : minuscules, chiffres et tirets simples. Rien n'est enregistré tant qu'elle n'est pas valide.",
+          "socialUrl": "Chaque lien de réseau doit être une adresse en https://. Rien n'est enregistré tant qu'elle n'est pas valide.",
+          "socialDuplicate": "Un réseau ne peut apparaître qu'une fois. Changez ou retirez le doublon pour enregistrer.",
+          "identifier": "Les numéros d'entreprise et de TVA n'acceptent que des lettres, des chiffres, des espaces, des points, des tirets et des barres obliques.",
+          "legalRequired": "Le site est publié : la raison sociale et le numéro d'entreprise doivent rester renseignés. Dépubliez le site pour les effacer."
+        },
+        "appearance": {
+          "title": "Apparence",
+          "description": "Trois thèmes sobres. Le choix s'applique tout de suite à l'aperçu, et vous pouvez l'annuler juste après."
+        },
+        "brandColor": "Couleur principale : {{color}}, reprise de la marque. Le site la rend lisible sur chaque thème.",
+        "changeBrandColor": "Modifier dans Marque",
+        "content": {
+          "title": "Accroche et adresse",
+          "description": "L'accroche s'affiche sous le nom de l'établissement et dans les résultats de recherche."
+        },
+        "taglineLabel": "Accroche",
+        "taglinePlaceholder": "p. ex. Cuisine belge de saison et bières d'abbaye",
+        "taglineCount": "{{count}} / {{max}} caractères",
+        "addressLabel": "Adresse du site",
+        "addressHint": "Changer cette adresse casse les liens déjà partagés ou imprimés.",
+        "social": {
+          "title": "Réseaux sociaux",
+          "description": "Les liens apparaissent dans la section « Nous trouver »."
+        },
+        "legal": {
+          "title": "Mentions légales",
+          "description": "Obligatoires pour publier : elles s'affichent en bas du site.",
+          "nameLabel": "Raison sociale",
+          "companyNumberLabel": "Numéro d'entreprise (BCE)",
+          "vatNumberLabel": "Numéro de TVA (facultatif)",
+          "addressLabel": "Siège social (facultatif)",
+          "addressHint": "À défaut, l'adresse de l'établissement est utilisée."
+        }
+      },
+      "images": {
+        "title": "Logo et photo de couverture",
+        "description": "Les images sont réduites et allégées automatiquement : une photo de téléphone suffit.",
+        "logo": {
+          "title": "Logo",
+          "hint": "JPEG, PNG ou WebP, 6 Mo maximum. Un fond transparent est conservé.",
+          "add": "Ajouter un logo",
+          "replace": "Remplacer le logo",
+          "remove": "Retirer le logo"
+        },
+        "cover": {
+          "title": "Photo de couverture",
+          "hint": "JPEG, PNG ou WebP, 6 Mo maximum. Une photo large, prise en paysage, rend le mieux.",
+          "add": "Ajouter une photo de couverture",
+          "replace": "Remplacer la photo",
+          "remove": "Retirer la photo"
+        }
+      },
+      "gallery": {
+        "title": "Galerie",
+        "description": "Quelques photos de la salle, de la terrasse ou des plats.",
+        "count_one": "{{count}} photo sur {{max}} possibles ({{min}} à {{max}} recommandées)",
+        "count_other": "{{count}} photos sur {{max}} possibles ({{min}} à {{max}} recommandées)",
+        "altLabel": "Description de la photo",
+        "altRequired": "Décrivez la photo pour enregistrer : c'est ce que lit un lecteur d'écran à sa place.",
+        "remove": "Supprimer",
+        "removeNamed": "Supprimer la photo « {{name}} »",
+        "removeTitle": "Supprimer cette photo ?",
+        "removeMessage": "La photo « {{name}} » disparaîtra de la galerie. Cette action est irréversible.",
+        "full": "La galerie est complète ({{max}} photos). Supprimez une photo pour en ajouter une autre.",
+        "newAltLabel": "Description de la nouvelle photo",
+        "newAltPlaceholder": "p. ex. La salle aux banquettes de cuir",
+        "newAltHint": "Obligatoire : décrivez ce que montre la photo pour les personnes qui ne la voient pas.",
+        "choose": "Choisir la photo",
+        "add": "Ajouter une photo"
+      },
+      "publish": {
+        "title": "Publication",
+        "description": "Tant que le site n'est pas publié, personne d'autre que vous ne peut le voir.",
+        "live": "En ligne",
+        "draft": "Brouillon",
+        "checklistTitle": "À compléter avant la publication",
+        "todo": {
+          "legalName": "Indiquer la raison sociale (mentions légales)",
+          "companyNumber": "Indiquer le numéro d'entreprise (mentions légales)",
+          "contactEmail": "Renseigner une adresse e-mail de contact, sur l'établissement ou dans la marque"
+        },
+        "blockedHint": "Le bouton se débloque dès que la liste ci-dessus est vide.",
+        "publish": "Publier le site",
+        "unpublish": "Dépublier",
+        "view": "Voir le site",
+        "copy": "Copier le lien",
+        "copied": "Lien copié"
+      },
+      "preview": {
+        "title": "Aperçu",
+        "phone": "Téléphone",
+        "desktop": "Ordinateur",
+        "loading": "Chargement de l'aperçu…",
+        "failed": "Impossible de charger l'aperçu.",
+        "frameTitle": "Aperçu du site"
+      }
+    },
     "sidebar": {
       "nav": {
         "sections": {
@@ -2295,6 +2445,7 @@
           "locations": "Établissements",
           "menus": "Cartes",
           "qrCodes": "QR codes",
+          "site": "Mon site",
           "notifications": "Notifications",
           "activity": "Activité",
           "brand": "Marque",

@@ -90,11 +90,13 @@ async function loadLazyImages(page) {
 const { page: api } = await session(DESKTOP, { admin: true });
 const locations = await (await api.request.get("/api/admin/restaurants")).json();
 const restaurant =
-  locations.find((r) => r.name === (process.env.CAPTURE_RESTAURANT ?? "Brasserie de la Senne Dorée")) ??
-  locations[0];
+  locations.find(
+    (r) => r.name === (process.env.CAPTURE_RESTAURANT ?? "Brasserie de la Senne Dorée")
+  ) ?? locations[0];
 const siteUrl = `/api/admin/restaurants/${restaurant.id}/site`;
 const original = await (await api.request.get(siteUrl)).json();
-if (!original.isPublished) throw new Error(`${restaurant.name} has no published site: seed the demo first`);
+if (!original.isPublished)
+  throw new Error(`${restaurant.name} has no published site: seed the demo first`);
 
 /** The settings the PUT replaces wholesale, read back from what the site holds. */
 const settingsWith = (theme) => ({
@@ -125,5 +127,28 @@ try {
 } finally {
   await api.request.put(siteUrl, { data: settingsWith(original.theme) });
 }
+
+// ── Desktop: the admin's "Mon site" screen. It sits behind the admin's desktop-only wall below
+// 600px, so there is no phone capture of it. The brasserie's site is published and complete; the
+// flagship's is a draft with no legal identity, which is what shows the checklist.
+async function captureAdminScreen(location, name) {
+  // The admin scrolls inside its own container, so a tall viewport is what shows the whole screen.
+  const { context, page } = await session({ width: 1360, height: 2600 }, { admin: true });
+  await context.addInitScript(
+    (id) => localStorage.setItem("menus:locationId", String(id)),
+    location.id
+  );
+  await page.goto("/admin/site");
+  await page.getByTestId("site-publish").waitFor();
+  await page.getByTestId("site-preview").locator("iframe").waitFor();
+  await page.waitForTimeout(1500);
+  await shot(page, name, { fullPage: true });
+  await context.close();
+}
+
+await captureAdminScreen(restaurant, "site-admin-mon-site-publie.png");
+const draft = locations.find((r) => r.id !== restaurant.id);
+const draftSite = await (await api.request.get(`/api/admin/restaurants/${draft.id}/site`)).json();
+if (!draftSite.isPublished) await captureAdminScreen(draft, "site-admin-mon-site-brouillon.png");
 
 await browser.close();

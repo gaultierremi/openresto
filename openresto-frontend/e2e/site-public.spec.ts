@@ -71,7 +71,10 @@ test.describe("Website: publish, read as a guest, unpublish", () => {
   test("a site that lacks its legal notice cannot be published", async ({ request }) => {
     const blank = await request.put(siteApi, { data: settings({ legal: {} }) });
     expect(blank.ok()).toBeTruthy();
-    expect(((await blank.json()) as SiteDto).missing).toEqual(["legal.name", "legal.companyNumber"]);
+    expect(((await blank.json()) as SiteDto).missing).toEqual([
+      "legal.name",
+      "legal.companyNumber",
+    ]);
 
     const publish = await request.post(`${siteApi}/publish`);
 
@@ -90,7 +93,10 @@ test.describe("Website: publish, read as a guest, unpublish", () => {
     expect(published.ok()).toBeTruthy();
 
     // A fresh context: the admin project's session cookie must not be mistaken for the page's own.
-    const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL });
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      storageState: { cookies: [], origins: [] },
+    });
     const page = await context.newPage();
     const origins = new Set<string>();
     page.on("request", (r) => origins.add(new URL(r.url()).origin));
