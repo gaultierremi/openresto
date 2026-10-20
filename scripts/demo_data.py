@@ -4,7 +4,7 @@ demo_data.py — the single source of truth for OpenResto demo/seed data.
 
 Emits SQL on stdout. Consumers pipe it straight into sqlite3:
 
-    python3 scripts/demo_data.py config            # brand, locations, sections, tables, groups
+    python3 scripts/demo_data.py config            # brand, locations, sections, tables, groups, menus
     python3 scripts/demo_data.py bookings          # bookings + admin notifications
     python3 scripts/demo_data.py all               # both, in FK-safe order
     python3 scripts/demo_data.py accounts          # the Owner + demo Manager (see below)
@@ -36,6 +36,7 @@ import json
 import os
 import pathlib
 import random
+import secrets
 import sys
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -335,6 +336,119 @@ HIGHLIGHTS = [
     ),
 ]
 
+# ─── Menus ───────────────────────────────────────────────────────────────────
+# The native menu module (Menus → MenuCategories → MenuItems). The flagship carries
+# the whole surface: two published menus, an unpublished draft (absent from the
+# public view), a hidden category, a sold-out item, a hidden item, a "price on
+# request" item (PriceMinor NULL), a free one (0), all three dietary tags, and all
+# fourteen EU allergens across the dishes. Toronto has one menu in its own
+# currency. Every other location has none, so its public link answers 404: the
+# "nothing published" state. Dish photos come from the media step (dish-<id>.<ext>), which
+# is the demo's own convention: a photo uploaded through the API is stored under a random
+# dish-<token> name so the public URL never carries a dish id.
+#
+# Allergens and DietaryTags are stored as the bit flags of the C# enums.
+
+ALLERGEN_BITS = {
+    "Gluten": 1 << 0, "Crustaceans": 1 << 1, "Eggs": 1 << 2, "Fish": 1 << 3,
+    "Peanuts": 1 << 4, "Soybeans": 1 << 5, "Milk": 1 << 6, "Nuts": 1 << 7,
+    "Celery": 1 << 8, "Mustard": 1 << 9, "Sesame": 1 << 10, "Sulphites": 1 << 11,
+    "Lupin": 1 << 12, "Molluscs": 1 << 13,
+}
+DIETARY_BITS = {"Vegetarian": 1 << 0, "Vegan": 1 << 1, "GlutenFree": 1 << 2}
+
+# item: (name, description, price_minor, availability, allergens, dietary_tags)
+MENUS = {
+    "Paddy's Pub": [
+        {
+            "name": "Food",
+            "description": "Served all day, cash only.",
+            "currency": "USD",
+            "published": True,
+            "categories": [
+                {
+                    "name": "Starters",
+                    "items": [
+                        ("Mac and cheese", "Dennis's recipe. Cheese from a can, pride from a box.", 900, "Available", ["Gluten", "Milk"], ["Vegetarian"]),
+                        ("Jelly beans", "A handful, served in a pint glass.", 300, "Available", [], ["Vegan", "GlutenFree"]),
+                        ("Crab shack bucket", "Whatever the crab guy dropped off today.", None, "Available", ["Crustaceans", "Molluscs", "Celery"], []),
+                    ],
+                },
+                {
+                    "name": "Mains",
+                    "description": "Charlie's kitchen. No substitutions.",
+                    "items": [
+                        ("Milk steak", "Boiled over hard, with a side of jelly beans, raw.", 2400, "Available", ["Milk"], ["GlutenFree"]),
+                        ("Rum ham", "Soaked. Do not ask for how long.", 1900, "SoldOut", ["Sulphites", "Mustard"], ["GlutenFree"]),
+                        ("Fish and chips", "Beer-battered cod.", 1600, "Available", ["Fish", "Gluten", "Eggs"], []),
+                        ("Satay skewers", "Frank's. Probably chicken.", 1400, "Available", ["Peanuts", "Soybeans", "Sesame"], []),
+                        ("Lupin falafel bowl", "The one healthy thing on the menu.", 1300, "Available", ["Lupin", "Sesame"], ["Vegan"]),
+                        ("Rat stick special", "Not ready for the public.", 500, "Hidden", [], []),
+                    ],
+                },
+                {
+                    "name": "Desserts",
+                    "items": [
+                        ("Walnut brownie", "Baked by Mac's mom.", 700, "Available", ["Nuts", "Eggs", "Gluten", "Milk"], ["Vegetarian"]),
+                    ],
+                },
+                {
+                    "name": "Staff meals",
+                    "visible": False,
+                    "items": [
+                        ("Family meal", "Whatever is left at close.", 0, "Available", ["Gluten"], []),
+                    ],
+                },
+            ],
+        },
+        {
+            "name": "Drinks",
+            "currency": "USD",
+            "published": True,
+            "categories": [
+                {
+                    "name": "Beer",
+                    "items": [
+                        ("Paddy's lager", "On tap, mostly.", 600, "Available", ["Gluten"], ["Vegan"]),
+                        ("Fight milk", "Crow's eggs, vodka and milk. For bodyguards, by bodyguards.", 800, "Available", ["Milk", "Eggs"], []),
+                    ],
+                },
+                {
+                    "name": "Soft drinks",
+                    "items": [
+                        ("Tap water", "On the house.", 0, "Available", [], ["Vegan", "GlutenFree"]),
+                    ],
+                },
+            ],
+        },
+        {
+            "name": "Holiday specials",
+            "description": "Draft: not published, so guests never see it.",
+            "currency": "USD",
+            "published": False,
+            "categories": [
+                {"name": "Christmas", "items": [("Egg nog", "Frank's batch.", 900, "Available", ["Milk", "Eggs"], ["Vegetarian"])]},
+            ],
+        },
+    ],
+    "Paddy's Pub Toronto": [
+        {
+            "name": "Late kitchen",
+            "currency": "CAD",
+            "published": True,
+            "categories": [
+                {
+                    "name": "After midnight",
+                    "items": [
+                        ("Poutine", "Fries, curds, gravy.", 1200, "Available", ["Milk", "Celery"], ["Vegetarian"]),
+                        ("Butter tarts", "Two to a plate.", 500, "Available", ["Gluten", "Eggs", "Milk"], ["Vegetarian"]),
+                    ],
+                },
+            ],
+        },
+    ],
+}
+
 SOCIAL_LINKS = [
     ("Instagram", "https://instagram.com/paddyspub", "logo-instagram"),
     ("Yelp", "https://yelp.com/biz/paddys-pub", "star-outline"),
@@ -419,13 +533,31 @@ def utc_str(dt):
     return dt.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 
+def public_token():
+    """A QR-code token in PublicTokenGenerator's shape: base64url of 16 CSPRNG bytes.
+
+    Deliberately not drawn from the --seed RNG, so tokens are new on every reset.
+    """
+    return secrets.token_urlsafe(16)
+
+
+def flag_bits(names, bits):
+    value = 0
+    for name in names:
+        value |= bits[name]
+    return value
+
+
 # ─── Dataset assembly ────────────────────────────────────────────────────────
 
 
 def build_dataset(now_utc):
     """Assign ids to the declarative location tree and resolve relative dates."""
     restaurants, sections, tables, groups, memberships = [], [], [], [], []
+    menus, menu_categories, menu_items = [], [], []
     rid = sid = tid = gid = 0
+    mid = cid = iid = 0
+    stamp = utc_str(now_utc)
 
     for spec in LOCATIONS:
         rid += 1
@@ -476,9 +608,53 @@ def build_dataset(now_utc):
                     "MaxTableOversizeSeats": spec.get("max_oversize"),
                     "MaxCoversPerSlot": spec.get("max_covers"),
                     "BookingRefFormat": spec["ref_format"],
+                    "PublicToken": public_token(),
                 },
             }
         )
+
+        for menu_order, menu in enumerate(MENUS.get(spec["name"], [])):
+            mid += 1
+            menus.append(
+                {
+                    "Id": mid,
+                    "RestaurantId": rid,
+                    "Name": menu["name"],
+                    "Description": menu.get("description"),
+                    "Currency": menu["currency"],
+                    "IsPublished": menu["published"],
+                    "SortOrder": menu_order,
+                    "CreatedAt": stamp,
+                    "UpdatedAt": stamp,
+                }
+            )
+            for cat_order, cat in enumerate(menu["categories"]):
+                cid += 1
+                menu_categories.append(
+                    {
+                        "Id": cid,
+                        "MenuId": mid,
+                        "Name": cat["name"],
+                        "Description": cat.get("description"),
+                        "SortOrder": cat_order,
+                        "IsVisible": cat.get("visible", True),
+                    }
+                )
+                for item_order, (name, desc, price, availability, allergens, tags) in enumerate(cat["items"]):
+                    iid += 1
+                    menu_items.append(
+                        {
+                            "Id": iid,
+                            "CategoryId": cid,
+                            "Name": name,
+                            "Description": desc,
+                            "PriceMinor": price,
+                            "Availability": availability,
+                            "Allergens": flag_bits(allergens, ALLERGEN_BITS),
+                            "DietaryTags": flag_bits(tags, DIETARY_BITS),
+                            "SortOrder": item_order,
+                        }
+                    )
 
         by_name = {}
         for order, sec in enumerate(spec["sections"]):
@@ -493,6 +669,7 @@ def build_dataset(now_utc):
                         "Seats": seats,
                         "SectionId": sid,
                         "WalkInOnly": tname in spec.get("walk_in_tables", ()),
+                        "PublicToken": public_token(),
                     }
                 )
                 by_name[tname] = {"id": tid, "seats": seats, "section_id": sid}
@@ -529,6 +706,9 @@ def build_dataset(now_utc):
         "tables": tables,
         "groups": groups,
         "memberships": memberships,
+        "menus": menus,
+        "menu_categories": menu_categories,
+        "menu_items": menu_items,
     }
 
 
@@ -543,6 +723,11 @@ CONFIG_TABLES = [
     "AdminAuditEntries",
     "Highlights",
     "SocialLinks",
+    # Listed rather than left to the Restaurants cascade: this runs under
+    # foreign_keys=OFF, where no cascade fires.
+    "MenuItems",
+    "MenuCategories",
+    "Menus",
     "TableGroupMemberships",
     "TableGroups",
     "Tables",
@@ -589,6 +774,15 @@ def emit_config(ds):
             out.append(insert("TableGroupMemberships", m))
 
     out.append("")
+    out.append("-- Menus (ImageUrl stays NULL: dish photos are linked by the media step)")
+    for m in ds["menus"]:
+        out.append(insert("Menus", m))
+    for c in ds["menu_categories"]:
+        out.append(insert("MenuCategories", c))
+    for i in ds["menu_items"]:
+        out.append(insert("MenuItems", i))
+
+    out.append("")
     out.append("-- Highlights (Link=NULL renders a static card; a Link makes the card clickable)")
     for i, (title, body, icon, link) in enumerate(HIGHLIGHTS):
         out.append(
@@ -610,7 +804,7 @@ def emit_config(ds):
 
 # ─── Media ───────────────────────────────────────────────────────────────────
 # MediaService writes uploads into deterministic slots — hero.<ext>,
-# location-<id>.<ext>, menu-<id>.pdf — so the seed can discover what artwork
+# location-<id>.<ext>, menu-<id>.pdf, dish-<id>.<ext> — so the seed can discover what artwork
 # actually exists instead of hardcoding paths. This is what lets an uploaded
 # image survive the demo reset: the config step leaves ImageUrl NULL, and this
 # step points it back at whatever file is on disk, whatever extension it has.
@@ -661,6 +855,16 @@ def emit_media(ds, media_dir):
         menu = root / f"menu-{rid}.pdf"
         if menu.is_file():
             out.append(f"UPDATE Restaurants SET MenuUrl={q(_media_url(menu))} WHERE Id={rid};")
+            linked += 1
+
+    for item in ds["menu_items"]:
+        iid = item["Id"]
+        photo = next(
+            (p for ext in IMAGE_EXTENSIONS for p in sorted(root.glob(f"dish-{iid}.{ext}"))),
+            None,
+        )
+        if photo:
+            out.append(f"UPDATE MenuItems SET ImageUrl={q(_media_url(photo))} WHERE Id={iid};")
             linked += 1
 
     if linked == 0:

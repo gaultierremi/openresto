@@ -130,6 +130,54 @@ week are unaffected, and the message the guest sees names the local time the pau
   confirmation shows how many upcoming bookings are affected.
 - Seat counts are 1–50.
 
+## Menus
+
+Each location can have any number of menus ("Lunch", "Drinks"), each with ordered categories
+and dishes. Guests see a menu only once it is **published**. Menus are edited in the admin under
+**Menus** (Owners and Managers), or through the API under `/api/admin/restaurants/{id}/menus`
+with an API key carrying the `menus` scope (`read` or `write`).
+
+In the editor, categories and dishes are reordered with the arrows beside them, and dishes,
+categories and menus save as you edit. **Service mode** lists every dish of the published menus
+as one large button that flips it between available and sold out; it is the one admin screen
+built for a phone, so it opens below the admin's usual 600px width.
+
+- **Prices** are whole numbers in the currency's smallest unit (`priceMinor`: 1250 is €12.50).
+  Leave the price empty for "price on request"; 0 means free. Each menu has one ISO 4217
+  currency (`EUR` by default).
+- **Allergens** are the 14 the EU requires a menu to declare (`Gluten`, `Crustaceans`, `Eggs`,
+  `Fish`, `Peanuts`, `Soybeans`, `Milk`, `Nuts`, `Celery`, `Mustard`, `Sesame`, `Sulphites`,
+  `Lupin`, `Molluscs`). Dietary tags are `Vegetarian`, `Vegan` and `GlutenFree`.
+- A dish is `Available`, `SoldOut` (shown, marked) or `Hidden` (left out of the public menu). A
+  category can be hidden too.
+- Dish photos are JPEG, PNG or WebP under 2 MB, and the file's own bytes have to match the
+  type it declares. Each is stored under a random name, so the public photo URL does not reveal
+  a dish id. Deleting a dish, a category or a menu deletes
+  the photos that go with it.
+- Reordering takes the full list of ids in the new order; a list that leaves one out, repeats
+  one or names another menu's is refused with `menu.reorder_ids_mismatch`.
+
+**Public menu links.** Every location and every table has a public token, the value a QR code
+carries. `GET /api/menus/r/{token}` returns the location's published menus and
+`GET /api/menus/t/{token}` the same plus the table's name. No account is needed, and no internal
+id appears in the response. An unknown token, an archived location and a location with nothing
+published all return the same 404 (`menu.not_found`). A token never changes on its own: an
+Owner can regenerate it (`POST .../public-token/regenerate`, or
+`.../tables/{tableId}/public-token/regenerate`), which retires every QR code printed with the
+old one.
+
+**QR codes and the public page.** The admin's **QR codes** page draws a code for the location
+and one for each table in the browser (no outside service is called), black on white whatever
+the brand colour. Each can be downloaded as PNG or SVG, and the page prints an A4 sheet with six
+table codes to a page and A6 easel cards, one code each. A code carries the instance's website
+address when one is set under Brand, and the address the admin is open on otherwise; the address
+is printed under every code so you can check it before printing. A code opens
+`/menu/r/{token}` or `/menu/t/{token}`, a page that opens in French for a guest who has not
+picked a language (the language picker is on the page), lets a guest filter by diet and avoid
+allergens, shows sold-out dishes greyed and marked, and ends in a **Book a table** button into
+the booking flow. The filters rely on what the restaurant declared for each dish, and the page
+says so.
+
 ## Booking references
 
 - The **word** format (default) ends in four random digits: `crispy-basil-thyme-0482`. The

@@ -15,7 +15,7 @@ namespace OpenRestoApi.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.13");
 
             modelBuilder.Entity("OpenRestoApi.Core.Domain.AdminApiKey", b =>
                 {
@@ -571,6 +571,124 @@ namespace OpenRestoApi.Migrations
                     b.ToTable("GuestPushSubscriptions");
                 });
 
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.Menu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId", "SortOrder");
+
+                    b.ToTable("Menus");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.MenuCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MenuId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuId", "SortOrder");
+
+                    b.ToTable("MenuCategories");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.MenuItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Allergens")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Availability")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DietaryTags")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("PriceMinor")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId", "SortOrder");
+
+                    b.ToTable("MenuItems");
+                });
+
             modelBuilder.Entity("OpenRestoApi.Core.Domain.NativeClientStat", b =>
                 {
                     b.Property<int>("Id")
@@ -668,6 +786,11 @@ namespace OpenRestoApi.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PublicToken")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Tags")
                         .HasColumnType("TEXT");
 
@@ -685,6 +808,9 @@ namespace OpenRestoApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PublicToken")
+                        .IsUnique();
 
                     b.ToTable("Restaurants");
                 });
@@ -777,6 +903,11 @@ namespace OpenRestoApi.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PublicToken")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Seats")
                         .HasColumnType("INTEGER");
 
@@ -787,6 +918,9 @@ namespace OpenRestoApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PublicToken")
+                        .IsUnique();
 
                     b.HasIndex("SectionId");
 
@@ -992,6 +1126,39 @@ namespace OpenRestoApi.Migrations
                     b.Navigation("Booking");
                 });
 
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.Menu", b =>
+                {
+                    b.HasOne("OpenRestoApi.Core.Domain.Restaurant", "Restaurant")
+                        .WithMany("Menus")
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.MenuCategory", b =>
+                {
+                    b.HasOne("OpenRestoApi.Core.Domain.Menu", "Menu")
+                        .WithMany("Categories")
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Menu");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.MenuItem", b =>
+                {
+                    b.HasOne("OpenRestoApi.Core.Domain.MenuCategory", "Category")
+                        .WithMany("Items")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("OpenRestoApi.Core.Domain.Section", b =>
                 {
                     b.HasOne("OpenRestoApi.Core.Domain.Restaurant", "Restaurant")
@@ -1062,9 +1229,21 @@ namespace OpenRestoApi.Migrations
                     b.Navigation("Restaurant");
                 });
 
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.Menu", b =>
+                {
+                    b.Navigation("Categories");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.MenuCategory", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("OpenRestoApi.Core.Domain.Restaurant", b =>
                 {
                     b.Navigation("Groups");
+
+                    b.Navigation("Menus");
 
                     b.Navigation("Sections");
                 });

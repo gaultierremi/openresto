@@ -376,6 +376,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAdminAuditRepository, AdminAuditRepository>();
         services.AddScoped<IAdminApiKeyRepository, AdminApiKeyRepository>();
         services.AddScoped<INativeClientStatsRepository, NativeClientStatsRepository>();
+        services.AddScoped<IMenuRepository, MenuRepository>();
 
         // One instance per request, reachable both as the write-only contract services enrich
         // through and as the concrete draft the audit middleware reads back.
@@ -406,6 +407,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAvailabilityService, AvailabilityService>();
         services.AddSingleton<IMediaStore, OpenRestoApi.Infrastructure.Media.MediaStore>();
         services.AddScoped<MediaService>();
+        services.AddScoped<MenuService>();
         services.AddScoped<NativeAppStatusService>();
 
         // Native guest-app telemetry: an in-memory counter on the request path, flushed to the
