@@ -133,9 +133,14 @@ week are unaffected, and the message the guest sees names the local time the pau
 ## Menus
 
 Each location can have any number of menus ("Lunch", "Drinks"), each with ordered categories
-and dishes. Guests see a menu only once it is **published**. There is no admin screen yet: the
-menus are managed through the API under `/api/admin/restaurants/{id}/menus`, with an API key
-carrying the `menus` scope (`read` or `write`).
+and dishes. Guests see a menu only once it is **published**. Menus are edited in the admin under
+**Menus** (Owners and Managers), or through the API under `/api/admin/restaurants/{id}/menus`
+with an API key carrying the `menus` scope (`read` or `write`).
+
+In the editor, categories and dishes are reordered with the arrows beside them, and dishes,
+categories and menus save as you edit. **Service mode** lists every dish of the published menus
+as one large button that flips it between available and sold out; it is the one admin screen
+built for a phone, so it opens below the admin's usual 600px width.
 
 - **Prices** are whole numbers in the currency's smallest unit (`priceMinor`: 1250 is €12.50).
   Leave the price empty for "price on request"; 0 means free. Each menu has one ISO 4217
@@ -160,6 +165,18 @@ published all return the same 404 (`menu.not_found`). A token never changes on i
 Owner can regenerate it (`POST .../public-token/regenerate`, or
 `.../tables/{tableId}/public-token/regenerate`), which retires every QR code printed with the
 old one.
+
+**QR codes and the public page.** The admin's **QR codes** page draws a code for the location
+and one for each table in the browser (no outside service is called), black on white whatever
+the brand colour. Each can be downloaded as PNG or SVG, and the page prints an A4 sheet with six
+table codes to a page and A6 easel cards, one code each. A code carries the instance's website
+address when one is set under Brand, and the address the admin is open on otherwise; the address
+is printed under every code so you can check it before printing. A code opens
+`/menu/r/{token}` or `/menu/t/{token}`, a page that opens in French for a guest who has not
+picked a language (the language picker is on the page), lets a guest filter by diet and avoid
+allergens, shows sold-out dishes greyed and marked, and ends in a **Book a table** button into
+the booking flow. The filters rely on what the restaurant declared for each dish, and the page
+says so.
 
 ## Booking references
 

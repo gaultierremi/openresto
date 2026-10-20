@@ -242,6 +242,7 @@
       "cancel": "Cancelar",
       "close": "Cerrar",
       "confirm": "Confirmar",
+      "delete": "Eliminar",
       "goHome": "Ir al inicio",
       "scrollToTop": "Subir arriba",
       "tryAgain": "Inténtalo de nuevo"
@@ -293,6 +294,36 @@
     },
     "language": {
       "switcherLabel": "Idioma"
+    },
+    "menu": {
+      "allergens": {
+        "Celery": "Apio",
+        "Crustaceans": "Crustáceos",
+        "Eggs": "Huevos",
+        "Fish": "Pescado",
+        "Gluten": "Gluten",
+        "Lupin": "Altramuces",
+        "Milk": "Leche",
+        "Molluscs": "Moluscos",
+        "Mustard": "Mostaza",
+        "Nuts": "Frutos de cáscara",
+        "Peanuts": "Cacahuetes",
+        "Sesame": "Sésamo",
+        "Soybeans": "Soja",
+        "Sulphites": "Sulfitos"
+      },
+      "availability": {
+        "Available": "Disponible",
+        "Hidden": "Oculto",
+        "SoldOut": "Agotado"
+      },
+      "dietary": {
+        "GlutenFree": "Sin gluten",
+        "Vegan": "Vegano",
+        "Vegetarian": "Vegetariano"
+      },
+      "free": "Gratis",
+      "priceOnRequest": "Precio a consultar"
     },
     "modalCard": {
       "defaultDismissLabel": "Cerrar"
@@ -657,6 +688,31 @@
       "tuesday": "Martes",
       "walkIn": "Sin reserva",
       "wednesday": "Miércoles"
+    },
+    "publicMenu": {
+      "bookCta": "Reservar una mesa",
+      "contains": "Contiene: {{list}}",
+      "documentTitle": "{{name}} — Carta",
+      "emptyMenu": "Todavía no hay nada en esta carta.",
+      "error": {
+        "body": "Comprueba tu conexión e inténtalo de nuevo.",
+        "title": "No se pudo cargar la carta"
+      },
+      "filters": {
+        "avoid": "Evitar alérgenos",
+        "avoidWithCount_one": "Evitando {{count}} alérgeno",
+        "avoidWithCount_other": "Evitando {{count}} alérgenos",
+        "clear": "Quitar filtros",
+        "diets": "Dieta",
+        "disclaimer": "Los filtros se basan en la información del propio restaurante. Si tienes una alergia, avisa al personal antes de pedir."
+      },
+      "loading": "Cargando la carta…",
+      "noMatch": "Ningún plato coincide con tus filtros.",
+      "notFound": {
+        "body": "Esta carta no está disponible ahora mismo. Pídela al personal.",
+        "title": "Carta no disponible"
+      },
+      "tableLabel": "Mesa {{name}}"
     },
     "seatingMap": {
       "combinableHeading": "Mesas que podemos combinar",
@@ -1261,6 +1317,101 @@
       },
       "backLabel": "Atrás"
     },
+    "menus": {
+      "actions": {
+        "qrCodes": "Códigos QR",
+        "service": "Modo servicio",
+        "viewPublic": "Ver la página pública"
+      },
+      "addCategory": "Añadir una categoría",
+      "addCategoryPlaceholder": "Nombre de la categoría, p. ej. Entrantes",
+      "addItem": "Añadir un plato",
+      "addItemPlaceholder": "Nombre del plato",
+      "addItemPrice": "Precio",
+      "addMenu": "Añadir una carta",
+      "addMenuPlaceholder": "Nombre de la carta, p. ej. Almuerzo",
+      "category": {
+        "deleteMessage_one": "«{{name}}» y su {{count}} plato se eliminarán. Esta acción no se puede deshacer.",
+        "deleteMessage_other": "«{{name}}» y sus {{count}} platos se eliminarán. Esta acción no se puede deshacer.",
+        "deleteNamed": "Eliminar {{name}}",
+        "deleteTitle": "¿Eliminar esta categoría?",
+        "descriptionLabel": "Descripción de la categoría",
+        "descriptionPlaceholder": "Descripción (opcional)",
+        "hidden": "Oculta",
+        "hideNamed": "Ocultar {{name}} a los clientes",
+        "nameLabel": "Nombre de la categoría",
+        "nameRequired": "Pon un nombre a la categoría para guardar los cambios.",
+        "noItems": "Todavía no hay platos en esta categoría.",
+        "showNamed": "Mostrar {{name}} a los clientes",
+        "visible": "Visible"
+      },
+      "couldntLoad": "No se pudieron cargar las cartas. Comprueba tu conexión e inténtalo de nuevo.",
+      "empty": "Todavía no hay ninguna carta. Añade la primera: tus clientes la verán en cuanto la publiques.",
+      "item": {
+        "addPriceInvalid": "Introduce un precio como 12,50, o déjalo vacío para «Precio a consultar».",
+        "allergensHint": "Marca cada alérgeno que contiene el plato. Tus clientes confían en ello: deja todo sin marcar solo si el plato no contiene ninguno de los 14 alérgenos de la UE.",
+        "allergensLabel": "Alérgenos",
+        "availabilityLabel": "Disponibilidad",
+        "close": "Cerrar",
+        "closeNamed": "Cerrar {{name}}",
+        "delete": "Eliminar el plato",
+        "deleteMessage": "«{{name}}» y su foto se eliminarán. Esta acción no se puede deshacer.",
+        "deleteTitle": "¿Eliminar este plato?",
+        "descriptionLabel": "Descripción (opcional)",
+        "dietaryLabel": "Dieta",
+        "edit": "Editar",
+        "editNamed": "Editar {{name}}",
+        "markAvailable": "Volver a poner {{name}} en la carta",
+        "markSoldOut": "Marcar {{name}} como agotado",
+        "nameLabel": "Nombre del plato",
+        "nameRequired": "Pon un nombre al plato para guardar los cambios.",
+        "photoAdd": "Añadir una foto",
+        "photoHint": "JPEG, PNG o WebP, 2 MB como máximo.",
+        "photoLabel": "Foto",
+        "photoRemove": "Quitar la foto",
+        "photoReplace": "Cambiar la foto",
+        "priceInvalid": "Introduce un precio válido, o marca «Precio a consultar», para guardar los cambios.",
+        "priceLabel": "Precio ({{currency}})"
+      },
+      "menu": {
+        "categoryCount_one": "{{count}} categoría",
+        "categoryCount_other": "{{count}} categorías",
+        "close": "Cerrar",
+        "closeNamed": "Cerrar {{name}}",
+        "currencyHint": "Los precios se guardan en la unidad más pequeña de la moneda. Revísalos después de cambiar de moneda.",
+        "currencyLabel": "Moneda",
+        "delete": "Eliminar la carta",
+        "deleteMessage": "«{{name}}», con todas sus categorías y platos, se eliminará, fotos incluidas. Esta acción no se puede deshacer.",
+        "deleteTitle": "¿Eliminar esta carta?",
+        "descriptionLabel": "Descripción (opcional)",
+        "draft": "Borrador",
+        "itemCount_one": "{{count}} plato",
+        "itemCount_other": "{{count}} platos",
+        "nameLabel": "Nombre de la carta",
+        "nameRequired": "Pon un nombre a la carta para guardar los cambios.",
+        "open": "Editar",
+        "openNamed": "Editar {{name}}",
+        "publish": "Publicar",
+        "published": "Publicada",
+        "unpublish": "Despublicar"
+      },
+      "moveDown": "Bajar {{name}}",
+      "moveUp": "Subir {{name}}",
+      "noLocations": "Añade un local para empezar a crear una carta.",
+      "service": {
+        "editMenus": "Editar cartas",
+        "filterAll": "Todos los platos",
+        "filterSoldOut": "Agotados ({{count}})",
+        "noMatch": "Ningún plato coincide.",
+        "nothingPublished": "No hay ninguna carta publicada para este local. Publica una para gestionarla aquí.",
+        "search": "Buscar un plato",
+        "subtitle": "Toca un plato para marcarlo como agotado y vuelve a tocarlo para ponerlo de nuevo. Tus clientes ven el cambio al instante.",
+        "title": "Modo servicio",
+        "updateFailed": "No se pudo actualizar «{{name}}». Se quedó como estaba."
+      },
+      "subtitle": "Crea la carta que tus clientes abren desde tus códigos QR.",
+      "title": "Cartas"
+    },
     "notifications": {
       "pageTitle": "Notificaciones",
       "totalCount_one": "{{count}} notificación en total",
@@ -1343,6 +1494,45 @@
         "enable": "Activar",
         "enableLabel": "Activar notificaciones push"
       }
+    },
+    "qrCodes": {
+      "codeLabel": "Código QR de {{name}}",
+      "couldntLoad": "No se pudieron cargar los códigos QR. Comprueba tu conexión e inténtalo de nuevo.",
+      "downloadFailed": "No se pudo crear la imagen. Prueba con el SVG.",
+      "downloadPng": "PNG",
+      "downloadSvg": "SVG",
+      "noLocations": "Añade un local para crear códigos QR.",
+      "printA4": "Imprimir hoja A4",
+      "printA6": "Imprimir expositores A6",
+      "printRestaurant": "Imprimir expositor A6",
+      "regenerate": "Regenerar",
+      "regenerateConfirm": "Regenerar y desactivar el código anterior",
+      "regenerateMessage": "El código actual de «{{name}}» deja de funcionar de inmediato: quien escanee una copia impresa verá «Carta no disponible». Imprime el código nuevo y sustituye todas las copias.",
+      "regenerateTitle": "¿Regenerar este código QR?",
+      "regenerated": "Código nuevo listo. El anterior ya no funciona: imprime el nuevo.",
+      "restaurant": {
+        "description": "Un código para todo el restaurante: la entrada, los folletos, el escaparate.",
+        "title": "Código del restaurante"
+      },
+      "sheet": {
+        "back": "Volver",
+        "hintA4": "Elige tamaño de papel A4, márgenes «Ninguno» y desactiva los encabezados y pies de página.",
+        "hintA6": "Elige tamaño de papel A6, márgenes «Ninguno» y desactiva los encabezados y pies de página.",
+        "noApp": "No hace falta ninguna aplicación: basta con la cámara del móvil.",
+        "print": "Imprimir",
+        "restaurantLabel": "Nuestra carta",
+        "scan": "Escanea para ver nuestra carta",
+        "unavailable": "No se puede mostrar esta hoja: el local no existe o no hay nada que imprimir."
+      },
+      "subtitle": "Imprime un código por mesa: tus clientes lo escanean para abrir tu carta.",
+      "tableFallback": "Mesa {{id}}",
+      "tableNamed": "Mesa {{name}}",
+      "tables": {
+        "description": "Un código por mesa. Al escanearlo se abre la carta con el nombre de la mesa.",
+        "empty": "Este local todavía no tiene mesas. Añade algunas en Locales.",
+        "title": "Códigos de las mesas"
+      },
+      "title": "Códigos QR"
     },
     "settings": {
       "weekdays": {
@@ -2103,6 +2293,8 @@
           "overview": "Resumen",
           "bookings": "Reservas",
           "locations": "Locales",
+          "menus": "Cartas",
+          "qrCodes": "Códigos QR",
           "notifications": "Notificaciones",
           "activity": "Actividad",
           "brand": "Marca",

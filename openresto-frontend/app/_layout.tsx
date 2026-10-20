@@ -135,6 +135,7 @@ function AppWithTheme() {
         }}
       >
         <Stack.Screen name="(user)" />
+        <Stack.Screen name="menu" />
         <Stack.Screen name="admin" />
       </Stack>
       {/* Not "auto": that reads the device scheme, which is the visitor's pick only while

@@ -37,11 +37,14 @@ function deviceLocale(): SupportedLocale | undefined {
  *     language; a website is expected to follow the restaurant's, which is why the same step
  *     is absent on web — a restaurant that sets `fr` wants `fr` for every visitor, and the
  *     switcher is the escape hatch for the tourist.
- *  3. `brand.defaultLocale`, the self-hoster's `Locale:Default` / `OPENRESTO_DEFAULT_LOCALE`.
- *  4. `DEFAULT_LOCALE` ("en"), hardcoded.
+ *  3. A route's own default, while one is mounted (`useRouteDefaultLocale`): the public menu
+ *     page opens in French for a guest who has not picked a language. It stands in for step 4's
+ *     input, never above the viewer's pick or the device.
+ *  4. `brand.defaultLocale`, the self-hoster's `Locale:Default` / `OPENRESTO_DEFAULT_LOCALE`.
+ *  5. `DEFAULT_LOCALE` ("en"), hardcoded.
  *
  * @see [LocaleContext.test.tsx](../tests/context/LocaleContext.test.tsx) — pins the web order,
- * device locale included.
+ * device locale included, and that a route default sits below the viewer's own pick.
  */
 function resolveLocale(brandDefaultLocale: string | undefined): SupportedLocale {
   const stored = StorageService.getItem(STORAGE_KEY);
@@ -61,11 +64,17 @@ interface LocaleContextValue {
    * switching languages re-formats dates/times immediately rather than only retranslating text.
    */
   setLocale: (locale: SupportedLocale) => void;
+  /**
+   * Sets, or with null clears, the language a mounted route opens in when the viewer has not
+   * chosen one. Not persisted: leaving the route puts the instance's own default back.
+   */
+  setRouteDefault: (locale: SupportedLocale | null) => void;
 }
 
 const LocaleContext = createContext<LocaleContextValue>({
   locale: DEFAULT_LOCALE,
   setLocale: () => {},
+  setRouteDefault: () => {},
 });
 
 /**
@@ -93,15 +102,16 @@ function applyLocale(locale: SupportedLocale): void {
  */
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const brand = useBrand();
+  const [routeDefault, setRouteDefault] = useState<SupportedLocale | null>(null);
   const [locale, setLocaleState] = useState<SupportedLocale>(() =>
     resolveLocale(brand.defaultLocale)
   );
 
   useEffect(() => {
-    const resolved = resolveLocale(brand.defaultLocale);
+    const resolved = resolveLocale(routeDefault ?? brand.defaultLocale);
     setLocaleState(resolved);
     applyLocale(resolved);
-  }, [brand.defaultLocale]);
+  }, [brand.defaultLocale, routeDefault]);
 
   const setLocale = (next: SupportedLocale) => {
     StorageService.setItem(STORAGE_KEY, next);
@@ -109,7 +119,28 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     applyLocale(next);
   };
 
-  return <LocaleContext.Provider value={{ locale, setLocale }}>{children}</LocaleContext.Provider>;
+  return (
+    <LocaleContext.Provider value={{ locale, setLocale, setRouteDefault }}>
+      {children}
+    </LocaleContext.Provider>
+  );
+}
+
+/**
+ * Opens the mounted route in `locale` for a viewer with no saved language pick, and hands the
+ * instance's default back on unmount. The public menu page uses it: a QR code is scanned by a
+ * guest, not by the restaurant's own staff, so it speaks the language of the restaurant's
+ * guests until the guest says otherwise.
+ *
+ * @see [LocaleContext.test.tsx](../tests/context/LocaleContext.test.tsx) — pins that the route
+ * default applies, that a saved pick outranks it, and that unmounting restores the brand default.
+ */
+export function useRouteDefaultLocale(locale: SupportedLocale): void {
+  const { setRouteDefault } = useContext(LocaleContext);
+  useEffect(() => {
+    setRouteDefault(locale);
+    return () => setRouteDefault(null);
+  }, [locale, setRouteDefault]);
 }
 
 export function useLocale(): LocaleContextValue {

@@ -242,6 +242,7 @@
       "cancel": "Abbrechen",
       "close": "Schließen",
       "confirm": "Bestätigen",
+      "delete": "Löschen",
       "goHome": "Zur Startseite",
       "scrollToTop": "Nach oben scrollen",
       "tryAgain": "Erneut versuchen"
@@ -293,6 +294,36 @@
     },
     "language": {
       "switcherLabel": "Sprache"
+    },
+    "menu": {
+      "allergens": {
+        "Celery": "Sellerie",
+        "Crustaceans": "Krebstiere",
+        "Eggs": "Eier",
+        "Fish": "Fisch",
+        "Gluten": "Gluten",
+        "Lupin": "Lupinen",
+        "Milk": "Milch",
+        "Molluscs": "Weichtiere",
+        "Mustard": "Senf",
+        "Nuts": "Schalenfrüchte",
+        "Peanuts": "Erdnüsse",
+        "Sesame": "Sesam",
+        "Soybeans": "Soja",
+        "Sulphites": "Sulfite"
+      },
+      "availability": {
+        "Available": "Verfügbar",
+        "Hidden": "Ausgeblendet",
+        "SoldOut": "Ausverkauft"
+      },
+      "dietary": {
+        "GlutenFree": "Glutenfrei",
+        "Vegan": "Vegan",
+        "Vegetarian": "Vegetarisch"
+      },
+      "free": "Kostenlos",
+      "priceOnRequest": "Preis auf Anfrage"
     },
     "modalCard": {
       "defaultDismissLabel": "Schließen"
@@ -657,6 +688,31 @@
       "tuesday": "Dienstag",
       "walkIn": "Ohne Reservierung",
       "wednesday": "Mittwoch"
+    },
+    "publicMenu": {
+      "bookCta": "Tisch reservieren",
+      "contains": "Enthält: {{list}}",
+      "documentTitle": "{{name}} — Speisekarte",
+      "emptyMenu": "Auf dieser Speisekarte steht noch nichts.",
+      "error": {
+        "body": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+        "title": "Die Speisekarte konnte nicht geladen werden"
+      },
+      "filters": {
+        "avoid": "Allergene meiden",
+        "avoidWithCount_one": "{{count}} Allergen wird gemieden",
+        "avoidWithCount_other": "{{count}} Allergene werden gemieden",
+        "clear": "Filter zurücksetzen",
+        "diets": "Ernährung",
+        "disclaimer": "Die Filter beruhen auf den Angaben des Restaurants. Bei einer Allergie sagen Sie dem Personal vor der Bestellung Bescheid."
+      },
+      "loading": "Speisekarte wird geladen…",
+      "noMatch": "Kein Gericht passt zu Ihren Filtern.",
+      "notFound": {
+        "body": "Diese Speisekarte ist im Moment nicht verfügbar. Bitte fragen Sie das Personal.",
+        "title": "Speisekarte nicht verfügbar"
+      },
+      "tableLabel": "Tisch {{name}}"
     },
     "seatingMap": {
       "combinableHeading": "Tische, die wir kombinieren können",
@@ -1261,6 +1317,101 @@
       },
       "backLabel": "Zurück"
     },
+    "menus": {
+      "actions": {
+        "qrCodes": "QR-Codes",
+        "service": "Servicemodus",
+        "viewPublic": "Öffentliche Seite ansehen"
+      },
+      "addCategory": "Kategorie hinzufügen",
+      "addCategoryPlaceholder": "Name der Kategorie, z. B. Vorspeisen",
+      "addItem": "Gericht hinzufügen",
+      "addItemPlaceholder": "Name des Gerichts",
+      "addItemPrice": "Preis",
+      "addMenu": "Speisekarte hinzufügen",
+      "addMenuPlaceholder": "Name der Speisekarte, z. B. Mittagstisch",
+      "category": {
+        "deleteMessage_one": "„{{name}}“ und sein {{count}} Gericht werden gelöscht. Das lässt sich nicht rückgängig machen.",
+        "deleteMessage_other": "„{{name}}“ und seine {{count}} Gerichte werden gelöscht. Das lässt sich nicht rückgängig machen.",
+        "deleteNamed": "{{name}} löschen",
+        "deleteTitle": "Diese Kategorie löschen?",
+        "descriptionLabel": "Beschreibung der Kategorie",
+        "descriptionPlaceholder": "Beschreibung (optional)",
+        "hidden": "Ausgeblendet",
+        "hideNamed": "{{name}} für Gäste ausblenden",
+        "nameLabel": "Name der Kategorie",
+        "nameRequired": "Geben Sie der Kategorie einen Namen, um Ihre Änderungen zu speichern.",
+        "noItems": "In dieser Kategorie gibt es noch keine Gerichte.",
+        "showNamed": "{{name}} für Gäste anzeigen",
+        "visible": "Sichtbar"
+      },
+      "couldntLoad": "Die Speisekarten konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "empty": "Noch keine Speisekarte. Legen Sie die erste an: Ihre Gäste sehen sie, sobald Sie sie veröffentlichen.",
+      "item": {
+        "addPriceInvalid": "Geben Sie einen Preis wie 12,50 ein oder lassen Sie das Feld für „Preis auf Anfrage“ leer.",
+        "allergensHint": "Haken Sie jedes Allergen an, das im Gericht enthalten ist. Ihre Gäste verlassen sich darauf: Lassen Sie alles frei, nur wenn das Gericht keines der 14 EU-Allergene enthält.",
+        "allergensLabel": "Allergene",
+        "availabilityLabel": "Verfügbarkeit",
+        "close": "Schließen",
+        "closeNamed": "{{name}} schließen",
+        "delete": "Gericht löschen",
+        "deleteMessage": "„{{name}}“ und sein Foto werden gelöscht. Das lässt sich nicht rückgängig machen.",
+        "deleteTitle": "Dieses Gericht löschen?",
+        "descriptionLabel": "Beschreibung (optional)",
+        "dietaryLabel": "Ernährung",
+        "edit": "Bearbeiten",
+        "editNamed": "{{name}} bearbeiten",
+        "markAvailable": "{{name}} wieder als verfügbar markieren",
+        "markSoldOut": "{{name}} als ausverkauft markieren",
+        "nameLabel": "Name des Gerichts",
+        "nameRequired": "Geben Sie dem Gericht einen Namen, um Ihre Änderungen zu speichern.",
+        "photoAdd": "Foto hinzufügen",
+        "photoHint": "JPEG, PNG oder WebP, höchstens 2 MB.",
+        "photoLabel": "Foto",
+        "photoRemove": "Foto entfernen",
+        "photoReplace": "Foto ersetzen",
+        "priceInvalid": "Geben Sie einen gültigen Preis ein oder haken Sie „Preis auf Anfrage“ an, um Ihre Änderungen zu speichern.",
+        "priceLabel": "Preis ({{currency}})"
+      },
+      "menu": {
+        "categoryCount_one": "{{count}} Kategorie",
+        "categoryCount_other": "{{count}} Kategorien",
+        "close": "Schließen",
+        "closeNamed": "{{name}} schließen",
+        "currencyHint": "Preise werden in der kleinsten Einheit der Währung gespeichert. Prüfen Sie sie nach einem Währungswechsel.",
+        "currencyLabel": "Währung",
+        "delete": "Speisekarte löschen",
+        "deleteMessage": "„{{name}}“ wird mit allen Kategorien und Gerichten gelöscht, Fotos eingeschlossen. Das lässt sich nicht rückgängig machen.",
+        "deleteTitle": "Diese Speisekarte löschen?",
+        "descriptionLabel": "Beschreibung (optional)",
+        "draft": "Entwurf",
+        "itemCount_one": "{{count}} Gericht",
+        "itemCount_other": "{{count}} Gerichte",
+        "nameLabel": "Name der Speisekarte",
+        "nameRequired": "Geben Sie der Speisekarte einen Namen, um Ihre Änderungen zu speichern.",
+        "open": "Bearbeiten",
+        "openNamed": "{{name}} bearbeiten",
+        "publish": "Veröffentlichen",
+        "published": "Veröffentlicht",
+        "unpublish": "Zurückziehen"
+      },
+      "moveDown": "{{name}} nach unten",
+      "moveUp": "{{name}} nach oben",
+      "noLocations": "Fügen Sie einen Standort hinzu, um eine Speisekarte zu erstellen.",
+      "service": {
+        "editMenus": "Speisekarten bearbeiten",
+        "filterAll": "Alle Gerichte",
+        "filterSoldOut": "Ausverkauft ({{count}})",
+        "noMatch": "Kein Gericht passt.",
+        "nothingPublished": "Für diesen Standort ist keine Speisekarte veröffentlicht. Veröffentlichen Sie eine, um sie hier zu verwalten.",
+        "search": "Gericht suchen",
+        "subtitle": "Tippen Sie auf ein Gericht, um es als ausverkauft zu markieren, und noch einmal, um es zurückzuholen. Ihre Gäste sehen die Änderung sofort.",
+        "title": "Servicemodus",
+        "updateFailed": "„{{name}}“ konnte nicht aktualisiert werden. Es blieb unverändert."
+      },
+      "subtitle": "Erstellen Sie die Speisekarte, die Ihre Gäste über Ihre QR-Codes öffnen.",
+      "title": "Speisekarten"
+    },
     "notifications": {
       "pageTitle": "Benachrichtigungen",
       "totalCount_one": "{{count}} Benachrichtigung insgesamt",
@@ -1343,6 +1494,45 @@
         "enable": "Aktivieren",
         "enableLabel": "Push-Benachrichtigungen aktivieren"
       }
+    },
+    "qrCodes": {
+      "codeLabel": "QR-Code für {{name}}",
+      "couldntLoad": "Die QR-Codes konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "downloadFailed": "Das Bild konnte nicht erstellt werden. Versuchen Sie es mit der SVG-Datei.",
+      "downloadPng": "PNG",
+      "downloadSvg": "SVG",
+      "noLocations": "Fügen Sie einen Standort hinzu, um QR-Codes zu erstellen.",
+      "printA4": "A4-Bogen drucken",
+      "printA6": "A6-Aufsteller drucken",
+      "printRestaurant": "A6-Aufsteller drucken",
+      "regenerate": "Neu erzeugen",
+      "regenerateConfirm": "Neu erzeugen und alten Code sperren",
+      "regenerateMessage": "Der aktuelle Code für „{{name}}“ funktioniert sofort nicht mehr: Wer eine gedruckte Kopie scannt, sieht „Speisekarte nicht verfügbar“. Drucken Sie den neuen Code und ersetzen Sie alle Kopien.",
+      "regenerateTitle": "Diesen QR-Code neu erzeugen?",
+      "regenerated": "Neuer Code bereit. Der alte funktioniert nicht mehr: Drucken Sie den neuen.",
+      "restaurant": {
+        "description": "Ein Code für das ganze Restaurant: Eingang, Flyer, Schaufenster.",
+        "title": "Restaurant-Code"
+      },
+      "sheet": {
+        "back": "Zurück",
+        "hintA4": "Wählen Sie das Papierformat A4, Ränder „Keine“ und deaktivieren Sie Kopf- und Fußzeilen.",
+        "hintA6": "Wählen Sie das Papierformat A6, Ränder „Keine“ und deaktivieren Sie Kopf- und Fußzeilen.",
+        "noApp": "Keine App nötig: die Handykamera genügt.",
+        "print": "Drucken",
+        "restaurantLabel": "Unsere Speisekarte",
+        "scan": "Scannen und unsere Speisekarte ansehen",
+        "unavailable": "Dieser Bogen kann nicht angezeigt werden: Der Standort wurde nicht gefunden oder es gibt nichts zu drucken."
+      },
+      "subtitle": "Drucken Sie einen Code pro Tisch: Ihre Gäste scannen ihn, um Ihre Speisekarte zu öffnen.",
+      "tableFallback": "Tisch {{id}}",
+      "tableNamed": "Tisch {{name}}",
+      "tables": {
+        "description": "Ein Code pro Tisch. Beim Scannen öffnet sich die Speisekarte mit dem Namen des Tisches.",
+        "empty": "Dieser Standort hat noch keine Tische. Fügen Sie unter Standorte welche hinzu.",
+        "title": "Tisch-Codes"
+      },
+      "title": "QR-Codes"
     },
     "settings": {
       "weekdays": {
@@ -2103,6 +2293,8 @@
           "overview": "Übersicht",
           "bookings": "Buchungen",
           "locations": "Standorte",
+          "menus": "Speisekarten",
+          "qrCodes": "QR-Codes",
           "notifications": "Benachrichtigungen",
           "activity": "Aktivität",
           "brand": "Marke",
