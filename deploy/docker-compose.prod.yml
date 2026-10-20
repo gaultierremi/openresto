@@ -1,0 +1,148 @@
+# OpenResto — production stack for a single Linux VM (Debian/Ubuntu).
+#
+#   internet ──► caddy (:80/:443, automatic HTTPS) ──► reverse-proxy (nginx) ──► backend  (ASP.NET, SQLite)
+#                                                                          └──► frontend (static web app)
+#
+# Caddy is the only service with published ports. The database is a SQLite file in the
+# backend's data directory: there is no database server and no database port.
+#
+# Usage (from this directory, see docs/HEBERGEMENT.md):
+#   cp .env.example .env && $EDITOR .env
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Images come from ${OPENRESTO_REGISTRY}/openresto-*:${OPENRESTO_VERSION}. To build them from
+# this checkout instead, add docker-compose.build.yml (see that file).
+
+name: openresto
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+networks:
+  # caddy <-> nginx only
+  edge:
+  # nginx <-> backend <-> frontend; nothing here is reachable from the internet
+  app:
+
+volumes:
+  # Certificates issued by Let's Encrypt. Re-issued on its own if lost (mind the rate limits).
+  caddy_data:
+  caddy_config:
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env (the public host name, e.g. reservations.example.be)}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env (Let's Encrypt expiry notices go there)}
+      ACME_CA: ${ACME_CA:-https://acme-v02.api.letsencrypt.org/directory}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [edge]
+    depends_on:
+      reverse-proxy:
+        condition: service_healthy
+    healthcheck:
+      # The admin API listens on localhost inside the container only.
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:2019/config/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    logging: *logging
+
+  reverse-proxy:
+    image: ${OPENRESTO_REGISTRY:-ghcr.io/karanshukla}/openresto-nginx:${OPENRESTO_VERSION:?Set OPENRESTO_VERSION in .env (e.g. 2.4.1)}
+    restart: unless-stopped
+    # No published port: only Caddy reaches it.
+    expose: ["80"]
+    environment:
+      PORT: "80"
+      BACKEND_HOST: backend
+      BACKEND_PORT: "8080"
+      FRONTEND_HOST: frontend
+      FRONTEND_PORT: "8081"
+    volumes:
+      - ${DATA_DIR:-/srv/openresto}/media:/usr/share/nginx/html/media:ro
+      - ./nginx-realip.conf:/etc/nginx/conf.d/00-realip.conf:ro
+    networks: [edge, app]
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    # The image's own HEALTHCHECK (GET /health on :80) applies.
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    logging: *logging
+
+  backend:
+    image: ${OPENRESTO_REGISTRY:-ghcr.io/karanshukla}/openresto-backend:${OPENRESTO_VERSION:?Set OPENRESTO_VERSION in .env (e.g. 2.4.1)}
+    restart: unless-stopped
+    expose: ["8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      PORT: "8080"
+      CORS_ORIGINS: https://${DOMAIN}
+      WEBSITE_URL: https://${DOMAIN}
+      JWT_KEY: ${JWT_KEY:?Set JWT_KEY in .env (openssl rand -base64 48)}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Set ADMIN_EMAIL in .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      CONNECTION_STRING: Data Source=/data/openresto.db
+      DATA_PROTECTION_KEYS_PATH: /data/dp-keys
+      OPENRESTO_DEFAULT_LOCALE: ${OPENRESTO_DEFAULT_LOCALE:-fr}
+      # SMTP: seeded into the admin's email settings on first boot only (see docs/HEBERGEMENT.md).
+      EmailSettings__Host: ${SMTP_HOST:-}
+      EmailSettings__Port: ${SMTP_PORT:-587}
+      EmailSettings__Username: ${SMTP_USERNAME:-}
+      EmailSettings__Password: ${SMTP_PASSWORD:-}
+      EmailSettings__FromEmail: ${SMTP_FROM_EMAIL:-}
+      EmailSettings__FromName: ${SMTP_FROM_NAME:-OpenResto}
+      EmailSettings__EnableSsl: ${SMTP_ENABLE_SSL:-true}
+      EmailSettings__SendBookingConfirmations: ${SMTP_SEND_CONFIRMATIONS:-true}
+      # Optional push notifications — leave empty to disable.
+      Vapid__PublicKey: ${VAPID_PUBLIC_KEY:-}
+      Vapid__PrivateKey: ${VAPID_PRIVATE_KEY:-}
+      Vapid__Subject: ${VAPID_SUBJECT:-}
+    volumes:
+      - ${DATA_DIR:-/srv/openresto}/db:/data
+      - ${DATA_DIR:-/srv/openresto}/media:/app/wwwroot/media
+    networks: [app]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 1g
+    logging: *logging
+
+  frontend:
+    image: ${OPENRESTO_REGISTRY:-ghcr.io/karanshukla}/openresto-frontend:${OPENRESTO_VERSION:?Set OPENRESTO_VERSION in .env (e.g. 2.4.1)}
+    restart: unless-stopped
+    expose: ["8081"]
+    environment:
+      EXPO_PUBLIC_API_URL: /api
+    networks: [app]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8081/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    logging: *logging
