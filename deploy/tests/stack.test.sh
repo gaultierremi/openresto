@@ -62,6 +62,11 @@ jar="$work/cookies"
 api() { curl -sS -k -m 15 -b "$jar" -c "$jar" -H 'Content-Type: application/json' "$@"; }
 
 echo "== 1. boot"
+# --pull never below keeps the OpenResto images local, but Caddy comes from a registry: fetch
+# whatever the stack needs that is not an OpenResto image and not already here.
+for image in $(compose config --images | grep -v '/openresto-'); do
+  docker image inspect "$image" >/dev/null 2>&1 || docker pull -q "$image"
+done
 compose up -d --pull never --wait --wait-timeout 180
 "$here/smoke.sh"
 

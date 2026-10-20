@@ -519,18 +519,18 @@ la politique de conservation ; en cas de restauration, **rejouer les suppression
 **Registre des traitements (art. 30).** Chaque restaurateur tient le sien ; toi aussi, comme
 sous-traitant. Modèle à recopier :
 
-| Champ                     | À renseigner                                                                                                                               |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Responsable de traitement | Restaurant (nom, adresse, contact)                                                                                                         |
-| Sous-traitant             | Toi (nom, contact) ; sous-traitants ultérieurs : All4Net (VM), fournisseur SMTP, stockage de sauvegarde                                    |
-| Finalité                  | Gestion des réservations de tables ; envoi de confirmations                                                                                |
-| Base légale               | Exécution de mesures précontractuelles à la demande de la personne (art. 6.1.b)                                                            |
-| Catégories de personnes   | Clients ayant réservé ; personnel ayant un compte admin                                                                                    |
-| Catégories de données     | Identité, e-mail, téléphone, détails de la réservation, adresse IP                                                                         |
-| Destinataires             | Le restaurant ; les sous-traitants ci-dessus                                                                                               |
-| Transferts hors UE        | Aucun (à confirmer pour chaque sous-traitant ultérieur)                                                                                    |
-| Durée de conservation     | À fixer (voir ci-dessus) ; sauvegardes : 35 jours                                                                                          |
-| Mesures de sécurité       | HTTPS, accès admin par compte nominatif, mots de passe hachés, sauvegardes chiffrées, journal d'audit, pare-feu, mises à jour automatiques |
+| Champ                     | À renseigner                                                                                                                                                                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Responsable de traitement | Restaurant (nom, adresse, contact)                                                                                                                                                                                                       |
+| Sous-traitant             | Toi (nom, contact) ; sous-traitants ultérieurs : All4Net (VM), fournisseur SMTP, stockage de sauvegarde                                                                                                                                  |
+| Finalité                  | Gestion des réservations de tables ; envoi de confirmations                                                                                                                                                                              |
+| Base légale               | Exécution de mesures précontractuelles à la demande de la personne (art. 6.1.b)                                                                                                                                                          |
+| Catégories de personnes   | Clients ayant réservé ; personnel ayant un compte admin                                                                                                                                                                                  |
+| Catégories de données     | Identité, e-mail, téléphone, détails de la réservation, adresse IP                                                                                                                                                                       |
+| Destinataires             | Le restaurant ; les sous-traitants ci-dessus                                                                                                                                                                                             |
+| Transferts hors UE        | Aucun (à confirmer pour chaque sous-traitant ultérieur)                                                                                                                                                                                  |
+| Durée de conservation     | À fixer (voir ci-dessus) ; sauvegardes : 35 jours                                                                                                                                                                                        |
+| Mesures de sécurité       | HTTPS, accès admin par compte nominatif, mots de passe hachés, archives de sauvegarde en clair sur la VM (droits 600) et chiffrées hors VM si le remote rclone est de type `crypt`, journal d'audit, pare-feu, mises à jour automatiques |
 
 ## 11. Limites et décisions ouvertes
 
@@ -541,7 +541,10 @@ Ce que le kit **ne fait pas**, volontairement ou faute de temps :
 2. **Images Docker du fork** : le kit tire par défaut les images amont `ghcr.io/karanshukla/…` à une
    version précise (la 2.4.1 existe, vérifié). Ces images n'ont **pas** la lecture de `SMTP_*`
    (§6.1) ni le module de menus à venir : dès que le fork diverge, il faut publier ses propres
-   images (workflow de publication à ajouter) et pointer `OPENRESTO_REGISTRY` dessus.
+   images (workflow de publication à ajouter) et pointer `OPENRESTO_REGISTRY` dessus. Une étiquette
+   de version peut être remplacée sous son éditeur : pour épingler une image par son condensat,
+   mettre `OPENRESTO_VERSION=2.4.1@sha256:<condensat>` dans `.env` (la forme `nom:étiquette@condensat`
+   est valide pour Docker).
 3. **Purge automatique des réservations** : absente de l'application (voir §10.2).
 4. **Supervision** : sondes externes à brancher par toi ; aucune alerte n'est envoyée par la VM
    elle-même hormis le ping de sauvegarde.
@@ -590,6 +593,10 @@ développement : c'est un aperçu, pas une production.
    _View logs_ ; le terminal affiche ensuite un encadré avec les adresses et les identifiants. Les
    ouvertures suivantes prennent 1 à 2 minutes.
 
+> **Ne pas activer les « prebuilds » de Codespaces sur ce dépôt.** Les identifiants sont générés dans
+> `postCreateCommand` : avec une préconstruction, ils seraient générés une fois pour toutes et
+> partagés par chaque Codespace créé à partir d'elle.
+
 ### 13.2 Ouvrir l'appli
 
 Le port **5062** est transféré automatiquement et s'ouvre dans un nouvel onglet quand l'appli est
@@ -599,8 +606,10 @@ _Open in Browser_.
 - Site public : l'adresse du port. Administration : `…/admin`.
 - Identifiants : l'encadré du terminal, ou `bash .devcontainer/demo.sh banner`. Propriétaire
   `demo@openresto.test`, gérant `manager@openresto.com`, **même mot de passe généré** pour les deux.
-- Carte QR du premier lieu : l'adresse `…/menu/r/<jeton>` de l'encadré ; les codes à imprimer sont
-  dans l'admin, page _QR codes_.
+- Carte QR du lieu qui porte le nom de la marque (le premier lieu à défaut) : l'adresse
+  `…/menu/r/<jeton>` de l'encadré ; les codes à imprimer sont dans l'admin, page _QR codes_. Cette
+  ligne n'existe que sur une branche qui contient les menus (PR 2 et 5) : sans eux elle est
+  simplement absente de l'encadré.
 
 ### 13.3 Montrer l'aperçu à quelqu'un d'autre (Chris)
 
