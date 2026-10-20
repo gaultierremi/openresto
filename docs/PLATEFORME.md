@@ -72,6 +72,13 @@ instance, many restaurants »).
   français seulement.
 - **L'import de la carte depuis une photo ou un PDF** n'existe pas : seul son emplacement est
   prévu.
+- **Fin de relation** : pas de procédure automatique. Suspendre l'établissement le retire du
+  public et verrouille l'assistant ; l'archiver puis le purger (Owner, écran Établissements)
+  supprime ses données, mais **le compte du restaurateur reste** (il n'apparaît pas dans la liste
+  des utilisateurs, donc aucun écran pour le désactiver) et le journal de consentement est gardé
+  volontairement comme preuve, sans suppression automatique. La politique de confidentialité
+  promet une suppression sous 30 jours : tant que cette procédure n'existe pas, c'est un
+  engagement à tenir à la main.
 - **Une instance, des comptes e-mail communs** : l'expéditeur des e-mails (SMTP) et la marque
   restent ceux de l'instance.
 
