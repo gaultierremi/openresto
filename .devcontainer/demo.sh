@@ -90,12 +90,12 @@ hook_banner() {
 banner() {
   [ -s "$ENV_FILE" ] || { log "pas encore installé : lance « bash .devcontainer/demo.sh setup »"; return 0; }
   local token
-  token="$(compose exec -T backend sqlite3 /data/openresto.db 'SELECT PublicToken FROM Restaurants ORDER BY Id LIMIT 1;' 2>/dev/null | tr -d '\r' || true)"
+  token="$(compose exec -T backend sqlite3 /data/openresto.db 'SELECT COALESCE((SELECT r.PublicToken FROM Restaurants r JOIN BrandSettings b ON r.Name = b.AppName LIMIT 1), (SELECT PublicToken FROM Restaurants ORDER BY Id LIMIT 1));' 2>/dev/null | tr -d '\r' || true)"
   echo
   echo "════════════════════ OpenResto — démo ════════════════════"
   echo "  Application   : $ORIGIN"
   echo "  Administration : $ORIGIN/admin"
-  [ -n "$token" ] && echo "  Carte QR (1er lieu) : $ORIGIN/menu/r/$token"
+  [ -n "$token" ] && echo "  Carte QR (lieu de la marque) : $ORIGIN/menu/r/$token"
   echo
   echo "  Propriétaire  : $(secret DEMO_ADMIN_EMAIL)"
   echo "  Gérant        : manager@openresto.com"
