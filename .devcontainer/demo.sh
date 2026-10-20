@@ -70,14 +70,15 @@ seed() {
   # The password reaches the generator through the environment, never argv, where ps would show it.
   ADMIN_EMAIL="$(secret DEMO_ADMIN_EMAIL)" ADMIN_PASSWORD="$(secret DEMO_ADMIN_PASSWORD)" \
     python3 scripts/demo_data.py accounts > "$accounts"
-  compose exec -T backend sqlite3 /data/openresto.db < "$sql"
-  compose exec -T backend sqlite3 /data/openresto.db < "$accounts"
+  compose exec -T backend sqlite3 /data/openresto.db < "$sql" >/dev/null
+  compose exec -T backend sqlite3 /data/openresto.db < "$accounts" >/dev/null
   compose exec -T backend sqlite3 /data/openresto.db 'PRAGMA wal_checkpoint(TRUNCATE);' >/dev/null
 }
 
 hook_banner() {
   local line="[ -f \"$PWD/.devcontainer/demo.sh\" ] && bash \"$PWD/.devcontainer/demo.sh\" banner # openresto-demo"
-  grep -qF '# openresto-demo' "$HOME/.bashrc" 2>/dev/null || printf '%s\n' "$line" >> "$HOME/.bashrc"
+  # Cosmetic: a home directory we cannot write to must not fail the setup.
+  grep -qF '# openresto-demo' "$HOME/.bashrc" 2>/dev/null || printf '%s\n' "$line" >> "$HOME/.bashrc" || true
 }
 
 banner() {
