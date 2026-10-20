@@ -1,0 +1,35 @@
+{
+  "etat": "Kit d'hébergement production prêt pour relecture : pile testée en local, guide d'hébergement rédigé.",
+  "sante": "actif",
+  "prochaine_etape": "Relecture de la PR 4, puis choix du modèle d'hébergement (une instance par client) et des images du fork.",
+  "chantiers": [
+    {
+      "id": "deploy-kit",
+      "titre": "Mise en production : kit d'hébergement, sauvegardes, CI",
+      "agent": "Claude",
+      "branche": "chore/deploy-kit",
+      "statut": "Prête à merger",
+      "pr": 4,
+      "etape": "Pile et sauvegarde/restauration testées en local, CI deploy-kit à observer sur la PR.",
+      "maj": "2026-10-20T13:58:46+00:00"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "modele-hebergement",
+      "titre": "Une instance par restaurant client, ou une seule instance multi-lieux ?",
+      "pourquoi": "Les comptes admin, la marque et l'expéditeur de mails sont communs à toute une instance : des restaurateurs indépendants ne sont pas isolés (docs/HEBERGEMENT.md, §3).",
+      "urgence": "Cette semaine"
+    },
+    {
+      "id": "images-fork",
+      "titre": "Publier les images Docker du fork sur GHCR, ou tirer les images amont ?",
+      "pourquoi": "Les images amont 2.4.1 ne lisent pas SMTP_* ; il faut les images du fork pour cette fonction et pour tout ce qui diverge.",
+      "urgence": "Cette semaine"
+    }
+  ],
+  "maj": {
+    "at": "2026-10-20T13:58:46+00:00",
+    "by": "Claude"
+  }
+}
