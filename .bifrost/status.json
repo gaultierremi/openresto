@@ -2,8 +2,8 @@
   "chantier": "Sprint 3 — mini-site vitrine généré pour chaque restaurant (page publique /r/{slug}, écran admin « Mon site »)",
   "branche": "feat/site-vitrine",
   "base": "feat/menu-screens",
-  "pr": null,
+  "pr": "https://github.com/gaultierremi/openresto/pull/7",
   "pr_empilee_sur": "https://github.com/gaultierremi/openresto/pull/5",
-  "etat": "en développement",
+  "etat": "en relecture",
   "mis_a_jour": "2026-10-20"
 }
