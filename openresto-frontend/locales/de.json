@@ -295,6 +295,30 @@
     "language": {
       "switcherLabel": "Sprache"
     },
+    "legal": {
+      "reviewBanner": "Template to be validated by a lawyer — do not use as is",
+      "indexTitle": "Legal documents",
+      "indexIntro": "The documents that frame how restaurants and their guests use the platform.",
+      "versionLine": "Version {{version}} · updated {{date}}",
+      "languageNote": "These documents are written in French.",
+      "otherDocuments": "Other documents",
+      "openDocument": "Read",
+      "back": "Back to the legal documents",
+      "notFoundTitle": "Document not found",
+      "notFoundBody": "This legal document does not exist. Pick one from the list.",
+      "loadFailed": "The document could not be loaded.",
+      "documents": {
+        "terms": "Terms of use",
+        "privacy": "Privacy policy",
+        "dpa": "Data processing agreement",
+        "legalNotice": "Legal notice"
+      },
+      "footer": {
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "legalNotice": "Legal notice"
+      }
+    },
     "menu": {
       "allergens": {
         "Celery": "Sellerie",
@@ -456,6 +480,9 @@
     "icon": {
       "invalid": "Der Symbolschlüssel muss einem der unterstützten Symbole entsprechen."
     },
+    "legal": {
+      "document_not_found": "Document not found."
+    },
     "media": {
       "hero_too_large": "Das Titelbild muss kleiner als 5 MB sein.",
       "location_image_too_large": "Das Standortbild muss kleiner als 2 MB sein.",
@@ -479,6 +506,17 @@
       "not_found": "Speisekarte nicht gefunden.",
       "price_invalid": "Der Preis muss null oder höher sein (höchstens {{max}} in der kleinsten Währungseinheit) oder leer bleiben für „Preis auf Anfrage“.",
       "reorder_ids_mismatch": "Die neue Reihenfolge muss jeden Eintrag genau einmal enthalten, ohne Ergänzungen."
+    },
+    "platform": {
+      "not_found": "Restaurant not found.",
+      "invitation_invalid": "This invitation link is invalid or has expired. Ask the platform for a new one.",
+      "invitation_email_invalid": "Enter a valid e-mail address for the invitation.",
+      "invitation_already_accepted": "This invitation has already been accepted.",
+      "restaurant_name_required": "A restaurant name is required.",
+      "access_reason_required": "State why the guests’ data is needed, in {{min}} to {{max}} characters.",
+      "suspend_reason_too_long": "The reason cannot exceed {{max}} characters.",
+      "already_suspended": "This restaurant is already suspended.",
+      "not_suspended": "This restaurant is not suspended."
     },
     "restaurant": {
       "archive_before_delete": "Archivieren Sie diesen Standort, bevor Sie ihn löschen. Das Archivieren nimmt ihn von der öffentlichen Website und lässt sich rückgängig machen – das Löschen nicht.",
@@ -1515,6 +1553,139 @@
         "enableLabel": "Push-Benachrichtigungen aktivieren"
       }
     },
+    "platform": {
+      "title": "Platform",
+      "subtitle": "Every restaurant on this instance, where it stands, and the platform’s own actions.",
+      "addButton": "Add a restaurant",
+      "loadFailed": "The restaurants could not be loaded.",
+      "empty": "No restaurant yet. Add the first one and invite its owner.",
+      "status": {
+        "draft": "Draft",
+        "published": "Published",
+        "suspended": "Suspended"
+      },
+      "invitationState": {
+        "pending": "Pending",
+        "expired": "Expired",
+        "revoked": "Revoked",
+        "accepted": "Accepted"
+      },
+      "steps": {
+        "info": "Information",
+        "hours": "Opening hours",
+        "layout": "Rooms and tables",
+        "menu": "Menu",
+        "branding": "Branding"
+      },
+      "row": {
+        "account": "Account: {{email}}",
+        "invitation": "Invitation: {{state}} · {{email}}",
+        "invitationExpiry": "Expires {{date}}",
+        "noInvitation": "No invitation sent yet",
+        "lastLogin": "Last sign-in: {{when}}",
+        "never": "never",
+        "bookings": "Bookings: {{total}} in total, {{upcoming}} upcoming",
+        "progress": "Setup: {{done}}/{{total}} steps",
+        "nextStep": "Next step: {{step}}",
+        "setupComplete": "Setup complete",
+        "suspendedSince": "Suspended since {{date}}",
+        "suspensionReason": "Reason shown to the restaurateur: {{reason}}"
+      },
+      "actions": {
+        "invite": "Invite",
+        "resend": "Resend the invitation",
+        "suspend": "Suspend",
+        "reactivate": "Reactivate",
+        "consents": "Consents",
+        "guestData": "Guest data…"
+      },
+      "locales": {
+        "fr": "Français",
+        "nl": "Nederlands",
+        "en": "English"
+      },
+      "form": {
+        "nameLabel": "Restaurant name",
+        "emailLabel": "Owner’s e-mail address",
+        "localeLabel": "Language of the invitation",
+        "invalidEmail": "Enter a valid e-mail address.",
+        "nameRequired": "Enter the restaurant’s name."
+      },
+      "add": {
+        "title": "Add a restaurant",
+        "intro": "Creates the restaurant as a draft and invites its owner by e-mail. The owner finishes the setup.",
+        "submit": "Create and invite"
+      },
+      "invite": {
+        "titleFirst": "Invite the owner of {{name}}",
+        "titleResend": "Resend the invitation for {{name}}",
+        "intro": "A new link replaces any link still open. It is also the way back in for an owner who lost their password.",
+        "submit": "Send the invitation"
+      },
+      "link": {
+        "title": "Invitation link",
+        "label": "Invitation link",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "The link could not be copied automatically. Select it and copy it by hand.",
+        "emailSent": "The invitation e-mail was sent to {{email}}.",
+        "emailNotSent": "No e-mail went out: no mail server is configured, or it refused the message.",
+        "onceNotice": "This link is shown only once and is not stored. Close this window and it is gone.",
+        "mustCopy": "Since no e-mail went out, copy the link now and pass it on yourself. If you lose it, send a new invitation."
+      },
+      "suspend": {
+        "title": "Suspend {{name}}",
+        "intro": "The restaurateur sees the reason you give below, and the restaurant disappears from guests at once: it can no longer be found or booked online.",
+        "reasonLabel": "Reason (optional)",
+        "reasonHint": "Shown to the restaurateur: state a fact, nothing internal.",
+        "counter": "{{count}} / {{max}}",
+        "next": "Continue",
+        "confirmTitle": "Suspend {{name}}?",
+        "confirmBody": "The restaurant disappears from guests immediately. You can reactivate it at any time.",
+        "confirm": "Yes, suspend",
+        "back": "Back"
+      },
+      "reactivate": {
+        "title": "Reactivate {{name}}?",
+        "body": "A restaurant that had been published comes back published; one still being set up comes back as a draft.",
+        "confirm": "Reactivate"
+      },
+      "consents": {
+        "title": "Consents of {{name}}",
+        "intro": "The documents accepted at sign-up, with the version and the fingerprint of the text that was shown.",
+        "empty": "No consent recorded yet.",
+        "loadFailed": "The consents could not be loaded.",
+        "versionLine": "Version {{version}}",
+        "emailLine": "E-mail: {{email}}",
+        "dateLine": "Date: {{date}}",
+        "fingerprintLine": "Fingerprint: {{hash}}"
+      },
+      "guestData": {
+        "title": "Guest data of {{name}}",
+        "warningTitle": "Read this first",
+        "warningDefault": "The platform does not read a restaurant’s guests by default.",
+        "warningAudit": "This access is recorded in the audit trail, with your reason and your name.",
+        "warningReason": "The reason must describe the ticket or the request it answers. Never name a guest in it.",
+        "reasonLabel": "Reason for the access",
+        "counter": "{{count}} / {{max}} characters (at least {{min}})",
+        "submit": "Open the guest data",
+        "banner": "Access logged",
+        "bannerDetail": "Opened {{date}}. Your reason and your name are in the audit trail. Closing this window discards the data.",
+        "empty": "No booking for this restaurant.",
+        "columns": {
+          "ref": "Reference",
+          "date": "Date",
+          "seats": "Party",
+          "name": "Name",
+          "email": "E-mail",
+          "requests": "Requests",
+          "status": "Status"
+        },
+        "anonymised": "Anonymised",
+        "cancelled": "Cancelled",
+        "close": "Close and discard"
+      }
+    },
     "qrCodes": {
       "codeLabel": "QR-Code für {{name}}",
       "couldntLoad": "Die QR-Codes konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
@@ -2454,7 +2625,8 @@
           "apiKeys": "API-Schlüssel",
           "nativeApp": "Native App",
           "account": "Konto",
-          "waitlist": "Warteliste"
+          "waitlist": "Warteliste",
+          "platform": "Platform"
         },
         "unreadLabel_one": "{{label}}, {{count}} ungelesen",
         "unreadLabel_other": "{{label}}, {{count}} ungelesen"
