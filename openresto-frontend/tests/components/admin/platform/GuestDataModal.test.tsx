@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { GuestDataModal } from "@/components/admin/platform/GuestDataModal";
 import { accessPlatformGuestData } from "@/api/platform";
 import { guestBooking, guestData, ok, refused, restaurant } from "@/tests/helpers/platformFixtures";
+import { invokeOnPress } from "@/tests/helpers/invokeOnPress";
 import { StorageService } from "@/services/storage";
 
 jest.mock("@/context/BrandContext", () => ({
@@ -126,10 +127,20 @@ describe("GuestDataModal, before the access", () => {
     open();
     type(GOOD_REASON);
     fireEvent.press(submitButton());
+    // The button is busy, and the handler refuses a second call on its own too.
     fireEvent.press(submitButton());
+    invokeOnPress("Open the guest data");
     expect(access).toHaveBeenCalledTimes(1);
     finish(ok(guestData()));
     await waitFor(() => expect(screen.getByTestId("guest-data-banner")).toBeTruthy());
+  });
+
+  it("refuses a reason below the minimum in the handler too, not only by greying the button", () => {
+    open();
+    type(NINE);
+    invokeOnPress("Open the guest data");
+    expect(access).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("guest-data-banner")).toBeNull();
   });
 
   it("cancels without fetching anything", () => {

@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react-nativ
 import { InvitationModal } from "@/components/admin/platform/InvitationModal";
 import { createPlatformRestaurant, sendPlatformInvitation } from "@/api/platform";
 import { invitationResult, ok, refused, restaurant } from "@/tests/helpers/platformFixtures";
+import { invokeOnPress } from "@/tests/helpers/invokeOnPress";
 
 jest.mock("@/context/BrandContext", () => ({
   useBrand: () => ({ appName: "Open Resto", primaryColor: "#0a7ea4" }),
@@ -109,7 +110,9 @@ describe("InvitationModal, adding a restaurant", () => {
     fireEvent.changeText(screen.getByLabelText("Restaurant name"), "Chez Léa");
     fireEvent.changeText(screen.getByLabelText("Owner’s e-mail address"), "lea@example.com");
     fireEvent.press(screen.getByText("Create and invite"));
+    // The button is busy, and the handler refuses a second call on its own too.
     fireEvent.press(screen.getByText("Create and invite"));
+    invokeOnPress("Create and invite");
     expect(create).toHaveBeenCalledTimes(1);
     finish(ok(invitationResult()));
     await waitFor(() => expect(screen.getByTestId("invitation-link")).toBeTruthy());

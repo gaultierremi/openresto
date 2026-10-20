@@ -18,6 +18,7 @@ import {
   refused,
   restaurant,
 } from "@/tests/helpers/platformFixtures";
+import { invokeOnPress } from "@/tests/helpers/invokeOnPress";
 
 jest.mock("expo-router", () => ({ Stack: { Screen: () => null } }));
 jest.mock("@/context/BrandContext", () => ({
@@ -282,7 +283,9 @@ describe("PlatformScreen, reactivating", () => {
     fireEvent.press(within(row(2)).getByText("Reactivate"));
     const confirm = screen.getAllByText("Reactivate").slice(-1)[0];
     fireEvent.press(confirm);
+    // The button is busy, and the handler refuses a second call on its own too.
     fireEvent.press(confirm);
+    invokeOnPress("Reactivate");
     expect(reactivate).toHaveBeenCalledTimes(1);
     finish(ok({ ...OTTO, status: "Published" }));
     await waitFor(() => expect(within(row(2)).getByText("Published")).toBeTruthy());

@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react-nativ
 import { SuspendModal } from "@/components/admin/platform/SuspendModal";
 import { suspendPlatformRestaurant } from "@/api/platform";
 import { ok, refused, restaurant } from "@/tests/helpers/platformFixtures";
+import { invokeOnPress } from "@/tests/helpers/invokeOnPress";
 
 jest.mock("@/context/BrandContext", () => ({
   useBrand: () => ({ appName: "Open Resto", primaryColor: "#0a7ea4" }),
@@ -110,7 +111,9 @@ describe("SuspendModal", () => {
     const { onClose } = open();
     fireEvent.press(screen.getByText("Continue"));
     fireEvent.press(screen.getByText("Yes, suspend"));
+    // The button is busy, and the handler refuses a second call on its own too.
     fireEvent.press(screen.getByText("Yes, suspend"));
+    invokeOnPress("Yes, suspend");
     expect(suspend).toHaveBeenCalledTimes(1);
     finish(ok(restaurant({ status: "Suspended" })));
     await waitFor(() => expect(onClose).toHaveBeenCalled());

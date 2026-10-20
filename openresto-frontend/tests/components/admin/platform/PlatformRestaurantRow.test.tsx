@@ -1,11 +1,18 @@
 import React from "react";
+import { StyleSheet } from "react-native";
 import { fireEvent, render, screen, within } from "@testing-library/react-native";
 import { PlatformRestaurantRow } from "@/components/admin/platform/PlatformRestaurantRow";
 import { restaurant } from "@/tests/helpers/platformFixtures";
 
+let mockScheme = "light";
+jest.mock("@/hooks/use-color-scheme", () => ({ useColorScheme: () => mockScheme }));
 jest.mock("@/context/BrandContext", () => ({
   useBrand: () => ({ appName: "Open Resto", primaryColor: "#0a7ea4" }),
 }));
+
+beforeEach(() => {
+  mockScheme = "light";
+});
 
 const renderRow = (row = restaurant(), onAction = jest.fn()) => {
   render(<PlatformRestaurantRow restaurant={row} onAction={onAction} />);
@@ -132,6 +139,26 @@ describe("PlatformRestaurantRow", () => {
     expect(screen.queryByText("Suspend")).toBeNull();
     fireEvent.press(screen.getByText("Reactivate"));
     expect(onAction).toHaveBeenCalledWith("reactivate", expect.objectContaining({ id: 1 }));
+  });
+
+  it("offers Reactivate on a dark card too, in a lighter green than the light card's", () => {
+    const colorOf = () => {
+      const { unmount } = render(
+        <PlatformRestaurantRow
+          restaurant={restaurant({ status: "Suspended" })}
+          onAction={jest.fn()}
+        />
+      );
+      const style = StyleSheet.flatten(
+        screen.getByText("Reactivate").parent?.parent?.props.style ??
+          screen.getByText("Reactivate").props.style
+      );
+      unmount();
+      return style.color ?? style.borderColor;
+    };
+    const light = colorOf();
+    mockScheme = "dark";
+    expect(colorOf()).not.toBe(light);
   });
 
   it("offers Invite before any invitation exists and Resend afterwards", () => {
