@@ -8,8 +8,10 @@
 #
 # AdminCredentials are wiped and re-seeded from demo_data.py's `accounts` section:
 # the Owner, using the Admin:Email/Admin:Password in appsettings.Development.json,
-# plus the demo Manager. So a reseed leaves you logged-in-able immediately, any user
-# invited through the Users card is gone, and both roles are there to click through.
+# plus the demo Manager and a demo restaurateur (the Senne Dorée's). So a reseed leaves you
+# logged-in-able immediately, any user invited through the Users card is gone, and every
+# role is there to click through. The draft "Brasserie du Canal" carries a pending
+# invitation with a known demo token, so the restaurateur sign-up can be walked end to end.
 # They have to be re-seeded here rather than left to the API: login stopped creating
 # accounts when multi-user landed, and only startup bootstraps one, so a wiped table
 # under a running dev server would have nothing to log in to.

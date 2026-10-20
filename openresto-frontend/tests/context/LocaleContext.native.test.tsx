@@ -89,6 +89,19 @@ describe("LocaleContext on a device", () => {
     await waitFor(() => expect(screen.getByTestId("locale").props.children).toBe("de"));
   });
 
+  it("ignores a ?lang= in the address: an installed app has no address a link can set", async () => {
+    window.history.pushState({}, "", "/?lang=nl");
+    mockGetLocales.mockReturnValue([{ languageCode: "fr", textDirection: "ltr" }]);
+
+    try {
+      renderProvider();
+
+      await waitFor(() => expect(screen.getByTestId("locale").props.children).toBe("fr"));
+    } finally {
+      window.history.pushState({}, "", "/");
+    }
+  });
+
   it("keeps following the phone when a route opts out of the browser's language", async () => {
     mockGetLocales.mockReturnValue([{ languageCode: "fr", textDirection: "ltr" }]);
     mockBrand = { defaultLocale: "es" };

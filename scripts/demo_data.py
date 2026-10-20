@@ -324,8 +324,77 @@ LOCATIONS = [
             {"name": "Terrasse", "tables": [("7", 4), ("8", 4), ("9", 2)]},
         ],
         "groups": [],
+        # Run by a restaurateur account (see DEMO_RESTAURATEUR_*): the published restaurant whose
+        # owner has finished the assistant, keeps the default 12-month retention and has a VAT number.
+        "vat": "BE0123456789",
+        "onboarding_steps": "info:done,hours:done,layout:done,menu:done,branding:done",
+    },
+    {
+        # Suspended (Status): the platform switched it off with a reason the restaurateur reads.
+        # Its site and menu stay published but vanish from guests, its bookings are kept, and it
+        # holds guests for 6 months rather than the default 12, so the platform list shows a
+        # restaurant that is neither live nor a draft, and the retention setting differs.
+        "name": "Le Petit Zinc",
+        "address": "Place Saint-Géry 12, 1000 Bruxelles",
+        "timezone": "Europe/Brussels",
+        "open_days": "3,4,5,6,7",
+        "open_time": "12:00",
+        "close_time": "23:00",
+        "duration": 90,
+        "slot_interval": 30,
+        "ref_format": 0,
+        "tags": "bistrot,cuisine belge",
+        "description": "Un bistrot de quartier, suspendu le temps de mettre ses mentions légales en ordre.",
+        "menu_url": None,
+        "phone": "+32 2 555 04 56",
+        "email": "bonjour@petit-zinc.example",
+        "guests": "belgian",
+        "sections": [
+            {"name": "Salle", "tables": [("1", 2), ("2", 2), ("3", 4), ("4", 6)]},
+        ],
+        "groups": [],
+        "status": "Suspended",
+        "suspension_reason": "Mentions légales à compléter : numéro d'entreprise manquant sur le site.",
+        "retention_months": 6,
+        "vat": "BE0712345630",
+        "onboarding_steps": "info:done,hours:done,layout:done,menu:skipped,branding:skipped",
+    },
+    {
+        # Draft (Status): invited but not yet live. The assistant is half done (two steps), no
+        # account exists yet, and a pending invitation with a known demo token lets a visitor
+        # walk the real sign-up. It is invisible to guests and takes no bookings.
+        "name": "Brasserie du Canal",
+        "address": "Quai au Foin 4, 1000 Bruxelles",
+        "timezone": "Europe/Brussels",
+        "open_days": "2,3,4,5,6",
+        "open_time": "12:00",
+        "close_time": "22:00",
+        "duration": 90,
+        "slot_interval": 30,
+        "ref_format": 0,
+        "tags": None,
+        "description": None,
+        "menu_url": None,
+        "phone": "+32 2 555 07 89",
+        "email": None,
+        "guests": "belgian",
+        "sections": [],
+        "groups": [],
+        "status": "Draft",
+        "onboarding_steps": "info:done,hours:done",
     },
 ]
+
+# The restaurateur account of "Brasserie de la Senne Dorée", created with the demo accounts.
+DEMO_RESTAURATEUR_EMAIL = "gerant@senne-doree.example"
+DEMO_RESTAURATEUR_DISPLAY_NAME = "Léa Janssens"
+DEMO_RESTAURATEUR_LOCATION = "Brasserie de la Senne Dorée"
+
+# The pending invitation of the draft restaurant. The token is published on purpose: the demo's
+# whole point is to let a visitor accept it, and the reset puts it back every two hours.
+DEMO_INVITATION_TOKEN = "demo-invitation-brasserie-du-canal"
+DEMO_INVITATION_LOCATION = "Brasserie du Canal"
+DEMO_INVITATION_EMAIL = "proprietaire@canal.example"
 
 # ─── Home page content ───────────────────────────────────────────────────────
 
@@ -576,6 +645,20 @@ SITES = {
             "La terrasse en fin de journée",
         ],
     },
+    "Le Petit Zinc": {
+        "slug": "le-petit-zinc",
+        "published": True,
+        "theme": "Cafe",
+        "tagline": "Le bistrot de la place Saint-Géry",
+        "socials": [],
+        "legal": {
+            "name": "Petit Zinc SRL",
+            "company_number": "0712.345.630",
+            "vat": "BE0712345630",
+            "address": "Place Saint-Géry 12, 1000 Bruxelles",
+        },
+        "photos": [],
+    },
     "Paddy's Pub": {
         "slug": "paddys-pub",
         "published": False,
@@ -771,6 +854,13 @@ def build_dataset(now_utc):
                     "MaxCoversPerSlot": spec.get("max_covers"),
                     "BookingRefFormat": spec["ref_format"],
                     "PublicToken": public_token(),
+                    "Status": spec.get("status", "Published"),
+                    "VatNumber": spec.get("vat"),
+                    "BookingRetentionMonths": spec.get("retention_months", 12),
+                    "OnboardingSteps": spec.get("onboarding_steps"),
+                    "PublishedAt": None if spec.get("status") == "Draft" else stamp,
+                    "SuspendedAt": stamp if spec.get("status") == "Suspended" else None,
+                    "SuspensionReason": spec.get("suspension_reason"),
                 },
             }
         )
@@ -892,7 +982,22 @@ def build_dataset(now_utc):
         restaurants[-1]["tables_by_name"] = by_name
         restaurants[-1]["groups"] = resolved_groups
 
+    ids = {r["spec"]["name"]: r["id"] for r in restaurants}
+    invitations = [
+        {
+            "Id": 1,
+            "RestaurantId": ids[DEMO_INVITATION_LOCATION],
+            "Email": DEMO_INVITATION_EMAIL,
+            "TokenHash": hashlib.sha256(DEMO_INVITATION_TOKEN.encode()).hexdigest(),
+            "Locale": "fr",
+            "CreatedAt": stamp,
+            "ExpiresAt": utc_str(now_utc + timedelta(days=14)),
+        }
+    ]
+
     return {
+        "invitations": invitations,
+        "restaurant_ids": ids,
         "restaurants": restaurants,
         "sections": sections,
         "tables": tables,
@@ -922,6 +1027,12 @@ CONFIG_TABLES = [
     "MenuCategories",
     "Menus",
     "RestaurantSites",
+    # The platform side. Members belong to the accounts section, but they point at restaurants
+    # this section rebuilds, so a stale row would name the wrong one; the consent journal is
+    # wiped because the accounts it names are replaced by the next accounts run.
+    "RestaurantMembers",
+    "RestaurantInvitations",
+    "LegalAcceptances",
     "TableGroupMemberships",
     "TableGroups",
     "Tables",
@@ -980,6 +1091,11 @@ def emit_config(ds):
     out.append("-- Websites (pictures stay NULL: they are linked by the media step)")
     for s in ds["sites"]:
         out.append(insert("RestaurantSites", s))
+
+    out.append("")
+    out.append(f"-- Pending invitation (demo token '{DEMO_INVITATION_TOKEN}', stored hashed like the real ones)")
+    for i in ds["invitations"]:
+        out.append(insert("RestaurantInvitations", i))
 
     out.append("")
     out.append("-- Highlights (Link=NULL renders a static card; a Link makes the card clickable)")
@@ -1178,13 +1294,15 @@ def build_demo_accounts(settings_file):
     identities = [
         (owner_email, None, "Owner"),
         (DEMO_MANAGER_EMAIL, DEMO_MANAGER_DISPLAY_NAME, "Manager"),
+        (DEMO_RESTAURATEUR_EMAIL, DEMO_RESTAURATEUR_DISPLAY_NAME, "Restaurateur"),
     ]
 
     accounts = []
-    for email, display_name, role in identities:
+    for number, (email, display_name, role) in enumerate(identities, start=1):
         password_hash, password_salt = _derive_credential(secret)
         accounts.append(
             {
+                "Id": number,
                 "Email": email.strip().lower(),
                 "PasswordHash": password_hash,
                 "PasswordSalt": password_salt,
@@ -1196,11 +1314,14 @@ def build_demo_accounts(settings_file):
     return accounts
 
 
-def emit_accounts(accounts, now_utc):
+def emit_accounts(accounts, now_utc, ds):
     """
-    Replaces every admin account with the curated pair. Wiping first is the point on
-    the demo: its admin password is public, so an account a visitor invited themselves
-    must not survive the reset, for the same reason their uploads don't.
+    Replaces every admin account with the curated set (Owner, Manager and the restaurateur of
+    the Senne Dorée). Wiping first is the point on the demo: its admin password is public, so
+    an account a visitor invited themselves must not survive the reset, for the same reason
+    their uploads don't. A restaurateur a visitor created by accepting the demo invitation goes
+    with it: its membership, and the consent journal that carries the visitor's e-mail address,
+    are deleted explicitly because the cascade never fires under foreign_keys=OFF.
 
     API keys are deleted explicitly rather than left to the AdminApiKeys -> AdminCredentials
     cascade, because this script runs under PRAGMA foreign_keys=OFF and the cascade therefore
@@ -1209,16 +1330,37 @@ def emit_accounts(accounts, now_utc):
     Owner and the key keeps authenticating, for the whole year until it expires.
     """
     out = [
-        "-- ── Admin accounts: the bootstrap Owner + a demo Manager ──",
+        "-- ── Admin accounts: the bootstrap Owner, a demo Manager and a demo restaurateur ──",
         "DELETE FROM AdminApiKeys;",
         "DELETE FROM sqlite_sequence WHERE name = 'AdminApiKeys';",
+        "DELETE FROM RestaurantMembers;",
+        "DELETE FROM sqlite_sequence WHERE name = 'RestaurantMembers';",
+        "DELETE FROM LegalAcceptances;",
+        "DELETE FROM sqlite_sequence WHERE name = 'LegalAcceptances';",
         "DELETE FROM AdminCredentials;",
         "DELETE FROM sqlite_sequence WHERE name = 'AdminCredentials';",
     ]
 
     created = utc_str(now_utc)
+    yesterday = utc_str(now_utc - timedelta(days=1))
     for account in accounts:
-        out.append(insert("AdminCredentials", {**account, "CreatedAt": created}))
+        row = {**account, "CreatedAt": created}
+        if account["Role"] == "Restaurateur":
+            row["LastLoginAt"] = yesterday
+        out.append(insert("AdminCredentials", row))
+
+    restaurateur = next(a for a in accounts if a["Role"] == "Restaurateur")
+    out.append(
+        insert(
+            "RestaurantMembers",
+            {
+                "Id": 1,
+                "UserId": restaurateur["Id"],
+                "RestaurantId": ds["restaurant_ids"][DEMO_RESTAURATEUR_LOCATION],
+                "CreatedAt": created,
+            },
+        )
+    )
 
     return out, len(accounts)
 
@@ -1393,6 +1535,8 @@ def emit_bookings(ds, now_utc, days_back, days_forward, occupancy, rng):
 
     for r in ds["restaurants"]:
         spec = r["spec"]
+        if spec.get("status") == "Draft":
+            continue  # a draft takes no bookings, and has not chosen its tables yet
         tz = ZoneInfo(spec["timezone"])
         open_days = {int(d) for d in spec["open_days"].split(",") if d.strip()}
         walk_in_days = {int(d) for d in (spec.get("walk_in_days") or "").split(",") if d.strip()}
@@ -1961,7 +2105,7 @@ def main():
     account_count = 0
     if args.section == "accounts":
         account_lines, account_count = emit_accounts(
-            build_demo_accounts(args.settings_file), now_utc
+            build_demo_accounts(args.settings_file), now_utc, ds
         )
         lines += account_lines
         lines.append("")

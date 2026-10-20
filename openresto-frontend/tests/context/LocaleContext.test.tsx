@@ -238,6 +238,52 @@ describe("LocaleContext", () => {
     });
   });
 
+  describe("a language the link asks for (?lang=)", () => {
+    const visit = (search: string) => window.history.pushState({}, "", `/${search}`);
+    const renderProvider = () =>
+      render(
+        <LocaleProvider>
+          <TestConsumer />
+        </LocaleProvider>
+      );
+
+    afterEach(() => visit(""));
+
+    it("outranks the saved pick and the browser, and is saved as the pick", async () => {
+      localStorage.setItem("openresto.locale", "fr");
+      setBrowserLanguages(["en-GB"]);
+      visit("?lang=nl");
+
+      renderProvider();
+
+      await waitFor(() => expect(shownLocale()).toBe("nl"));
+      expect(localStorage.getItem("openresto.locale")).toBe("nl");
+      expect(i18n.changeLanguage).toHaveBeenLastCalledWith("nl");
+    });
+
+    it("is read whatever its case", async () => {
+      visit("?lang=FR");
+
+      renderProvider();
+
+      await waitFor(() => expect(shownLocale()).toBe("fr"));
+    });
+
+    it.each(["?lang=xx", "?lang=", "?lang=nl-BE", "?other=nl"])(
+      "changes nothing when it is %s",
+      async (search) => {
+        localStorage.setItem("openresto.locale", "de");
+        visit(search);
+
+        renderProvider();
+
+        await waitFor(() => expect(shownLocale()).toBe("de"));
+        expect(localStorage.getItem("openresto.locale")).toBe("de");
+      }
+    );
+
+  });
+
   describe("useBrowserLocaleOptOut", () => {
     const renderWithRoutes = (routes: React.ReactNode) =>
       render(

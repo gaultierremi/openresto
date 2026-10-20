@@ -30,6 +30,25 @@ function browserLocale(): SupportedLocale | undefined {
 }
 
 /**
+ * The language a link asked for (`?lang=nl`), web only, and only a shipped one. The restaurant
+ * websites carry it on their booking button, so a guest who switched a page to Dutch lands on
+ * a booking page in Dutch. A guest following such a link has just said which language they want,
+ * so it is kept like a pick from the switcher.
+ *
+ * @see [LocaleContext.test.tsx](../tests/context/LocaleContext.test.tsx) — pins that a shipped
+ * `?lang=` outranks the saved pick and is saved itself, and that an unshipped or absent one
+ * changes nothing.
+ */
+function linkedLocale(): SupportedLocale | undefined {
+  if (Platform.OS !== "web") return undefined;
+  /* istanbul ignore next -- the static export renders without a window; every test runs under jsdom */
+  const search = typeof window === "undefined" ? "" : window.location.search;
+  // Not URLSearchParams: React Native ships a stub of it that cannot be constructed.
+  const requested = /[?&]lang=([^&#]*)/.exec(search)?.[1].toLowerCase();
+  return isSupportedLocale(requested) ? requested : undefined;
+}
+
+/**
  * The language of the device the viewer is on: the phone's own off web, only when this app
  * ships it, or the browser's on web, unless a mounted route opted out of it.
  *
@@ -47,6 +66,7 @@ function deviceLocale(browserAllowed: boolean): SupportedLocale | undefined {
 
 /**
  * Resolution order, highest priority first:
+ *  0. A language the link itself asked for (`?lang=`), which is also saved as the viewer's pick.
  *  1. The viewer's own pick, in `localStorage["openresto.locale"]`, written by `setLocale`
  *     below — the admin sidebar's `LanguageSwitcher`, the guest navbar's overflow menu and
  *     the native guest settings sheet all go through it. A value outside `SUPPORTED_LOCALES`
@@ -70,6 +90,11 @@ function resolveLocale(
   brandDefaultLocale: string | undefined,
   browserAllowed: boolean
 ): SupportedLocale {
+  const linked = linkedLocale();
+  if (linked) {
+    StorageService.setItem(STORAGE_KEY, linked);
+    return linked;
+  }
   const stored = StorageService.getItem(STORAGE_KEY);
   if (isSupportedLocale(stored)) return stored;
   return (
