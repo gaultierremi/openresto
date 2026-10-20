@@ -4,7 +4,7 @@ demo_data.py — the single source of truth for OpenResto demo/seed data.
 
 Emits SQL on stdout. Consumers pipe it straight into sqlite3:
 
-    python3 scripts/demo_data.py config            # brand, locations, sections, tables, groups, menus
+    python3 scripts/demo_data.py config            # brand, locations, sections, tables, groups, menus, websites
     python3 scripts/demo_data.py bookings          # bookings + admin notifications
     python3 scripts/demo_data.py all               # both, in FK-safe order
     python3 scripts/demo_data.py accounts          # the Owner + demo Manager (see below)
@@ -539,6 +539,54 @@ MENUS = {
     ],
 }
 
+# ─── Websites ────────────────────────────────────────────────────────────────
+# The one-page site generated for a location (RestaurantSites), keyed by location name. The
+# Belgian brasserie has the whole surface: published, a theme, a tagline, a logo, a cover, a
+# four-photo gallery with descriptions, social links and the full legal notice. The flagship
+# has a DRAFT with the Gastronomique theme and no legal identity: a screen driven by data state
+# needs that state seeded, or the "what is still missing" checklist and the disabled Publish
+# button are invisible on the demo.
+#
+# Pictures are not in this table. Like every other image they are linked from the files that
+# exist on disk by the media step, under the names site-<slug>-logo / -cover / -photo-<n>
+# (the slug, not the location id, so a public URL carries no internal number). `photos` holds
+# the description each gallery file gets; a file with no description is not linked, because the
+# site refuses a photo without one.
+SITES = {
+    "Brasserie de la Senne Dorée": {
+        "slug": "brasserie-de-la-senne-doree",
+        "published": True,
+        "theme": "Brasserie",
+        "tagline": "Cuisine belge de saison, bières d'abbaye et terrasse aux beaux jours",
+        "socials": [
+            ("Facebook", "https://facebook.example/senne-doree"),
+            ("Instagram", "https://instagram.example/senne.doree"),
+            ("TripAdvisor", "https://tripadvisor.example/Restaurant-Senne-Doree"),
+        ],
+        "legal": {
+            "name": "Senne Dorée SRL",
+            "company_number": "0123.456.789",
+            "vat": "BE 0123.456.789",
+            "address": "Rue des Fabriques 25, 1000 Bruxelles",
+        },
+        "photos": [
+            "La salle aux banquettes de cuir et aux lampes dorées",
+            "Une carbonade flamande, frites et salade",
+            "Le comptoir et ses tireuses à bière d'abbaye",
+            "La terrasse en fin de journée",
+        ],
+    },
+    "Paddy's Pub": {
+        "slug": "paddys-pub",
+        "published": False,
+        "theme": "Gastronomique",
+        "tagline": "An Irish pub with a Philadelphia accent",
+        "socials": [("Instagram", "https://instagram.example/paddyspub")],
+        "legal": None,
+        "photos": [],
+    },
+}
+
 SOCIAL_LINKS = [
     ("Instagram", "https://instagram.com/paddyspub", "logo-instagram"),
     ("Yelp", "https://yelp.com/biz/paddys-pub", "star-outline"),
@@ -668,6 +716,7 @@ def build_dataset(now_utc):
     """Assign ids to the declarative location tree and resolve relative dates."""
     restaurants, sections, tables, groups, memberships = [], [], [], [], []
     menus, menu_categories, menu_items = [], [], []
+    sites = []
     rid = sid = tid = gid = 0
     mid = cid = iid = 0
     stamp = utc_str(now_utc)
@@ -725,6 +774,36 @@ def build_dataset(now_utc):
                 },
             }
         )
+
+        site = SITES.get(spec["name"])
+        if site:
+            legal = site["legal"] or {}
+            sites.append(
+                {
+                    "Id": len(sites) + 1,
+                    "RestaurantId": rid,
+                    "Slug": site["slug"],
+                    "IsPublished": site["published"],
+                    "Theme": site["theme"],
+                    "Tagline": site["tagline"],
+                    "LogoUrl": None,
+                    "CoverUrl": None,
+                    "PhotosJson": None,
+                    "SocialLinksJson": json.dumps(
+                        [{"kind": kind, "url": url} for kind, url in site["socials"]],
+                        separators=(",", ":"),
+                        ensure_ascii=False,
+                    )
+                    if site["socials"]
+                    else None,
+                    "LegalName": legal.get("name"),
+                    "CompanyNumber": legal.get("company_number"),
+                    "VatNumber": legal.get("vat"),
+                    "LegalAddress": legal.get("address"),
+                    "CreatedAt": stamp,
+                    "UpdatedAt": stamp,
+                }
+            )
 
         for menu_order, menu in enumerate(MENUS.get(spec["name"], [])):
             mid += 1
@@ -822,6 +901,7 @@ def build_dataset(now_utc):
         "menus": menus,
         "menu_categories": menu_categories,
         "menu_items": menu_items,
+        "sites": sites,
     }
 
 
@@ -841,6 +921,7 @@ CONFIG_TABLES = [
     "MenuItems",
     "MenuCategories",
     "Menus",
+    "RestaurantSites",
     "TableGroupMemberships",
     "TableGroups",
     "Tables",
@@ -894,6 +975,11 @@ def emit_config(ds):
         out.append(insert("MenuCategories", c))
     for i in ds["menu_items"]:
         out.append(insert("MenuItems", i))
+
+    out.append("")
+    out.append("-- Websites (pictures stay NULL: they are linked by the media step)")
+    for s in ds["sites"]:
+        out.append(insert("RestaurantSites", s))
 
     out.append("")
     out.append("-- Highlights (Link=NULL renders a static card; a Link makes the card clickable)")
@@ -980,9 +1066,65 @@ def emit_media(ds, media_dir):
             out.append(f"UPDATE MenuItems SET ImageUrl={q(_media_url(photo))} WHERE Id={iid};")
             linked += 1
 
+    for site in ds["sites"]:
+        linked += _emit_site_media(out, root, site)
+
     if linked == 0:
         out.append("-- no matching media files found")
     return out, linked
+
+
+def _site_file(root, slug, part):
+    return next(
+        (p for ext in IMAGE_EXTENSIONS for p in sorted(root.glob(f"site-{slug}-{part}.{ext}"))),
+        None,
+    )
+
+
+def _emit_site_media(out, root, site):
+    """Links a site's logo, cover and gallery from site-<slug>-logo / -cover / -photo-<n>."""
+    slug = site["Slug"]
+    spec = next(s for s in SITES.values() if s["slug"] == slug)
+    sets, linked = [], 0
+
+    for column, part in (("LogoUrl", "logo"), ("CoverUrl", "cover")):
+        path = _site_file(root, slug, part)
+        if path:
+            sets.append(f"{column}={q(_media_url(path))}")
+            linked += 1
+
+    photos = []
+    for n, alt in enumerate(spec["photos"], start=1):
+        path = _site_file(root, slug, f"photo-{n}")
+        if path:
+            width, height = _image_size(path)
+            photos.append({"id": f"demo-photo-{n}", "url": _media_url(path), "alt": alt, "width": width, "height": height})
+            linked += 1
+    if photos:
+        sets.append(f"PhotosJson={q(json.dumps(photos, separators=(',', ':'), ensure_ascii=False))}")
+
+    if sets:
+        out.append(f"UPDATE RestaurantSites SET {', '.join(sets)} WHERE Id={site['Id']};")
+    return linked
+
+
+def _image_size(path):
+    """Pixel size of a PNG or JPEG from its header; the gallery's fallback when it cannot be read."""
+    fallback = (1200, 800)
+    data = path.read_bytes()
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
+    if data[:2] == b"\xff\xd8":
+        i = 2
+        while i + 9 < len(data):
+            if data[i] != 0xFF:
+                i += 1
+                continue
+            marker = data[i + 1]
+            if marker in (0xC0, 0xC1, 0xC2):
+                return int.from_bytes(data[i + 7 : i + 9], "big"), int.from_bytes(data[i + 5 : i + 7], "big")
+            i += 2 + int.from_bytes(data[i + 2 : i + 4], "big")
+    return fallback
 
 
 # ─── Admin accounts ──────────────────────────────────────────────────────────

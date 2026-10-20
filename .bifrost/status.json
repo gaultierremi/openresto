@@ -12,6 +12,15 @@
       "pr": 4,
       "etape": "Corrections P2 et P3 de la relecture poussées ; en attente d'un nouveau verdict.",
       "maj": "2026-10-20T20:38:22+00:00"
+    },
+    {
+      "id": "site-vitrine",
+      "titre": "Sprint 3 — mini-site vitrine par restaurant (/r/{slug}, écran « Mon site »)",
+      "agent": "Claude",
+      "branche": "feat/site-vitrine",
+      "statut": "En relecture",
+      "pr": 7,
+      "maj": "2026-10-20T20:00:00+00:00"
     }
   ],
   "decisions": [

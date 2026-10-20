@@ -37,6 +37,25 @@ public class ImageSignatureTests
     }
 
     [Fact]
+    public async Task MatchesAsync_ChecksTheDeclaredType_AndRewindsSoTheCheckedBytesAreWhatGetsStored()
+    {
+        using var stream = new MemoryStream([.. _png, 1, 2, 3, 4]);
+
+        Assert.True(await ImageSignature.MatchesAsync(stream, "image/png"));
+        Assert.Equal(0, stream.Position);
+        Assert.False(await ImageSignature.MatchesAsync(stream, "image/jpeg"));
+        Assert.Equal(0, stream.Position);
+    }
+
+    [Fact]
+    public async Task MatchesAsync_RefusesAFileShorterThanItsSignature()
+    {
+        using var stream = new MemoryStream([0x89, 0x50]);
+
+        Assert.False(await ImageSignature.MatchesAsync(stream, "image/png"));
+    }
+
+    [Fact]
     public void Matches_ReadsOnlyTheLeadingBytes_SoATruncatedPngSignatureFails()
     {
         Assert.False(ImageSignature.Matches(_png.AsSpan(0, 7), "image/png"));

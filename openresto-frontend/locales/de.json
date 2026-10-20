@@ -501,6 +501,26 @@
       "walk_in_days_invalid": "WalkInDays muss eine durch Kommas getrennte Liste von ISO-Tagesnummern von 1 (Montag) bis 7 (Sonntag) sein.",
       "max_covers_invalid": "Die maximale Gästezahl pro Zeitfenster muss mindestens 1 sein oder leer bleiben (kein Limit)."
     },
+    "site": {
+      "not_found": "Webseite nicht gefunden.",
+      "slug_invalid": "Die Adresse der Webseite muss 3 bis 60 Zeichen lang sein: Kleinbuchstaben, Ziffern und einzelne Bindestriche.",
+      "slug_taken": "Eine andere Webseite verwendet diese Adresse bereits.",
+      "theme_invalid": "Dieses Design gibt es nicht.",
+      "tagline_too_long": "Der Slogan darf höchstens {{max}} Zeichen lang sein.",
+      "social_invalid": "Ein Netzwerk-Link braucht ein bekanntes Netzwerk, eine https://-Adresse und darf nur einmal vorkommen.",
+      "social_too_many": "Es gibt zu viele Links zu sozialen Netzwerken.",
+      "legal_too_long": "Dieses Impressumsfeld darf höchstens {{max}} Zeichen lang sein.",
+      "legal_invalid": "Dieses Impressumsfeld akzeptiert nur Buchstaben, Ziffern, Leerzeichen, Punkte, Bindestriche und Schrägstriche.",
+      "photo_alt_required": "Jedes Foto braucht eine Beschreibung.",
+      "photo_alt_too_long": "Die Fotobeschreibung darf höchstens {{max}} Zeichen lang sein.",
+      "photos_full": "Eine Galerie enthält höchstens {{max}} Fotos.",
+      "reorder_ids_mismatch": "Die Liste muss jedes Foto genau einmal nennen, ohne weitere hinzuzufügen.",
+      "image_too_large": "Das Bild darf höchstens 6 MB groß sein.",
+      "image_dimensions_too_large": "Das Bild hat zu viele Pixel (höchstens {{maxSide}} Pixel pro Seite).",
+      "image_unreadable": "Diese Datei ist kein lesbares Bild.",
+      "not_publishable": "Die Webseite kann erst veröffentlicht werden, wenn Impressum und Kontakt-E-Mail-Adresse ausgefüllt sind.",
+      "location_archived": "Ein archivierter Standort kann keine Webseite online haben."
+    },
     "social_link": {
       "label_required": "Die Bezeichnung des Social-Media-Links darf nicht leer sein.",
       "label_too_long": "Die Bezeichnung des Social-Media-Links darf höchstens {{max}} Zeichen lang sein.",
@@ -2023,7 +2043,8 @@
           "audit": "Aktivitätsprotokoll",
           "guests": "Gäste",
           "email": "E-Mail-Status",
-          "menus": "Speisekarten"
+          "menus": "Speisekarten",
+          "sites": "Webseite"
         },
         "scopeLevel": {
           "none": "Keine"
@@ -2037,7 +2058,8 @@
           "audit": "Das Administrations-Aktivitätsprotokoll",
           "guests": "Kundennamen und E-Mails auf Reservierungen. Ohne dies kommen sie leer zurück.",
           "email": "Ob der E-Mail-Versand eingerichtet ist und was nicht zugestellt werden konnte. Niemals die SMTP-Zugangsdaten.",
-          "menus": "Speisekarten, ihre Kategorien, Gerichte und Fotos sowie die Links hinter den QR-Codes. Einen Link neu zu erzeugen erfordert zusätzlich den Schlüssel eines Inhabers."
+          "menus": "Speisekarten, ihre Kategorien, Gerichte und Fotos sowie die Links hinter den QR-Codes. Einen Link neu zu erzeugen erfordert zusätzlich den Schlüssel eines Inhabers.",
+          "sites": "Die Webseite eines Standorts: Design, Slogan, Fotos, Impressum, Veröffentlichung und Vorschau."
         },
         "expiryLabel": "Ablauf",
         "expiryHint": "Standardmäßig 1 Jahr. Wähle „Kein Ablauf“ für einen Schlüssel, der nie abläuft.",
@@ -2283,6 +2305,134 @@
         "serverUnreachable": "Server konnte nicht erreicht werden."
       }
     },
+    "site": {
+      "title": "Meine Webseite",
+      "subtitle": "Eine kleine Webseite für jeden Standort, erstellt aus Ihren Öffnungszeiten, Ihrer Speisekarte und Ihren Kontaktdaten.",
+      "noLocations": "Fügen Sie einen Standort hinzu, um seine Webseite zu erstellen.",
+      "couldntLoad": "Die Webseite konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "themes": {
+        "label": "Design der Webseite",
+        "brasserie": {
+          "name": "Brasserie",
+          "description": "Warm und einladend: cremefarbenes Papier, Überschriften mit Serifen."
+        },
+        "gastronomique": {
+          "name": "Gehobene Küche",
+          "description": "Zurückhaltend und elegant: dunkler Hintergrund, gesperrte Schrift."
+        },
+        "cafe": {
+          "name": "Café",
+          "description": "Hell und abgerundet: Akzente in Ihrer Farbe, sehr gut lesbar."
+        }
+      },
+      "social": {
+        "kindLabel": "Netzwerk",
+        "urlPlaceholder": "https://…",
+        "urlLabel": "Adresse der {{network}}-Seite",
+        "remove": "Entfernen",
+        "removeNamed": "{{network}} entfernen",
+        "add": "Netzwerk hinzufügen"
+      },
+      "settings": {
+        "problem": {
+          "slug": "Die Adresse der Webseite muss 3 bis 60 Zeichen lang sein: Kleinbuchstaben, Ziffern und einzelne Bindestriche. Gespeichert wird erst, wenn sie gültig ist.",
+          "socialUrl": "Jeder Netzwerk-Link muss eine https://-Adresse sein. Gespeichert wird erst, wenn sie gültig ist.",
+          "socialDuplicate": "Ein Netzwerk darf nur einmal vorkommen. Ändern oder entfernen Sie das Duplikat, um zu speichern.",
+          "identifier": "Unternehmens- und USt-Nummer akzeptieren nur Buchstaben, Ziffern, Leerzeichen, Punkte, Bindestriche und Schrägstriche.",
+          "legalRequired": "Die Webseite ist veröffentlicht: Firmenname und Unternehmensnummer müssen ausgefüllt bleiben. Nehmen Sie die Webseite offline, um sie zu löschen."
+        },
+        "appearance": {
+          "title": "Erscheinungsbild",
+          "description": "Drei zurückhaltende Designs. Ihre Wahl erscheint sofort in der Vorschau und lässt sich direkt danach rückgängig machen."
+        },
+        "brandColor": "Hauptfarbe: {{color}}, aus der Marke übernommen. Die Webseite macht sie in jedem Design lesbar.",
+        "changeBrandColor": "In Marke ändern",
+        "content": {
+          "title": "Slogan und Adresse",
+          "description": "Der Slogan erscheint unter dem Namen des Standorts und in den Suchergebnissen."
+        },
+        "taglineLabel": "Slogan",
+        "taglinePlaceholder": "z. B. Belgische Saisonküche und Abteibiere",
+        "taglineCount": "{{count}} / {{max}} Zeichen",
+        "addressLabel": "Adresse der Webseite",
+        "addressHint": "Wird diese Adresse geändert, funktionieren bereits geteilte oder gedruckte Links nicht mehr.",
+        "social": {
+          "title": "Soziale Netzwerke",
+          "description": "Die Links erscheinen im Abschnitt „So finden Sie uns“."
+        },
+        "legal": {
+          "title": "Impressum",
+          "description": "Zum Veröffentlichen erforderlich: Es erscheint am Ende der Webseite.",
+          "nameLabel": "Firmenname",
+          "companyNumberLabel": "Unternehmensnummer",
+          "vatNumberLabel": "USt-Nummer (optional)",
+          "addressLabel": "Firmensitz (optional)",
+          "addressHint": "Bleibt das Feld leer, wird die Adresse des Standorts verwendet."
+        }
+      },
+      "images": {
+        "title": "Logo und Titelbild",
+        "description": "Bilder werden automatisch verkleinert und komprimiert: Ein Handyfoto genügt.",
+        "logo": {
+          "title": "Logo",
+          "hint": "JPEG, PNG oder WebP, höchstens 6 MB. Ein transparenter Hintergrund bleibt erhalten.",
+          "add": "Logo hinzufügen",
+          "replace": "Logo ersetzen",
+          "remove": "Logo entfernen"
+        },
+        "cover": {
+          "title": "Titelbild",
+          "hint": "JPEG, PNG oder WebP, höchstens 6 MB. Ein breites Querformat wirkt am besten.",
+          "add": "Titelbild hinzufügen",
+          "replace": "Bild ersetzen",
+          "remove": "Bild entfernen"
+        }
+      },
+      "gallery": {
+        "title": "Galerie",
+        "description": "Einige Fotos vom Gastraum, der Terrasse oder den Gerichten.",
+        "count_one": "{{count}} Foto von möglichen {{max}} ({{min}} bis {{max}} empfohlen)",
+        "count_other": "{{count}} Fotos von möglichen {{max}} ({{min}} bis {{max}} empfohlen)",
+        "altLabel": "Beschreibung des Fotos",
+        "altRequired": "Beschreiben Sie das Foto, um zu speichern: Ein Screenreader liest dies an seiner Stelle vor.",
+        "remove": "Löschen",
+        "removeNamed": "Foto „{{name}}“ löschen",
+        "removeTitle": "Dieses Foto löschen?",
+        "removeMessage": "Das Foto „{{name}}“ verschwindet aus der Galerie. Dies kann nicht rückgängig gemacht werden.",
+        "full": "Die Galerie ist voll ({{max}} Fotos). Löschen Sie ein Foto, um ein anderes hinzuzufügen.",
+        "newAltLabel": "Beschreibung des neuen Fotos",
+        "newAltPlaceholder": "z. B. Der Gastraum mit Ledersitzbänken",
+        "newAltHint": "Pflichtfeld: Beschreiben Sie, was das Foto zeigt, für Menschen, die es nicht sehen können.",
+        "choose": "Foto auswählen",
+        "add": "Foto hinzufügen"
+      },
+      "publish": {
+        "title": "Veröffentlichung",
+        "description": "Solange die Webseite nicht veröffentlicht ist, kann nur Sie sie sehen.",
+        "live": "Online",
+        "draft": "Entwurf",
+        "checklistTitle": "Vor der Veröffentlichung auszufüllen",
+        "todo": {
+          "legalName": "Firmennamen angeben (Impressum)",
+          "companyNumber": "Unternehmensnummer angeben (Impressum)",
+          "contactEmail": "Eine Kontakt-E-Mail-Adresse hinterlegen, am Standort oder in der Marke"
+        },
+        "blockedHint": "Die Schaltfläche wird freigeschaltet, sobald die Liste oben leer ist.",
+        "publish": "Webseite veröffentlichen",
+        "unpublish": "Offline nehmen",
+        "view": "Webseite ansehen",
+        "copy": "Link kopieren",
+        "copied": "Link kopiert"
+      },
+      "preview": {
+        "title": "Vorschau",
+        "phone": "Smartphone",
+        "desktop": "Computer",
+        "loading": "Vorschau wird geladen …",
+        "failed": "Die Vorschau konnte nicht geladen werden.",
+        "frameTitle": "Vorschau der Webseite"
+      }
+    },
     "sidebar": {
       "nav": {
         "sections": {
@@ -2295,6 +2445,7 @@
           "locations": "Standorte",
           "menus": "Speisekarten",
           "qrCodes": "QR-Codes",
+          "site": "Meine Webseite",
           "notifications": "Benachrichtigungen",
           "activity": "Aktivität",
           "brand": "Marke",

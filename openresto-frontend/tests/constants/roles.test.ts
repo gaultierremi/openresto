@@ -35,6 +35,14 @@ describe("roles", () => {
       expect(roleCan(ROLES.manager, "regenerate:qr-token")).toBe(false);
     });
 
+    it("lets an Owner and a Manager manage the website, as the backend's RequireAdmin does", () => {
+      expect(roleCan(ROLES.owner, "manage:site")).toBe(true);
+      expect(roleCan(ROLES.legacyAdmin, "manage:site")).toBe(true);
+      expect(roleCan(ROLES.manager, "manage:site")).toBe(true);
+      expect(roleCan("Host", "manage:site")).toBe(false);
+      expect(roleCan(null, "manage:site")).toBe(false);
+    });
+
     it("grants the QR token capability to nobody without a recognised role", () => {
       expect(roleCan(null, "regenerate:qr-token")).toBe(false);
       expect(roleCan("", "regenerate:qr-token")).toBe(false);

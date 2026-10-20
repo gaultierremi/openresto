@@ -45,6 +45,11 @@ describe("READ_ONLY_SCOPE_RESOURCES", () => {
     expect(SCOPE_RESOURCES).toContain("menus");
     expect(READ_ONLY_SCOPE_RESOURCES.has("menus")).toBe(false);
   });
+
+  it("offers sites at both levels, as the backend's ApiKeyScopes does", () => {
+    expect(SCOPE_RESOURCES).toContain("sites");
+    expect(READ_ONLY_SCOPE_RESOURCES.has("sites")).toBe(false);
+  });
 });
 
 describe("adminListApiKeys", () => {
