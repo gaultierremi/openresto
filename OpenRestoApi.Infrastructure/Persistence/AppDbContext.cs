@@ -29,6 +29,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Menu> Menus { get; set; } = null!;
     public DbSet<MenuCategory> MenuCategories { get; set; } = null!;
     public DbSet<MenuItem> MenuItems { get; set; } = null!;
+    public DbSet<RestaurantSite> RestaurantSites { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -129,6 +130,25 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             ib.Property(i => i.Description).HasMaxLength(MenuFields.MaxDescriptionLength);
             ib.Property(i => i.Availability).HasConversion<string>().HasMaxLength(MenuFields.MaxAvailabilityLength);
             ib.HasIndex(i => new { i.CategoryId, i.SortOrder });
+        });
+
+        modelBuilder.Entity<RestaurantSite>(sb =>
+        {
+            sb.HasKey(s => s.Id);
+            // One site per location, gone with it. The unique slug is the page's address.
+            sb.HasOne(s => s.Restaurant)
+              .WithOne()
+              .HasForeignKey<RestaurantSite>(s => s.RestaurantId)
+              .OnDelete(DeleteBehavior.Cascade);
+            sb.HasIndex(s => s.RestaurantId).IsUnique();
+            sb.Property(s => s.Slug).IsRequired().HasMaxLength(SiteSlug.MaxLength);
+            sb.HasIndex(s => s.Slug).IsUnique();
+            sb.Property(s => s.Theme).HasConversion<string>().HasMaxLength(SiteFields.MaxThemeLength);
+            sb.Property(s => s.Tagline).HasMaxLength(SiteFields.MaxTaglineLength);
+            sb.Property(s => s.LegalName).HasMaxLength(SiteFields.MaxLegalNameLength);
+            sb.Property(s => s.CompanyNumber).HasMaxLength(SiteFields.MaxCompanyNumberLength);
+            sb.Property(s => s.VatNumber).HasMaxLength(SiteFields.MaxVatNumberLength);
+            sb.Property(s => s.LegalAddress).HasMaxLength(SiteFields.MaxLegalAddressLength);
         });
 
         modelBuilder.Entity<Booking>(bb =>

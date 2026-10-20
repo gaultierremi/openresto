@@ -3831,6 +3831,268 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/r/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/html": unknown;
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/html": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/html": unknown;
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/html": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        patch?: never;
+        trace?: never;
+    };
+    "/r/{slug}/reserver": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Found */
+                302: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        /** The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id. */
+        head: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Found */
+                302: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        patch?: never;
+        trace?: never;
+    };
+    "/sitemap.xml": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/xml": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/xml": unknown;
+                    };
+                };
+            };
+        };
+        patch?: never;
+        trace?: never;
+    };
+    "/robots.txt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": unknown;
+                    };
+                };
+            };
+        };
+        patch?: never;
+        trace?: never;
+    };
     "/api/Restaurants": {
         parameters: {
             query?: never;
@@ -4365,6 +4627,491 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveSiteRequest"];
+                    "text/json": components["schemas"]["SaveSiteRequest"];
+                    "application/*+json": components["schemas"]["SaveSiteRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The page as it would render now, as HTML. `theme` previews another look without saving it. */
+        get: {
+            parameters: {
+                query?: {
+                    theme?: string;
+                };
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/html": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site/logo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file?: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site/cover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file?: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Adds a gallery photo. `alt`, its text description, is required. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file?: components["schemas"]["IFormFile"];
+                    } & {
+                        alt?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site/photos/{photoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    photoId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SavePhotoAltRequest"];
+                    "text/json": components["schemas"]["SavePhotoAltRequest"];
+                    "application/*+json": components["schemas"]["SavePhotoAltRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    photoId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/restaurants/{restaurantId}/site/photos/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReorderSitePhotosRequest"];
+                    "text/json": components["schemas"]["ReorderSitePhotosRequest"];
+                    "application/*+json": components["schemas"]["ReorderSitePhotosRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SiteDto"];
+                        "application/json": components["schemas"]["SiteDto"];
+                        "text/json": components["schemas"]["SiteDto"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/social-links": {
@@ -5376,6 +6123,14 @@ export interface components {
             /** @description If the caller already holds this ID, the backend atomically replaces it. */
             currentHoldId?: null | string;
         };
+        ProblemDetails: {
+            type?: null | string;
+            title?: null | string;
+            /** Format: int32 */
+            status?: null | number | string;
+            detail?: null | string;
+            instance?: null | string;
+        };
         PublicMenuCategoryDto: {
             name?: string;
             description?: null | string;
@@ -5429,6 +6184,9 @@ export interface components {
              *     same set of section IDs the restaurant currently has (no additions/removals here).
              */
             sectionIds?: (number | string)[];
+        };
+        ReorderSitePhotosRequest: {
+            ids?: string[];
         };
         ResetPasswordRequest: {
             resetToken?: string;
@@ -5514,6 +6272,20 @@ export interface components {
             description?: null | string;
             currency?: null | string;
         };
+        SavePhotoAltRequest: {
+            alt?: null | string;
+        };
+        /**
+         * @description The whole editable text of a site, replaced on every save: a null or blank value clears that
+         *     field. The exception is string? SaveSiteRequest.Slug, where null or blank keeps the current address.
+         */
+        SaveSiteRequest: {
+            slug?: null | string;
+            theme?: string;
+            tagline?: null | string;
+            socialLinks?: null | components["schemas"]["SiteSocialLinkDto"][];
+            legal?: null | components["schemas"]["SiteLegalDto"];
+        };
         /** @description Seats a party. With neither id set the smallest free unit that fits is chosen. */
         SeatWaitlistEntryRequest: {
             /** Format: int32 */
@@ -5543,6 +6315,56 @@ export interface components {
         };
         SetUserActiveRequest: {
             isActive?: boolean;
+        };
+        /**
+         * @description What the "Mon site" screen shows for one location. Nothing in it is read by guests: the public
+         *     page is rendered HTML, not this. A location that has never had a site saved reads as the
+         *     defaults it would get (bool SiteDto.Exists false, a suggested address, unpublished).
+         */
+        SiteDto: {
+            exists?: boolean;
+            slug?: string;
+            /** @description Where the page lives on this instance, `/r/{slug}`. */
+            publicPath?: string;
+            isPublished?: boolean;
+            /** @description `Brasserie`, `Gastronomique` or `Cafe`. */
+            theme?: string;
+            tagline?: null | string;
+            logoUrl?: null | string;
+            coverUrl?: null | string;
+            photos?: components["schemas"]["SitePhotoDto"][];
+            socialLinks?: components["schemas"]["SiteSocialLinkDto"][];
+            legal?: components["schemas"]["SiteLegalDto"];
+            /** @description The brand colour the site is painted with. Read-only here: it is set in the brand settings. */
+            brandColor?: string;
+            /**
+             * @description What stops the site going live, as field paths (`legal.name`, `legal.companyNumber`,
+             *     `contact.email`). Empty means it can be published.
+             */
+            missing?: string[];
+            /** Format: date-time */
+            updatedAt?: null | string;
+        };
+        SiteLegalDto: {
+            name?: null | string;
+            companyNumber?: null | string;
+            vatNumber?: null | string;
+            address?: null | string;
+        };
+        SitePhotoDto: {
+            id?: string;
+            url?: string;
+            alt?: string;
+            /** Format: int32 */
+            width?: number | string;
+            /** Format: int32 */
+            height?: number | string;
+        };
+        SiteSocialLinkDto: {
+            /** @description One of `Facebook`, `Instagram`, `TikTok`, `X`, `YouTube`, `TripAdvisor`, `LinkedIn`. */
+            kind?: string;
+            /** @description An https address. */
+            url?: string;
         };
         TableDto: {
             /** Format: int32 */
