@@ -3838,9 +3838,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * The restaurant's public page, in French or Dutch: `?lang=fr|nl` first, then the browser's
+         *     `Accept-Language`, then French.
+         */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    lang?: string;
+                };
                 header?: never;
                 path: {
                     slug: string;
@@ -3873,9 +3879,15 @@ export interface paths {
         post?: never;
         delete?: never;
         options?: never;
+        /**
+         * The restaurant's public page, in French or Dutch: `?lang=fr|nl` first, then the browser's
+         *     `Accept-Language`, then French.
+         */
         head: {
             parameters: {
-                query?: never;
+                query?: {
+                    lang?: string;
+                };
                 header?: never;
                 path: {
                     slug: string;
@@ -3914,10 +3926,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id. */
+        /**
+         * The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.
+         *     `?lang=fr|nl` is passed on to the booking page; any other value is dropped.
+         */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    lang?: string;
+                };
                 header?: never;
                 path: {
                     slug: string;
@@ -3950,10 +3967,15 @@ export interface paths {
         post?: never;
         delete?: never;
         options?: never;
-        /** The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id. */
+        /**
+         * The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.
+         *     `?lang=fr|nl` is passed on to the booking page; any other value is dropped.
+         */
         head: {
             parameters: {
-                query?: never;
+                query?: {
+                    lang?: string;
+                };
                 header?: never;
                 path: {
                     slug: string;
@@ -5881,6 +5903,11 @@ export interface components {
              *     Not returned in responses.
              */
             holdId?: null | string;
+            /**
+             * @description The language the guest was using when booking, one of SupportedLocales. Chooses
+             *     the language of the confirmation email; an unsupported value is ignored rather than refused.
+             */
+            locale?: null | string;
         };
         bookingStatus: number;
         BrandRequest: {
