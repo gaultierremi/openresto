@@ -124,6 +124,9 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
             .Take(limit)
             .ToListAsync();
 
+    public async Task<int> CountBookingsAsync(int restaurantId)
+        => await _db.Bookings.CountAsync(b => b.RestaurantId == restaurantId);
+
     public async Task<RetentionOutcome> AnonymizeBeforeAsync(int restaurantId, DateTime cutoffUtc, DateTime nowUtc)
     {
         // The devices and failed-mail rows go first: both are found through the bookings that are

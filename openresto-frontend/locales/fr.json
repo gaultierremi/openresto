@@ -1672,6 +1672,7 @@
         "banner": "Accès journalisé",
         "bannerDetail": "Ouvert le {{date}}. Votre motif et votre nom figurent dans le journal d’audit. Fermer cette fenêtre efface les données.",
         "empty": "Aucune réservation pour cet établissement.",
+        "truncated": "Les {{shown}} réservations les plus récentes sur {{total}}.",
         "columns": {
           "ref": "Référence",
           "date": "Date",

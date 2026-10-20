@@ -382,6 +382,38 @@ public sealed class PlatformControllerTests(TestWebAppFactory factory) : IClassF
     }
 
     [Fact]
+    public async Task GuestDataAccess_WithNoReasonField_OrATooLongOne_IsRefusedWithItsCode()
+    {
+        int id = await PublishedRestaurantAsync("Champ Absent");
+
+        HttpResponseMessage absent = await _h.Operator().PostAsJsonAsync($"/api/platform/restaurants/{id}/guest-data-access", new { });
+        HttpResponseMessage tooLong = await _h.Operator().PostAsJsonAsync($"/api/platform/restaurants/{id}/guest-data-access", new { reason = new string('x', 301) });
+
+        Assert.Equal(HttpStatusCode.BadRequest, absent.StatusCode);
+        Assert.Equal(ErrorCodes.PlatformAccessReasonRequired, Code(await ErrorOf(absent)));
+        Assert.Equal(HttpStatusCode.BadRequest, tooLong.StatusCode);
+        Assert.Equal(ErrorCodes.PlatformAccessReasonRequired, Code(await ErrorOf(tooLong)));
+    }
+
+    [Fact]
+    public async Task AnArchivedRestaurant_CannotBeSuspendedInvitedOrRead_AndIsNotAServerError()
+    {
+        int id = await _h.InDbAsync(async db =>
+        {
+            var restaurant = new Restaurant { Name = "Archivé HTTP", IsArchived = true };
+            db.Restaurants.Add(restaurant);
+            await db.SaveChangesAsync();
+            return restaurant.Id;
+        });
+        HttpClient op = _h.Operator();
+
+        Assert.Equal(HttpStatusCode.NotFound, (await op.PostAsJsonAsync($"/api/platform/restaurants/{id}/suspend", new { })).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await op.PostAsync($"/api/platform/restaurants/{id}/reactivate", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await op.PostAsJsonAsync($"/api/platform/restaurants/{id}/invitations", new { email = "a@b.example" })).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await op.PostAsJsonAsync($"/api/platform/restaurants/{id}/guest-data-access", new { reason = "Ticket 5 : motif valable" })).StatusCode);
+    }
+
+    [Fact]
     public async Task GuestDataAccess_ToAnUnknownRestaurant_IsANotFound_AndRecordsNothing()
     {
         int audited = await _h.InDbAsync(db => db.AdminAuditEntries.CountAsync(a => a.Action == AuditActions.PlatformGuestDataAccess));

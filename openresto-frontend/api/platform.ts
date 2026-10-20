@@ -51,6 +51,8 @@ export interface GuestDataAccess {
   restaurantId: number;
   restaurantName: string;
   grantedAt: string;
+  /** All the restaurant's bookings: `bookings` holds only the most recent ones. */
+  totalBookings: number;
   bookings: PlatformGuestBooking[];
 }
 

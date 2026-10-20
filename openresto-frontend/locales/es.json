@@ -1672,6 +1672,7 @@
         "banner": "Access logged",
         "bannerDetail": "Opened {{date}}. Your reason and your name are in the audit trail. Closing this window discards the data.",
         "empty": "No booking for this restaurant.",
+        "truncated": "Se muestran las {{shown}} reservas más recientes de {{total}}.",
         "columns": {
           "ref": "Reference",
           "date": "Date",

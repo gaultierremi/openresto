@@ -95,10 +95,11 @@ public class SuspendRestaurantRequest
 
 public class GuestDataAccessRequest
 {
-    /// <summary>Why the platform needs to read this restaurant's guests. Recorded in the audit trail.</summary>
-    [Required]
-    [StringLength(300)]
-    public string Reason { get; set; } = null!;
+    /// <summary>
+    /// Why the platform needs to read this restaurant's guests. Recorded in the audit trail.
+    /// Bounded by the service rather than by model validation, so a refusal carries its code.
+    /// </summary>
+    public string? Reason { get; set; }
 }
 
 public class GuestDataAccessDto
@@ -106,6 +107,10 @@ public class GuestDataAccessDto
     public int RestaurantId { get; set; }
     public string RestaurantName { get; set; } = null!;
     public DateTime GrantedAt { get; set; }
+
+    /// <summary>All the restaurant's bookings; <see cref="Bookings"/> holds only the most recent ones.</summary>
+    public int TotalBookings { get; set; }
+
     public List<PlatformGuestBookingDto> Bookings { get; set; } = [];
 }
 

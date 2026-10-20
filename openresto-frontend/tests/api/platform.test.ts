@@ -131,7 +131,13 @@ describe("endpoints", () => {
   });
 
   it("opens the guest data as a POST carrying the reason", async () => {
-    ok({ restaurantId: 4, restaurantName: "X", grantedAt: "2026-10-20T10:00:00Z", bookings: [] });
+    ok({
+      restaurantId: 4,
+      restaurantName: "X",
+      grantedAt: "2026-10-20T10:00:00Z",
+      totalBookings: 0,
+      bookings: [],
+    });
     await platformApi.accessPlatformGuestData(4, "Support ticket 123, booking not received");
     expect(lastCall().url).toContain("/api/platform/restaurants/4/guest-data-access");
     expect(lastCall().init.method).toBe("POST");

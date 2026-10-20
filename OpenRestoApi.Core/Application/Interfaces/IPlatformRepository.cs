@@ -64,6 +64,8 @@ public interface IPlatformRepository
     /// <summary>The restaurant's latest bookings, newest first, with the guest's details.</summary>
     Task<List<Booking>> GetRecentBookingsAsync(int restaurantId, int limit);
 
+    Task<int> CountBookingsAsync(int restaurantId);
+
     /// <summary>
     /// Strips name, address and notes from the restaurant's bookings that ended before
     /// <paramref name="cutoffUtc"/>, drops the reminder devices and failed-mail records that

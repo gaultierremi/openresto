@@ -65,6 +65,7 @@ export function guestData(overrides: Partial<GuestDataAccess> = {}): GuestDataAc
     restaurantId: 1,
     restaurantName: "Chez Léa",
     grantedAt: "2026-10-20T10:00:00Z",
+    totalBookings: 1,
     bookings: [guestBooking()],
     ...overrides,
   };

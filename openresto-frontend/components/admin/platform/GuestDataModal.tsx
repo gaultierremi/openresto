@@ -188,6 +188,15 @@ export function GuestDataModal({
             </View>
           </View>
 
+          {data.totalBookings > data.bookings.length && (
+            <ThemedText style={{ color: colors.muted }} testID="guest-data-truncated">
+              {t("admin.platform.guestData.truncated", {
+                shown: data.bookings.length,
+                total: data.totalBookings,
+              })}
+            </ThemedText>
+          )}
+
           {data.bookings.length === 0 ? (
             <ThemedText style={{ color: colors.muted }} testID="guest-data-empty">
               {t("admin.platform.guestData.empty")}

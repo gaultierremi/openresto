@@ -34,8 +34,8 @@ const type = (value: string) =>
 
 const submitButton = () => screen.getByRole("button", { name: "Open the guest data" });
 
-const unlock = async (bookings = [guestBooking()]) => {
-  access.mockResolvedValue(ok(guestData({ bookings })));
+const unlock = async (bookings = [guestBooking()], totalBookings = bookings.length) => {
+  access.mockResolvedValue(ok(guestData({ bookings, totalBookings })));
   type(GOOD_REASON);
   fireEvent.press(submitButton());
   await waitFor(() => expect(screen.getByTestId("guest-data-banner")).toBeTruthy());
@@ -224,6 +224,20 @@ describe("GuestDataModal, once the access is granted", () => {
     await unlock([]);
     expect(screen.getByTestId("guest-data-empty")).toBeTruthy();
     expect(screen.queryByTestId("guest-data-scroll")).toBeNull();
+  });
+
+  it("says how many bookings it shows out of how many there are, when the server cut the list", async () => {
+    open();
+    await unlock([guestBooking()], 205);
+
+    expect(within(screen.getByTestId("guest-data-truncated")).getByText(/1.*205/)).toBeTruthy();
+  });
+
+  it("says nothing about a cut when every booking is shown", async () => {
+    open();
+    await unlock([guestBooking()], 1);
+
+    expect(screen.queryByTestId("guest-data-truncated")).toBeNull();
   });
 
   it("writes nothing to storage, before or after the access", async () => {

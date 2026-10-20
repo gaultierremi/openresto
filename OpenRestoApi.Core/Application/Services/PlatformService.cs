@@ -177,15 +177,17 @@ public class PlatformService(
 
         Restaurant restaurant = await RequireRestaurantAsync(restaurantId);
         List<Booking> bookings = await _repo.GetRecentBookingsAsync(restaurantId, GuestDataLimit);
+        int total = await _repo.CountBookingsAsync(restaurantId);
 
         Describe(AuditActions.PlatformGuestDataAccess, restaurant,
-            $"Read the guest bookings of \"{restaurant.Name}\" ({bookings.Count}). Reason: {reason}");
+            $"Read the guest bookings of \"{restaurant.Name}\" ({bookings.Count} of {total}). Reason: {reason}");
 
         return new GuestDataAccessDto
         {
             RestaurantId = restaurant.Id,
             RestaurantName = restaurant.Name,
             GrantedAt = _clock.UtcNow,
+            TotalBookings = total,
             Bookings = [.. bookings.Select(b => new PlatformGuestBookingDto
             {
                 BookingRef = b.BookingRef,
@@ -299,9 +301,15 @@ public class PlatformService(
 
     // ── Reading ──────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// An archived restaurant is not on the platform's list, so it is not reachable through it
+    /// either: the same not-found, rather than a row that cannot be built.
+    /// </summary>
+    /// <seealso>PlatformServiceTests.EveryOperationOnAnUnknownOrArchivedRestaurant_IsANotFound</seealso>
     private async Task<Restaurant> RequireRestaurantAsync(int restaurantId)
-        => await _repo.FindRestaurantAsync(restaurantId)
-            ?? throw new NotFoundException("Restaurant not found.") { Code = ErrorCodes.PlatformNotFound };
+        => await _repo.FindRestaurantAsync(restaurantId) is { IsArchived: false } restaurant
+            ? restaurant
+            : throw new NotFoundException("Restaurant not found.") { Code = ErrorCodes.PlatformNotFound };
 
     private async Task<PlatformRestaurantDto> RowFor(int restaurantId)
     {

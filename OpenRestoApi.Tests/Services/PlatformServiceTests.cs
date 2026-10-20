@@ -177,6 +177,7 @@ public sealed class PlatformServiceTests(TestWebAppFactory factory) : IClassFixt
         GuestDataAccessDto granted = await AsOperatorAsync((s, _) => s.AccessGuestDataAsync(id, new GuestDataAccessRequest { Reason = "Ticket 9 : volume important" }));
 
         Assert.Equal(PlatformService.GuestDataLimit, granted.Bookings.Count);
+        Assert.Equal(205, granted.TotalBookings);
         Assert.True(granted.Bookings.Zip(granted.Bookings.Skip(1)).All(p => p.First.Date >= p.Second.Date));
     }
 
@@ -207,23 +208,39 @@ public sealed class PlatformServiceTests(TestWebAppFactory factory) : IClassFixt
     }
 
     [Fact]
-    public async Task EveryOperationOnAnUnknownRestaurant_IsANotFound()
+    public async Task EveryOperationOnAnUnknownOrArchivedRestaurant_IsANotFound()
     {
-        const int Missing = 987654;
-        var operations = new Func<PlatformService, Task>[]
+        int archived = await PublishedRestaurantAsync("Archivé", r => r.IsArchived = true);
+        foreach (int id in new[] { 987654, archived })
         {
-            s => s.SendInvitationAsync(Missing, new SendInvitationRequest { Email = "x@y.example" }),
-            s => s.SuspendAsync(Missing, new SuspendRestaurantRequest()),
-            s => s.ReactivateAsync(Missing),
-            s => s.AccessGuestDataAsync(Missing, new GuestDataAccessRequest { Reason = "Ticket 1 : valid reason" }),
-            s => s.GetAcceptancesAsync(Missing),
-        };
+            var operations = new Func<PlatformService, Task>[]
+            {
+                s => s.SendInvitationAsync(id, new SendInvitationRequest { Email = "x@y.example" }),
+                s => s.SuspendAsync(id, new SuspendRestaurantRequest()),
+                s => s.ReactivateAsync(id),
+                s => s.AccessGuestDataAsync(id, new GuestDataAccessRequest { Reason = "Ticket 1 : valid reason" }),
+                s => s.GetAcceptancesAsync(id),
+            };
 
-        foreach (Func<PlatformService, Task> operation in operations)
-        {
-            NotFoundException refused = await AsOperatorAsync((s, _) => Assert.ThrowsAsync<NotFoundException>(() => operation(s)));
-            Assert.Equal(ErrorCodes.PlatformNotFound, refused.Code);
+            foreach (Func<PlatformService, Task> operation in operations)
+            {
+                NotFoundException refused = await AsOperatorAsync((s, _) => Assert.ThrowsAsync<NotFoundException>(() => operation(s)));
+                Assert.Equal(ErrorCodes.PlatformNotFound, refused.Code);
+            }
         }
+
+        Assert.Equal(RestaurantStatus.Published, (await _h.InDbAsync(db => db.Restaurants.AsNoTracking().FirstAsync(r => r.Id == archived))).Status);
+    }
+
+    [Fact]
+    public async Task AccessGuestData_RefusesAnAbsentReason_WithItsCode()
+    {
+        int id = await PublishedRestaurantAsync("Sans Champ");
+
+        ValidationException refused = await AsOperatorAsync((s, _) => Assert.ThrowsAsync<ValidationException>(
+            () => s.AccessGuestDataAsync(id, new GuestDataAccessRequest { Reason = null })));
+
+        Assert.Equal(ErrorCodes.PlatformAccessReasonRequired, refused.Code);
     }
 
     [Fact]
