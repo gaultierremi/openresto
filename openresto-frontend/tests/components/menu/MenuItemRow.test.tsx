@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 import { act, render, renderHook, screen } from "@testing-library/react-native";
 import { MenuItemRow, usePriceLabel } from "@/components/menu/MenuItemRow";
 import type { PublicMenuItem } from "@/api/menus";
@@ -114,8 +114,8 @@ describe("MenuItemRow", () => {
           currency="EUR"
         />
       );
-      const opacityOf = (node: { props: { style?: unknown } }) =>
-        StyleSheet.flatten(node.props.style as never)?.opacity;
+      const opacityOf = (node: { props: { style?: StyleProp<ViewStyle> } }) =>
+        StyleSheet.flatten(node.props.style)?.opacity;
       expect(opacityOf(screen.getByTestId("menu-item"))).toBeUndefined();
       expect(opacityOf(screen.getByText("Contains: Milk"))).toBeUndefined();
       expect(opacityOf(screen.getByText("Gratinée"))).toBeUndefined();

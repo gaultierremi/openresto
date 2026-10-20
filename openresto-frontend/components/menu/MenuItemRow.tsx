@@ -37,10 +37,7 @@ export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency
   const soldOut = item.availability === "SoldOut";
 
   return (
-    <View
-      testID="menu-item"
-      style={[styles.row, { borderBottomColor: colors.border }]}
-    >
+    <View testID="menu-item" style={[styles.row, { borderBottomColor: colors.border }]}>
       <View style={styles.body}>
         <View style={styles.titleLine}>
           <ThemedText style={[styles.name, soldOut && { color: colors.muted }]}>
