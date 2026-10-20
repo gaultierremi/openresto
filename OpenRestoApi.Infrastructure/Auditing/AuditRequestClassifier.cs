@@ -13,7 +13,7 @@ namespace OpenRestoApi.Infrastructure.Auditing;
 /// </para>
 /// <seealso>AuditCoverageTests.EveryAuthorizedMutatingAction_IsGatedByANamedAdminPolicy</seealso>
 /// <seealso>AuditCoverageTests.EveryMutatingAdminEndpoint_IsGatedOrAnAuthenticationPath</seealso>
-/// <seealso>AuditRequestClassifierTests.RequiresAdminPolicy_RecognisesBothAdminPolicies</seealso>
+/// <seealso>AuditRequestClassifierTests.RequiresAdminPolicy_RecognisesEveryGatedPolicy</seealso>
 /// <seealso>AuditRequestClassifierTests.RequiresAdminPolicy_RejectsAGateThatNamesNoPolicy</seealso>
 /// </summary>
 public static class AuditRequestClassifier

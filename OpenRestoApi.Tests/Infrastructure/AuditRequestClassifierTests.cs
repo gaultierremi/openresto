@@ -33,7 +33,9 @@ public class AuditRequestClassifierTests
     [Theory]
     [InlineData(AuthPolicies.RequireAdmin)]
     [InlineData(AuthPolicies.RequireOwner)]
-    public void RequiresAdminPolicy_RecognisesBothAdminPolicies(string policy)
+    [InlineData(AuthPolicies.RequirePlatform)]
+    [InlineData(AuthPolicies.RequireRestaurateur)]
+    public void RequiresAdminPolicy_RecognisesEveryGatedPolicy(string policy)
         => Assert.True(AuditRequestClassifier.RequiresAdminPolicy([new AuthorizeAttribute { Policy = policy }]));
 
     /// <summary>

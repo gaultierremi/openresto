@@ -27,6 +27,37 @@ public class RestaurantTests
             BookingsPausedUntil = bookingsPausedUntil
         };
 
+    // ── IsListedPublicly ───────────────────────────────────────────────────────
+
+    [Fact]
+    public void IsListedPublicly_True_ForAPublishedUnarchivedRestaurant()
+    {
+        Restaurant r = NewRestaurant();
+        r.Status = RestaurantStatus.Published;
+        r.IsArchived = false;
+
+        Assert.True(r.IsListedPublicly);
+    }
+
+    [Theory]
+    [InlineData(RestaurantStatus.Draft, false)]
+    [InlineData(RestaurantStatus.Suspended, false)]
+    [InlineData(RestaurantStatus.Published, true)]
+    [InlineData(RestaurantStatus.Draft, true)]
+    [InlineData(RestaurantStatus.Suspended, true)]
+    public void IsListedPublicly_False_ForADraft_ASuspended_OrAnArchivedRestaurant(RestaurantStatus status, bool archived)
+    {
+        Restaurant r = NewRestaurant();
+        r.Status = status;
+        r.IsArchived = archived;
+
+        Assert.False(r.IsListedPublicly);
+    }
+
+    [Fact]
+    public void IsListedPublicly_DefaultsToTrue_SoExistingInstallsChangeNothing()
+        => Assert.True(NewRestaurant().IsListedPublicly);
+
     // ── IsPaused ───────────────────────────────────────────────────────────────
 
     [Fact]
