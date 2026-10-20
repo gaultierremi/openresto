@@ -281,7 +281,6 @@ describe("LocaleContext", () => {
         expect(localStorage.getItem("openresto.locale")).toBe("de");
       }
     );
-
   });
 
   describe("useBrowserLocaleOptOut", () => {
