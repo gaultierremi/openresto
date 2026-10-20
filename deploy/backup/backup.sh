@@ -29,12 +29,7 @@ flock -n 9 || die "another backup is already running"
 stamp="$(date -u +%Y%m%d-%H%M%S)"
 work="$(mktemp -d "$BACKUP_DIR/.work.XXXXXX")"
 snapshot="/data/.snapshot-$stamp.db"
-# shellcheck disable=SC2329 # runs through the EXIT trap
-cleanup() {
-  compose exec -T backend rm -f "$snapshot" >/dev/null 2>&1 || true
-  rm -rf "$work"
-}
-trap cleanup EXIT
+trap 'compose exec -T backend rm -f "$snapshot" >/dev/null 2>&1 || true; rm -rf "$work"' EXIT
 
 [ -n "$(compose ps -q backend)" ] || die "the backend container is not running; nothing to back up from"
 
@@ -47,7 +42,14 @@ migration="$(compose exec -T backend sqlite3 "$snapshot" \
 
 mkdir -p "$work/content"
 compose cp "backend:$snapshot" "$work/content/openresto.db"
-compose cp backend:/data/dp-keys "$work/content/dp-keys" 2>/dev/null || mkdir -p "$work/content/dp-keys"
+# Only an absent directory is tolerated (an instance that never encrypted anything). A copy that
+# fails on an existing one must stop the backup: without these keys a restore cannot read the
+# saved SMTP password or the "recent bookings" cookie.
+if compose exec -T backend test -d /data/dp-keys; then
+  compose cp backend:/data/dp-keys "$work/content/dp-keys"
+else
+  mkdir -p "$work/content/dp-keys"
+fi
 compose cp backend:/app/wwwroot/media "$work/content/media"
 
 {
