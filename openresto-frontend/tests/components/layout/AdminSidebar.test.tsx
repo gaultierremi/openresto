@@ -127,6 +127,34 @@ describe("AdminSidebar", () => {
     expect(screen.queryByText("Users")).toBeNull();
   });
 
+  it("shows the Platform entry to an Owner and opens the platform space", async () => {
+    render(
+      <AuthProvider>
+        <AdminSidebar />
+      </AuthProvider>
+    );
+    await waitFor(() => expect(screen.getByText("Platform")).toBeTruthy());
+    fireEvent.press(screen.getByText("Platform"));
+    expect(mockPush).toHaveBeenCalledWith("/admin/platform");
+  });
+
+  it("hides the Platform entry from a Manager", async () => {
+    const { checkSession } = require("@/api/auth");
+    (checkSession as jest.Mock).mockResolvedValueOnce({
+      id: 2,
+      email: "manager@test.com",
+      displayName: "Manager Person",
+      role: "Manager",
+    });
+    render(
+      <AuthProvider>
+        <AdminSidebar />
+      </AuthProvider>
+    );
+    await waitFor(() => expect(screen.getByText("CONFIGURE")).toBeTruthy());
+    expect(screen.queryByText("Platform")).toBeNull();
+  });
+
   it("shows the API Keys entry to an Owner", async () => {
     render(
       <AuthProvider>

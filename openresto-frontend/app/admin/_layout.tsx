@@ -105,6 +105,7 @@ function AdminLayoutInner() {
       "/admin/waitlist": "Waitlist",
       "/admin/notifications": "Notifications",
       "/admin/activity": "Activity",
+      "/admin/platform": "Platform",
       "/admin/login": "Admin Login",
     };
     /* istanbul ignore next */
