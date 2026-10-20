@@ -99,6 +99,7 @@ describe("GuestSettingsMenu", () => {
       openPane("language");
       expect(screen.getByText("Français")).toBeTruthy();
       expect(screen.getByText("Deutsch")).toBeTruthy();
+      expect(screen.getByText("Nederlands")).toBeTruthy();
     });
 
     it("carries the privacy policy the app stores require a listing to reach", () => {

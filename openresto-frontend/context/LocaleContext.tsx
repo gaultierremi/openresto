@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { Platform } from "react-native";
 import { getLocales } from "expo-localization";
 import i18n from "@/i18n";
@@ -15,14 +15,32 @@ import {
 const STORAGE_KEY = "openresto.locale";
 
 /**
- * The phone's own language, off web only, and only when this app ships it.
+ * The first language the browser lists that this app ships, in the browser's own order of
+ * preference (`navigator.languages`, then `navigator.language`), matched on the language
+ * subtag so `nl-BE` and `fr-CA` count as `nl` and `fr`. `undefined` when there is no
+ * `navigator` (the static export renders without one) or nothing listed is shipped.
+ */
+function browserLocale(): SupportedLocale | undefined {
+  if (typeof navigator === "undefined") return undefined;
+  for (const tag of [...(navigator.languages ?? []), navigator.language]) {
+    const languageCode = tag?.split(/[-_]/)[0].toLowerCase();
+    if (isSupportedLocale(languageCode)) return languageCode;
+  }
+  return undefined;
+}
+
+/**
+ * The language of the device the viewer is on: the phone's own off web, only when this app
+ * ships it, or the browser's on web, unless a mounted route opted out of it.
  *
  * @see [LocaleContext.native.test.tsx](../tests/context/LocaleContext.native.test.tsx) — pins
  * that a device set to a shipped language wins over the brand default, and that a device set
  * to one this app does not ship falls through to it.
+ * @see [LocaleContext.test.tsx](../tests/context/LocaleContext.test.tsx) — pins the same two
+ * cases for the browser, plus that opting out puts the brand default back.
  */
-function deviceLocale(): SupportedLocale | undefined {
-  if (Platform.OS === "web") return undefined;
+function deviceLocale(browserAllowed: boolean): SupportedLocale | undefined {
+  if (Platform.OS === "web") return browserAllowed ? browserLocale() : undefined;
   const languageCode = getLocales()[0]?.languageCode;
   return isSupportedLocale(languageCode) ? languageCode : undefined;
 }
@@ -33,21 +51,26 @@ function deviceLocale(): SupportedLocale | undefined {
  *     below — the admin sidebar's `LanguageSwitcher`, the guest navbar's overflow menu and
  *     the native guest settings sheet all go through it. A value outside `SUPPORTED_LOCALES`
  *     is ignored, not trusted.
- *  2. The device locale, **off web only**. An installed app is expected to follow the phone's
- *     language; a website is expected to follow the restaurant's, which is why the same step
- *     is absent on web — a restaurant that sets `fr` wants `fr` for every visitor, and the
- *     switcher is the escape hatch for the tourist.
+ *  2. The device locale: the phone's language off web, the browser's `navigator.languages`
+ *     on web. A guest in Belgium whose browser asks for Dutch gets Dutch without finding the
+ *     switcher; the switcher stays the escape hatch for a browser set to the wrong language.
+ *     A route that is not for the guest (the admin) calls `useBrowserLocaleOptOut` so it
+ *     keeps following the instance default instead of the owner's browser.
  *  3. `brand.defaultLocale`, the self-hoster's `Locale:Default` / `OPENRESTO_DEFAULT_LOCALE`.
  *  4. `DEFAULT_LOCALE` ("en"), hardcoded.
  *
  * @see [LocaleContext.test.tsx](../tests/context/LocaleContext.test.tsx) — pins the web order,
- * device locale included.
+ * browser language included.
  */
-function resolveLocale(brandDefaultLocale: string | undefined): SupportedLocale {
+function resolveLocale(
+  brandDefaultLocale: string | undefined,
+  browserAllowed: boolean
+): SupportedLocale {
   const stored = StorageService.getItem(STORAGE_KEY);
   if (isSupportedLocale(stored)) return stored;
   return (
-    deviceLocale() ?? (isSupportedLocale(brandDefaultLocale) ? brandDefaultLocale : DEFAULT_LOCALE)
+    deviceLocale(browserAllowed) ??
+    (isSupportedLocale(brandDefaultLocale) ? brandDefaultLocale : DEFAULT_LOCALE)
   );
 }
 
@@ -61,11 +84,17 @@ interface LocaleContextValue {
    * switching languages re-formats dates/times immediately rather than only retranslating text.
    */
   setLocale: (locale: SupportedLocale) => void;
+  /**
+   * Registers a route that must not follow the browser's language and returns the function
+   * that withdraws it. Counted, so two such routes mounted at once do not clear each other.
+   */
+  holdBrowserOptOut: () => () => void;
 }
 
 const LocaleContext = createContext<LocaleContextValue>({
   locale: DEFAULT_LOCALE,
   setLocale: () => {},
+  holdBrowserOptOut: () => () => {},
 });
 
 /**
@@ -93,15 +122,17 @@ function applyLocale(locale: SupportedLocale): void {
  */
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const brand = useBrand();
+  const [browserOptOuts, setBrowserOptOuts] = useState(0);
+  const browserAllowed = browserOptOuts === 0;
   const [locale, setLocaleState] = useState<SupportedLocale>(() =>
-    resolveLocale(brand.defaultLocale)
+    resolveLocale(brand.defaultLocale, browserAllowed)
   );
 
   useEffect(() => {
-    const resolved = resolveLocale(brand.defaultLocale);
+    const resolved = resolveLocale(brand.defaultLocale, browserAllowed);
     setLocaleState(resolved);
     applyLocale(resolved);
-  }, [brand.defaultLocale]);
+  }, [brand.defaultLocale, browserAllowed]);
 
   const setLocale = (next: SupportedLocale) => {
     StorageService.setItem(STORAGE_KEY, next);
@@ -109,7 +140,31 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     applyLocale(next);
   };
 
-  return <LocaleContext.Provider value={{ locale, setLocale }}>{children}</LocaleContext.Provider>;
+  const holdBrowserOptOut = useCallback(() => {
+    setBrowserOptOuts((count) => count + 1);
+    return () => setBrowserOptOuts((count) => count - 1);
+  }, []);
+
+  return (
+    <LocaleContext.Provider value={{ locale, setLocale, holdBrowserOptOut }}>
+      {children}
+    </LocaleContext.Provider>
+  );
+}
+
+/**
+ * Keeps the mounted route on the instance's own default language rather than the browser's,
+ * for a viewer with no saved pick, and hands the browser back on unmount. The admin uses it:
+ * its screens ship no Dutch, and a restaurant's staff run the back office in the language the
+ * instance was configured with, wherever their browser happens to point.
+ *
+ * @see [LocaleContext.test.tsx](../tests/context/LocaleContext.test.tsx) — pins that a mounted
+ * opt-out ignores the browser, that a saved pick still outranks the default, and that
+ * unmounting restores the browser's language.
+ */
+export function useBrowserLocaleOptOut(): void {
+  const { holdBrowserOptOut } = useContext(LocaleContext);
+  useEffect(() => holdBrowserOptOut(), [holdBrowserOptOut]);
 }
 
 export function useLocale(): LocaleContextValue {

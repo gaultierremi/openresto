@@ -1,0 +1,664 @@
+{
+  "booking": {
+    "calendar": {
+      "heading": "TOEVOEGEN AAN AGENDA",
+      "icsA11y": "Download .ics voor Apple Agenda, Thunderbird en andere"
+    },
+    "confirmation": {
+      "loadingInlineLabel": "Reservatie laden",
+      "loadingLabel": "Uw reservatie wordt geladen"
+    },
+    "directions": {
+      "heading": "ROUTEBESCHRIJVING",
+      "openMapsButton": "Openen in Maps"
+    },
+    "drawer": {
+      "bookLocationLabel": "Reserveer bij {{name}}",
+      "closePanelLabel": "Reservatiepaneel sluiten",
+      "exactTimeLabel": "Exact uur",
+      "genericSubmitError": "Er is iets misgegaan. Probeer het opnieuw.",
+      "locationSelectLabel": "Vestiging",
+      "partyDateHeading": "Gezelschap en datum",
+      "seatingDisclosureLabel": "Kies een zaal of tafel",
+      "specialRequestsLabel": "Bijzondere wensen / allergieën",
+      "summaryLine_one": "{{count}} gast · {{when}} · {{time}}",
+      "summaryLine_other": "{{count}} gasten · {{when}} · {{time}}",
+      "today": "Vandaag",
+      "yourDetailsHeading": "Uw gegevens",
+      "waitlistSummary_one": "Wachtlijst zonder reservatie · {{count}} gast",
+      "waitlistSummary_other": "Wachtlijst zonder reservatie · {{count}} gasten",
+      "waitlistLocationLabel": "Op de wachtlijst bij {{name}}"
+    },
+    "factsBand": {
+      "dateKey": "Datum",
+      "dateTimeKey": "Datum en uur",
+      "guestsKey": "Gasten",
+      "tableFor": "Tafel voor {{count}}",
+      "timeKey": "Uur",
+      "until": "tot {{time}}"
+    },
+    "form": {
+      "autoAssignHint": "Wij plaatsen u aan de beste beschikbare tafel.",
+      "autoAssignHintAllSections": "Wij plaatsen u aan de beste beschikbare tafel in alle zalen.",
+      "closedDayNotice": "Het restaurant is op deze dag gesloten. Kies een andere datum.",
+      "confirmBookingLabel": "Reservatie bevestigen",
+      "confirmLabel": "Reservatie bevestigen",
+      "confirmingLabel": "Bevestigen…",
+      "dateLabel": "Datum",
+      "emailAccessibilityLabel": "E-mailadres",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "uw@e-mail.be",
+      "fewerGuestsLabel": "Een gast minder",
+      "fullNameAccessibilityLabel": "Volledige naam",
+      "fullNameLabel": "Volledige naam",
+      "fullNamePlaceholder": "Uw volledige naam",
+      "gdprText": "Door te bevestigen gaat u ermee akkoord dat uw e-mailadres en reservatiegegevens worden bewaard om uw reservatie te beheren. Wij gebruiken ook een noodzakelijke cookie om uw recente reservaties op dit toestel te onthouden. Wij delen uw gegevens niet met derden. U kunt de verwijdering ervan aanvragen door contact op te nemen met het restaurant.",
+      "guestsLabel": "Gasten",
+      "guestsSelectLabel": "Aantal gasten",
+      "holdRequiredHint": "Een tafel moet eerst tijdelijk vastgehouden worden vóór de bevestiging.",
+      "loadingTimesLabel": "Beschikbare uren laden",
+      "moreGuestsLabel": "Een gast meer",
+      "noTablesAvailable_one": "Geen tafels beschikbaar voor {{count}} gast.",
+      "noTablesAvailable_other": "Geen tafels beschikbaar voor {{count}} gasten.",
+      "numberOfGuestsLabel": "Aantal gasten",
+      "oversizeConfirm": "Let op: deze tafel heeft slechts {{tableSeats}} plaatsen, maar u reserveert voor {{guests}}. Wilt u doorgaan?",
+      "partySize_one": "{{count}} gast",
+      "partySize_other": "{{count}} gasten",
+      "popularTimesLabel": "Populaire uren",
+      "requestsAccessibilityLabel": "Bijzondere wensen of allergieën",
+      "requestsPlaceholder": "bv. notenallergie, kinderstoel nodig… (optioneel)",
+      "seatsCount_one": "{{count}} plaats",
+      "seatsCount_other": "{{count}} plaatsen",
+      "sectionLabel": "Zaal",
+      "selectSectionPlaceholder": "Kies een zaal",
+      "selectTablePlaceholder": "Kies een tafel",
+      "specialRequestsLabel": "Bijzondere wensen / allergieën",
+      "tableLabel": "Tafel",
+      "timeLabel": "Uur",
+      "timezoneHint": "Alle uren zijn in {{timezone}} (daar is het nu {{time}})",
+      "walkInsOnlyReason": "Enkel zonder reservatie"
+    },
+    "guestDetails": {
+      "bookedUnder": "Gereserveerd op naam van {{name}}",
+      "bookedWith": "Gereserveerd bij",
+      "specialRequestsLabel": "Bijzondere wensen"
+    },
+    "hold": {
+      "checking": "Beschikbaarheid controleren…",
+      "checkingA11y": "Beschikbaarheid controleren",
+      "expiredMessage": "Uw tijdelijk vastgehouden tafel is vervallen. De beschikbaarheid is mogelijk veranderd.",
+      "expiresIn": "- vervalt over {{time}}",
+      "expiryNoticeBody": "Nog één minuut om uw reservatie af te ronden, daarna wordt de tafel vrijgegeven.",
+      "expiryNoticeChannel": "Vastgehouden tafels",
+      "expiryNoticeTitle": "Uw tafel wordt nog vastgehouden",
+      "heldLabel": "Tafel vastgehouden",
+      "heldLabelNamed": "Tafel vastgehouden: {{table}}",
+      "refreshButton": "Pagina vernieuwen",
+      "refreshHint": "Laadt de beschikbaarheid voor deze datum opnieuw",
+      "unavailableDefault": "Tafel niet beschikbaar op deze datum. Kies een andere."
+    },
+    "largeParty": {
+      "body": "Onze grootste tafel biedt plaats aan {{count}} personen. Neem contact met ons op om een reservatie voor een grotere groep te regelen.",
+      "callLabel": "Bel {{phone}}",
+      "contactAccessibilityLabel": "Neem contact met ons op voor een grote groep",
+      "contactLink": "Contacteer ons →",
+      "emailLabel": "Mail {{email}}",
+      "gotItLabel": "Begrepen",
+      "modalMessage": "Onze grootste tafel biedt plaats aan {{count}} personen. Een reservatie voor een grotere groep moet dus rechtstreeks geregeld worden. Neem gerust contact met ons op, we zoeken graag een oplossing.",
+      "noContactsMessage": "Er zijn nog geen contactgegevens vermeld. Neem rechtstreeks contact met ons op.",
+      "title": "Grote groep"
+    },
+    "moveNotice": {
+      "body": "Wij hebben uw reservatie bij {{venue}} verplaatst.\n\nVoordien: {{previous}}\nNu: {{next}}\n\nAlle andere gegevens van de reservatie blijven ongewijzigd.{{referenceLine}}\n\nPast het nieuwe tijdstip u niet, antwoord dan op deze e-mail en we zoeken samen een oplossing.",
+      "greetingGeneric": "Goedendag,",
+      "greetingNamed": "Beste {{name}},",
+      "referenceLine": "\n\nUw reservatienummer blijft ongewijzigd: {{ref}}.",
+      "subject": "Uw reservatie bij {{venue}} is verplaatst",
+      "venueFallback": "het restaurant"
+    },
+    "popularTimes": {
+      "availableTimesA11y": "Beschikbare uren",
+      "earlierA11y": "Vroegere uren tonen",
+      "empty": "Geen uren beschikbaar voor deze periode.",
+      "laterA11y": "Latere uren tonen"
+    },
+    "result": {
+      "cancelActionLabel": "Deze reservatie annuleren",
+      "cancelButton": "Reservatie annuleren",
+      "cancelHint": "Deze reservatie kan niet gewijzigd worden. U kunt ze wel annuleren en opnieuw reserveren indien nodig.",
+      "cancelledHint": "Deze reservatie is geannuleerd.",
+      "copiedButton": "Gekopieerd",
+      "copyButton": "Kopiëren",
+      "copyReferenceLabel": "Reservatienummer kopiëren",
+      "linkCopiedButton": "Link gekopieerd",
+      "linkCopiedLabel": "Reservatielink gekopieerd",
+      "mapTitle": "Kaart van {{name}}",
+      "pastHint": "Deze reservatie is al voorbij en kan niet meer geannuleerd worden.",
+      "referenceCopiedLabel": "Reservatienummer gekopieerd",
+      "referenceLabel": "Referentie",
+      "routeTitleConfirmed": "Reservatie bevestigd",
+      "shareButton": "Delen",
+      "shareLabel": "Reservatiegegevens delen",
+      "shareMessage_one": "Reservatie {{ref}} bij {{name}} · {{when}} · {{count}} gast",
+      "shareMessage_other": "Reservatie {{ref}} bij {{name}} · {{when}} · {{count}} gasten",
+      "statusCancelled": "Reservatie geannuleerd",
+      "statusConfirmed": "Reservatie bevestigd",
+      "statusFound": "Reservatie gevonden",
+      "statusPassed": "Reservatie is voorbij",
+      "unnamedRestaurant": "Restaurant"
+    },
+    "seating": {
+      "anySectionLabel": "Eender welke zaal",
+      "seatsSuffix_one": "({{count}} plaats)",
+      "seatsSuffix_other": "({{count}} plaatsen)",
+      "tableFallbackName": "Tafel {{id}}"
+    },
+    "summaryHeader": {
+      "combinedTablesFallback": "Samengevoegde tafels"
+    },
+    "walkIn": {
+      "dayBodyGeneric": "Online reserveren is niet mogelijk voor de gekozen datum. Kies een andere dag, of kom gewoon langs. Gasten zonder reservatie zijn altijd welkom.",
+      "dayBodyWithDays": "Deze vestiging neemt geen online reservaties aan op {{days}}. Kies een andere dag, of kom gewoon langs - gasten zonder reservatie zijn altijd welkom.",
+      "dayTitle": "Op deze dag enkel zonder reservatie",
+      "daysBanner": "Op {{days}} enkel zonder reservatie - online reserveren is op die dagen niet mogelijk.",
+      "locationBody": "Deze vestiging neemt geen online reservaties aan. Tafels worden toegewezen in volgorde van aankomst. Kom gewoon langs tijdens de openingsuren.",
+      "locationTitle": "Enkel zonder reservatie"
+    },
+    "reminders": {
+      "heading": "HERINNERINGEN",
+      "offButton": "Herinner mij",
+      "onButton": "Herinneringen aan",
+      "turnOnLabel": "Reservatieherinneringen op dit toestel inschakelen",
+      "turnOffLabel": "Reservatieherinneringen op dit toestel uitschakelen",
+      "offHint": "Ontvang op dit toestel een melding de dag voor uw reservatie en kort voor uw tafel.",
+      "onHint": "Dit toestel ontvangt een melding de dag voor uw reservatie en kort voor uw tafel.",
+      "denied": "Meldingen zijn uitgeschakeld voor deze app. Sta ze toe in de instellingen van uw toestel om herinneringen te ontvangen.",
+      "failed": "De herinneringen konden niet worden ingeschakeld. Controleer uw verbinding en probeer het opnieuw."
+    },
+    "wallet": {
+      "heading": "TOEVOEGEN AAN WALLET",
+      "appleButton": "Apple Wallet",
+      "googleButton": "Google Wallet",
+      "appleA11y": "Deze reservatie toevoegen aan Apple Wallet",
+      "googleA11y": "Deze reservatie opslaan in Google Wallet",
+      "failed": "De pas kon niet worden aangemaakt. Controleer uw verbinding en probeer het opnieuw."
+    },
+    "waitlist": {
+      "joinCta": "Op de wachtlijst",
+      "intro": "Wij verwittigen u zodra uw tafel klaar is.",
+      "partySizeLabel": "Aantal gasten",
+      "emailLabel": "E-mail (optioneel)",
+      "push": {
+        "offButton": "Verwittig mij",
+        "onButton": "Meldingen aan",
+        "offHint": "Ontvang op dit toestel een melding zodra uw tafel klaar is.",
+        "onHint": "Dit toestel ontvangt een melding zodra uw tafel klaar is.",
+        "denied": "Meldingen zijn uitgeschakeld voor deze app. Sta ze toe in de instellingen van uw toestel om verwittigd te worden."
+      },
+      "submit": "Op de wachtlijst",
+      "partiesWaiting_one": "1 groep wacht",
+      "partiesWaiting_other": "{{count}} groepen wachten",
+      "waitNow": "Er is nu een tafel vrij",
+      "waitMinutes": "Ongeveer {{minutes}} min wachten",
+      "waitUnknown": "Geen enkele tafel biedt plaats aan een gezelschap van die grootte",
+      "notAccepting": "De wachtlijst is momenteel niet open.",
+      "loadFailed": "De wachtlijst kon niet worden geladen. Probeer het opnieuw.",
+      "joinAgain": "Opnieuw aansluiten",
+      "openTicket": "Bekijk het bij Mijn reservaties"
+    },
+    "waitlistStatus": {
+      "routeTitle": "Uw plaats in de rij",
+      "ticket": "Ticket #{{number}}",
+      "ticketKey": "Ticket",
+      "waitKey": "Wachttijd",
+      "waitValue": "{{minutes}} min",
+      "waitNow": "Nu",
+      "joinedKey": "Aangemeld",
+      "waitingTitle": "U staat op de lijst",
+      "partiesAhead_one": "1 groep voor u",
+      "partiesAhead_other": "{{count}} groepen voor u",
+      "next": "U bent de volgende",
+      "readyTitle": "Uw tafel is klaar",
+      "readyBody": "Meld u aan bij de onthaalbalie.",
+      "seatedTitle": "Smakelijk",
+      "leftTitle": "U hebt de wachtlijst verlaten",
+      "expiredTitle": "Deze wachtlijstplaats is vervallen",
+      "pushOn": "U ontvangt een melding zodra uw tafel klaar is.",
+      "leave": "Wachtlijst verlaten",
+      "leaveModal": {
+        "title": "Wachtlijst verlaten",
+        "message": "Weet u zeker dat u de wachtlijst wilt verlaten? U verliest uw plaats in de rij.",
+        "confirm": "Wachtlijst verlaten",
+        "confirming": "Verlaten…",
+        "keep": "In de rij blijven"
+      },
+      "leaveFailed": "De wachtlijst kon niet worden verlaten. Probeer het opnieuw.",
+      "notFound": "Wij konden die wachtlijstplaats niet vinden.",
+      "loadFailed": "Uw plaats in de rij kon niet worden vernieuwd."
+    }
+  },
+  "common": {
+    "actions": {
+      "cancel": "Annuleren",
+      "close": "Sluiten",
+      "confirm": "Bevestigen",
+      "goHome": "Naar de startpagina",
+      "scrollToTop": "Naar boven",
+      "tryAgain": "Opnieuw proberen"
+    },
+    "alertModal": {
+      "defaultButtonLabel": "OK",
+      "defaultTitle": "Melding"
+    },
+    "confirmModal": {
+      "defaultTitle": "Bevestigen"
+    },
+    "footer": {
+      "adminLinkText": "Beheer",
+      "copyrightFallback": "© {{year}} {{appName}}. Alle rechten voorbehouden.",
+      "privacyPolicy": "Privacybeleid",
+      "restaurantAdminLabel": "Restaurantbeheer"
+    },
+    "guestSettings": {
+      "title": "Instellingen",
+      "openLabel": "Instellingen openen",
+      "closeLabel": "Instellingen sluiten",
+      "appearance": "Weergave",
+      "themeSystem": "Systeem",
+      "themeLight": "Licht",
+      "themeDark": "Donker",
+      "about": "Over",
+      "version": "Versie {{version}}"
+    },
+    "offline": {
+      "label": "Offline",
+      "message": "U bent offline. Sommige informatie is mogelijk niet meer actueel."
+    },
+    "updateRequired": {
+      "title": "Update vereist",
+      "message": "Werk de app bij via de store om te kunnen blijven reserveren."
+    },
+    "datePicker": {
+      "changeDate": "Datum wijzigen, momenteel {{date}}",
+      "chooseDate": "Kies een datum",
+      "closeButtonLabel": "De datumkiezer sluiten",
+      "nextMonth": "Volgende maand",
+      "normallyClosed": "Normaal gesloten",
+      "previousMonth": "Vorige maand",
+      "selectDate": "Selecteer een datum"
+    },
+    "keyboardShortcuts": {
+      "closeLabel": "Sneltoetsen sluiten",
+      "title": "Sneltoetsen"
+    },
+    "language": {
+      "switcherLabel": "Taal"
+    },
+    "modalCard": {
+      "defaultDismissLabel": "Sluiten"
+    },
+    "navbar": {
+      "brandBackToTop": "{{appName}}, terug naar boven",
+      "brandHome": "{{appName}}, naar de startpagina",
+      "goBack": "Terug",
+      "locationsLink": "Vestigingen",
+      "myBookingsLink": "Mijn reservaties"
+    },
+    "overflowMenu": {
+      "closeHelp": "Help sluiten",
+      "closeLanguage": "Taalkeuze sluiten",
+      "closeMenu": "Menu sluiten",
+      "findUsElsewhere": "Vind ons elders",
+      "help": "Help",
+      "helpBody": "Open de pagina Vestigingen om de openingsuren, menukaarten en beschikbare uren van elke vestiging te zien. Kies een uur om meteen het reservatieformulier te openen, of gebruik \"Mijn reservaties\" om een bestaande reservatie op te zoeken met uw reservatienummer.",
+      "language": "Taal",
+      "moreOptions": "Meer opties",
+      "openMenu": "Menu openen",
+      "switchToDarkMode": "Overschakelen naar donkere modus",
+      "switchToLightMode": "Overschakelen naar lichte modus",
+      "viewKeyboardShortcuts": "Sneltoetsen bekijken",
+      "visitWebsite": "Bezoek onze website"
+    },
+    "roles": {
+      "owner": "Eigenaar",
+      "manager": "Manager"
+    },
+    "select": {
+      "closeListLabel": "De lijst met opties sluiten",
+      "placeholder": "Kies een optie"
+    },
+    "slidePanel": {
+      "closeLabel": "{{label}} sluiten"
+    },
+    "status": {
+      "loading": "Laden…",
+      "saving": "Opslaan…",
+      "adding": "Toevoegen…"
+    },
+    "timePicker": {
+      "accessibilityLabel": "Uur",
+      "placeholder": "Kies een uur"
+    },
+    "tabs": {
+      "home": "Start"
+    }
+  },
+  "errors": {
+    "admin": {
+      "password_not_configured": "Admin:Password moet ingesteld zijn vóór het eerste gebruik. Stel het in via de omgevingsvariabele ADMIN_PASSWORD."
+    },
+    "auth": {
+      "email_already_in_use": "Dat e-mailadres is al in gebruik.",
+      "email_unchanged": "Het nieuwe e-mailadres moet verschillen van het huidige.",
+      "invalid_reset_token": "Ongeldige of verlopen resetcode.",
+      "no_account_for_session": "Geen enkele account komt overeen met de aangemelde sessie.",
+      "pvq_fields_required": "Vraag en antwoord zijn verplicht.",
+      "pvq_not_configured": "Voor deze account is geen beveiligingsvraag ingesteld."
+    },
+    "booking": {
+      "all_tables_held": "Alle geschikte tafels worden momenteel door andere gebruikers vastgehouden. Probeer het zo meteen opnieuw.",
+      "already_active": "De reservatie is al actief.",
+      "already_past": "Een reservatie die al voorbij is, kan niet meer geannuleerd worden.",
+      "ambiguous_table_selection": "Geef zowel TableId als SectionId op, of laat beide weg voor automatische toewijzing.",
+      "cancel_email_required": "Een e-mailadres is vereist om een reservatie te annuleren.",
+      "email_fields_required": "Onderwerp en bericht zijn verplicht.",
+      "email_invalid": "Dat e-mailadres lijkt niet te kloppen.",
+      "email_send_failed": "Verzenden mislukt: {{detail}}",
+      "invalid_table_for_restaurant": "Ongeldige tafel voor dit restaurant.",
+      "lookup_email_required": "Een e-mailadres is vereist om een reservatie op te zoeken.",
+      "lookup_not_found": "Geen reservatie gevonden met dat nummer en e-mailadres.",
+      "move_conflict": "Deze wijziging zou een conflict veroorzaken met een bestaande reservatie.",
+      "no_customer_email": "Het e-mailadres van de klant is niet beschikbaar.",
+      "no_show_before_start": "Een reservatie kan pas als niet komen opdagen (no-show) gemarkeerd worden zodra de zitting begonnen is.",
+      "no_tables_available": "Er zijn geen tafels beschikbaar voor het gevraagde uur en aantal gasten.",
+      "party_size_out_of_range": "Het aantal gasten moet tussen {{min}} en {{max}} liggen.",
+      "past_date": "Een reservatie in het verleden is niet mogelijk.",
+      "paused": "Reservaties zijn onderbroken tot {{until}}. Kies een later uur.",
+      "paused_indefinitely": "Reservaties voor dit restaurant zijn momenteel onderbroken. Probeer het later opnieuw.",
+      "section_mismatch": "De zaal hoort niet bij dit restaurant.",
+      "status_cancelled": "Een geannuleerde reservatie kan geen statuswijzigingen meer krijgen.",
+      "status_invalid": "De status moet een van de volgende zijn: {{allowed}}.",
+      "status_transition_invalid": "Een reservatie met status {{from}} kan niet als {{to}} gemarkeerd worden.",
+      "table_conflict": "Voor deze tafel bestaat al een reservatie die overlapt met het gevraagde uur.",
+      "table_held": "Deze tafel wordt al door een andere gebruiker vastgehouden. Kies een andere tafel of probeer het zo meteen opnieuw.",
+      "table_id_required_for_section_change": "Geef een tableId op wanneer u naar een andere zaal verplaatst.",
+      "table_not_in_section": "Tafel niet gevonden in de opgegeven zaal.",
+      "walk_in_only": "Deze vestiging werkt enkel zonder reservatie en neemt geen online reservaties aan.",
+      "walk_in_only_today": "Deze vestiging werkt op de gekozen dag enkel zonder reservatie. Kies een andere dag of kom gewoon langs.",
+      "pacing_full": "Er kunnen om {{time}} nog slechts {{remaining}} gasten aankomen. Kies een ander uur."
+    },
+    "brand": {
+      "accent_color_invalid": "Ongeldige hexcode voor de accentkleur.",
+      "app_name_too_long": "De naam van de app mag niet langer zijn dan 32 tekens.",
+      "copyright_too_long": "De copyrighttekst mag niet langer zijn dan 200 tekens.",
+      "favicon_invalid": "Ongeldig favicon-pictogram.",
+      "header_image_fit_invalid": "HeaderImageFit moet een van de volgende zijn: {{allowed}}.",
+      "highlights_heading_too_long": "De titel van de uitgelichte items mag niet langer zijn dan 60 tekens.",
+      "highlights_subheading_too_long": "De ondertitel van de uitgelichte items mag niet langer zijn dan 60 tekens.",
+      "primary_color_invalid": "Ongeldige hexcode voor de hoofdkleur.",
+      "subtitle_too_long": "De ondertitel mag niet langer zijn dan 160 tekens."
+    },
+    "contact": {
+      "email_invalid": "Het e-mailadres moet een geldig e-mailadres zijn.",
+      "email_too_long": "Het e-mailadres mag niet langer zijn dan {{max}} tekens.",
+      "phone_too_long": "Het telefoonnummer mag niet langer zijn dan {{max}} tekens."
+    },
+    "email": {
+      "connection_failed": "Verbinding mislukt: {{detail}}",
+      "not_configured": "E-mail is niet ingesteld."
+    },
+    "generic": "Er is iets misgegaan",
+    "genericMessage": "Er is een onverwachte fout opgetreden. Probeer het opnieuw.",
+    "highlight": {
+      "body_too_long": "De tekst van het uitgelichte item mag niet langer zijn dan {{max}} tekens.",
+      "link_invalid": "De link van het uitgelichte item moet een geldige absolute URL zijn (http, https, mailto, tel of sms).",
+      "title_required": "De titel van het uitgelichte item mag niet leeg zijn.",
+      "title_too_long": "De titel van het uitgelichte item mag niet langer zijn dan {{max}} tekens."
+    },
+    "hold": {
+      "ambiguous_group_and_table": "Geef ofwel TableId ofwel TableGroupId op, niet beide.",
+      "auto_assign_seats_required": "Het aantal plaatsen is vereist voor automatische toewijzing, zodat de server een tafel kan kiezen die bij uw gezelschap past.",
+      "client_limit": "Er worden te veel tafels vastgehouden vanaf uw verbinding. Probeer het over enkele minuten opnieuw.",
+      "group_seats_required": "Het aantal plaatsen is vereist om een groep samengevoegde tafels vast te houden, zodat de server de gezamenlijke capaciteit kan controleren.",
+      "unavailable": "Tafel vasthouden is niet mogelijk."
+    },
+    "icon": {
+      "invalid": "De pictogramsleutel moet een van de ondersteunde pictogrammen zijn."
+    },
+    "media": {
+      "hero_too_large": "De bannerafbeelding moet kleiner zijn dan 5 MB.",
+      "location_image_too_large": "De afbeelding van de vestiging moet kleiner zijn dan 2 MB.",
+      "menu_too_large": "Het menukaartbestand moet kleiner zijn dan 10 MB.",
+      "unsupported_image_type": "Enkel JPEG-, PNG- en WebP-afbeeldingen worden aanvaard.",
+      "unsupported_menu_type": "Enkel pdf-bestanden worden aanvaard voor de menukaart."
+    },
+    "restaurant": {
+      "archive_before_delete": "Archiveer deze vestiging voordat u ze verwijdert. Archiveren haalt ze van de publieke site en kan ongedaan gemaakt worden; verwijderen niet.",
+      "booking_ref_format_invalid": "BookingRefFormat moet een van de volgende zijn: {{allowed}}.",
+      "closed_at_time": "Het restaurant is gesloten op het gevraagde uur.",
+      "duration_invalid": "DefaultBookingDurationMinutes moet een van de volgende zijn: {{allowed}}.",
+      "menu_url_invalid": "De menu-URL moet een geldige absolute http(s)-URL zijn.",
+      "name_required": "Een naam is verplicht.",
+      "no_sections": "Restaurant niet gevonden of heeft geen zalen.",
+      "not_found": "Ongeldig restaurant.",
+      "open_hours_day_invalid": "OpenHours-items moeten ISO-dagnummers gebruiken, van 1 (maandag) tot 7 (zondag).",
+      "open_hours_duplicate_day": "OpenHours bevat meer dan één item voor dag {{day}}.",
+      "open_hours_time_invalid": "OpenHours-uren moeten geldige HH:mm-waarden zijn (00:00–23:59).",
+      "oversize_cap_invalid": "MaxTableOversizeSeats moet nul of meer zijn, of null om uit te schakelen.",
+      "section_ids_mismatch": "sectionIds moet precies de huidige zalen van het restaurant bevatten, zonder dubbels.",
+      "slot_interval_invalid": "BookingSlotIntervalMinutes moet een van de volgende zijn: {{allowed}}.",
+      "turn_time_duplicate_seats": "Er is meer dan één zittijd voor gezelschappen van {{seats}}.",
+      "turn_time_minutes_invalid": "De minuten van een zittijd moeten een van de volgende zijn: {{allowed}}.",
+      "turn_time_seats_out_of_range": "De groottes van gezelschappen voor een zittijd moeten tussen {{min}} en {{max}} liggen.",
+      "walk_in_days_invalid": "WalkInDays moet een door komma's gescheiden lijst zijn van ISO-dagnummers, van 1 (maandag) tot 7 (zondag).",
+      "max_covers_invalid": "Het maximum aantal gasten per tijdslot moet 1 of meer zijn, of leeg voor geen limiet."
+    },
+    "social_link": {
+      "label_required": "Het label van de sociale link mag niet leeg zijn.",
+      "label_too_long": "Het label van de sociale link mag niet langer zijn dan {{max}} tekens.",
+      "url_invalid": "De URL van de sociale link moet een geldige absolute URL zijn (http, https, mailto, tel of sms).",
+      "url_required": "De URL van de sociale link mag niet leeg zijn."
+    },
+    "table": {
+      "oversize_cap": "Deze tafel heeft {{seats}} plaatsen, wat te groot is voor een gezelschap van {{partySize}}.",
+      "seats_exceeded": "Deze tafel heeft slechts {{seats}} plaatsen, maar er werd voor {{requested}} gasten gevraagd.",
+      "seats_out_of_range": "Het aantal plaatsen moet tussen {{min}} en {{max}} liggen.",
+      "walk_in_only": "Deze tafel is voorbehouden voor gasten zonder reservatie en kan niet online gereserveerd worden."
+    },
+    "table_group": {
+      "booking_conflict": "Een van de samengevoegde tafels is op dat uur al gereserveerd.",
+      "combined_seats_exceeds_sum": "CombinedSeats ({{combined}}) mag de som van de plaatsen van de tafels ({{sum}}) niet overschrijden.",
+      "combined_seats_not_worth_combining": "CombinedSeats ({{combined}}) moet groter zijn dan de grootste tafel van de groep ({{largest}}). Deze tafels samenvoegen zou geen groter gezelschap plaats bieden.",
+      "disbanded": "Deze tafels kunnen niet meer samengevoegd worden. Kies een ander uur of een andere tafel.",
+      "duplicate_member": "Een groep van samenvoegbare tafels kan dezelfde tafel niet tweemaal bevatten.",
+      "hold_conflict": "Een van de samengevoegde tafels wordt al door een andere gebruiker vastgehouden. Probeer het zo meteen opnieuw.",
+      "invalid_members": "Alle tafels van de groep moeten bestaan en tot dit restaurant behoren.",
+      "member_already_grouped": "Tafel {{tableId}} behoort al tot een andere groep van samenvoegbare tafels ({{groupId}}).",
+      "min_members": "Een groep van samenvoegbare tafels moet minstens twee tafels bevatten.",
+      "no_members": "Deze tafelgroep bevat geen tafels.",
+      "not_found": "Tafelgroep niet gevonden.",
+      "oversize_cap": "Deze groep heeft {{seats}} plaatsen samen, wat te groot is voor een gezelschap van {{partySize}}.",
+      "seats_exceeded": "Deze groep heeft samen slechts {{seats}} plaatsen, maar er werd voor {{requested}} gasten gevraagd."
+    },
+    "title": "Fout",
+    "user": {
+      "cannot_change_own_role": "U kunt uw eigen rol niet wijzigen.",
+      "cannot_deactivate_self": "U kunt uw eigen account niet deactiveren.",
+      "display_name_too_long": "De weergavenaam mag niet langer zijn dan {{max}} tekens.",
+      "email_already_exists": "Er bestaat al een account met dat e-mailadres.",
+      "email_invalid": "Een geldig e-mailadres is verplicht.",
+      "email_too_long": "Het e-mailadres mag niet langer zijn dan {{max}} tekens.",
+      "last_active_owner_deactivate": "De laatste actieve eigenaar kan niet gedeactiveerd worden. Maak eerst een andere gebruiker eigenaar.",
+      "last_active_owner_demote": "De laatste actieve eigenaar kan niet gedegradeerd worden. Maak eerst een andere gebruiker eigenaar.",
+      "not_found": "Gebruiker {{id}} niet gevonden.",
+      "password_too_short": "Het wachtwoord moet minstens {{min}} tekens bevatten.",
+      "role_invalid": "De rol moet een van de volgende zijn: {{allowed}}."
+    },
+    "waitlist": {
+      "not_found": "Wachtlijstplaats niet gevonden.",
+      "not_walk_in_now": "Deze vestiging werkt vandaag niet met een wachtlijst voor gasten zonder reservatie.",
+      "closed_now": "Deze vestiging is momenteel gesloten.",
+      "name_required": "Een naam is verplicht om op de wachtlijst te komen.",
+      "email_invalid": "Dat e-mailadres lijkt niet te kloppen.",
+      "party_too_large": "Geen enkele tafel hier biedt plaats aan een gezelschap van {{seats}}.",
+      "not_active": "Dit gezelschap heeft de wachtlijst al verlaten.",
+      "no_table_free": "Er is momenteel geen vrije tafel voor dit gezelschap.",
+      "push_invalid": "Dat toestel kan geen meldingen van deze site ontvangen."
+    }
+  },
+  "lookup": {
+    "cancelModal": {
+      "confirm": "Reservatie annuleren",
+      "confirming": "Annuleren…",
+      "keep": "Reservatie behouden",
+      "message": "Weet u zeker dat u deze reservatie wilt annuleren? Dit kan niet ongedaan gemaakt worden.",
+      "title": "Reservatie annuleren"
+    },
+    "connectionError": "Wij konden het reservatiesysteem niet bereiken. Uw reservatie is veilig.",
+    "offlineError": "U bent offline. Maak opnieuw verbinding om uw reservatie op te zoeken.",
+    "form": {
+      "callLabel": "Bel {{phone}}",
+      "emailA11y": "E-mailadres",
+      "emailContactLabel": "Mail {{email}}",
+      "emailLabel": "E-mailadres",
+      "emailPlaceholder": "Het e-mailadres waarmee u reserveerde",
+      "helpText": "Vindt u uw reservatie niet terug? Neem rechtstreeks contact op met het restaurant.",
+      "referenceA11y": "Reservatienummer",
+      "referenceLabel": "Reservatienummer",
+      "referencePlaceholder": "bv. crispy-basil-thyme",
+      "submitA11y": "Mijn reservatie zoeken",
+      "submitButton": "Opzoeken"
+    },
+    "notFound": "Geen reservatie gevonden met dat nummer en e-mailadres.",
+    "routeTitle": "Mijn reservatie zoeken",
+    "recent": {
+      "guestCount_one": "{{count}} gast",
+      "guestCount_other": "{{count}} gasten",
+      "heading": "UW RECENTE RESERVATIES",
+      "itemA11y": "Reservatie {{ref}} opzoeken",
+      "itemWithNameA11y": "Reservatie {{ref}} bij {{name}} opzoeken",
+      "showAll": "Alle {{count}} tonen",
+      "showFewer": "Minder tonen",
+      "storageNote": "Recente reservaties worden op dit toestel bewaard. Als u uw cache en cookies wist of de app verwijdert, wordt deze lijst leeggemaakt."
+    },
+    "resultPanelA11y": "Resultaat van de reservatie",
+    "subtitle": "Geef uw reservatienummer en e-mailadres in om uw reservatie op te zoeken.",
+    "title": "Mijn reservatie zoeken"
+  },
+  "restaurant": {
+    "card": {
+      "availableSlots": "Beschikbare uren",
+      "bookAt": "Reserveer om {{time}} bij {{name}}",
+      "closedBadge": "Gesloten",
+      "closedToday": "Vandaag gesloten",
+      "directions": "Route",
+      "guestsToday_one": "{{count}} gast · vandaag",
+      "guestsToday_other": "{{count}} gasten · vandaag",
+      "hoursOpen": "Open {{hours}}",
+      "hoursToday": "Vandaag {{hours}}",
+      "multipleAreas": "Meerdere zalen",
+      "noAvailableSlotsToday": "Vandaag geen uren beschikbaar",
+      "noReservationsRequired": "Reserveren niet nodig",
+      "openBookingPageNewTab": "Reservatiepagina openen in een nieuw tabblad",
+      "openInAppleMaps": "Openen in Apple Maps",
+      "openInGoogleMaps": "Openen in Google Maps",
+      "openTill": "Open tot {{time}}",
+      "opensInHours": "Opent over {{hours}}u",
+      "opensInHoursMinutes": "Opent over {{hours}}u {{minutes}}m",
+      "opensInMinutes": "Opent over {{minutes}}m",
+      "seeDetails": "Details bekijken",
+      "seeDetailsFor": "Details van {{name}} bekijken",
+      "viewDetailsAndBook": "{{name}}, details bekijken en reserveren"
+    },
+    "details": {
+      "directionsHeading": "Route",
+      "openInProviderMaps": "Openen in {{provider}} Maps",
+      "openMenu": "Menukaart openen",
+      "openingHoursHeading": "Openingsuren",
+      "viewMenu": "Menukaart bekijken"
+    },
+    "filterBar": {
+      "all": "Alle",
+      "allTimes": "Alle uren",
+      "dinner": "Avondeten",
+      "guestCount_one": "{{count}} gast",
+      "guestCount_other": "{{count}} gasten",
+      "lunch": "Middageten",
+      "numberOfGuests": "Aantal gasten",
+      "timeOfDay": "Moment van de dag",
+      "today": "Vandaag",
+      "todayDate": "Vandaag, {{date}}"
+    },
+    "home": {
+      "heroSubtitle": "Scroll naar beneden, kies een vestiging, een uur en uw e-mailadres, en uw tafel is gereserveerd!",
+      "highlightsHeading": "Uitgelicht in het restaurant",
+      "highlightsSubheading": "Samengesteld door de eigenaar",
+      "loadingLocations": "Vestigingen laden",
+      "locationsHeading": "Onze vestigingen",
+      "opensInNewTab": "Opent in een nieuw tabblad",
+      "opensExternally": "Opent buiten de app"
+    },
+    "locationListItem": {
+      "bookNow": "Nu reserveren",
+      "bookTableAt": "Reserveer een tafel bij {{name}}",
+      "closedLabel": "Gesloten op {{day}}",
+      "closedOpensNext": "{{closedLabel}} · opent {{day}} {{time}}",
+      "detailsLabel": "Details",
+      "hideDetails": "Details verbergen",
+      "hideDetailsFor": "Details van {{name}} verbergen",
+      "hoursRange": "{{open}} – {{close}} {{day}}",
+      "menuLabel": "Menukaart",
+      "noReservationsFirstCome": "Reserveren niet nodig, wie eerst komt, eerst maalt",
+      "showDetails": "Details tonen",
+      "showDetailsFor": "Details van {{name}} tonen",
+      "today": "vandaag",
+      "viewMenu": "Menukaart bekijken",
+      "joinWaitlist": "Op de wachtlijst",
+      "joinWaitlistAt": "Op de wachtlijst bij {{name}}"
+    },
+    "locationsScreen": {
+      "availabilitySummary_one": "{{withTables}} van {{count}} vestiging heeft tafels",
+      "availabilitySummary_other": "{{withTables}} van {{count}} vestigingen hebben tafels",
+      "checkingAvailability": "Beschikbaarheid controleren…",
+      "couldntLoad": "Onze vestigingen konden niet worden geladen. Controleer uw verbinding en probeer het opnieuw.",
+      "noLocationsYet": "Nog geen vestigingen. Kom binnenkort nog eens terug.",
+      "noTablesAtThisTime": "Geen tafels op dit uur",
+      "routeTitle": "Vestigingen",
+      "subtitle": "Kies een uur en wij houden de tafel vijf minuten voor u vast.",
+      "tablesAvailable": "Tafels beschikbaar",
+      "title": "Onze vestigingen",
+      "tryAgain": "Opnieuw proberen"
+    },
+    "openingHours": {
+      "closed": "Gesloten",
+      "dayToday": "{{day}}  (vandaag)",
+      "friday": "Vrijdag",
+      "monday": "Maandag",
+      "saturday": "Zaterdag",
+      "sunday": "Zondag",
+      "thursday": "Donderdag",
+      "tuesday": "Dinsdag",
+      "walkIn": "Zonder reservatie",
+      "wednesday": "Woensdag"
+    },
+    "seatingMap": {
+      "combinableHeading": "Tafels die we kunnen samenvoegen",
+      "heading": "Zitplaatsen en tafels",
+      "seatsCount_one": "{{count}} plaats",
+      "seatsCount_other": "{{count}} plaatsen",
+      "seatsUpTo": "Tot {{count}} plaatsen samengeschoven",
+      "tableFallbackName": "Tafel {{id}}",
+      "walkInOnly": "Enkel zonder reservatie"
+    },
+    "slotRow": {
+      "bookAt": "Reserveer {{name}} om {{time}}",
+      "moreLabel": "+{{count}} meer",
+      "noTimesAvailable": "Geen uren beschikbaar, probeer een andere datum of een ander aantal gasten",
+      "showAllTimesFor": "Alle uren voor {{name}} tonen"
+    },
+    "tags": {
+      "moreTagsLabel_one": "{{count}} extra label: {{list}}",
+      "moreTagsLabel_other": "{{count}} extra labels: {{list}}"
+    }
+  }
+}

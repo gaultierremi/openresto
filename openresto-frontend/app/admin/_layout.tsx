@@ -8,6 +8,7 @@ import AdminSidebar from "@/components/layout/AdminSidebar";
 import { theme } from "@/theme/theme";
 import { useBrand } from "@/context/BrandContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { useBrowserLocaleOptOut } from "@/context/LocaleContext";
 import PageLoader from "@/components/common/PageLoader";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { focusTarget } from "@/utils/focusRegistry";
@@ -33,8 +34,11 @@ function DesktopOnlyWall() {
  * on ios/android this layout hands the visitor back to the home screen rather than mounting a
  * dashboard whose every screen assumes a pointer, a keyboard and a browser session.
  *
+ * The admin opts out of the browser's language (`useBrowserLocaleOptOut`): Dutch covers the
+ * guest surface only, so the back office follows the instance default instead.
+ *
  * @see [admin-layout.test.tsx](../../tests/app/admin-layout.test.tsx) — pins the redirect on
- * native and that web still mounts the admin.
+ * native, that web still mounts the admin, and that only web asks for the opt-out.
  */
 export default function AdminLayout() {
   if (Platform.OS !== "web") return <Redirect href="/" />;
@@ -42,6 +46,7 @@ export default function AdminLayout() {
 }
 
 function AdminLayoutWeb() {
+  useBrowserLocaleOptOut();
   const { width } = useWindowDimensions();
   const showWall = width < MIN_WIDTH;
 
