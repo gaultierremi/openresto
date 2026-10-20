@@ -15,6 +15,15 @@ public static class ImageSignature
     private static readonly byte[] _jpeg = [0xFF, 0xD8, 0xFF];
     private static readonly byte[] _png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
+    /// <summary>Reads the leading bytes of <paramref name="stream"/> and rewinds it, so what is stored is the file that was checked.</summary>
+    public static async Task<bool> MatchesAsync(Stream stream, string contentType)
+    {
+        byte[] header = new byte[HeaderLength];
+        int read = await stream.ReadAtLeastAsync(header, header.Length, throwOnEndOfStream: false);
+        stream.Position = 0;
+        return Matches(header.AsSpan(0, read), contentType);
+    }
+
     public static bool Matches(ReadOnlySpan<byte> header, string contentType) => contentType switch
     {
         "image/jpeg" => header.StartsWith(_jpeg),

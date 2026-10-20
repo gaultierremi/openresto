@@ -61,6 +61,15 @@ public static class AuditActions
     public const string MenuItemPhotoDelete = "menu.item_photo_delete";
     public const string MenuTokenRegenerate = "menu.token_regenerate";
 
+    // ── Sites ────────────────────────────────────────────────────────────────
+    public const string SiteUpdate = "site.update";
+    public const string SitePublish = "site.publish";
+    public const string SiteUnpublish = "site.unpublish";
+    public const string SiteImageUpload = "site.image_upload";
+    public const string SiteImageDelete = "site.image_delete";
+    public const string SitePhotoUpdate = "site.photo_update";
+    public const string SitePhotoReorder = "site.photo_reorder";
+
     // ── Waitlist ─────────────────────────────────────────────────────────────
     public const string WaitlistAdd = "waitlist.add";
     public const string WaitlistNotify = "waitlist.notify";
@@ -141,4 +150,5 @@ public static class AuditTargets
     public const string Menu = "Menu";
     public const string MenuCategory = "MenuCategory";
     public const string MenuItem = "MenuItem";
+    public const string Site = "Site";
 }

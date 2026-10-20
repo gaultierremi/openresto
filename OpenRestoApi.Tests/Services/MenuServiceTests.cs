@@ -4,6 +4,7 @@ using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Exceptions;
 using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.Services;
+using OpenRestoApi.Core.Application.Site;
 using OpenRestoApi.Core.Application.Utilities;
 using OpenRestoApi.Core.Domain;
 using OpenRestoApi.Infrastructure.Persistence;
@@ -572,6 +573,45 @@ public class MenuServiceTests : IDisposable
         PublicMenuCategoryDto category = Assert.Single(menu.Categories);
         Assert.Equal(["Steak", "Sold out fish"], category.Items.Select(i => i.Name));
         Assert.Equal(["Available", "SoldOut"], category.Items.Select(i => i.Availability));
+    }
+
+    [Fact]
+    public async Task PublishedMenuViews_AreTheSameDishesTheQrPageShows()
+    {
+        (MenuDto _, MenuCategoryDto mains) = await PublishedMenuAsync();
+        await CreateItemAsync(mains.Id, "Steak");
+        await CreateItemAsync(mains.Id, "Sold out fish", availability: "SoldOut");
+        await CreateItemAsync(mains.Id, "Secret", availability: "Hidden");
+        MenuDto lunch = (await _svc.GetMenusAsync(RestaurantA))[0];
+        MenuCategoryDto hidden = await CreateCategoryAsync(lunch.Id, "Staff only", visible: false);
+        await CreateItemAsync(hidden.Id, "Staff meal");
+        MenuDto draft = await CreateMenuAsync(name: "Draft");
+        await CreateCategoryAsync(draft.Id, "Draft category");
+
+        PublicMenuResponse qr = await _svc.GetPublicMenuByRestaurantTokenAsync("token-alpha");
+        List<PublicMenuView> site = await _svc.GetPublishedMenuViewsAsync(RestaurantA);
+
+        PublicMenuView menu = Assert.Single(site);
+        Assert.Equal(qr.Menus[0].Name, menu.Name);
+        Assert.Equal(qr.Menus[0].Categories.Select(c => c.Name), menu.Categories.Select(c => c.Name));
+        Assert.Equal(qr.Menus[0].Categories[0].Items.Select(i => i.Name), menu.Categories[0].Items.Select(i => i.Name));
+        Assert.Equal([false, true], menu.Categories[0].Items.Select(i => i.SoldOut));
+    }
+
+    [Fact]
+    public async Task PublishedMenuViews_AreEmpty_WhenNothingIsPublished_WithoutThrowing()
+    {
+        await CreateMenuAsync();
+
+        Assert.Empty(await _svc.GetPublishedMenuViewsAsync(RestaurantA));
+    }
+
+    [Fact]
+    public async Task PublishedMenuViews_NeverCrossIntoAnotherRestaurant()
+    {
+        await PublishedMenuAsync();
+
+        Assert.Empty(await _svc.GetPublishedMenuViewsAsync(RestaurantB));
     }
 
     [Fact]
