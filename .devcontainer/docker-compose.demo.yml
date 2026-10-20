@@ -1,0 +1,22 @@
+# Layered over the repository's docker-compose.yml by demo.sh. It swaps the committed development
+# credentials for the generated ones in demo.env and keeps the database in a named volume.
+#
+# The base file's JWT key and admin password are committed, so anyone could forge an admin
+# session on a stack that made its port public. Nothing below is a committed secret.
+
+services:
+  backend:
+    environment:
+      CORS_ORIGINS: ${DEMO_ORIGIN:?run .devcontainer/demo.sh setup}
+      JWT_KEY: ${DEMO_JWT_KEY:?run .devcontainer/demo.sh setup}
+      Admin__Email: ${DEMO_ADMIN_EMAIL:?run .devcontainer/demo.sh setup}
+      Admin__Password: ${DEMO_ADMIN_PASSWORD:?run .devcontainer/demo.sh setup}
+    volumes:
+      - demo_db:/data
+  reverse-proxy:
+    # Loopback unless demo.sh says otherwise, so a run on a laptop is not offered to the LAN.
+    ports: !override
+      - "${DEMO_BIND:-127.0.0.1}:5062:80"
+
+volumes:
+  demo_db:

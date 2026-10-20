@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using OpenRestoApi.Core.Application.Exceptions;
 using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.Services;
@@ -43,7 +44,7 @@ public sealed class InitializeDatabaseTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static WebApplication BuildApp(string connectionString, Dictionary<string, string?>? configValues = null)
+    private static WebApplication BuildApp(string connectionString, Dictionary<string, string?>? configValues = null, ICredentialProtector? protector = null)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { EnvironmentName = "Testing" });
         builder.Logging.ClearProviders();
@@ -51,6 +52,8 @@ public sealed class InitializeDatabaseTests : IDisposable
             builder.Configuration.AddInMemoryCollection(configValues);
         builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlite(connectionString));
         builder.Services.AddScoped<IPasswordService, PasswordService>();
+        if (protector != null)
+            builder.Services.AddSingleton(protector);
         return builder.Build();
     }
 
@@ -100,6 +103,38 @@ public sealed class InitializeDatabaseTests : IDisposable
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var cred = await db.AdminCredentials.SingleAsync();
         Assert.Equal("env-admin@openresto.com", cred.Email);
+    }
+
+    [Fact]
+    public async Task FreshInstall_SeedsEmailSettings_FromConfiguration_AndKeepsThemOnTheNextStart()
+    {
+        string dbFile = Path.Combine(_tempDir, "openresto.db");
+        string connectionString = $"Data Source={dbFile}";
+        var protector = new Mock<ICredentialProtector>();
+        protector.Setup(p => p.Encrypt(It.IsAny<string>())).Returns((string plain) => "enc:" + plain);
+        var config = new Dictionary<string, string?>
+        {
+            ["Admin:Password"] = "config-password",
+            ["EmailSettings:Host"] = "smtp.example.be",
+            ["EmailSettings:Password"] = "s3cret",
+        };
+
+        using (WebApplication first = BuildApp(connectionString, config, protector.Object))
+        {
+            first.InitializeDatabase(connectionString, first.Configuration);
+            using IServiceScope scope = first.Services.CreateScope();
+            var row = await scope.ServiceProvider.GetRequiredService<AppDbContext>().EmailSettings.SingleAsync();
+            Assert.Equal("smtp.example.be", row.Host);
+            Assert.Equal("enc:s3cret", row.EncryptedPassword);
+            row.Host = "smtp.edited-in-admin.be";
+            await scope.ServiceProvider.GetRequiredService<AppDbContext>().SaveChangesAsync();
+        }
+
+        using WebApplication second = BuildApp(connectionString, config, protector.Object);
+        second.InitializeDatabase(connectionString, second.Configuration);
+        using IServiceScope secondScope = second.Services.CreateScope();
+        var kept = await secondScope.ServiceProvider.GetRequiredService<AppDbContext>().EmailSettings.SingleAsync();
+        Assert.Equal("smtp.edited-in-admin.be", kept.Host);
     }
 
     [Fact]
