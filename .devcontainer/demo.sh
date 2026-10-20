@@ -75,6 +75,12 @@ seed() {
   compose exec -T backend sqlite3 /data/openresto.db 'PRAGMA wal_checkpoint(TRUNCATE);' >/dev/null
 }
 
+# The dataset names the public demo's address as the site's, and the QR codes encode it: scanned
+# from a phone they would open that site instead of this one.
+point_site_at_origin() {
+  compose exec -T backend sqlite3 /data/openresto.db "UPDATE BrandSettings SET WebsiteUrl='${ORIGIN}';" >/dev/null
+}
+
 hook_banner() {
   local line="[ -f \"$PWD/.devcontainer/demo.sh\" ] && bash \"$PWD/.devcontainer/demo.sh\" banner # openresto-demo"
   # Cosmetic: a home directory we cannot write to must not fail the setup.
@@ -112,6 +118,7 @@ case "${1:-}" in
     [ "${DEMO_NO_BUILD:-0}" = 1 ] || { log "construction des images (10 à 15 min la première fois)"; compose build; }
     up
     seed
+    point_site_at_origin
     hook_banner
     banner
     ;;
@@ -120,6 +127,7 @@ case "${1:-}" in
     ensure_tools
     ensure_secrets
     up
+    point_site_at_origin
     hook_banner
     ;;
   banner) banner ;;
@@ -127,6 +135,7 @@ case "${1:-}" in
     [ -s "$ENV_FILE" ] || die "rien d'installé : lance d'abord « setup »."
     ensure_tools
     seed
+    point_site_at_origin
     log "données rechargées"
     ;;
   stop)
