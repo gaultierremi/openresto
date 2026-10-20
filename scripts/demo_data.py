@@ -69,7 +69,7 @@ DEMO_MANAGER_DISPLAY_NAME = "Dee Reynolds"
 # a hardcoded path can never point at a missing file.
 
 BRAND = {
-    "AppName": "Paddy's Pub",
+    "AppName": "Brasserie de la Senne Dorée",
     "PrimaryColor": "#059669",
     "AccentColor": "#f59e0b",
     "FaviconIcon": "pizza",
@@ -78,10 +78,10 @@ BRAND = {
     "WebsiteUrl": "https://openres.to",
     "PhoneNumber": "+1 215 555 0100",
     "EmailAddress": "bookings@paddyspub.example",
-    "CopyrightText": "Paddy's Pub Inc. — established 2006, incorporated reluctantly.",
-    "Subtitle": "Philadelphia's home of milk steak and jelly beans.",
+    "CopyrightText": "Brasserie de la Senne Dorée — cuisine belge, bières d'abbaye.",
+    "Subtitle": "Cuisine belge de saison, au cœur de Bruxelles.",
     "HighlightsHeading": "What we're known for",
-    "HighlightsSubheading": "Curated by Frank Reynolds",
+    "HighlightsSubheading": "Nos incontournables",
     # Native-app settings (#388). A privacy policy is what the store listings need, so the
     # demo has one; MinimumAppVersion stays NULL so the readiness screen shows the
     # "every build accepted" state rather than a version nobody can install.
