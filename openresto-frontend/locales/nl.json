@@ -295,6 +295,30 @@
     "language": {
       "switcherLabel": "Taal"
     },
+    "legal": {
+      "reviewBanner": "Template to be validated by a lawyer — do not use as is",
+      "indexTitle": "Legal documents",
+      "indexIntro": "The documents that frame how restaurants and their guests use the platform.",
+      "versionLine": "Version {{version}} · updated {{date}}",
+      "languageNote": "These documents are written in French.",
+      "otherDocuments": "Other documents",
+      "openDocument": "Read",
+      "back": "Back to the legal documents",
+      "notFoundTitle": "Document not found",
+      "notFoundBody": "This legal document does not exist. Pick one from the list.",
+      "loadFailed": "The document could not be loaded.",
+      "documents": {
+        "terms": "Terms of use",
+        "privacy": "Privacy policy",
+        "dpa": "Data processing agreement",
+        "legalNotice": "Legal notice"
+      },
+      "footer": {
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "legalNotice": "Legal notice"
+      }
+    },
     "menu": {
       "allergens": {
         "Celery": "Selder",
@@ -456,6 +480,9 @@
     "icon": {
       "invalid": "De pictogramsleutel moet een van de ondersteunde pictogrammen zijn."
     },
+    "legal": {
+      "document_not_found": "Document not found."
+    },
     "media": {
       "hero_too_large": "De bannerafbeelding moet kleiner zijn dan 5 MB.",
       "location_image_too_large": "De afbeelding van de vestiging moet kleiner zijn dan 2 MB.",
@@ -479,6 +506,17 @@
       "not_found": "Menukaart niet gevonden.",
       "price_invalid": "De prijs moet nul of meer zijn (hoogstens {{max}} in de kleinste eenheid van de munteenheid), of leeg blijven voor \"prijs op aanvraag\".",
       "reorder_ids_mismatch": "De nieuwe volgorde moet elk item precies één keer bevatten, zonder toevoegingen."
+    },
+    "platform": {
+      "not_found": "Restaurant not found.",
+      "invitation_invalid": "This invitation link is invalid or has expired. Ask the platform for a new one.",
+      "invitation_email_invalid": "Enter a valid e-mail address for the invitation.",
+      "invitation_already_accepted": "This invitation has already been accepted.",
+      "restaurant_name_required": "A restaurant name is required.",
+      "access_reason_required": "State why the guests’ data is needed, in {{min}} to {{max}} characters.",
+      "suspend_reason_too_long": "The reason cannot exceed {{max}} characters.",
+      "already_suspended": "This restaurant is already suspended.",
+      "not_suspended": "This restaurant is not suspended."
     },
     "restaurant": {
       "archive_before_delete": "Archiveer deze vestiging voordat u ze verwijdert. Archiveren haalt ze van de publieke site en kan ongedaan gemaakt worden; verwijderen niet.",

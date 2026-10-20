@@ -43,6 +43,14 @@ describe("roles", () => {
       expect(roleCan(null, "manage:site")).toBe(false);
     });
 
+    it("lets only an Owner into the platform space, as RequirePlatform does", () => {
+      expect(roleCan(ROLES.owner, "manage:platform")).toBe(true);
+      expect(roleCan(ROLES.legacyAdmin, "manage:platform")).toBe(true);
+      expect(roleCan(ROLES.manager, "manage:platform")).toBe(false);
+      expect(roleCan("Host", "manage:platform")).toBe(false);
+      expect(roleCan(null, "manage:platform")).toBe(false);
+    });
+
     it("grants the QR token capability to nobody without a recognised role", () => {
       expect(roleCan(null, "regenerate:qr-token")).toBe(false);
       expect(roleCan("", "regenerate:qr-token")).toBe(false);

@@ -15,6 +15,8 @@ export interface ModalCardProps {
   alert?: boolean;
   /** Label for the invisible backdrop-dismiss target. */
   dismissLabel?: string;
+  /** For a dialog whose body is a table: the card keeps its height rules but takes a wider column. */
+  wide?: boolean;
   testID?: string;
 }
 
@@ -31,6 +33,7 @@ export function ModalCard({
   children,
   alert = false,
   dismissLabel,
+  wide = false,
   testID,
 }: ModalCardProps) {
   const { colors } = useAppTheme();
@@ -54,7 +57,11 @@ export function ModalCard({
           accessibilityViewIsModal
           accessibilityLabel={title}
           tabIndex={-1}
-          style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+          style={[
+            styles.card,
+            wide && styles.cardWide,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
         >
           <ThemedText type="h3" accessibilityRole="header">
             {title}

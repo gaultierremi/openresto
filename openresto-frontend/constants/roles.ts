@@ -27,7 +27,8 @@ export type Capability =
   | "view:audit"
   | "manage:api-keys"
   | "regenerate:qr-token"
-  | "manage:site";
+  | "manage:site"
+  | "manage:platform";
 
 const CAPABILITY_ROLES: Record<Capability, readonly string[]> = {
   "manage:users": [ROLES.owner, ROLES.legacyAdmin],
@@ -38,6 +39,9 @@ const CAPABILITY_ROLES: Record<Capability, readonly string[]> = {
   // (`RequireOwner` on the regenerate endpoints) and the Managers never see the button.
   "regenerate:qr-token": [ROLES.owner, ROLES.legacyAdmin],
   "manage:site": [ROLES.owner, ROLES.manager, ROLES.legacyAdmin],
+  // The platform's own space (every restaurant, invitations, suspension, the audited guest-data
+  // door) is `RequirePlatform` server-side, which is Owner-only and takes no API key.
+  "manage:platform": [ROLES.owner, ROLES.legacyAdmin],
 };
 
 export function roleCan(role: string | null | undefined, capability: Capability): boolean {

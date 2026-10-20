@@ -101,6 +101,14 @@ function getNavSections(t: TFunction): { heading: string; items: NavItem[] }[] {
           match: (p: string) => p === "/admin/activity",
           capability: "view:audit" as const,
         },
+        {
+          id: "platform",
+          label: t("admin.sidebar.nav.items.platform"),
+          icon: "business-outline" as const,
+          href: "/admin/platform" as const,
+          match: (p: string) => p === "/admin/platform",
+          capability: "manage:platform" as const,
+        },
       ],
     },
     {

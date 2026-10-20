@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { View, Platform, Pressable, Linking, useWindowDimensions } from "react-native";
-import { Link } from "expo-router";
+import { Link, type Href } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { ThemedView } from "@/components/themed-view";
@@ -13,7 +13,13 @@ import { Icon, type IconName } from "@/components/common/Icon";
 
 /**
  * The end of every guest page on the web: copyright, social links, the privacy policy both
- * app stores require a listing to reach, and the way in to the admin.
+ * app stores require a listing to reach, the platform's terms and legal notice, and the way in to
+ * the admin. The privacy link goes to the self-hoster's own policy when one is configured and to
+ * the platform's `/legal/privacy` otherwise.
+ *
+ * @see [Footer.test.tsx](../../tests/components/layout/Footer.test.tsx) — pins that the privacy
+ * link prefers `brand.privacyPolicyUrl` and falls back to `/legal/privacy`, and that the terms and
+ * legal notice links are always there.
  *
  * Web only. A footer is a document paradigm — the bottom of one long page — and the native
  * app has screens instead, so the same band under every screen read as a website in a wrapper
@@ -71,8 +77,26 @@ export default function Footer() {
             </View>
           )}
 
-          {brand.privacyPolicyUrl && (
+          {/* The platform's own pages. Privacy stays the self-hoster's own policy when they
+              configured one, and is the platform's template otherwise. */}
+          <Link href={"/legal/terms" as Href} asChild>
             <Pressable
+              testID="footer-terms"
+              accessibilityRole="link"
+              accessibilityLabel={t("common.legal.footer.terms")}
+              hitSlop={10}
+              style={styles.adminBtn}
+            >
+              <Icon name="document-text-outline" size="sm" color={colors.muted} />
+              <ThemedText style={[styles.adminText, { color: colors.muted }]}>
+                {t("common.legal.footer.terms")}
+              </ThemedText>
+            </Pressable>
+          </Link>
+
+          {brand.privacyPolicyUrl ? (
+            <Pressable
+              testID="footer-privacy"
               onPress={() => openExternal(brand.privacyPolicyUrl!)}
               accessibilityRole="link"
               accessibilityLabel={t("common.footer.privacyPolicy")}
@@ -84,7 +108,37 @@ export default function Footer() {
                 {t("common.footer.privacyPolicy")}
               </ThemedText>
             </Pressable>
+          ) : (
+            <Link href={"/legal/privacy" as Href} asChild>
+              <Pressable
+                testID="footer-privacy"
+                accessibilityRole="link"
+                accessibilityLabel={t("common.legal.footer.privacy")}
+                hitSlop={10}
+                style={styles.adminBtn}
+              >
+                <Icon name="shield-checkmark-outline" size="sm" color={colors.muted} />
+                <ThemedText style={[styles.adminText, { color: colors.muted }]}>
+                  {t("common.legal.footer.privacy")}
+                </ThemedText>
+              </Pressable>
+            </Link>
           )}
+
+          <Link href={"/legal/legal-notice" as Href} asChild>
+            <Pressable
+              testID="footer-legal-notice"
+              accessibilityRole="link"
+              accessibilityLabel={t("common.legal.footer.legalNotice")}
+              hitSlop={10}
+              style={styles.adminBtn}
+            >
+              <Icon name="business-outline" size="sm" color={colors.muted} />
+              <ThemedText style={[styles.adminText, { color: colors.muted }]}>
+                {t("common.legal.footer.legalNotice")}
+              </ThemedText>
+            </Pressable>
+          </Link>
 
           <Link href={"/admin/dashboard" as const} asChild>
             <Pressable
