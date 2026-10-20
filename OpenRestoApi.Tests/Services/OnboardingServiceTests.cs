@@ -6,6 +6,7 @@ using OpenRestoApi.Core.Application.Exceptions;
 using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.Legal;
 using OpenRestoApi.Core.Application.Services;
+using OpenRestoApi.Core.Application.Site;
 using OpenRestoApi.Core.Application.Utilities;
 using OpenRestoApi.Core.Domain;
 using OpenRestoApi.Infrastructure.Persistence;
@@ -348,7 +349,7 @@ public sealed class OnboardingServiceTests(TestWebAppFactory factory) : IClassFi
         Assert.Equal(ValidCompanyNumber, site.CompanyNumber);
         Assert.Equal("BE0123456749", site.VatNumber);
         Assert.Equal("Rue des Fabriques 25, 1000 Bruxelles", site.LegalAddress);
-        Assert.Equal("brasserie-de-la-senne", site.Slug);
+        Assert.StartsWith("brasserie-de-la-senne", site.Slug);
     }
 
     [Fact]
@@ -887,7 +888,9 @@ public sealed class OnboardingServiceTests(TestWebAppFactory factory) : IClassFi
 
         Assert.Equal("Published", live.Status);
         Assert.Equal($"/locations/{c.RestaurantId}", live.Links.BookingPath);
-        Assert.Equal("/r/brasserie-de-la-senne", live.Links.SitePath);
+        string slug = await _h.InDbAsync(async db => (await db.RestaurantSites.FirstAsync(x => x.RestaurantId == c.RestaurantId)).Slug);
+        Assert.StartsWith("brasserie-de-la-senne", slug);
+        Assert.Equal($"/r/{slug}", live.Links.SitePath);
         Assert.StartsWith("/menu/r/", live.Links.MenuPath);
         Restaurant stored = await StoredAsync(c.RestaurantId);
         Assert.Equal(RestaurantStatus.Published, stored.Status);

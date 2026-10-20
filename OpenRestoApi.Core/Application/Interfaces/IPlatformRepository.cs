@@ -52,7 +52,8 @@ public interface IPlatformRepository
 
     Task<RestaurantInvitation?> FindInvitationByHashAsync(string tokenHash);
 
-    Task<List<RestaurantInvitation>> GetUnsettledInvitationsAsync(int restaurantId);
+    /// <summary>Every invitation ever sent for the restaurant, whatever became of it.</summary>
+    Task<List<RestaurantInvitation>> GetInvitationsAsync(int restaurantId);
 
     void AddInvitation(RestaurantInvitation invitation);
 

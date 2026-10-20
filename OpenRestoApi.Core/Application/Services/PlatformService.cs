@@ -81,9 +81,10 @@ public class PlatformService(
     public async Task<PlatformInvitationResultDto> SendInvitationAsync(int restaurantId, SendInvitationRequest req)
     {
         Restaurant restaurant = await RequireRestaurantAsync(restaurantId);
-        List<RestaurantInvitation> open = await _repo.GetUnsettledInvitationsAsync(restaurantId);
+        List<RestaurantInvitation> sent = await _repo.GetInvitationsAsync(restaurantId);
+        List<RestaurantInvitation> open = [.. sent.Where(i => i.AcceptedAt is null && i.RevokedAt is null)];
 
-        string? previous = open.OrderByDescending(i => i.CreatedAt).FirstOrDefault()?.Email;
+        string? previous = sent.OrderByDescending(i => i.CreatedAt).ThenByDescending(i => i.Id).FirstOrDefault()?.Email;
         string email = NormalizeInvitee(string.IsNullOrWhiteSpace(req.Email) ? previous : req.Email);
 
         // A first invitation to an address that already has an account would only fail later, at

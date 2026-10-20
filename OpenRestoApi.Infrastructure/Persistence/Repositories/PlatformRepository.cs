@@ -100,9 +100,9 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
             .Include(i => i.Restaurant)
             .FirstOrDefaultAsync(i => i.TokenHash == tokenHash);
 
-    public async Task<List<RestaurantInvitation>> GetUnsettledInvitationsAsync(int restaurantId)
+    public async Task<List<RestaurantInvitation>> GetInvitationsAsync(int restaurantId)
         => await _db.RestaurantInvitations
-            .Where(i => i.RestaurantId == restaurantId && i.AcceptedAt == null && i.RevokedAt == null)
+            .Where(i => i.RestaurantId == restaurantId)
             .ToListAsync();
 
     public void AddInvitation(RestaurantInvitation invitation) => _db.RestaurantInvitations.Add(invitation);

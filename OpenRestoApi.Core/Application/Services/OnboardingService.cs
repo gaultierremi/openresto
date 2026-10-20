@@ -332,7 +332,8 @@ public class OnboardingService(
         foreach (OnboardingSectionDto wantedSection in wanted)
         {
             int sectionId = await UpsertSectionAsync(restaurantId, current, wantedSection);
-            foreach (Table gone in current.FirstOrDefault(s => s.Id == sectionId)?.Tables.Where(t => !keptTables.Contains(t.Id)) ?? [])
+            // Materialised: deleting a table edits the very collection being walked.
+            foreach (Table gone in current.FirstOrDefault(s => s.Id == sectionId)?.Tables.Where(t => !keptTables.Contains(t.Id)).ToList() ?? [])
             {
                 await _restaurants.DeleteTableAsync(restaurantId, sectionId, gone.Id);
             }
