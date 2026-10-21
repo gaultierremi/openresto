@@ -141,6 +141,7 @@
       "shareLabel": "Reservatiegegevens delen",
       "shareMessage_one": "Reservatie {{ref}} bij {{name}} · {{when}} · {{count}} gast",
       "shareMessage_other": "Reservatie {{ref}} bij {{name}} · {{when}} · {{count}} gasten",
+      "showMapButton": "Kaart tonen",
       "statusCancelled": "Reservatie geannuleerd",
       "statusConfirmed": "Reservatie bevestigd",
       "statusFound": "Reservatie gevonden",
