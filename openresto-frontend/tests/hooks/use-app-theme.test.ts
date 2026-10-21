@@ -60,7 +60,7 @@ describe("useAppTheme", () => {
 
   describe("under a scope that keeps the colour as chosen", () => {
     const wrapper = ({ children }: { children: ReactNode }) =>
-      React.createElement(BrandPaletteScope, { mode: "chosen", children });
+      React.createElement(BrandPaletteScope, { mode: "chosen" }, children);
 
     it.each(["light", "dark"])(
       "hands out the colour exactly as picked under a white label, on the %s theme",
