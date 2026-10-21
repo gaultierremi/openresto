@@ -133,14 +133,22 @@ domaine dont tu contrôles la zone DNS. Exemple : `reservations.example.be`.
 
 ### 5.0 En une commande (`deploy/install.sh`)
 
+Version courte pour une première mise en ligne, démo comprise : [PREMIERE-MISE-EN-LIGNE.md](PREMIERE-MISE-EN-LIGNE.md).
+
 Le DNS (§5.1) doit déjà pointer sur la VM. Le reste des étapes 5.3 à 5.8 se résume à :
 
 ```bash
 sudo apt-get update && sudo apt-get install -y git
 sudo git clone --depth 1 https://github.com/gaultierremi/openresto.git /opt/openresto
 cd /opt/openresto/deploy
-sudo ./install.sh --domain reservations.example.be --email ops@example.be --install-docker --firewall
+sudo ./install.sh --domain reservations.example.be --email ops@example.be --install-docker --firewall --build
 ```
+
+**`--build` construit les images depuis ce dépôt** (une dizaine de minutes ; le frontend veut environ
+4 Go de mémoire). Sans lui, le script tire les images publiées par le projet amont, qui ne contiennent
+rien de ce fork. Ces images construites s'appellent `localhost/openresto-*`, un nom qu'aucun registre
+ne sert : un `docker compose pull` oublié échoue au lieu de télécharger autre chose. `update.sh` sait
+les reconstruire (faire d'abord `git pull`).
 
 Le script **contrôle d'abord la machine et n'écrit rien tant que tout n'est pas bon** : droits root,
 Debian ou Ubuntu, nom de domaine valide et résolu, ports 80 et 443 libres, mémoire et disque,
