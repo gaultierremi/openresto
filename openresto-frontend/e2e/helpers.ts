@@ -276,3 +276,74 @@ export function buildUpdateRestaurantBody(
     ...overrides,
   };
 }
+
+/** WCAG AA for text, the floor `brandPalette` moves a brand colour up to for the guest. */
+const AA_TEXT_CONTRAST = 4.5;
+
+type Rgb = [number, number, number];
+
+const parseRgb = (css: string): Rgb => {
+  const m = css.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (!m) throw new Error(`not an rgb colour: ${css}`);
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+};
+
+const fromHex = (hex: string): Rgb =>
+  [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)) as Rgb;
+
+const luminance = ([r, g, b]: Rgb) => {
+  const lin = (v: number) => {
+    const s = v / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+};
+
+const contrast = (a: Rgb, b: Rgb) => {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+
+const dominantChannel = (c: Rgb) => c.indexOf(Math.max(...c));
+
+/**
+ * The guest draws the restaurateur's brand colour through `brandPalette`: untouched when it
+ * already reads as text, nudged along its own lightness when it does not. So a brand colour that
+ * propagates to the guest surface is not the picked hex byte for byte; it is that colour, still
+ * recognisably itself, at AA against what it sits on. Pass the element drawn in the brand colour.
+ *
+ * @see [brandColors.test.ts](../tests/theme/brandColors.test.ts) — pins the palette itself; this
+ * is the same rule seen end to end.
+ */
+export async function expectBrandColourApplied(
+  element: Locator,
+  picked: string,
+  seeded: string
+): Promise<void> {
+  const { color, background } = await element.evaluate((el: Element) => {
+    let node: Element | null = el;
+    let bg = "rgba(0, 0, 0, 0)";
+    while (node) {
+      const value = window.getComputedStyle(node).backgroundColor;
+      if (!/rgba\(\d+,\s*\d+,\s*\d+,\s*0\)|transparent/.test(value)) {
+        bg = value;
+        break;
+      }
+      node = node.parentElement;
+    }
+    return { color: window.getComputedStyle(el).color, background: bg };
+  });
+
+  const applied = parseRgb(color);
+  const pickedRgb = fromHex(picked);
+
+  // It left the colour the instance started with, for the picked one's family.
+  expect(applied).not.toEqual(fromHex(seeded));
+  expect(dominantChannel(applied)).toBe(dominantChannel(pickedRgb));
+  // And it reads: AA against the surface it is drawn on.
+  expect(contrast(applied, parseRgb(background))).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST);
+  // A colour that already reads is left exactly as the restaurateur chose it.
+  if (contrast(pickedRgb, parseRgb(background)) >= AA_TEXT_CONTRAST) {
+    expect(applied).toEqual(pickedRgb);
+  }
+}
