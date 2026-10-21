@@ -14,13 +14,34 @@
       "maj": "2026-10-20T20:38:22+00:00"
     },
     {
+      "id": "menu-api",
+      "titre": "Module carte natif — API (#2, avec les écrans #5)",
+      "agent": "Claude",
+      "branche": "feat/menu-api",
+      "statut": "Prête à merger",
+      "pr": 2,
+      "etape": "Relue MERGE (0282e76 pour #2, 15b7ef1 pour #5) ; main fusionné pour lever le conflit de status.json.",
+      "maj": "2026-10-21T15:24:40+00:00"
+    },
+    {
       "id": "site-vitrine",
-      "titre": "Sprint 3 — mini-site vitrine par restaurant (/r/{slug}, écran « Mon site »)",
+      "titre": "Sprint 3 — mini-site vitrine par restaurant (#7, rouvert vers main)",
       "agent": "Claude",
       "branche": "feat/site-vitrine",
-      "statut": "En relecture",
-      "pr": 7,
-      "maj": "2026-10-20T20:00:00+00:00"
+      "statut": "Prête à merger",
+      "pr": 18,
+      "etape": "Relue MERGE (948dc05) ; le travail de #7 avait été fusionné dans sa branche empilée, pas dans main.",
+      "maj": "2026-10-21T15:25:02+00:00"
+    },
+    {
+      "id": "bifrost-openresto",
+      "titre": "Brancher OpenResto sur Heimdall",
+      "agent": "Claude",
+      "branche": "chore/bifrost",
+      "statut": "Prête à merger",
+      "pr": 3,
+      "etape": "Fusionnée avec la chaîne #2, #7 (PR 18) pour se fusionner sans conflit après elles.",
+      "maj": "2026-10-21T15:26:01+00:00"
     },
     {
       "id": "premier-restaurant",
@@ -29,8 +50,8 @@
       "branche": "claude/festive-wozniak-b62txe",
       "statut": "En relecture",
       "pr": 8,
-      "etape": "Corrections de la relecture (CORRIGER) poussées : lectures de données clients journalisées, clauses légales alignées, notifications anonymisées, conservation nulle pour l'existant, état annoncé des radios et onglets, refusion de #7. En attente d'une contre-relecture. Les textes légaux restent des modèles : un juriste doit les valider avant tout vrai restaurant.",
-      "maj": "2026-10-21T08:09:39+00:00"
+      "etape": "Corrections de la relecture (CORRIGER) poussées ; branche mise à jour avec main et la chaîne #2, #7 (PR 18), #3 ; en attente d'une contre-relecture. Les textes légaux restent des modèles : un juriste doit les valider avant tout vrai restaurant.",
+      "maj": "2026-10-21T15:26:36+00:00"
     }
   ],
   "decisions": [
@@ -60,7 +81,7 @@
     }
   ],
   "maj": {
-    "at": "2026-10-20T23:43:56+00:00",
+    "at": "2026-10-21T15:26:36+00:00",
     "by": "Claude"
   }
 }
