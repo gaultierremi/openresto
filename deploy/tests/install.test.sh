@@ -174,6 +174,7 @@ grep -qF -- "$password" <<< "$out" && fail "fresh install: the admin password wa
 grep -qF -- "$jwt" <<< "$out" && fail "fresh install: the JWT key was printed" || pass "fresh install: the JWT key is not printed"
 expect "fresh install: keeps the rest of .env.example" "$(grep -E '^BACKUP_KEEP_DAILY=' "$here/.env.example")" "$(grep -E '^BACKUP_KEEP_DAILY=' "$env_file")"
 expect "fresh install: backup dir is private" 700 "$(stat -c %a "$backups")"
+expect "fresh install: data dir (database, keys) is private" 700 "$(stat -c %a "$data")"
 [ -d "$data" ] && pass "fresh install: data dir created" || fail "fresh install: data dir missing"
 pull_line="$(grep -n ' pull$' "$calls" | head -n 1 | cut -d: -f1)"
 up_line="$(grep -n ' up -d --wait' "$calls" | head -n 1 | cut -d: -f1)"
@@ -212,6 +213,14 @@ expect "rerun with another version: .env unchanged" "$before" "$(sha256sum "$env
 run_install --domain other.example.be --email ops@example.be --data-dir "$data" --backup-dir "$backups"
 expect "rerun with another domain: exit 1" 1 "$code"
 expect_in "rerun with another domain: says so" "differs from DOMAIN=resto.example.be" "$out"
+
+# A data directory that already exists may be a shared parent: it is reported, never chmod-ed.
+reset; mkdir -p "$data"; chmod 755 "$data"; run_install "${std[@]}"
+expect "existing open data dir: still installs" 0 "$code"
+expect "existing open data dir: mode left alone" 755 "$(stat -c %a "$data")"
+expect_in "existing open data dir: warns" "is open to other users" "$out"
+reset; mkdir -p "$data"; chmod 700 "$data"; run_install "${std[@]}"
+grep -q "is open to other users" <<< "$out" && fail "private data dir: warned for nothing" || pass "private data dir: no warning"
 
 # --- optional parts ------------------------------------------------------------------------------
 reset; ssh_port=2222; run_install "${std[@]}" --firewall --ssh-port 2222

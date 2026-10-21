@@ -276,8 +276,18 @@ create_env() {
   log "wrote $ENV_FILE (mode 600) with a generated JWT key and admin password"
 }
 
+# DATA_DIR holds the database and the Data Protection keys. The container's entrypoint chowns
+# its mounted subdirectories itself and the daemon resolves the mount, so the parent can be
+# closed to every other user of the host. An existing directory is reported, never chmod-ed:
+# --data-dir may name a shared parent such as /srv.
 prepare_directories() {
-  mkdir -p "$data_dir"
+  if [ -d "$data_dir" ]; then
+    if [ "$(( 8#$(stat -c %a "$data_dir") & 8#077 ))" -ne 0 ]; then
+      warn "$data_dir is open to other users of this machine and holds the database and keys; chmod 700 it"
+    fi
+  else
+    install -d -m 700 "$data_dir"
+  fi
   install -d -m 700 "$backup_dir"
 }
 
