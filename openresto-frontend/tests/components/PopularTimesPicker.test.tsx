@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
 import PopularTimesPicker from "@/components/booking/PopularTimesPicker";
 import { TimeSlotDto } from "@/api/availability";
 
@@ -112,6 +113,14 @@ describe("PopularTimesPicker", () => {
   it("renders selected slot with highlighted style", () => {
     render(<PopularTimesPicker slots={mockSlots} selectedTime="12:00" onSelectTime={jest.fn()} />);
     expect(screen.getByText("12:00")).toBeTruthy();
+  });
+
+  it("draws the Lunch, Dinner and All tabs at the 44px touch target", () => {
+    render(<PopularTimesPicker slots={mockSlots} selectedTime="" onSelectTime={jest.fn()} />);
+    for (const name of ["Lunch", "Dinner", "All"]) {
+      const tab = screen.getByRole("tab", { name });
+      expect(StyleSheet.flatten(tab.props.style).minHeight).toBeGreaterThanOrEqual(44);
+    }
   });
 
   describe("the time already chosen", () => {

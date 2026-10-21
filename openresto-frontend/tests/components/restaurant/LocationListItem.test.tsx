@@ -15,7 +15,6 @@ import { renderWithProviders } from "@/tests/helpers/renderWithProviders";
 import { getRestaurantNow } from "@/utils/restaurantTime";
 import * as useAppThemeModule from "@/hooks/use-app-theme";
 import { getThemeColors, theme } from "@/theme/theme";
-import { DETAILS_MIN_HEIGHT } from "@/components/restaurant/LocationListItem.styles";
 
 // WalkInNotice links to the waitlist; the real router can't load under Jest.
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
@@ -247,13 +246,16 @@ describe("LocationListItem", () => {
       expect(style.minHeight).toBeGreaterThanOrEqual(theme.a11y.minTouchTarget);
     });
 
-    it("reaches the 44px touch target on Details through its hit area, keeping it compact", async () => {
+    // A real height: react-native-web does not turn a `hitSlop` into a contact area, so on the web
+    // a toggle drawn at 36px is a 36px target however much slop it asks for.
+    it("draws Details at the 44px touch target itself, not through a hit area", async () => {
       renderWithProviders(<LocationListItem {...baseProps} restaurant={utcRestaurant as any} />);
       await waitFor(() => expect(screen.getByTestId("location-details-toggle-1")).toBeTruthy());
 
-      const { top, bottom } = screen.getByTestId("location-details-toggle-1").props.hitSlop;
-      expect(DETAILS_MIN_HEIGHT + top + bottom).toBe(theme.a11y.minTouchTarget);
-      expect(DETAILS_MIN_HEIGHT).toBeLessThan(theme.a11y.minTouchTarget);
+      const toggle = screen.getByTestId("location-details-toggle-1");
+      const style = StyleSheet.flatten(toggle.props.style);
+      expect(style.minHeight).toBeGreaterThanOrEqual(theme.a11y.minTouchTarget);
+      expect(toggle.props.hitSlop).toBeUndefined();
     });
 
     it("seeds Book now with the earliest slot on offer", async () => {

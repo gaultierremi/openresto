@@ -22,20 +22,13 @@ import { RestaurantTags } from "./RestaurantTags";
 import { LocationSlotRow } from "./LocationSlotRow";
 import { LocationThumbnail } from "./LocationThumbnail";
 import { useLocationSlots } from "./useLocationSlots";
-import { DETAILS_MIN_HEIGHT, styles } from "./LocationListItem.styles";
+import { styles } from "./LocationListItem.styles";
 import { Icon } from "@/components/common/Icon";
 import Button from "@/components/common/Button";
 import { resolveServerUrl } from "@/utils/serverUrl";
-import { theme } from "@/theme/theme";
 
 const SLOTS_SHOWN_WIDE = 5;
 const SLOTS_SHOWN_COMPACT = 3;
-
-/** Details is drawn compact and reaches the 44px target through its hit area, not its layout. */
-const DETAILS_HIT_SLOP = {
-  top: (theme.a11y.minTouchTarget - DETAILS_MIN_HEIGHT) / 2,
-  bottom: (theme.a11y.minTouchTarget - DETAILS_MIN_HEIGHT) / 2,
-};
 
 /**
  * A single location row in the Locations list: header + times now, details behind an accordion.
@@ -165,7 +158,6 @@ export default function LocationListItem({
           ? t("restaurant.locationListItem.hideDetails")
           : t("restaurant.locationListItem.showDetails")
       }
-      hitSlop={DETAILS_HIT_SLOP}
       style={({ hovered, pressed }: { hovered?: boolean; pressed: boolean }) => [
         cardStyles.viewBtn,
         styles.detailsBtn,
