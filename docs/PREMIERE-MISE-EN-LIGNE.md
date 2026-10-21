@@ -59,6 +59,8 @@ Ce que contient la démo : 10 lieux, 41 tables, environ 500 réservations géné
 | Espace du restaurateur de démo           | `/onboarding/login`, identifiant `gerant@senne-doree.example`, même mot de passe             |
 | Carte à scanner                          | l'adresse `/menu/r/…` de l'encadré ; les codes à imprimer sont dans l'admin, page _QR codes_ |
 
+**Selon ce qui est fusionné** : les cartes, les QR codes et les sites des restaurants viennent des PR #2 et #18. L'espace plateforme, le parcours d'inscription, l'espace du restaurateur, les pages `/legal` et le néerlandais viennent de la PR #8 (Sprint 4) : sans elle, ces lignes du tableau n'existent pas. La branche `preview/test-serveur` contient tout.
+
 Remettre la démo à neuf : `bash .devcontainer/demo.sh reseed`. Arrêter : `… stop`. **Tout effacer : `… clean`.**
 
 ## 2B. Vraie mise en ligne
