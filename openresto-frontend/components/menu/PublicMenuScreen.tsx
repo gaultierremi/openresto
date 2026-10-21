@@ -42,7 +42,7 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { colors, primaryColor } = useAppTheme();
+  const { colors, primaryColor, onPrimary } = useAppTheme();
   useRouteDefaultLocale(MENU_DEFAULT_LOCALE);
 
   const [load, setLoad] = useState<Load>({ status: "loading" });
@@ -163,7 +163,7 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
                     ]}
                   >
                     <ThemedText
-                      style={[styles.menuTabText, selected && { color: "#ffffff" }]}
+                      style={[styles.menuTabText, selected && { color: onPrimary }]}
                       numberOfLines={1}
                     >
                       {m.name}

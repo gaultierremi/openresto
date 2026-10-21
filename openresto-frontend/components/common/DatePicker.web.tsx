@@ -102,7 +102,7 @@ export default function DatePicker({
    */
   allowPast?: boolean;
 }) {
-  const { colors, primaryColor } = useAppTheme();
+  const { colors, primaryColor, onPrimary } = useAppTheme();
   const { t } = useTranslation();
   const borderColor = colors.border;
   const bg = colors.input;
@@ -394,11 +394,7 @@ export default function DatePicker({
                         <ThemedText
                           style={{
                             fontSize: 13,
-                            color: isSelected
-                              ? theme.colors.white
-                              : disabled
-                                ? colors.disabled
-                                : textColor,
+                            color: isSelected ? onPrimary : disabled ? colors.disabled : textColor,
                             fontWeight: isSelected ? "600" : "400",
                           }}
                         >

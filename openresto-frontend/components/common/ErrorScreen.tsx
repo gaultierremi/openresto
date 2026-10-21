@@ -23,7 +23,7 @@ interface ErrorScreenProps {
  * navigation context.
  */
 export default function ErrorScreen({ title, message, retry, onGoHome }: ErrorScreenProps) {
-  const { colors, primaryColor, isDark } = useAppTheme();
+  const { colors, primaryColor, onPrimary, isDark } = useAppTheme();
   const { t } = useTranslation();
   const mutedColor = isDark ? colors.muted : "#666";
   const resolvedTitle = title ?? t("errors.generic");
@@ -46,7 +46,9 @@ export default function ErrorScreen({ title, message, retry, onGoHome }: ErrorSc
                 accessibilityRole="button"
                 accessibilityLabel={t("common.actions.tryAgain")}
               >
-                <ThemedText style={styles.btnText}>{t("common.actions.tryAgain")}</ThemedText>
+                <ThemedText style={[styles.btnText, { color: onPrimary }]}>
+                  {t("common.actions.tryAgain")}
+                </ThemedText>
               </Pressable>
             )}
             {onGoHome && (

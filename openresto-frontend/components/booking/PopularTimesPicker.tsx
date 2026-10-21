@@ -40,7 +40,7 @@ export default function PopularTimesPicker({
   timezone,
   wrap = false,
 }: PopularTimesPickerProps) {
-  const { colors, primaryColor: PRIMARY } = useAppTheme();
+  const { colors, primaryColor: PRIMARY, onPrimary } = useAppTheme();
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<Category>("Lunch");
 
@@ -195,7 +195,7 @@ export default function PopularTimesPicker({
         <ThemedText
           style={[
             styles.tabText,
-            isActive && { color: "#fff" },
+            isActive && { color: onPrimary },
             disabled && styles.tabTextDisabled,
           ]}
         >
@@ -232,7 +232,7 @@ export default function PopularTimesPicker({
               },
             ]}
           >
-            <ThemedText style={[styles.slotText, isSelected && { color: "#fff" }]}>
+            <ThemedText style={[styles.slotText, isSelected && { color: onPrimary }]}>
               {slot.time}
             </ThemedText>
           </Pressable>
