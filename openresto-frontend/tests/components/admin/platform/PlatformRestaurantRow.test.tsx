@@ -92,6 +92,36 @@ describe("PlatformRestaurantRow", () => {
     expect(screen.getByText("Setup: 2/5 steps · Next step: Rooms and tables")).toBeTruthy();
   });
 
+  it.each([
+    [1, "Retention: 1 month"],
+    [12, "Retention: 12 months"],
+    [60, "Retention: 60 months"],
+  ])("shows a fixed period of %i months", (months, line) => {
+    renderRow(restaurant({ bookingRetentionMonths: months }));
+    expect(screen.getByText(line)).toBeTruthy();
+    expect(screen.queryByText(/no automatic erasure/)).toBeNull();
+  });
+
+  it("says there is no automatic erasure for a restaurant with no period", () => {
+    renderRow(restaurant({ bookingRetentionMonths: null }));
+    expect(screen.getByText("Retention: no automatic erasure")).toBeTruthy();
+    expect(screen.queryByText(/^Retention: \d/)).toBeNull();
+  });
+
+  it("offers the retention dialog for any status, with the row", () => {
+    for (const status of ["Draft", "Published", "Suspended"] as const) {
+      const { unmount } = render(
+        <PlatformRestaurantRow restaurant={restaurant({ status })} onAction={jest.fn()} />
+      );
+      expect(screen.getByText("Retention…")).toBeTruthy();
+      unmount();
+    }
+
+    const onAction = renderRow(restaurant({ id: 7 }));
+    fireEvent.press(screen.getByText("Retention…"));
+    expect(onAction).toHaveBeenCalledWith("retention", expect.objectContaining({ id: 7 }));
+  });
+
   it("says the setup is complete when no step is left", () => {
     renderRow(restaurant({ stepsDone: 5, stepsTotal: 5, nextStep: null }));
     expect(screen.getByText("Setup: 5/5 steps · Setup complete")).toBeTruthy();

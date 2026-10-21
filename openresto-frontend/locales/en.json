@@ -1854,7 +1854,10 @@
         "nextStep": "Next step: {{step}}",
         "setupComplete": "Setup complete",
         "suspendedSince": "Suspended since {{date}}",
-        "suspensionReason": "Reason shown to the restaurateur: {{reason}}"
+        "suspensionReason": "Reason shown to the restaurateur: {{reason}}",
+        "retention_one": "Retention: {{count}} month",
+        "retention_other": "Retention: {{count}} months",
+        "retentionNone": "Retention: no automatic erasure"
       },
       "actions": {
         "invite": "Invite",
@@ -1862,7 +1865,8 @@
         "suspend": "Suspend",
         "reactivate": "Reactivate",
         "consents": "Consents",
-        "guestData": "Guest data…"
+        "guestData": "Guest data…",
+        "retention": "Retention…"
       },
       "locales": {
         "fr": "Français",
@@ -1909,6 +1913,17 @@
         "confirmBody": "The restaurant disappears from guests immediately. You can reactivate it at any time.",
         "confirm": "Yes, suspend",
         "back": "Back"
+      },
+      "retention": {
+        "title": "Retention of {{name}}",
+        "intro": "How long this restaurant’s guests stay identifiable. Once a sitting is older than the period, its booking keeps the date, party size and table, and loses the guest’s name, e-mail address and notes.",
+        "optionsLabel": "Retention period",
+        "periodOption": "Erase after a set period",
+        "noneOption": "No automatic erasure",
+        "noneHint": "Nothing is erased automatically until a period is fixed. This is where every restaurant that existed before the setting stands.",
+        "monthsLabel": "Months after the sitting ({{min}} to {{max}})",
+        "warning": "Bookings older than the period are anonymised at the next daily pass. This cannot be undone.",
+        "save": "Save"
       },
       "reactivate": {
         "title": "Reactivate {{name}}?",

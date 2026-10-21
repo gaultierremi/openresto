@@ -16,7 +16,8 @@ namespace OpenRestoApi.Core.Application.Services;
 /// </summary>
 /// <seealso>BookingRetentionServiceTests.Run_AnonymisesOnlyWhatIsPastEachRestaurantsOwnPeriod</seealso>
 /// <seealso>BookingRetentionServiceTests.Run_SkipsARestaurantWhoseStoredPeriodIsOutOfBounds</seealso>
-/// <seealso>BookingRetentionServiceTests.Run_SkipsARestaurantWithNoPeriod</seealso>
+/// <seealso>BookingRetentionServiceTests.Run_SkipsARestaurantWithNoPeriod_EvenWhenItHoldsFiveYearOldBookings</seealso>
+/// <seealso>PlatformRepositoryTests.ARestaurantWithNoPeriod_IsNeverErasedFrom_UntilOneIsFixed</seealso>
 public class BookingRetentionService(IPlatformRepository repository, ISystemClock clock)
 {
     private readonly IPlatformRepository _repo = repository;

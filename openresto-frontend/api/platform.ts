@@ -1,4 +1,4 @@
-import { get, post } from "./client";
+import { get, post, put } from "./client";
 import { apiRequest, readJson, type ApiResult } from "@/api/request";
 import type { InvitationLocale, InvitationState, PlatformStatus } from "@/constants/platform";
 
@@ -27,6 +27,8 @@ export interface PlatformRestaurant {
   stepsDone: number;
   stepsTotal: number;
   nextStep: string | null;
+  /** Months a guest stays identifiable after the sitting; null is no automatic erasure. */
+  bookingRetentionMonths: number | null;
 }
 
 /** `invitationUrl` is shown once: the server keeps only a hash of the token. */
@@ -99,6 +101,15 @@ export const suspendPlatformRestaurant = (restaurantId: number, reason: string |
 
 export const reactivatePlatformRestaurant = (restaurantId: number) =>
   apiRequest(() => post(`${base}/${restaurantId}/reactivate`), readJson<PlatformRestaurant>);
+
+// ── Retention ────────────────────────────────────────────────────────────────
+
+/** 1 to 60 months, or `null` for no automatic erasure; the answer is the updated row. */
+export const setPlatformRetention = (restaurantId: number, months: number | null) =>
+  apiRequest(
+    () => put(`${base}/${restaurantId}/retention`, { months }),
+    readJson<PlatformRestaurant>
+  );
 
 // ── Guests and consents ──────────────────────────────────────────────────────
 

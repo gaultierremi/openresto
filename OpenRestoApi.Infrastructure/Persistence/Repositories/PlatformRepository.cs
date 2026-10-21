@@ -129,6 +129,8 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
     public async Task<int> CountBookingsAsync(int restaurantId)
         => await _db.Bookings.CountAsync(b => b.RestaurantId == restaurantId);
 
+    /// <seealso>PlatformRepositoryTests.ANotificationStaysIntact_WhileItsBookingIsInsideTheRetention_AndLosesTheNameOneSecondAfter</seealso>
+    /// <seealso>PlatformRepositoryTests.TheNotificationOfAFutureBooking_OrAnotherRestaurantsExpiredOne_IsNeverTouched</seealso>
     public async Task<RetentionOutcome> AnonymizeBeforeAsync(int restaurantId, DateTime cutoffUtc, DateTime nowUtc)
     {
         // The devices, failed-mail rows and notifications go first: all are found through the

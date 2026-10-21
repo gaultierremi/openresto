@@ -130,6 +130,31 @@ describe("endpoints", () => {
     expect(lastCall().init.body).toBeUndefined();
   });
 
+  it("sets the retention with a PUT carrying the months, or null for no erasure", async () => {
+    ok({ id: 4, bookingRetentionMonths: 6 });
+    const result = await platformApi.setPlatformRetention(4, 6);
+    expect(result).toEqual({ ok: true, value: { id: 4, bookingRetentionMonths: 6 } });
+    expect(lastCall().url).toContain("/api/platform/restaurants/4/retention");
+    expect(lastCall().init.method).toBe("PUT");
+    expect(sentBody()).toEqual({ months: 6 });
+
+    ok({ id: 4, bookingRetentionMonths: null });
+    await platformApi.setPlatformRetention(4, null);
+    expect(sentBody()).toEqual({ months: null });
+  });
+
+  it("returns a refused retention with its code", async () => {
+    refuse({
+      message: "The retention period must be between 1 and 60 months.",
+      code: "platform.retention_invalid",
+    });
+    expect(await platformApi.setPlatformRetention(4, 99)).toEqual({
+      ok: false,
+      message: "The retention period must be between 1 and 60 months.",
+      code: "platform.retention_invalid",
+    });
+  });
+
   it("opens the guest data as a POST carrying the reason", async () => {
     ok({
       restaurantId: 4,

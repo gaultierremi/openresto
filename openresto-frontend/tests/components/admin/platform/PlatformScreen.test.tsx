@@ -8,6 +8,7 @@ import {
   fetchPlatformRestaurants,
   reactivatePlatformRestaurant,
   sendPlatformInvitation,
+  setPlatformRetention,
   suspendPlatformRestaurant,
 } from "@/api/platform";
 import {
@@ -39,9 +40,11 @@ jest.mock("@/api/platform", () => ({
   reactivatePlatformRestaurant: jest.fn(),
   accessPlatformGuestData: jest.fn(),
   fetchPlatformConsents: jest.fn(),
+  setPlatformRetention: jest.fn(),
 }));
 
 const list = fetchPlatformRestaurants as jest.Mock;
+const setRetention = setPlatformRetention as jest.Mock;
 const create = createPlatformRestaurant as jest.Mock;
 const invite = sendPlatformInvitation as jest.Mock;
 const suspend = suspendPlatformRestaurant as jest.Mock;
@@ -60,7 +63,9 @@ const OTTO = restaurant({
 
 beforeEach(() => {
   jest.clearAllMocks();
-  [list, create, invite, suspend, reactivate, guests, consents].forEach((m) => m.mockReset());
+  [list, create, invite, suspend, reactivate, guests, consents, setRetention].forEach((m) =>
+    m.mockReset()
+  );
 });
 
 const open = async (rows = [LEA, OTTO]) => {
@@ -289,6 +294,35 @@ describe("PlatformScreen, reactivating", () => {
     expect(reactivate).toHaveBeenCalledTimes(1);
     finish(ok({ ...OTTO, status: "Published" }));
     await waitFor(() => expect(within(row(2)).getByText("Published")).toBeTruthy());
+  });
+});
+
+describe("PlatformScreen, retention", () => {
+  it("fixes the period of a restaurant that had none, and shows it on the row", async () => {
+    await open([{ ...LEA, bookingRetentionMonths: null }, OTTO]);
+    expect(within(row(1)).getByText("Retention: no automatic erasure")).toBeTruthy();
+    setRetention.mockResolvedValue(ok({ ...LEA, bookingRetentionMonths: 6 }));
+
+    fireEvent.press(within(row(1)).getByText("Retention…"));
+    fireEvent.press(screen.getByRole("radio", { name: "Erase after a set period" }));
+    fireEvent.changeText(screen.getByLabelText("Months after the sitting (1 to 60)"), "6");
+    fireEvent.press(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(setRetention).toHaveBeenCalledWith(1, 6));
+    await waitFor(() => expect(within(row(1)).getByText("Retention: 6 months")).toBeTruthy());
+    expect(within(row(2)).getByText("Retention: 12 months")).toBeTruthy();
+    expect(screen.queryByTestId("retention-modal")).toBeNull();
+  });
+
+  it("leaves the row as it was when the dialog is cancelled", async () => {
+    await open();
+
+    fireEvent.press(within(row(1)).getByText("Retention…"));
+    fireEvent.press(screen.getByText("Cancel"));
+
+    expect(setRetention).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("retention-modal")).toBeNull();
+    expect(within(row(1)).getByText("Retention: 12 months")).toBeTruthy();
   });
 });
 

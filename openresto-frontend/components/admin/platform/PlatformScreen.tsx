@@ -17,6 +17,7 @@ import { ConsentsModal } from "./ConsentsModal";
 import { GuestDataModal } from "./GuestDataModal";
 import { InvitationModal } from "./InvitationModal";
 import { PlatformRestaurantRow, type PlatformRowAction } from "./PlatformRestaurantRow";
+import { RetentionModal } from "./RetentionModal";
 import { SuspendModal } from "./SuspendModal";
 import { styles } from "./PlatformScreen.styles";
 
@@ -37,8 +38,8 @@ type Dialog = { kind: "add" } | { kind: PlatformRowAction; restaurant: PlatformR
  *
  * @see [PlatformScreen.test.tsx](../../../tests/components/admin/platform/PlatformScreen.test.tsx)
  * — pins the load states, each row action opening its own dialog, the list patched from an
- * answer, the suspend and reactivate paths, and that a refused reactivation is shown and leaves
- * the row as it was.
+ * answer (a retention change included), the suspend and reactivate paths, and that a refused
+ * reactivation is shown and leaves the row as it was.
  */
 export function PlatformScreen() {
   const { t } = useTranslation();
@@ -136,6 +137,9 @@ export function PlatformScreen() {
       )}
       {dialog?.kind === "suspend" && (
         <SuspendModal restaurant={dialog.restaurant} onSaved={upsert} onClose={closeDialog} />
+      )}
+      {dialog?.kind === "retention" && (
+        <RetentionModal restaurant={dialog.restaurant} onSaved={upsert} onClose={closeDialog} />
       )}
       {dialog?.kind === "consents" && (
         <ConsentsModal restaurant={dialog.restaurant} onClose={closeDialog} />
