@@ -28,18 +28,20 @@ PR de correction reprennent.
 
 ## Résumé
 
-| Id  | Constat                                                                                                    | Gravité | Correction  |
-| --- | ---------------------------------------------------------------------------------------------------------- | ------- | ----------- |
-| C1  | L'heure de la confirmation suit le fuseau du téléphone, pas celui du restaurant                            | haute   | PR 1        |
-| X1  | La couleur de marque échoue le contraste AA (3,3 à 3,8 : 1) en texte et en bouton                          | haute   | PR 2        |
-| A1  | Le lien de la réservation porte l'adresse e-mail du client dans l'URL                                      | moyenne | PR 3        |
-| R1  | L'heure choisie n'apparaît pas dans la liste de pastilles de la feuille                                    | moyenne | PR 4        |
-| X2  | Zones tactiles de 36 px (retour, menu, « Book now », « Details »)                                          | moyenne | PR 4        |
-| X3  | Pastilles d'heure sans `aria-checked`, feuille sans nom accessible, aucun repère `main`                    | moyenne | PR 4        |
-| M1  | La carte (4,8 Ko de données) attend 1,16 Mo de JavaScript : 4,6 s en 4G, 9,6 s en 4G lente                 | haute   | après PR 2  |
-| M2  | Filtres allergènes et régime jamais mémorisés, panneau fermé à chaque scan                                 | moyenne | PR 5        |
-| V1  | Un seul paquet de 4,2 Mo (1,1 Mo en gzip) pour toutes les pages, administration comprise                   | moyenne | à étudier   |
-| C2  | Le courriel de confirmation n'a ni lien calendrier, ni autre langue, et promet une modification impossible | moyenne | après PR #8 |
+| Id  | Constat                                                                                                    | Gravité | Correction         |
+| --- | ---------------------------------------------------------------------------------------------------------- | ------- | ------------------ |
+| C1  | L'heure de la confirmation suit le fuseau du téléphone, pas celui du restaurant                            | haute   | PR #12             |
+| X1  | La couleur de marque échoue le contraste AA (3,3 à 3,8 : 1) en texte et en bouton                          | haute   | PR #13             |
+| R1  | L'heure choisie n'apparaît pas dans la liste de pastilles de la feuille                                    | moyenne | PR #14             |
+| X2  | « Book now » et « Details » : 36 px de haut                                                                | moyenne | PR #14             |
+| X3  | Pastilles d'heure et onglets sans `aria-checked` / `aria-selected` dans le DOM, aucun repère `main`        | moyenne | PR #14 (en partie) |
+| R3  | Le bouton Confirmer est sous le pli de la feuille de réservation                                           | moyenne | PR #15             |
+| C3  | La page de confirmation contacte Nominatim et OpenStreetMap à son ouverture                                | moyenne | PR #16             |
+| M2  | Filtres allergènes et régime jamais mémorisés, panneau fermé à chaque scan                                 | moyenne | PR #17 (sur #2)    |
+| A1  | Le lien de la réservation porte l'adresse e-mail du client dans l'URL                                      | moyenne | reportée           |
+| M1  | La carte (4,8 Ko de données) attend 1,16 Mo de JavaScript : 4,6 s en 4G, 9,6 s en 4G lente                 | haute   | après #2 et #8     |
+| V1  | Un seul paquet de 4,2 Mo (1,1 Mo en gzip) pour toutes les pages, administration comprise                   | moyenne | à étudier          |
+| C2  | Le courriel de confirmation n'a ni lien calendrier, ni autre langue, et promet une modification impossible | moyenne | après PR #8        |
 
 ## Parcours 1 — Réserver une table en moins de 30 secondes, sans compte
 
@@ -65,7 +67,7 @@ Le formulaire est déjà au minimum ; ce qui reste est de la friction de lecture
   de réservation et que R1 règle le plus gênant.
 - **R3 — le bouton de confirmation est sous le pli** (`03-booking-sheet-bottom.png`) : il faut
   traverser « Choose a section or table » et un paragraphe de six lignes sur les données. Sur
-  téléphone natif il est déjà ancré (`DockedBookingSubmit`) ; sur le web non. Non traité ici.
+  téléphone natif il est déjà ancré (`DockedBookingSubmit`) ; sur le web non. Corrigé par la PR #15.
 
 ## Parcours 2 — Scanner le QR et lire la carte
 
@@ -81,8 +83,8 @@ langue (`07-qr-menu.png`, `08-qr-menu-allergens.png`).
   Le service worker laisse passer `/api/` sans le mettre en cache et l'écran ne garde rien en
   stockage : une page déjà ouverte n'affiche pas la carte hors réseau. La seule vraie
   réponse est une page HTML servie par le backend, comme le fait déjà la PR #8 pour le site du
-  restaurant (`/r/<slug>`, route nginx dédiée) ; elle suppose cette PR et le routage nginx, d'où
-  « après PR 2 » et non une PR de plus ici.
+  restaurant (`/r/<slug>`, route nginx dédiée) ; elle suppose les PR #2 et #8 et leur routage
+  nginx, d'où « après #2 et #8 » et non une PR de plus ici.
 - **M2 — le filtre allergènes demande deux appuis, et chaque scan repart de zéro.** « Éviter des
   allergènes » est replié ; le choix n'est écrit nulle part. Une personne allergique le refait à
   chaque table, chaque visite. Ce qui existe est correct une fois ouvert : 14 pastilles de 44 px,
@@ -110,6 +112,12 @@ Google, Outlook ou fichier `.ics`, itinéraire Google ou Apple (`04-confirmation
   écrit « Need to change or cancel your reservation? » alors que la page répond « This booking cannot
   be modified ». Traiter le courriel maintenant entrerait en conflit avec la PR #8, qui y change les
   textes et la langue : à reprendre après elle.
+- **C3 — deux services tiers dès l'ouverture.** `BookingResultPanel` envoyait l'adresse du restaurant
+  à Nominatim depuis le navigateur du client, sans qu'il ait rien demandé (et sur toutes les
+  plateformes, application native comprise, alors que seul le web dessine la carte), puis intégrait un
+  cadre OpenStreetMap : deux tiers apprennent l'IP du client à chaque ouverture de sa réservation, et la
+  connexion faible paie le poids. Mesuré : `nominatim.openstreetmap.org` contacté dès que la page s'ouvre.
+  Corrigé par la PR #16 : la carte se charge à l'appui sur « Afficher la carte ».
 
 ## Parcours 4 — Annuler ou modifier depuis le lien reçu
 
@@ -123,14 +131,19 @@ les routes « par référence » ont un limiteur serré, et l'annulation se ferm
 après l'heure de la réservation (`Booking.CanBeCancelledAt`) : le lien « expire » donc déjà pour
 l'annulation.
 
-- **A1 — l'adresse e-mail est dans l'URL.** Elle part dans l'historique du navigateur, les journaux
-  des serveurs et des proxys, l'en-tête `Referer` d'une page ouverte depuis la confirmation. Un
-  jeton signé, à durée limitée, qui remplace l'adresse dans le lien règle cela sans stocker quoi que
-  ce soit (donc sans migration).
+- **A1 — l'adresse e-mail est dans l'URL.** Elle part dans l'historique du navigateur et dans les
+  journaux d'accès du serveur (la requête de page, puis les appels à l'API, qui portent la page en
+  `Referer` ; la politique `strict-origin-when-cross-origin` de nginx empêche en revanche qu'elle
+  parte vers un autre domaine). Un jeton signé, à durée limitée, qui remplace l'adresse dans le lien
+  règle cela sans stocker quoi que ce soit (donc sans migration). **Reportée** : le lien est
+  fabriqué par `BookingLinks`, appelé par le courriel, la notification de rappel et les cartes
+  Wallet ; le courriel et son service passent par `IEmailTemplateService` et
+  `BookingConfirmationService`, que la PR #8 réécrit (langue de la réservation, néerlandais). Une
+  PR qui y touche maintenant se heurterait à elle ; elle se fait mieux après sa fusion.
 - **A2 — pas de modification.** « This booking cannot be modified. However, feel free to cancel and
   rebook » : l'annulation puis une nouvelle réservation est le chemin. Pas de correction proposée ici.
-- **A3 — la page reste consultable après l'heure** avec nom et adresse du client. Le jeton de PR 3
-  porte une échéance, ce qui y met un terme pour les nouveaux liens.
+- **A3 — la page reste consultable après l'heure** avec nom et adresse du client, sans échéance.
+  Un jeton qui porte la sienne y mettrait un terme ; c'est la part de A1 qui est reportée.
 
 ## Accessibilité
 
@@ -143,12 +156,18 @@ axe-core, 375 px, en clair et en sombre.
   le blanc sur bouton à 3,76 toujours. Le restaurateur choisit sa couleur : tout ce qu'il choisira
   d'un peu clair échouera de la même façon. `useAppTheme().primaryColor` est le point par où tout
   passe (plus de 400 usages dans le code).
-- **X2 — zones tactiles.** « Go back », « Open menu » : 36 × 36 ; « Book now », « Details » : 36 de
-  haut ; le lien « Restaurant admin » du pied de page : 32. Les pastilles d'heure (44), les champs
-  (44) et la confirmation (50) sont bons. La règle de la maison est 44 px (WCAG 2.5.5).
+- **X2 — zones tactiles.** « Book now » et « Details » : 36 de haut, sans zone élargie. Le nom du
+  restaurant dans la barre du haut (lien de 36) non plus. « Go back », « Open menu » (36 × 36) et le
+  lien du pied de page (32) portent déjà un `hitSlop` qui les amène à 44 ou plus : leur boîte
+  mesure moins que ce qu'on peut toucher, ce n'est pas un défaut. Les pastilles d'heure (44), les
+  champs (44) et la confirmation (50) sont bons. La règle de la maison est 44 px (WCAG 2.5.5).
 - **X3 — rôles et noms.** Les pastilles d'heure sont `role=radio` sans `aria-checked` (axe : critique,
-  5 éléments) ; la feuille de réservation et celle de la confirmation sont des `dialog` sans nom ;
-  aucune page n'a de repère `main` (axe : 3 à 12 éléments hors repère).
+  5 éléments) et les onglets Lunch/Dinner/All `role=tab` sans `aria-selected` : react-native-web
+  n'émet pas l'état pour ces deux rôles, un lecteur d'écran ne sait pas lequel est choisi. Les
+  `dialog` des feuilles ont un nom, mais react-native-web enveloppe tout `Modal` d'un `dialog` sans
+  nom que l'application ne peut pas étiqueter (axe : `aria-dialog-name`) ; aucune page n'a de repère
+  `main` (axe : 3 à 12 éléments hors repère, la barre de navigation porte déjà `role=navigation`).
+  La PR #14 règle les deux premiers ; le conteneur du `Modal` et le repère `main` restent.
 - **Bon** : `autocomplete` et `type=email` sur les champs, `aria-expanded` sur le panneau d'allergènes,
   `aria-checked` sur les filtres de la carte, libellés accessibles en clair sur chaque bouton d'heure
   (« Book Paddy's Pub at 09:00 »).
@@ -179,14 +198,30 @@ EN, FR, ES, DE ; annulation sans connexion limitée dans le temps.
 
 | PR  | Sujet                                                                  | Constats   | Base            |
 | --- | ---------------------------------------------------------------------- | ---------- | --------------- |
-| 0   | Cet audit                                                              | —          | `main`          |
-| 1   | Heure de la confirmation dans le fuseau du restaurant                  | C1         | `main`          |
-| 2   | Couleur de marque rendue lisible (AA) au point d'entrée du thème       | X1, M3     | `main`          |
-| 3   | Lien de réservation sans adresse e-mail, jeton signé qui expire        | A1, A3     | `main`          |
-| 4   | Heure choisie visible, zones de 44 px, rôles et noms accessibles       | R1, X2, X3 | `main`          |
-| 5   | Carte : filtres mémorisés, panneau d'allergènes ouvert, carte en cache | M2         | `feat/menu-api` |
+| #11 | Cet audit                                                              | —          | `main`          |
+| #12 | Heure de la confirmation dans le fuseau du restaurant                  | C1         | `main`          |
+| #13 | Couleur de marque rendue lisible (AA) au point d'entrée du thème       | X1, M3     | `main`          |
+| #14 | Heure choisie visible, `aria-checked`/`aria-selected`, cibles de 44 px | R1, X2, X3 | `main`          |
+| #15 | Bouton Confirmer collé au bas de la feuille (web)                      | R3         | `main`          |
+| #16 | Carte affichée à la demande, plus d'appel tiers à l'ouverture          | C3         | `main`          |
+| #17 | Carte QR : filtre allergènes et régime mémorisé d'un scan à l'autre    | M2         | `feat/menu-api` |
 
-Reste sans PR, volontairement : M1 (page HTML légère pour la carte, après #2 et #8), C2 (courriel,
-après #8), V1 (analyse du bloc commun), R2/R3, M4/M5. Le néerlandais est ajouté par la PR #8 :
-chaque PR ci-dessus qui ajoute des textes le fait pour en, fr, es, de ; si #8 est fusionnée avant,
-`nl.json` devra recevoir les mêmes clés (le test de parité du dépôt le dira).
+Ordre d'impact : le fuseau (une heure fausse fait manquer la table) et le contraste (tout l'écran,
+des clients comme du restaurateur) d'abord, puis la feuille de réservation, puis la vie privée de la
+page de confirmation, puis la mémoire du filtre de la carte.
+
+Sans PR, avec la raison : **A1** (lien de réservation sans adresse e-mail, jeton signé qui expire :
+elle passe par le courriel que la PR #8 réécrit, voir plus haut) ; **M1** (page HTML légère pour la
+carte : elle suppose la PR #2 et le routage nginx que la PR #8 apporte pour le site du restaurant) ;
+**C2** (courriel, après #8) ; **V1** (le découpage par route ne gagne que 18 %, une analyse du bloc
+commun de 578 Ko est à faire) ; **R2** (deux sélecteurs d'heure) ; **M4** (noms de plats par langue :
+exige une migration) ; **M5** (photos de plats, non vérifiées). Le néerlandais est ajouté par la
+PR #8 : les PR ci-dessus qui ajoutent des textes (#16) le font pour en, fr, es, de ; si #8 est fusionnée
+avant, `nl.json` devra recevoir la même clé (le test de parité du dépôt le dira).
+
+La carte QR d'une PR empilée (#17) devra, une fois #13 fusionnée, lire `onPrimary` pour l'onglet de
+menu sélectionné, qui pose aujourd'hui un blanc figé sur la couleur de marque.
+
+Constat hors périmètre, laissé tel quel : `RecentBookingsList` lit encore le jour d'une réservation
+sur l'horloge du téléphone (`fmtMonthDay(new Date(c.date))`), parce que le cache des réservations
+récentes n'embarque pas le fuseau du restaurant.
