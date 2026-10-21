@@ -89,6 +89,9 @@ valid_domain() { [[ "$1" =~ ^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$
 valid_email() { [[ "$1" =~ ^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$ ]]; }
 valid_version() { [ "$1" != latest ] && [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$ ]]; }
 valid_port() { [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -ge 1 ] && [ "$1" -le 65535 ]; }
+# Docker reads the first segment as a registry host only if it is localhost or holds a dot or a
+# colon; anything else ("local", "acme") is a Docker Hub namespace that anyone could register.
+valid_registry() { local first="${1%%/*}"; [ "$first" = localhost ] || [[ "$first" == *.* ]] || [[ "$first" == *:* ]]; }
 
 example_value() { ENV_FILE="$here/.env.example" env_get "$1"; }
 
@@ -148,6 +151,7 @@ resolve_config() {
   valid_domain "$domain" || die "'$domain' is not a public host name (lower-case, with a dot; an IP address or localhost cannot get a certificate)"
   valid_email "$acme_email" || die "'$acme_email' is not an e-mail address"
   valid_email "$admin_email" || die "'$admin_email' is not an e-mail address"
+  valid_registry "$registry" || die "registry '$registry' would be read as a Docker Hub namespace, which anyone can register; use a host name (ghcr.io/owner, registry.example.be/path) or localhost for images built here"
   valid_version "$version" || die "'$version' is not an exact release such as 2.4.1 ('latest' is refused: an unattended pull could change the version)"
   case "$DEPLOY_DIR" in *[[:space:]]*) die "$DEPLOY_DIR contains a space; systemd cannot run the backup from there" ;; esac
   if [ "$firewall" = 1 ]; then

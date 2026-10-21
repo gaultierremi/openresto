@@ -49,6 +49,12 @@ grep -q ' pull$' "$work/calls" && pass "registry install: pulls" || fail "regist
 grep -q ' build$' "$work/calls" && fail "registry install: built images" || pass "registry install: builds nothing"
 grep -q 'docker-compose.build.yml' "$work/calls" && fail "registry install: layered the build override" || pass "registry install: no build override"
 
+# A registry that is a Docker Hub namespace ("local") is refused before a backup, a pull or a build.
+run_update local && code=0 || code=$?
+[ "$code" != 0 ] && pass "namespace registry: refused" || fail "namespace registry: update ran"
+grep -q 'Docker Hub namespace' "$work/out" && pass "namespace registry: says why" || fail "namespace registry: no explanation"
+[ ! -s "$work/calls" ] && pass "namespace registry: nothing ran, not even the backup" || fail "namespace registry: ran $(wc -l < "$work/calls") command(s)"
+
 echo
 echo "passed: $passed  failed: $failed"
 [ "$failed" -eq 0 ]
