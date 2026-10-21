@@ -5,6 +5,7 @@ using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Services;
 using OpenRestoApi.Core.Application.Utilities;
 using OpenRestoApi.Extensions;
+using OpenRestoApi.Infrastructure.Auditing;
 using OpenRestoApi.Infrastructure.Auth;
 
 namespace OpenRestoApi.Controllers;
@@ -59,6 +60,7 @@ public class WaitlistController(WaitlistService waitlistService) : ControllerBas
     [HttpGet("api/admin/restaurants/{restaurantId:int}/waitlist")]
     [Authorize(Policy = AuthPolicies.RequireAdmin)]
     [RequiresScope(ApiKeyScopes.Bookings, ApiKeyScopes.Read)]
+    [ReadsGuestData("Waitlist")]
     public async Task<IActionResult> GetBoard(int restaurantId)
     {
         return Ok(await _waitlist.GetBoardAsync(restaurantId));

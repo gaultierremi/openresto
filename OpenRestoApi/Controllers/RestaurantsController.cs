@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Services;
 using OpenRestoApi.Core.Application.Utilities;
+using OpenRestoApi.Infrastructure.Auditing;
 using OpenRestoApi.Infrastructure.Auth;
 
 namespace OpenRestoApi.Controllers;
@@ -131,6 +132,7 @@ public class RestaurantsController(RestaurantManagementService service) : Contro
     [HttpGet("{id}/schedule-conflicts")]
     [Authorize(Policy = AuthPolicies.RequireAdmin)]
     [RequiresScope(ApiKeyScopes.Locations, ApiKeyScopes.Read)]
+    [ReadsGuestData("Schedule conflicts", RestaurantRouteKey = "id")]
     public async Task<IActionResult> GetScheduleConflicts(int id)
     {
         List<ScheduleConflictDto>? result = await _service.GetScheduleConflictsAsync(id);

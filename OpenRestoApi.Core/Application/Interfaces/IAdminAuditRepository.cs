@@ -11,6 +11,14 @@ public interface IAdminAuditRepository
 {
     Task AddAsync(AdminAuditEntry entry);
 
+    /// <summary>
+    /// Whether this actor already has a row for the same action, screen and location since
+    /// <paramref name="sinceUtc"/>. A read of guest data is recorded once per such window rather
+    /// than once per poll, so the list stays something a person can read.
+    /// </summary>
+    Task<bool> ExistsSinceAsync(
+        int? actorUserId, string actorEmail, string action, string? targetLabel, int? restaurantId, DateTime sinceUtc);
+
     Task<(List<AdminAuditEntry> Items, int TotalCount)> QueryPagedAsync(AuditQuery query, int page, int pageSize);
 
     /// <summary>Returns how many rows were dropped, for the retention pass to log.</summary>
