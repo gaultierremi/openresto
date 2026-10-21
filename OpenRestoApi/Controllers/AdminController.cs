@@ -4,6 +4,8 @@ using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Exceptions;
 using OpenRestoApi.Core.Application.Services;
 using OpenRestoApi.Core.Application.Utilities;
+using OpenRestoApi.Extensions;
+using OpenRestoApi.Infrastructure.Auditing;
 using OpenRestoApi.Infrastructure.Auth;
 
 namespace OpenRestoApi.Controllers;
@@ -23,11 +25,13 @@ public class AdminController(AdminService adminService) : ControllerBase
     // by BookingGuestVisibility when the key also lacks guests:read.
     [HttpGet("overview")]
     [RequiresScope(ApiKeyScopes.Bookings, ApiKeyScopes.Read)]
+    [ReadsGuestData("Today's bookings")]
     public async Task<IActionResult> Overview()
         => Ok(await _adminService.GetOverviewAsync());
 
     [HttpGet("bookings")]
     [RequiresScope(ApiKeyScopes.Bookings, ApiKeyScopes.Read)]
+    [ReadsGuestData("Bookings")]
     public async Task<IActionResult> GetBookings(
         [FromQuery] int? restaurantId,
         [FromQuery] DateTime? date,
@@ -44,10 +48,14 @@ public class AdminController(AdminService adminService) : ControllerBase
 
     [HttpGet("bookings/{id}")]
     [RequiresScope(ApiKeyScopes.Bookings, ApiKeyScopes.Read)]
+    [ReadsGuestData("Booking")]
     public async Task<IActionResult> GetBooking(int id)
     {
         BookingDetailDto? result = await _adminService.GetBookingAsync(id);
-        return result == null ? NotFound() : Ok(result);
+        if (result == null) return NotFound();
+
+        this.NoteGuestDataLocation(result.RestaurantId);
+        return Ok(result);
     }
 
     [HttpPost("bookings")]

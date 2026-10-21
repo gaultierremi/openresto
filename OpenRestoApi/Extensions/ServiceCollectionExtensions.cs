@@ -289,6 +289,10 @@ public static class ServiceCollectionExtensions
                 policy.RequireRole(UserRoles.Owner, UserRoles.Manager, UserRoles.LegacyAdmin));
             options.AddPolicy(AuthPolicies.RequireOwner, policy =>
                 policy.RequireRole(UserRoles.Owner, UserRoles.LegacyAdmin));
+            options.AddPolicy(AuthPolicies.RequirePlatform, policy =>
+                policy.RequireRole(UserRoles.Owner, UserRoles.LegacyAdmin));
+            options.AddPolicy(AuthPolicies.RequireRestaurateur, policy =>
+                policy.RequireRole(UserRoles.Restaurateur));
         });
 
         return services;
@@ -376,6 +380,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAdminAuditRepository, AdminAuditRepository>();
         services.AddScoped<IAdminApiKeyRepository, AdminApiKeyRepository>();
         services.AddScoped<INativeClientStatsRepository, NativeClientStatsRepository>();
+        services.AddScoped<IMenuRepository, MenuRepository>();
+        services.AddScoped<ISiteRepository, SiteRepository>();
+        services.AddScoped<IPlatformRepository, PlatformRepository>();
 
         // One instance per request, reachable both as the write-only contract services enrich
         // through and as the concrete draft the audit middleware reads back.
@@ -406,6 +413,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAvailabilityService, AvailabilityService>();
         services.AddSingleton<IMediaStore, OpenRestoApi.Infrastructure.Media.MediaStore>();
         services.AddScoped<MediaService>();
+        services.AddScoped<MenuService>();
+        services.AddScoped<SiteService>();
+        services.AddScoped<PlatformService>();
+        services.AddScoped<OnboardingService>();
+        services.AddScoped<BookingRetentionService>();
+        services.AddHostedService<OpenRestoApi.Infrastructure.Retention.BookingRetentionWorker>();
         services.AddScoped<NativeAppStatusService>();
 
         // Native guest-app telemetry: an in-memory counter on the request path, flushed to the

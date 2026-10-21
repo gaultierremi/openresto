@@ -2,6 +2,7 @@ import en from "@/locales/en.json";
 import fr from "@/locales/fr.json";
 import es from "@/locales/es.json";
 import de from "@/locales/de.json";
+import nl from "@/locales/nl.json";
 import { SUPPORTED_LOCALES } from "@/constants/locales";
 
 type Json = { [key: string]: Json | string };
@@ -39,7 +40,21 @@ function leafEntries(node: Json, prefix = ""): [string, string][] {
   });
 }
 
-const LOCALE_FILES: Record<string, Json> = { en, fr, es, de };
+const LOCALE_FILES: Record<string, Json> = { en, fr, es, de, nl };
+
+/**
+ * Locales that deliberately cover the guest surface only, mapped to the top-level segments
+ * they leave out. Dutch is guest-facing only; the admin area has no Dutch, and `i18n/index.ts`
+ * sends a Dutch viewer who reaches an admin key to French. Every other locale keeps exact
+ * parity with en.json, so a missing key anywhere else still fails.
+ */
+const GUEST_ONLY_LOCALES: Record<string, string[]> = { nl: ["admin"] };
+
+function isOmitted(locale: string, path: string): boolean {
+  return (GUEST_ONLY_LOCALES[locale] ?? []).includes(path.split(".")[0]);
+}
+
+const NON_ENGLISH = SUPPORTED_LOCALES.filter((locale) => locale !== "en");
 
 describe("i18n locale key parity", () => {
   it("ships a locale file for every entry in SUPPORTED_LOCALES", () => {
@@ -52,19 +67,33 @@ describe("i18n locale key parity", () => {
     expect(englishKeys.length).toBeGreaterThan(0);
   });
 
-  it.each(SUPPORTED_LOCALES.filter((locale) => locale !== "en"))(
-    "%s.json has the exact same leaf key paths as en.json",
+  it("lets only Dutch omit the admin subtree", () => {
+    expect(GUEST_ONLY_LOCALES).toEqual({ nl: ["admin"] });
+    expect(Object.keys(nl)).not.toContain("admin");
+    for (const locale of NON_ENGLISH.filter((l) => l !== "nl")) {
+      expect(Object.keys(LOCALE_FILES[locale])).toContain("admin");
+    }
+  });
+
+  it.each(NON_ENGLISH)(
+    "%s.json has the same leaf key paths as en.json, less the segments it leaves out",
     (locale) => {
-      expect(leafKeyPaths(LOCALE_FILES[locale])).toEqual(englishKeys);
+      const expected = englishKeys.filter((path) => !isOmitted(locale, path));
+      expect(leafKeyPaths(LOCALE_FILES[locale])).toEqual(expected);
     }
   );
+
+  it("nl.json translates every guest key en.json has and adds none of its own", () => {
+    const guestKeys = englishKeys.filter((path) => !path.startsWith("admin."));
+    expect(leafKeyPaths(nl)).toEqual(guestKeys);
+  });
 
   /**
    * A placeholder a translation invents is never anything but a bug: nothing supplies it, so
    * i18next renders the braces literally and the viewer reads "{{naem}}". Key parity cannot
    * see this — the key is present and the value is a plausible sentence.
    */
-  it.each(SUPPORTED_LOCALES.filter((locale) => locale !== "en"))(
+  it.each(NON_ENGLISH)(
     "%s.json references no interpolation variable en.json does not supply",
     (locale) => {
       const english = new Map(leafEntries(en));
@@ -86,24 +115,22 @@ describe("i18n locale key parity", () => {
    * principled exception is `count` on a singular variant — "the following booking" is idiomatic
    * where "the following 1 booking" is not, in every language whose `_one` form means exactly one.
    */
-  it.each(SUPPORTED_LOCALES.filter((locale) => locale !== "en"))(
-    "%s.json keeps every interpolation variable en.json supplies",
-    (locale) => {
-      const translated = new Map(leafEntries(LOCALE_FILES[locale]));
-      const dropped = leafEntries(en)
-        .map(([path, value]) => ({
-          path,
-          missing: placeholders(value).filter(
-            (name) =>
-              !placeholders(translated.get(path) ?? "").includes(name) &&
-              !(name === "count" && path.endsWith("_one"))
-          ),
-        }))
-        .filter(({ missing }) => missing.length > 0);
+  it.each(NON_ENGLISH)("%s.json keeps every interpolation variable en.json supplies", (locale) => {
+    const translated = new Map(leafEntries(LOCALE_FILES[locale]));
+    const dropped = leafEntries(en)
+      .filter(([path]) => !isOmitted(locale, path))
+      .map(([path, value]) => ({
+        path,
+        missing: placeholders(value).filter(
+          (name) =>
+            !placeholders(translated.get(path) ?? "").includes(name) &&
+            !(name === "count" && path.endsWith("_one"))
+        ),
+      }))
+      .filter(({ missing }) => missing.length > 0);
 
-      expect(dropped).toEqual([]);
-    }
-  );
+    expect(dropped).toEqual([]);
+  });
 
   it("only nests keys under the six approved top-level segments", () => {
     const approved = ["common", "booking", "restaurant", "lookup", "admin", "errors"];

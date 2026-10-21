@@ -31,6 +31,11 @@ jest.mock("expo-router", () => ({
 
 jest.mock("@/utils/bookingCache", () => ({ rememberBooking: jest.fn() }));
 
+let mockLocale = "en";
+jest.mock("@/context/LocaleContext", () => ({
+  useLocale: () => ({ locale: mockLocale, setLocale: jest.fn() }),
+}));
+
 jest.mock("@/api/bookings", () => ({
   createBooking: jest.fn(),
 }));
@@ -542,6 +547,42 @@ describe("BookingDrawer", () => {
           expect.objectContaining({ specialRequests: null })
         )
       );
+    });
+
+    describe("the guest's language", () => {
+      afterEach(() => {
+        mockLocale = "en";
+      });
+
+      it("rides along on the booking so the confirmation email can speak it", async () => {
+        mockLocale = "nl";
+        renderWithProviders(<BookingDrawer {...baseProps} />);
+        fireEvent.press(screen.getByTestId("submit-trigger"));
+        await waitFor(() =>
+          expect(createBooking).toHaveBeenCalledWith(expect.objectContaining({ locale: "nl" }))
+        );
+      });
+
+      it("is the active language, not a fixed one", async () => {
+        mockLocale = "fr";
+        renderWithProviders(<BookingDrawer {...baseProps} />);
+        fireEvent.press(screen.getByTestId("submit-trigger"));
+        await waitFor(() =>
+          expect(createBooking).toHaveBeenCalledWith(expect.objectContaining({ locale: "fr" }))
+        );
+        expect(createBooking).not.toHaveBeenCalledWith(expect.objectContaining({ locale: "nl" }));
+      });
+
+      it("leaves no booking behind when the server refuses it", async () => {
+        mockLocale = "nl";
+        (createBooking as jest.Mock).mockRejectedValue(new Error("Fully booked"));
+        renderWithProviders(<BookingDrawer {...baseProps} />);
+        fireEvent.press(screen.getByTestId("submit-trigger"));
+        await waitFor(() => expect(screen.getByText("Fully booked")).toBeTruthy());
+        expect(createBooking).toHaveBeenCalledWith(expect.objectContaining({ locale: "nl" }));
+        expect(rememberBooking).not.toHaveBeenCalled();
+        expect(mockPush).not.toHaveBeenCalled();
+      });
     });
 
     it("falls back to the UTC timezone when the restaurant has none set", async () => {

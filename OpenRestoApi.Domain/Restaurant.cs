@@ -32,6 +32,11 @@ public class Restaurant
 
     public ICollection<TableGroup> Groups { get; set; } = new List<TableGroup>();
 
+    public ICollection<Menu> Menus { get; set; } = new List<Menu>();
+
+    /// <summary>What the location's QR code carries; see <see cref="PublicTokenGenerator"/>.</summary>
+    public string PublicToken { get; set; } = PublicTokenGenerator.New();
+
     /// <summary>
     /// If set, sittings that start before this instant (UTC) are closed to new bookings.
     /// </summary>
@@ -68,6 +73,33 @@ public class Restaurant
     public string? EmailAddress { get; set; }
 
     public bool IsArchived { get; set; }
+
+    /// <summary>
+    /// Where the restaurant stands on the platform. A row that predates onboarding is
+    /// <see cref="RestaurantStatus.Published"/>, so existing installs change nothing.
+    /// </summary>
+    public RestaurantStatus Status { get; set; } = RestaurantStatus.Published;
+
+    /// <summary>What every public path asks: guests only reach a published, unarchived restaurant.</summary>
+    public bool IsListedPublicly => !IsArchived && Status == RestaurantStatus.Published;
+
+    /// <summary>Belgian VAT number as <c>BE0123456789</c>; null when the restaurant has none.</summary>
+    public string? VatNumber { get; set; }
+
+    /// <summary>
+    /// Months a guest stays identifiable after the sitting; see <see cref="BookingRetention"/>.
+    /// Null is no automatic erasure until the platform or the restaurateur fixes a period: that is
+    /// what every restaurant that predates the setting holds. A new restaurant starts at
+    /// <see cref="BookingRetention.DefaultMonths"/>.
+    /// </summary>
+    public int? BookingRetentionMonths { get; set; } = BookingRetention.DefaultMonths;
+
+    /// <summary>The setup assistant's progress; read it through <see cref="OnboardingProgress"/>.</summary>
+    public string? OnboardingSteps { get; set; }
+
+    public DateTime? PublishedAt { get; set; }
+    public DateTime? SuspendedAt { get; set; }
+    public string? SuspensionReason { get; set; }
 
     /// <summary>
     /// When true the location accepts walk-ins only: it stays listed publicly

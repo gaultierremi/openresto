@@ -22,6 +22,9 @@ export const styles = StyleSheet.create({
     gap: theme.spacing.md,
     ...theme.shadows.popup,
   },
+  cardWide: {
+    maxWidth: 960,
+  },
   // `flexShrink` is what lets the ceiling above win: a ScrollView sized to its content would
   // push the card taller rather than scrolling inside it.
   body: {

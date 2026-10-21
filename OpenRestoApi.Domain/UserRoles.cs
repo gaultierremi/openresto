@@ -16,6 +16,13 @@ public static class UserRoles
     public const string Manager = "Manager";
 
     /// <summary>
+    /// The person who runs one restaurant. Deliberately outside <see cref="Assignable"/> and both
+    /// admin policies: the account is only ever created by accepting an invitation, and it reaches
+    /// the restaurants it is a <see cref="RestaurantMember"/> of through its own endpoints.
+    /// </summary>
+    public const string Restaurateur = "Restaurateur";
+
+    /// <summary>
     /// The role claim minted before multi-user support existed. No user row ever carries it —
     /// it only appears in 30-day JWTs issued by an older build. Both policies honour it so an
     /// in-flight session survives the upgrade instead of being silently logged out; it can be

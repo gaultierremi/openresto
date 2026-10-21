@@ -1,7 +1,7 @@
 {
-  "etat": "Kit d'hébergement corrigé après relecture ; CI du kit verte sur GitHub, démo Codespaces lancée par Gaultier.",
+  "etat": "Sprint 4 en PR 8 : embarquement, espace plateforme, pages légales (modèles), néerlandais ; corrections de relecture appliquées. Kit d'hébergement corrigé après relecture ; CI du kit verte sur GitHub.",
   "sante": "actif",
-  "prochaine_etape": "Relecture de la PR 4, puis choix du modèle d'hébergement (une instance par client) et des images du fork.",
+  "prochaine_etape": "Contre-relecture de la PR 8 par Astra, puis validation juridique des textes et portée admin par restaurant avant le premier vrai restaurant ; choix du modèle d'hébergement et des images du fork.",
   "chantiers": [
     {
       "id": "deploy-kit",
@@ -12,6 +12,46 @@
       "pr": 4,
       "etape": "Corrections P2 et P3 de la relecture poussées ; en attente d'un nouveau verdict.",
       "maj": "2026-10-20T20:38:22+00:00"
+    },
+    {
+      "id": "menu-api",
+      "titre": "Module carte natif — API (#2, avec les écrans #5)",
+      "agent": "Claude",
+      "branche": "feat/menu-api",
+      "statut": "Prête à merger",
+      "pr": 2,
+      "etape": "Relue MERGE (0282e76 pour #2, 15b7ef1 pour #5) ; main fusionné pour lever le conflit de status.json.",
+      "maj": "2026-10-21T15:24:40+00:00"
+    },
+    {
+      "id": "site-vitrine",
+      "titre": "Sprint 3 — mini-site vitrine par restaurant (#7, rouvert vers main)",
+      "agent": "Claude",
+      "branche": "feat/site-vitrine",
+      "statut": "Prête à merger",
+      "pr": 18,
+      "etape": "Relue MERGE (948dc05) ; le travail de #7 avait été fusionné dans sa branche empilée, pas dans main.",
+      "maj": "2026-10-21T15:25:02+00:00"
+    },
+    {
+      "id": "bifrost-openresto",
+      "titre": "Brancher OpenResto sur Heimdall",
+      "agent": "Claude",
+      "branche": "chore/bifrost",
+      "statut": "Prête à merger",
+      "pr": 3,
+      "etape": "Fusionnée avec la chaîne #2, #7 (PR 18) pour se fusionner sans conflit après elles.",
+      "maj": "2026-10-21T15:26:01+00:00"
+    },
+    {
+      "id": "premier-restaurant",
+      "titre": "Sprint 4 — prêt pour le premier restaurant (embarquement, espace plateforme, légal, néerlandais)",
+      "agent": "Claude",
+      "branche": "claude/festive-wozniak-b62txe",
+      "statut": "En relecture",
+      "pr": 8,
+      "etape": "Corrections de la relecture (CORRIGER) poussées ; branche mise à jour avec main et la chaîne #2, #7 (PR 18), #3 ; en attente d'une contre-relecture. Les textes légaux restent des modèles : un juriste doit les valider avant tout vrai restaurant.",
+      "maj": "2026-10-21T15:26:36+00:00"
     }
   ],
   "decisions": [
@@ -26,10 +66,22 @@
       "titre": "Publier les images Docker du fork sur GHCR, ou tirer les images amont ?",
       "pourquoi": "Les images amont 2.4.1 ne lisent pas SMTP_* ; il faut les images du fork pour cette fonction et pour tout ce qui diverge.",
       "urgence": "Cette semaine"
+    },
+    {
+      "id": "validation-juridique",
+      "titre": "Faire valider les quatre textes légaux par un juriste belge",
+      "pourquoi": "Conditions, confidentialité, sous-traitance art. 28 et mentions légales sont des modèles à champs [entre crochets] : aucun vrai restaurant ne doit les accepter avant relecture (docs/PLATEFORME.md).",
+      "urgence": "Avant le premier restaurant"
+    },
+    {
+      "id": "portee-admin-par-restaurant",
+      "titre": "Après publication, le restaurateur ne gère pas ses réservations ; les écrans admin montrent les clients à tout Owner/Manager",
+      "pourquoi": "Le Sprint 4 isole le restaurateur en l'excluant de l'admin au lieu de restreindre l'admin par restaurant : c'est le chantier suivant, à décider avant d'accueillir un restaurant indépendant.",
+      "urgence": "Avant le premier restaurant"
     }
   ],
   "maj": {
-    "at": "2026-10-20T20:38:22+00:00",
+    "at": "2026-10-21T18:07:13+00:00",
     "by": "Claude"
   }
 }
