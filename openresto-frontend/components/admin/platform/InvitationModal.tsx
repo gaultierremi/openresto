@@ -170,6 +170,7 @@ export function InvitationModal({
                   label={invitationLocaleLabel(t, choice)}
                   color={primaryColor}
                   selected={locale === choice}
+                  radio
                   onPress={() => setLocale(choice)}
                 />
               ))}

@@ -34,6 +34,18 @@ describe("ConsentCheckbox", () => {
     expect(screen.getByRole("checkbox").props.accessibilityState.checked).toBe(true);
   });
 
+  it.each([true, false])(
+    "states checked=%s through aria-checked too, which is what the web reads",
+    (checked) => {
+      renderBox(checked);
+      const value = screen
+        .UNSAFE_getAllByProps({ testID: "box" })
+        .map((node) => node.props["aria-checked"])
+        .find((v) => v !== undefined);
+      expect(value).toBe(checked);
+    }
+  );
+
   it("ticks from the box and unticks a ticked one", () => {
     const first = renderBox(false);
     fireEvent.press(screen.getByRole("checkbox"));

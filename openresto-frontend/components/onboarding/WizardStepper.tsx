@@ -51,6 +51,9 @@ export function WizardStepper({
             onPress={() => onSelect(key)}
             role="tab"
             accessibilityState={{ selected }}
+            // react-native-web reads the `aria-*` prop, not `accessibilityState`, so without this
+            // the rendered tab never says which stage is open.
+            aria-selected={selected}
             accessibilityLabel={current ? `${label}, ${stateLabel[current]}` : label}
             style={[
               styles.item,

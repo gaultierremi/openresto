@@ -1,6 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { WizardStepper } from "@/components/onboarding/WizardStepper";
+import { STAGES } from "@/constants/onboarding";
 import { state, steps } from "@/tests/helpers/onboardingFixtures";
 
 jest.mock("@/context/BrandContext", () => ({
@@ -42,6 +43,44 @@ describe("WizardStepper", () => {
     render(<WizardStepper state={state()} stage="layout" onSelect={jest.fn()} />);
     expect(screen.getByTestId("stepper-layout").props.accessibilityState.selected).toBe(true);
     expect(screen.getByTestId("stepper-hours").props.accessibilityState.selected).toBe(false);
+  });
+
+  describe("tab state, through aria-selected, which is what the web reads", () => {
+    // The `aria-*` prop is only visible on the component element, not on the host node that
+    // `getByTestId` returns.
+    const ariaSelected = () =>
+      STAGES.map((key) =>
+        screen
+          .UNSAFE_getAllByProps({ testID: `stepper-${key}` })
+          .map((node) => node.props["aria-selected"])
+          .find((value) => value !== undefined)
+      );
+    const only = (open: string) => STAGES.map((key) => key === open);
+
+    it("is a labelled tablist", () => {
+      render(<WizardStepper state={state()} stage="info" onSelect={jest.fn()} />);
+      // A bare grouping `View` is not "accessible", which `getByRole` insists on, so find it by prop.
+      const list = screen.UNSAFE_getByProps({ role: "tablist" });
+      expect(list.props.accessibilityLabel).toBe("Setup steps");
+      expect(list.findAllByProps({ role: "tab" }).length).toBeGreaterThanOrEqual(STAGES.length);
+    });
+
+    it("announces only the open stage as selected", () => {
+      render(<WizardStepper state={state()} stage="layout" onSelect={jest.fn()} />);
+      expect(ariaSelected()).toEqual(only("layout"));
+    });
+
+    it("announces the preview as the only selected tab when it is open", () => {
+      render(<WizardStepper state={state()} stage="preview" onSelect={jest.fn()} />);
+      expect(ariaSelected()).toEqual(only("preview"));
+    });
+
+    it("moves the selection when another stage opens", () => {
+      const view = render(<WizardStepper state={state()} stage="info" onSelect={jest.fn()} />);
+      expect(ariaSelected()).toEqual(only("info"));
+      view.rerender(<WizardStepper state={state()} stage="menu" onSelect={jest.fn()} />);
+      expect(ariaSelected()).toEqual(only("menu"));
+    });
   });
 
   it("opens any stage on a press, a later one included, whatever the earlier ones say", () => {

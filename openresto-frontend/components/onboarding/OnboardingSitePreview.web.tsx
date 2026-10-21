@@ -41,12 +41,17 @@ export function OnboardingSitePreview({ restaurantId, version }: OnboardingSiteP
 
   return (
     <View testID="onboarding-site-preview">
-      <View style={styles.header} accessibilityRole="radiogroup">
+      <View
+        style={styles.header}
+        accessibilityRole="radiogroup"
+        accessibilityLabel={t("admin.onboarding.preview.site.frameTitle")}
+      >
         <RowTextButton
           label={t("admin.onboarding.preview.site.phone")}
           color={primaryColor}
           icon="phone-portrait-outline"
           selected={frame === "phone"}
+          radio
           onPress={() => setFrame("phone")}
           testID="onboarding-site-preview-phone"
         />
@@ -55,6 +60,7 @@ export function OnboardingSitePreview({ restaurantId, version }: OnboardingSiteP
           color={primaryColor}
           icon="desktop-outline"
           selected={frame === "desktop"}
+          radio
           onPress={() => setFrame("desktop")}
           testID="onboarding-site-preview-desktop"
         />
