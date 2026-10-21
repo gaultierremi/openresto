@@ -1,6 +1,7 @@
 using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Exceptions;
 using OpenRestoApi.Core.Application.Interfaces;
+using OpenRestoApi.Core.Application.Site;
 using OpenRestoApi.Core.Application.Utilities;
 using OpenRestoApi.Core.Domain;
 
@@ -385,7 +386,7 @@ public class MenuService(
     /// <seealso>MenuServiceTests.PublicMenu_NotFound_WhenNothingIsPublished</seealso>
     private async Task<PublicMenuResponse> BuildPublicMenuAsync(Restaurant restaurant, Table? table)
     {
-        if (restaurant.IsArchived)
+        if (!restaurant.IsListedPublicly)
         {
             throw NotFound();
         }
@@ -405,11 +406,11 @@ public class MenuService(
                 Name = m.Name,
                 Description = m.Description,
                 Currency = m.Currency,
-                Categories = Ordered(m.Categories.Where(c => c.IsVisible)).Select(c => new PublicMenuCategoryDto
+                Categories = VisibleCategories(m).Select(c => new PublicMenuCategoryDto
                 {
                     Name = c.Name,
                     Description = c.Description,
-                    Items = Ordered(c.Items.Where(i => i.Availability != MenuItemAvailability.Hidden)).Select(i => new PublicMenuItemDto
+                    Items = VisibleItems(c).Select(i => new PublicMenuItemDto
                     {
                         Name = i.Name,
                         Description = i.Description,
@@ -423,6 +424,38 @@ public class MenuService(
             }).ToList(),
         };
     }
+
+    /// <summary>
+    /// The restaurant's published menus as the one-page site shows them: the same filter as the QR
+    /// page (published menus, visible categories, items not hidden), in the same order. Empty when
+    /// nothing is published; unlike the QR page that is not an error, a site simply has no menu
+    /// section.
+    /// </summary>
+    /// <seealso>MenuServiceTests.PublishedMenuViews_AreTheSameDishesTheQrPageShows</seealso>
+    public async Task<List<PublicMenuView>> GetPublishedMenuViewsAsync(int restaurantId)
+    {
+        List<Menu> menus = await _repo.GetMenusWithContentAsync(restaurantId);
+        return Ordered(menus.Where(m => m.IsPublished)).Select(m => new PublicMenuView(
+            m.Name,
+            m.Description,
+            m.Currency,
+            VisibleCategories(m).Select(c => new PublicMenuCategoryView(
+                c.Name,
+                c.Description,
+                VisibleItems(c).Select(i => new PublicMenuItemView(
+                    i.Name,
+                    i.Description,
+                    i.PriceMinor,
+                    i.ImageUrl,
+                    i.Availability == MenuItemAvailability.SoldOut,
+                    i.Allergens,
+                    i.DietaryTags)).ToList())).ToList())).ToList();
+    }
+
+    private static IEnumerable<MenuCategory> VisibleCategories(Menu menu) => Ordered(menu.Categories.Where(c => c.IsVisible));
+
+    private static IEnumerable<MenuItem> VisibleItems(MenuCategory category)
+        => Ordered(category.Items.Where(i => i.Availability != MenuItemAvailability.Hidden));
 
     /// <summary>A token that could never have been minted is turned away before any query.</summary>
     private static bool IsPlausibleToken(string? token)

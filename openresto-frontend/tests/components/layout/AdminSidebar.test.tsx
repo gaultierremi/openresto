@@ -127,6 +127,34 @@ describe("AdminSidebar", () => {
     expect(screen.queryByText("Users")).toBeNull();
   });
 
+  it("shows the Platform entry to an Owner and opens the platform space", async () => {
+    render(
+      <AuthProvider>
+        <AdminSidebar />
+      </AuthProvider>
+    );
+    await waitFor(() => expect(screen.getByText("Platform")).toBeTruthy());
+    fireEvent.press(screen.getByText("Platform"));
+    expect(mockPush).toHaveBeenCalledWith("/admin/platform");
+  });
+
+  it("hides the Platform entry from a Manager", async () => {
+    const { checkSession } = require("@/api/auth");
+    (checkSession as jest.Mock).mockResolvedValueOnce({
+      id: 2,
+      email: "manager@test.com",
+      displayName: "Manager Person",
+      role: "Manager",
+    });
+    render(
+      <AuthProvider>
+        <AdminSidebar />
+      </AuthProvider>
+    );
+    await waitFor(() => expect(screen.getByText("CONFIGURE")).toBeTruthy());
+    expect(screen.queryByText("Platform")).toBeNull();
+  });
+
   it("shows the API Keys entry to an Owner", async () => {
     render(
       <AuthProvider>
@@ -339,6 +367,58 @@ describe("AdminSidebar", () => {
     it("does not light QR codes for a lookalike prefix", async () => {
       await renderAt("/admin/qr-codes-old");
       expect(selected("QR codes")).toBe(false);
+    });
+  });
+
+  describe("my website", () => {
+    afterEach(() => {
+      (usePathname as jest.Mock).mockImplementation(() => "/dashboard");
+    });
+
+    const renderAt = async (pathname: string) => {
+      (usePathname as jest.Mock).mockImplementation(() => pathname);
+      render(
+        <AuthProvider>
+          <AdminSidebar />
+        </AuthProvider>
+      );
+      await screen.findByText("My website");
+    };
+
+    const selected = () =>
+      screen.getByRole("link", { name: "My website" }).props.accessibilityState.selected;
+
+    it("navigates to the website screen when it is pressed", async () => {
+      await renderAt("/admin/dashboard");
+      fireEvent.press(screen.getByText("My website"));
+      expect(mockPush).toHaveBeenCalledWith("/admin/site");
+    });
+
+    it("is listed for a Manager, as the backend lets a Manager edit a site", async () => {
+      const { checkSession } = require("@/api/auth");
+      (checkSession as jest.Mock).mockResolvedValueOnce({
+        id: 2,
+        email: "manager@test.com",
+        displayName: "Manager Person",
+        role: "Manager",
+      });
+      await renderAt("/admin/dashboard");
+      expect(screen.getByText("My website")).toBeTruthy();
+    });
+
+    it("is lit on its own page and on a route beneath it", async () => {
+      await renderAt("/admin/site");
+      expect(selected()).toBe(true);
+    });
+
+    it("is lit beneath its path", async () => {
+      await renderAt("/admin/site/photos");
+      expect(selected()).toBe(true);
+    });
+
+    it("is not lit on a route that only starts with the same letters", async () => {
+      await renderAt("/admin/sites-archive");
+      expect(selected()).toBe(false);
     });
   });
 });

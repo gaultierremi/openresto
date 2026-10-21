@@ -180,6 +180,9 @@ namespace OpenRestoApi.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(true);
 
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -322,6 +325,9 @@ namespace OpenRestoApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("AnonymizedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("BookingRef")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -343,6 +349,10 @@ namespace OpenRestoApi.Migrations
 
                     b.Property<bool>("IsCancelled")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Locale")
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("OriginalEndTime")
                         .HasColumnType("TEXT");
@@ -571,6 +581,48 @@ namespace OpenRestoApi.Migrations
                     b.ToTable("GuestPushSubscriptions");
                 });
 
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.LegalAcceptance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("AcceptedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContentSha256")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DocumentKey")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId", "AcceptedAt");
+
+                    b.ToTable("LegalAcceptances");
+                });
+
             modelBuilder.Entity("OpenRestoApi.Core.Domain.Menu", b =>
                 {
                     b.Property<int>("Id")
@@ -734,6 +786,9 @@ namespace OpenRestoApi.Migrations
                     b.Property<int>("BookingRefFormat")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("BookingRetentionMonths")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("BookingSlotIntervalMinutes")
                         .HasColumnType("INTEGER");
 
@@ -772,6 +827,10 @@ namespace OpenRestoApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("OnboardingSteps")
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("OpenDays")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -791,6 +850,23 @@ namespace OpenRestoApi.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Published");
+
+                    b.Property<DateTime?>("SuspendedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SuspensionReason")
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Tags")
                         .HasColumnType("TEXT");
 
@@ -799,6 +875,10 @@ namespace OpenRestoApi.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TurnTimesJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VatNumber")
+                        .HasMaxLength(16)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("WalkInDays")
@@ -843,6 +923,158 @@ namespace OpenRestoApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Highlights");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.RestaurantInvitation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("AcceptedByUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Locale")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("RestaurantInvitations");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.RestaurantMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId");
+
+                    b.HasIndex("UserId", "RestaurantId")
+                        .IsUnique();
+
+                    b.ToTable("RestaurantMembers");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.RestaurantSite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CompanyNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CoverUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LegalAddress")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LegalName")
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LogoUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhotosJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PrimaryColor")
+                        .HasMaxLength(9)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SocialLinksJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tagline")
+                        .HasMaxLength(160)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VatNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId")
+                        .IsUnique();
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("RestaurantSites");
                 });
 
             modelBuilder.Entity("OpenRestoApi.Core.Domain.Section", b =>
@@ -1157,6 +1389,47 @@ namespace OpenRestoApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.RestaurantInvitation", b =>
+                {
+                    b.HasOne("OpenRestoApi.Core.Domain.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.RestaurantMember", b =>
+                {
+                    b.HasOne("OpenRestoApi.Core.Domain.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OpenRestoApi.Core.Domain.AdminCredential", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.RestaurantSite", b =>
+                {
+                    b.HasOne("OpenRestoApi.Core.Domain.Restaurant", "Restaurant")
+                        .WithOne()
+                        .HasForeignKey("OpenRestoApi.Core.Domain.RestaurantSite", "RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("OpenRestoApi.Core.Domain.Section", b =>

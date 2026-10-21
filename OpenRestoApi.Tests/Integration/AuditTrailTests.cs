@@ -78,7 +78,8 @@ public class AuditTrailTests(TestWebAppFactory factory) : IClassFixture<TestWebA
     }
 
     /// <summary>
-    /// Reads are out of scope for v1. The dashboard polls several of these per minute per open
+    /// Reads are out of scope except the ones that hand over guest identity
+    /// (<c>GuestDataReadAuditTests</c>). The dashboard polls several of these per minute per open
     /// tab, and a row each would bury the writes the log exists to show.
     /// </summary>
     [Fact]
@@ -87,7 +88,7 @@ public class AuditTrailTests(TestWebAppFactory factory) : IClassFixture<TestWebA
         HttpClient client = _factory.CreateAuthenticatedClient();
         int before = await EntryCountAsync();
 
-        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/admin/overview")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/admin/restaurants")).StatusCode);
 
         Assert.Equal(before, await EntryCountAsync());
     }

@@ -12,6 +12,7 @@ public static class DbSeeder
             {
                 Name = "Pasta Place",
                 Address = "123 Main St",
+                BookingRetentionMonths = BookingRetention.DefaultMonths,
                 Sections = new List<Section>
                 {
                     new Section
@@ -38,6 +39,7 @@ public static class DbSeeder
             {
                 Name = "Sushi Spot",
                 Address = "456 Elm St",
+                BookingRetentionMonths = BookingRetention.DefaultMonths,
                 Sections = new List<Section>
                 {
                     new Section

@@ -1,0 +1,26 @@
+# Build the three OpenResto images from this checkout instead of pulling them.
+#
+#   docker compose -f docker-compose.prod.yml -f docker-compose.build.yml build
+#   docker compose -f docker-compose.prod.yml -f docker-compose.build.yml up -d
+#
+# The images are tagged ${OPENRESTO_REGISTRY}/openresto-*:${OPENRESTO_VERSION} like the pulled
+# ones, so set OPENRESTO_REGISTRY=localhost to keep the two apart. Docker reads "localhost" as a
+# registry host, so a later `docker compose pull` fails instead of fetching a same-named image
+# from Docker Hub (where "local" is an ordinary namespace anyone could register).
+# A frontend build needs about 3 GB of RAM: do it in CI or on a bigger machine, not on a 2 GB VM.
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: OpenRestoApi/Dockerfile
+  frontend:
+    build:
+      context: ../openresto-frontend
+      dockerfile: Dockerfile
+      args:
+        EXPO_PUBLIC_API_URL: /api
+  reverse-proxy:
+    build:
+      context: ../nginx
+      dockerfile: Dockerfile

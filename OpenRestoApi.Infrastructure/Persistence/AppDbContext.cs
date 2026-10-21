@@ -29,6 +29,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Menu> Menus { get; set; } = null!;
     public DbSet<MenuCategory> MenuCategories { get; set; } = null!;
     public DbSet<MenuItem> MenuItems { get; set; } = null!;
+    public DbSet<RestaurantSite> RestaurantSites { get; set; } = null!;
+    public DbSet<RestaurantMember> RestaurantMembers { get; set; } = null!;
+    public DbSet<RestaurantInvitation> RestaurantInvitations { get; set; } = null!;
+    public DbSet<LegalAcceptance> LegalAcceptances { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -76,6 +80,47 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
               .OnDelete(DeleteBehavior.Cascade);
             rb.Property(r => r.PublicToken).IsRequired().HasMaxLength(PublicTokenGenerator.MaxLength);
             rb.HasIndex(r => r.PublicToken).IsUnique();
+            // A stored default, so the migration backfills the rows that already exist: a restaurant
+            // that predates onboarding is live. BookingRetentionMonths has none on purpose: those rows
+            // stay NULL (no automatic erasure) until a period is fixed, and a stored default would
+            // also turn a 0 assigned in C# into that default.
+            rb.Property(r => r.Status).HasConversion<string>().HasMaxLength(RestaurantStatusExtensions.MaxLength)
+              .HasDefaultValue(RestaurantStatus.Published);
+            rb.Property(r => r.VatNumber).HasMaxLength(PlatformFields.MaxVatLength);
+            rb.Property(r => r.OnboardingSteps).HasMaxLength(OnboardingProgress.MaxLength);
+            rb.Property(r => r.SuspensionReason).HasMaxLength(PlatformFields.MaxSuspensionReasonLength);
+            rb.Ignore(r => r.IsListedPublicly);
+        });
+
+        modelBuilder.Entity<RestaurantMember>(mb =>
+        {
+            mb.HasKey(m => m.Id);
+            mb.HasOne(m => m.User).WithMany().HasForeignKey(m => m.UserId).OnDelete(DeleteBehavior.Cascade);
+            mb.HasOne(m => m.Restaurant).WithMany().HasForeignKey(m => m.RestaurantId).OnDelete(DeleteBehavior.Cascade);
+            mb.HasIndex(m => new { m.UserId, m.RestaurantId }).IsUnique();
+        });
+
+        modelBuilder.Entity<RestaurantInvitation>(ib =>
+        {
+            ib.HasKey(i => i.Id);
+            ib.HasOne(i => i.Restaurant).WithMany().HasForeignKey(i => i.RestaurantId).OnDelete(DeleteBehavior.Cascade);
+            ib.Property(i => i.Email).IsRequired().HasMaxLength(PlatformFields.MaxEmailLength);
+            ib.Property(i => i.TokenHash).IsRequired().HasMaxLength(PlatformFields.TokenHashLength);
+            ib.Property(i => i.Locale).IsRequired().HasMaxLength(PlatformFields.MaxLocaleLength);
+            ib.HasIndex(i => i.TokenHash).IsUnique();
+            ib.HasIndex(i => i.RestaurantId);
+        });
+
+        // No foreign keys, on purpose: the proof of a consent has to outlive the account and the
+        // restaurant it was given for.
+        modelBuilder.Entity<LegalAcceptance>(lb =>
+        {
+            lb.HasKey(a => a.Id);
+            lb.Property(a => a.Email).IsRequired().HasMaxLength(PlatformFields.MaxEmailLength);
+            lb.Property(a => a.DocumentKey).IsRequired().HasMaxLength(LegalDocumentKeys.MaxLength);
+            lb.Property(a => a.Version).IsRequired().HasMaxLength(LegalDocumentKeys.MaxVersionLength);
+            lb.Property(a => a.ContentSha256).IsRequired().HasMaxLength(PlatformFields.Sha256HexLength);
+            lb.HasIndex(a => new { a.RestaurantId, a.AcceptedAt });
         });
 
         modelBuilder.Entity<Section>(sb =>
@@ -131,6 +176,26 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             ib.HasIndex(i => new { i.CategoryId, i.SortOrder });
         });
 
+        modelBuilder.Entity<RestaurantSite>(sb =>
+        {
+            sb.HasKey(s => s.Id);
+            // One site per location, gone with it. The unique slug is the page's address.
+            sb.HasOne(s => s.Restaurant)
+              .WithOne()
+              .HasForeignKey<RestaurantSite>(s => s.RestaurantId)
+              .OnDelete(DeleteBehavior.Cascade);
+            sb.HasIndex(s => s.RestaurantId).IsUnique();
+            sb.Property(s => s.Slug).IsRequired().HasMaxLength(SiteSlug.MaxLength);
+            sb.HasIndex(s => s.Slug).IsUnique();
+            sb.Property(s => s.Theme).HasConversion<string>().HasMaxLength(SiteFields.MaxThemeLength);
+            sb.Property(s => s.PrimaryColor).HasMaxLength(PlatformFields.MaxPrimaryColorLength);
+            sb.Property(s => s.Tagline).HasMaxLength(SiteFields.MaxTaglineLength);
+            sb.Property(s => s.LegalName).HasMaxLength(SiteFields.MaxLegalNameLength);
+            sb.Property(s => s.CompanyNumber).HasMaxLength(SiteFields.MaxCompanyNumberLength);
+            sb.Property(s => s.VatNumber).HasMaxLength(SiteFields.MaxVatNumberLength);
+            sb.Property(s => s.LegalAddress).HasMaxLength(SiteFields.MaxLegalAddressLength);
+        });
+
         modelBuilder.Entity<Booking>(bb =>
         {
             bb.HasKey(b => b.Id);
@@ -140,6 +205,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             bb.HasOne(b => b.TableGroup).WithMany().HasForeignKey(b => b.TableGroupId).OnDelete(DeleteBehavior.SetNull);
             bb.Property(b => b.Status).HasConversion<string>().HasMaxLength(BookingStatusExtensions.MaxLength);
             bb.Property(b => b.PreviousStatus).HasConversion<string>().HasMaxLength(BookingStatusExtensions.MaxLength);
+            bb.Property(b => b.Locale).HasMaxLength(GuestPushFields.MaxLocaleLength);
         });
 
         modelBuilder.Entity<TableGroup>(gb =>

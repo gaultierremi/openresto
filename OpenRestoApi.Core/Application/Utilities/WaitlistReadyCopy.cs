@@ -3,13 +3,14 @@ using System.Globalization;
 namespace OpenRestoApi.Core.Application.Utilities;
 
 /// <summary>
-/// The words in a "your table is ready" email and push, in the four UI languages. Like
+/// The words in a "your table is ready" email and push, in the five UI languages. Like
 /// <see cref="GuestReminderCopy"/>, it goes out beyond the app's i18next bundle, so the locale
 /// the guest joined under travels with the entry.
 /// </summary>
 /// <seealso>WaitlistReadyCopyTests.Build_UsesTheGuestsLocale</seealso>
 /// <seealso>WaitlistReadyCopyTests.Build_FallsBackToEnglishForAnUnknownLocale</seealso>
 /// <seealso>WaitlistReadyCopyTests.BuildPush_UsesTheGuestsLocale</seealso>
+/// <seealso>WaitlistReadyCopyTests.Build_WritesDutchForADutchSpeakingGuest</seealso>
 public static class WaitlistReadyCopy
 {
     private sealed record Strings(string Subject, string Greeting, string Body, string Ticket, string Link);
@@ -20,6 +21,7 @@ public static class WaitlistReadyCopy
         ["fr"] = new("Votre table chez {0} est prête", "Bonjour {0},", "Votre table est prête. Merci de vous présenter à l'accueil.", "Ticket n° {0}", "Voir votre place dans la file"),
         ["es"] = new("Su mesa en {0} está lista", "Hola {0}:", "Su mesa está lista. Acérquese a recepción, por favor.", "Número {0}", "Ver su lugar en la fila"),
         ["de"] = new("Ihr Tisch im {0} ist bereit", "Hallo {0},", "Ihr Tisch ist bereit. Bitte kommen Sie zum Empfang.", "Nummer {0}", "Ihren Platz in der Warteschlange ansehen"),
+        ["nl"] = new("Uw tafel bij {0} is klaar", "Goedendag {0},", "Uw tafel is klaar. Gelieve u aan te melden bij de ontvangst.", "Ticket nr. {0}", "Uw plaats in de wachtrij bekijken"),
     };
 
     public static (string Subject, string Html) Build(string? locale, string restaurantName, string guestName, int number, string statusUrl)

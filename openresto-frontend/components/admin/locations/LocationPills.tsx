@@ -40,6 +40,7 @@ export function LocationPills({ restaurants, selectedId, onSelect }: LocationPil
               archived ? t("admin.locations.pills.archivedLabel", { name: r.name }) : r.name
             }
             accessibilityState={{ checked: selected }}
+            aria-checked={selected}
             style={[
               styles.pill,
               {
