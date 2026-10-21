@@ -30,6 +30,8 @@ health="${INSTALL_HEALTH:-$here/health.sh}"
 readonly EXIT_NOT_HEALTHY=2
 readonly EXIT_BACKUP_FAILED=3
 readonly MIN_MEMORY_MB=1800
+# The frontend build needs about 3 GB; leave room for the rest of the machine.
+readonly MIN_BUILD_MEMORY_MB=3500
 readonly MIN_DISK_MB=5120
 
 warn() { log "WARN: $*" >&2; }
@@ -42,7 +44,9 @@ Usage: sudo ./install.sh --domain <host> --email <contact> [options]
   --email <address>      contact Let's Encrypt writes to before a certificate expires
   --admin-email <addr>   first Owner account (default: --email)
   --version <x.y.z>      release to run (default: the one in .env.example; never "latest")
-  --registry <path>      image registry (default: the one in .env.example)
+  --registry <path>      image registry (default: the one in .env.example; "local" with --build)
+  --build                build the images from this checkout instead of pulling them (needed for
+                         anything newer than the upstream 2.4.1 images; wants about 4 GB of RAM)
   --data-dir <path>      database and keys (default /srv/openresto)
   --backup-dir <path>    backups (default /srv/openresto-backups)
   --install-docker       install Docker from its official apt repository if it is missing
@@ -55,7 +59,7 @@ USAGE
 }
 
 domain=""; acme_email=""; admin_email=""; version=""; registry=""; data_dir=""; backup_dir=""
-install_docker=0; firewall=0; ssh_port=""; check_dns=1; backup_timer=1; preflight_only=0
+install_docker=0; firewall=0; ssh_port=""; check_dns=1; backup_timer=1; preflight_only=0; build_from_source=0
 
 take() { [ -n "${2:-}" ] || die "$1 needs a value"; }
 parse_args() {
@@ -69,6 +73,7 @@ parse_args() {
       --data-dir) take "$@"; data_dir="$2"; shift 2 ;;
       --backup-dir) take "$@"; backup_dir="$2"; shift 2 ;;
       --ssh-port) take "$@"; ssh_port="$2"; shift 2 ;;
+      --build) build_from_source=1; shift ;;
       --install-docker) install_docker=1; shift ;;
       --firewall) firewall=1; shift ;;
       --skip-dns-check) check_dns=0; shift ;;
@@ -124,6 +129,9 @@ resolve_config() {
     [ -n "$acme_email" ] || { usage >&2; die "--email is required"; }
     admin_email="${admin_email:-$acme_email}"
     version="${version:-$(example_value OPENRESTO_VERSION)}"
+    # Built images must not carry the upstream registry's name: `local` keeps them apart from
+    # anything a later `docker compose pull` would fetch.
+    if [ "$build_from_source" = 1 ]; then registry="${registry:-local}"; fi
     registry="${registry:-$(example_value OPENRESTO_REGISTRY)}"
     data_dir="${data_dir:-$(example_value DATA_DIR)}"
     backup_dir="${backup_dir:-$(example_value BACKUP_DIR)}"
@@ -160,6 +168,9 @@ check_system() {
   memory_mb="$(awk '/^MemTotal:/ { print int($2 / 1024) }' "$meminfo")"
   if [ "${memory_mb:-0}" -lt "$MIN_MEMORY_MB" ]; then
     warn "${memory_mb:-0} MB of memory; the stack wants about 2 GB (docs/HEBERGEMENT.md section 4)"
+  fi
+  if [ "$build_from_source" = 1 ] && [ "${memory_mb:-0}" -lt "$MIN_BUILD_MEMORY_MB" ]; then
+    warn "${memory_mb:-0} MB of memory; building the frontend wants about 4 GB, add swap or build elsewhere"
   fi
 }
 
@@ -305,8 +316,15 @@ configure_firewall() {
 }
 
 start_stack() {
-  log "pulling $registry images at $version"
-  compose pull || die "could not pull the images; check OPENRESTO_REGISTRY and OPENRESTO_VERSION in $ENV_FILE (the upstream registry has no image for a version that exists only in this fork)"
+  if [ "$build_from_source" = 1 ]; then
+    # lib.sh's compose() layers COMPOSE_OVERRIDE on top of the prod file.
+    COMPOSE_OVERRIDE="$here/docker-compose.build.yml"
+    log "building the images from this checkout (several minutes; the frontend is the slow one)"
+    compose build || die "the image build failed; the last lines above say why (a killed frontend build is almost always memory)"
+  else
+    log "pulling $registry images at $version"
+    compose pull || die "could not pull the images; check OPENRESTO_REGISTRY and OPENRESTO_VERSION in $ENV_FILE (the upstream registry has no image for a version that exists only in this fork; use --build)"
+  fi
   log "starting the stack"
   if ! compose up -d --wait --wait-timeout 300 --remove-orphans; then
     compose ps >&2 || true
