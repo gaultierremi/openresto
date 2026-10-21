@@ -64,6 +64,18 @@ describe("contrast - ensureContrast", () => {
     expect(g).toBeGreaterThan(b);
   });
 
+  it.each([
+    ["red", "#ff6b6b", 0],
+    ["green", "#5cd68a", 1],
+    ["blue", "#6b8cff", 2],
+  ])("keeps a %s colour the dominant channel it was when it moves", (_name, colour, channel) => {
+    const moved = ensureContrast(colour, () => ["#ffffff"]);
+    expect(moved).not.toBe(colour);
+    const { r, g, b } = hexToRgb(moved);
+    const channels = [r, g, b];
+    expect(channels[channel]).toBe(Math.max(...channels));
+  });
+
   it("re-checks a surface that is itself derived from the candidate", () => {
     const moved = ensureContrast("#059669", (candidate) => [
       "#ffffff",

@@ -13,6 +13,7 @@ import {
   type PublicMenuResponse,
 } from "@/api/menus";
 import { useRouteDefaultLocale } from "@/context/LocaleContext";
+import * as useAppThemeModule from "@/hooks/use-app-theme";
 import i18n from "@/i18n";
 
 jest.mock("@/api/menus", () => ({ fetchPublicMenu: jest.fn() }));
@@ -303,6 +304,21 @@ describe("PublicMenuScreen", () => {
         .filter((value) => value !== undefined);
       expect(ariaSelected).toEqual([true, false]);
       expect(categoryNames()).toEqual(["Starters", "Mains", "Desserts"]);
+    });
+
+    it("draws the selected tab's label in what the theme says reads on the brand fill, not in a fixed white", async () => {
+      const real = jest.requireActual("@/hooks/use-app-theme").useAppTheme;
+      const spy = jest
+        .spyOn(useAppThemeModule, "useAppTheme")
+        .mockImplementation(() => ({ ...real(), onPrimary: "#123456" }));
+      try {
+        await showMenu(ok([lunch, dinner]));
+        const [selected, other] = screen.getAllByTestId("menu-tab");
+        expect(within(selected).getByText("Lunch")).toHaveStyle({ color: "#123456" });
+        expect(within(other).getByText("Dinner")).not.toHaveStyle({ color: "#123456" });
+      } finally {
+        spy.mockRestore();
+      }
     });
 
     it("switches the dishes shown, and the description, to the pressed menu", async () => {

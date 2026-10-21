@@ -1,5 +1,5 @@
 import { theme } from "@/theme/theme";
-import { blend, contrastRatio, ensureContrast } from "@/utils/contrast";
+import { blend, ensureContrast } from "@/utils/contrast";
 
 /** WCAG AA for body text; the brand colour is used at 18px and under in most places. */
 export const AA_TEXT_CONTRAST = 4.5;
@@ -38,12 +38,8 @@ export function brandPalette(brandColor: string, isDark: boolean): BrandPalette 
     AA_TEXT_CONTRAST
   );
 
-  if (!isDark) return { primary, onPrimary: theme.colors.white };
-
-  const darkLabel = theme.colors.page.dark;
-  const onPrimary =
-    contrastRatio(primary, darkLabel) >= contrastRatio(primary, theme.colors.white)
-      ? darkLabel
-      : theme.colors.white;
-  return { primary, onPrimary };
+  // On the dark theme the colour has to reach AA against surfaces nearly black, which puts its
+  // luminance above 0.23: white cannot hold on that (3.7:1 at best), the page's own near-black
+  // does (5:1 at worst). So the label is not a comparison, it is the one that always passes.
+  return { primary, onPrimary: isDark ? theme.colors.page.dark : theme.colors.white };
 }

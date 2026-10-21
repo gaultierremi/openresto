@@ -1,4 +1,6 @@
+import React, { type ReactNode } from "react";
 import { renderHook } from "@testing-library/react-native";
+import { BrandPaletteScope } from "@/context/BrandPaletteContext";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useBrand } from "@/context/BrandContext";
@@ -54,6 +56,29 @@ describe("useAppTheme", () => {
     expect(brandPalette).toHaveBeenCalledWith("#007AFF", true);
     expect(result.current.primaryColor).toBe("#007AFF/dark");
     expect(result.current.onPrimary).toBe("#111");
+  });
+
+  describe("under a scope that keeps the colour as chosen", () => {
+    const wrapper = ({ children }: { children: ReactNode }) =>
+      React.createElement(BrandPaletteScope, { mode: "chosen", children });
+
+    it.each(["light", "dark"])(
+      "hands out the colour exactly as picked under a white label, on the %s theme",
+      (scheme) => {
+        (useColorScheme as jest.Mock).mockReturnValue(scheme);
+        const { result } = renderHook(() => useAppTheme(), { wrapper });
+
+        expect(result.current.primaryColor).toBe("#007AFF");
+        expect(result.current.onPrimary).toBe("#ffffff");
+        expect(brandPalette).not.toHaveBeenCalled();
+      }
+    );
+
+    it("is the default outside it: the colour goes through the palette", () => {
+      (useColorScheme as jest.Mock).mockReturnValue("light");
+      renderHook(() => useAppTheme());
+      expect(brandPalette).toHaveBeenCalledWith("#007AFF", false);
+    });
   });
 
   it("uses default primary color if brand has none", () => {
