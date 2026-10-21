@@ -28,7 +28,7 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
                 r.SuspensionReason,
                 r.OnboardingSteps,
                 r.BookingRetentionMonths,
-                Total =_db.Bookings.Count(b => b.RestaurantId == r.Id && !b.IsCancelled),
+                Total = _db.Bookings.Count(b => b.RestaurantId == r.Id && !b.IsCancelled),
                 Upcoming = _db.Bookings.Count(b => b.RestaurantId == r.Id && !b.IsCancelled && b.Date > nowUtc),
             })
             .ToListAsync();
