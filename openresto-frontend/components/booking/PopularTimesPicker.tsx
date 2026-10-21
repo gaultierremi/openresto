@@ -83,6 +83,27 @@ export default function PopularTimesPicker({
     return !slotsInView.some((s) => s.category === cat);
   };
 
+  // The sheet opens on the time the guest touched on the location's card. Follow it to the tab
+  // that holds it (an off-peak time sits under "All" alone), or the choice is not among the
+  // chips they are looking at. Once per chosen time: moving between tabs, or picking another
+  // time from the tab they are on, is theirs to do.
+  //
+  // @see [PopularTimesPicker.test.tsx](../../tests/components/PopularTimesPicker.test.tsx) —
+  // pins that it opens on the chosen time's tab, leaves "All" and a deliberate tab change alone.
+  const chosenSlot = slotsInView.find((s) => s.isAvailable && s.time === selectedTime);
+  const chosenTab: Category | null = chosenSlot
+    ? chosenSlot.category === "Lunch" || chosenSlot.category === "Dinner"
+      ? chosenSlot.category
+      : "All"
+    : null;
+  const followedTime = useRef<string | null>(null);
+  useEffect(() => {
+    if (!chosenTab || followedTime.current === selectedTime) return;
+    followedTime.current = selectedTime;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setActiveCategory((current) => (current === "All" ? current : chosenTab));
+  }, [selectedTime, chosenTab]);
+
   useEffect(() => {
     const hasAvailableInCategory = slotsInView.some(
       (s) => s.isAvailable && s.category === activeCategory
@@ -185,6 +206,8 @@ export default function PopularTimesPicker({
         accessibilityRole="tab"
         accessibilityLabel={categoryLabel(cat)}
         accessibilityState={{ selected: isActive, disabled }}
+        // As for the time chips: the web only gets the DOM attribute if it is set directly.
+        aria-selected={isActive}
         style={[
           styles.tab,
           { borderColor: colors.border },
@@ -223,6 +246,9 @@ export default function PopularTimesPicker({
             accessibilityRole="radio"
             accessibilityLabel={slot.time}
             accessibilityState={{ checked: isSelected, selected: isSelected }}
+            // react-native-web drops `checked` for a radio, so a screen reader would not say which
+            // time is chosen; the DOM attribute has to be set directly.
+            aria-checked={isSelected}
             style={[
               styles.slotChip,
               { borderColor: colors.border, backgroundColor: colors.input },

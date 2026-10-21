@@ -1,6 +1,9 @@
 import { StyleSheet } from "react-native";
 import { theme } from "@/theme/theme";
 
+/** The Details toggle's drawn height; its hit area makes up the rest of the touch target. */
+export const DETAILS_MIN_HEIGHT = 36;
+
 export const styles = StyleSheet.create({
   item: {
     borderWidth: 1,
@@ -119,7 +122,7 @@ export const styles = StyleSheet.create({
 
   detailsBtn: {
     flexShrink: 0,
-    minHeight: 36,
+    minHeight: DETAILS_MIN_HEIGHT,
   },
   /** Details beside Book now: source order is reading order, so the filled CTA lands last. */
   headerActions: {

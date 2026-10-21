@@ -14,7 +14,8 @@ import { fetchAvailability } from "@/api/availability";
 import { renderWithProviders } from "@/tests/helpers/renderWithProviders";
 import { getRestaurantNow } from "@/utils/restaurantTime";
 import * as useAppThemeModule from "@/hooks/use-app-theme";
-import { getThemeColors } from "@/theme/theme";
+import { getThemeColors, theme } from "@/theme/theme";
+import { DETAILS_MIN_HEIGHT } from "@/components/restaurant/LocationListItem.styles";
 
 // WalkInNotice links to the waitlist; the real router can't load under Jest.
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
@@ -236,6 +237,23 @@ describe("LocationListItem", () => {
 
       fireEvent.press(screen.getByTestId("location-book-now-1"));
       expect(onBook).toHaveBeenCalledWith(utcRestaurant, "09:00");
+    });
+
+    it("draws Book now at the 44px touch target, the row's one filled call to action", async () => {
+      renderWithProviders(<LocationListItem {...baseProps} restaurant={utcRestaurant as any} />);
+      await waitFor(() => expect(screen.getByTestId("location-book-now-1")).toBeTruthy());
+
+      const style = StyleSheet.flatten(screen.getByTestId("location-book-now-1").props.style);
+      expect(style.minHeight).toBeGreaterThanOrEqual(theme.a11y.minTouchTarget);
+    });
+
+    it("reaches the 44px touch target on Details through its hit area, keeping it compact", async () => {
+      renderWithProviders(<LocationListItem {...baseProps} restaurant={utcRestaurant as any} />);
+      await waitFor(() => expect(screen.getByTestId("location-details-toggle-1")).toBeTruthy());
+
+      const { top, bottom } = screen.getByTestId("location-details-toggle-1").props.hitSlop;
+      expect(DETAILS_MIN_HEIGHT + top + bottom).toBe(theme.a11y.minTouchTarget);
+      expect(DETAILS_MIN_HEIGHT).toBeLessThan(theme.a11y.minTouchTarget);
     });
 
     it("seeds Book now with the earliest slot on offer", async () => {

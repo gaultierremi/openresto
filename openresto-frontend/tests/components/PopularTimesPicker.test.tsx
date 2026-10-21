@@ -114,6 +114,90 @@ describe("PopularTimesPicker", () => {
     expect(screen.getByText("12:00")).toBeTruthy();
   });
 
+  describe("the time already chosen", () => {
+    // The sheet opens on the time the guest touched on the location's card, so its tab has to be
+    // the one in view, or the choice is not among the chips they are looking at.
+    it("opens on the tab that holds it", () => {
+      render(
+        <PopularTimesPicker slots={mockSlots} selectedTime="18:00" onSelectTime={jest.fn()} />
+      );
+      expect(screen.getByText("18:00")).toBeTruthy();
+      expect(screen.queryByText("12:00")).toBeNull();
+    });
+
+    it("opens on the first tab when the chosen time is a lunch time", () => {
+      render(
+        <PopularTimesPicker slots={mockSlots} selectedTime="12:00" onSelectTime={jest.fn()} />
+      );
+      expect(screen.getByText("12:00")).toBeTruthy();
+      expect(screen.queryByText("18:00")).toBeNull();
+    });
+
+    it("opens on All for an off-peak time, which no other tab holds", () => {
+      const offPeak: TimeSlotDto[] = [
+        { time: "09:00", isAvailable: true, availableTableIds: [1], category: "Off-Peak" },
+        ...mockSlots,
+      ];
+      render(<PopularTimesPicker slots={offPeak} selectedTime="09:00" onSelectTime={jest.fn()} />);
+      expect(screen.getByText("09:00")).toBeTruthy();
+      expect(screen.getByText("18:00")).toBeTruthy();
+    });
+
+    it("follows the time once the slots arrive, when they were still loading at first", () => {
+      const { rerender } = render(
+        <PopularTimesPicker slots={[]} selectedTime="18:00" onSelectTime={jest.fn()} />
+      );
+      rerender(
+        <PopularTimesPicker slots={mockSlots} selectedTime="18:00" onSelectTime={jest.fn()} />
+      );
+      expect(screen.getByText("18:00")).toBeTruthy();
+      expect(screen.queryByText("12:00")).toBeNull();
+    });
+
+    it("leaves a guest who picks another tab where they went", () => {
+      const { rerender } = render(
+        <PopularTimesPicker slots={mockSlots} selectedTime="18:00" onSelectTime={jest.fn()} />
+      );
+      fireEvent.press(screen.getByText("Lunch"));
+      expect(screen.getByText("12:00")).toBeTruthy();
+
+      // The same chosen time on a later render does not pull them back.
+      rerender(
+        <PopularTimesPicker slots={mockSlots} selectedTime="18:00" onSelectTime={jest.fn()} />
+      );
+      expect(screen.getByText("12:00")).toBeTruthy();
+      expect(screen.queryByText("18:00")).toBeNull();
+    });
+
+    it("leaves a guest on All when they choose a time from there", () => {
+      const { rerender } = render(
+        <PopularTimesPicker slots={mockSlots} selectedTime="" onSelectTime={jest.fn()} />
+      );
+      fireEvent.press(screen.getByText("All"));
+      rerender(
+        <PopularTimesPicker slots={mockSlots} selectedTime="18:00" onSelectTime={jest.fn()} />
+      );
+      expect(screen.getByText("12:00")).toBeTruthy();
+      expect(screen.getByText("18:00")).toBeTruthy();
+    });
+
+    // The renderer folds `aria-checked` into `accessibilityState`, so this pins the state that
+    // reaches assistive technology; that the DOM attribute itself is present on the web is
+    // checked in a browser (react-native-web drops `checked` for a radio without it).
+    it("says which time is chosen to assistive technology, and which are not", () => {
+      render(
+        <PopularTimesPicker slots={mockSlots} selectedTime="12:00" onSelectTime={jest.fn()} />
+      );
+      expect(screen.getByRole("radio", { name: "12:00" }).props.accessibilityState).toMatchObject({
+        checked: true,
+      });
+      fireEvent.press(screen.getByText("All"));
+      expect(screen.getByRole("radio", { name: "18:00" }).props.accessibilityState).toMatchObject({
+        checked: false,
+      });
+    });
+  });
+
   it("handles scroll event", () => {
     render(<PopularTimesPicker slots={mockSlots} selectedTime="" onSelectTime={jest.fn()} />);
     const scrollView = screen.UNSAFE_getByType(require("react-native").ScrollView);
