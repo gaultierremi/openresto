@@ -1,4 +1,21 @@
 import { StyleSheet } from "react-native";
+import { theme } from "@/theme/theme";
+
+const CONFIRM_BAR_GAP = 12;
+const CONFIRM_BAR_PADDING_TOP = 12;
+/** The line of hint under the button, at the form's 12px hint size. */
+const CONFIRM_BAR_HINT_LINE = 16;
+
+/**
+ * How much of the sheet's scrollport the sticky confirm bar covers at the bottom: the sheet's
+ * scroller keeps this much clear (`scroll-padding-bottom`), or a field the keyboard focuses is
+ * counted as visible while sitting behind the bar (WCAG 2.2, 2.4.11 Focus Not Obscured).
+ */
+export const CONFIRM_BAR_CLEARANCE =
+  theme.buttonSizes.lg.minHeight +
+  CONFIRM_BAR_GAP +
+  CONFIRM_BAR_HINT_LINE +
+  CONFIRM_BAR_PADDING_TOP;
 
 export const styles = StyleSheet.create({
   form: {
@@ -22,8 +39,8 @@ export const styles = StyleSheet.create({
   },
   /** The confirm and what it waits on; the sheet's own fill and a hairline set it off while it rides over the form. */
   confirmBar: {
-    gap: 12,
-    paddingTop: 12,
+    gap: CONFIRM_BAR_GAP,
+    paddingTop: CONFIRM_BAR_PADDING_TOP,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   divider: {

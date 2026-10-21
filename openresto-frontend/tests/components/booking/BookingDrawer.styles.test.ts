@@ -6,6 +6,8 @@
  * table and anything already typed into the booking form with it.
  */
 import { StyleSheet, type ViewStyle } from "react-native";
+import { CONFIRM_BAR_CLEARANCE } from "@/components/booking/BookingForm.styles";
+import { theme } from "@/theme/theme";
 
 function stylesOn(platform: string) {
   let loaded: Record<string, ViewStyle> = {};
@@ -39,6 +41,13 @@ describe("BookingDrawer styles on web", () => {
   it("stops the form's scroll chaining out to the page at its top", () => {
     expect(flat(styles.scroll).overscrollBehavior).toBe("contain");
   });
+
+  // The confirm bar rides over the foot of this scroller. Without the padding the browser counts
+  // a field focused behind the bar as visible and does not scroll to it (WCAG 2.4.11).
+  it("keeps the confirm bar's height clear when it scrolls a focused field into view", () => {
+    expect(flat(styles.scroll).scrollPaddingBottom).toBe(CONFIRM_BAR_CLEARANCE);
+    expect(CONFIRM_BAR_CLEARANCE).toBeGreaterThanOrEqual(theme.buttonSizes.lg.minHeight);
+  });
 });
 
 describe("BookingDrawer styles on native", () => {
@@ -50,5 +59,6 @@ describe("BookingDrawer styles on native", () => {
     // to fend off in the first place.
     expect(flat(styles.grabberArea).touchAction).toBeUndefined();
     expect(flat(styles.scroll).overscrollBehavior).toBeUndefined();
+    expect(flat(styles.scroll).scrollPaddingBottom).toBeUndefined();
   });
 });
