@@ -1854,7 +1854,10 @@
         "nextStep": "Siguiente paso: {{step}}",
         "setupComplete": "Configuración completada",
         "suspendedSince": "Suspendido desde el {{date}}",
-        "suspensionReason": "Motivo mostrado al restaurador: {{reason}}"
+        "suspensionReason": "Motivo mostrado al restaurador: {{reason}}",
+        "retention_one": "Conservación: {{count}} mes",
+        "retention_other": "Conservación: {{count}} meses",
+        "retentionNone": "Conservación: sin borrado automático"
       },
       "actions": {
         "invite": "Invitar",
@@ -1862,7 +1865,8 @@
         "suspend": "Suspender",
         "reactivate": "Reactivar",
         "consents": "Consentimientos",
-        "guestData": "Datos de clientes…"
+        "guestData": "Datos de clientes…",
+        "retention": "Conservación…"
       },
       "locales": {
         "fr": "Français",
@@ -1909,6 +1913,17 @@
         "confirmBody": "El restaurante desaparece de inmediato para los clientes. Puedes reactivarlo en cualquier momento.",
         "confirm": "Sí, suspender",
         "back": "Atrás"
+      },
+      "retention": {
+        "title": "Conservación de los datos de {{name}}",
+        "intro": "Durante cuánto tiempo los clientes de este restaurante siguen siendo identificables. Cuando un servicio supera ese plazo, la reserva conserva la fecha, el tamaño del grupo y la mesa, y pierde el nombre, el correo electrónico y las notas del cliente.",
+        "optionsLabel": "Plazo de conservación",
+        "periodOption": "Borrar tras un plazo fijado",
+        "noneOption": "Sin borrado automático",
+        "noneHint": "No se borra nada automáticamente mientras no se fije un plazo. Es la situación de todo restaurante anterior a este ajuste.",
+        "monthsLabel": "Meses tras el servicio ({{min}} a {{max}})",
+        "warning": "Las reservas más antiguas que el plazo se anonimizan en la siguiente pasada diaria. No se puede deshacer.",
+        "save": "Guardar"
       },
       "reactivate": {
         "title": "¿Reactivar {{name}}?",

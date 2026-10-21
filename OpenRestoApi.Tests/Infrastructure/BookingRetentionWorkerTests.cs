@@ -62,7 +62,7 @@ public class BookingRetentionWorkerTests
                 : Task.FromResult(new List<Restaurant> { new() { Id = 1, Name = "R", BookingRetentionMonths = 12 } });
         });
         repository.Setup(r => r.AnonymizeBeforeAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync(new RetentionOutcome(1, 0, 0, 0));
+            .ReturnsAsync(new RetentionOutcome(1, 0, 0, 0, 0));
 
         await RunUntilAsync(CreateWorker(repository, TimeSpan.Zero), () => Volatile.Read(ref passes) >= 3);
 

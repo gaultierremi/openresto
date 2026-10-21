@@ -66,6 +66,7 @@ public class PlatformService(
             Name = name,
             Timezone = NewRestaurantTimezone,
             Status = RestaurantStatus.Draft,
+            BookingRetentionMonths = BookingRetention.DefaultMonths,
         });
 
         PlatformInvitationResultDto result = await IssueInvitationAsync(restaurant, email, req.Locale);
@@ -150,6 +151,37 @@ public class PlatformService(
         await _repo.SaveChangesAsync();
 
         Describe(AuditActions.PlatformReactivate, restaurant, $"Reactivated \"{restaurant.Name}\"");
+        return await RowFor(restaurantId);
+    }
+
+    /// <summary>
+    /// Fixes how long the restaurant's guests stay identifiable, or switches the automatic erasure
+    /// off with null. It is how the platform settles an establishment that predates the setting
+    /// (those hold null, so nothing is erased from them until this is called). The audit entry
+    /// records the restaurant and the old and new period, never a guest.
+    /// </summary>
+    /// <seealso>PlatformServiceTests.SetRetention_FixesThePeriod_AndNullSwitchesTheErasureOff</seealso>
+    /// <seealso>PlatformServiceTests.SetRetention_RefusesAPeriodOutsideTheBounds_AndWritesNothing</seealso>
+    public async Task<PlatformRestaurantDto> SetRetentionAsync(int restaurantId, SetRetentionRequest req)
+    {
+        if (req.Months is { } months && !BookingRetention.IsValid(months))
+        {
+            throw new ValidationException("The retention period must be between 1 and 60 months.")
+            {
+                Code = ErrorCodes.PlatformRetentionInvalid,
+                Args = new Dictionary<string, object> { ["min"] = BookingRetention.MinMonths, ["max"] = BookingRetention.MaxMonths },
+            };
+        }
+
+        Restaurant restaurant = await RequireRestaurantAsync(restaurantId);
+        _audit.RecordChange("bookingRetentionMonths", restaurant.BookingRetentionMonths, req.Months);
+        restaurant.BookingRetentionMonths = req.Months;
+        await _repo.SaveChangesAsync();
+
+        Describe(AuditActions.PlatformRetentionSet, restaurant,
+            req.Months is { } kept
+                ? $"Set the guest-data retention of \"{restaurant.Name}\" to {kept} months"
+                : $"Switched off the automatic guest-data erasure of \"{restaurant.Name}\"");
         return await RowFor(restaurantId);
     }
 
@@ -337,6 +369,7 @@ public class PlatformService(
             StepsDone = done,
             StepsTotal = OnboardingProgress.All.Count,
             NextStep = next is null ? null : OnboardingProgress.KeyOf(next.Value),
+            BookingRetentionMonths = r.BookingRetentionMonths,
             Invitation = r.LatestInvitation is null ? null : new PlatformInvitationDto
             {
                 Email = r.LatestInvitation.Email,

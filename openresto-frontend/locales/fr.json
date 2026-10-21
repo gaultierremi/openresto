@@ -1854,7 +1854,10 @@
         "nextStep": "Prochaine étape : {{step}}",
         "setupComplete": "Mise en route terminée",
         "suspendedSince": "Suspendu depuis le {{date}}",
-        "suspensionReason": "Motif affiché au restaurateur : {{reason}}"
+        "suspensionReason": "Motif affiché au restaurateur : {{reason}}",
+        "retention_one": "Conservation : {{count}} mois",
+        "retention_other": "Conservation : {{count}} mois",
+        "retentionNone": "Conservation : aucun effacement automatique"
       },
       "actions": {
         "invite": "Inviter",
@@ -1862,7 +1865,8 @@
         "suspend": "Suspendre",
         "reactivate": "Réactiver",
         "consents": "Consentements",
-        "guestData": "Données clients…"
+        "guestData": "Données clients…",
+        "retention": "Conservation…"
       },
       "locales": {
         "fr": "Français",
@@ -1909,6 +1913,17 @@
         "confirmBody": "L’établissement disparaît immédiatement pour les clients. Vous pouvez le réactiver à tout moment.",
         "confirm": "Oui, suspendre",
         "back": "Retour"
+      },
+      "retention": {
+        "title": "Conservation des données de {{name}}",
+        "intro": "Combien de temps les clients de cet établissement restent identifiables. Une fois le service plus ancien que cette durée, la réservation garde sa date, sa taille et sa table, et perd le nom, l’adresse e-mail et les notes du client.",
+        "optionsLabel": "Durée de conservation",
+        "periodOption": "Effacer au bout d’une durée fixée",
+        "noneOption": "Aucun effacement automatique",
+        "noneHint": "Rien n’est effacé automatiquement tant qu’une durée n’est pas fixée. C’est la situation de tout établissement antérieur à ce réglage.",
+        "monthsLabel": "Mois après le service ({{min}} à {{max}})",
+        "warning": "Les réservations plus anciennes que cette durée sont anonymisées au prochain passage quotidien. C’est irréversible.",
+        "save": "Enregistrer"
       },
       "reactivate": {
         "title": "Réactiver {{name}} ?",

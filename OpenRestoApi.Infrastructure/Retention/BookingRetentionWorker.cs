@@ -53,8 +53,8 @@ internal sealed class BookingRetentionWorker(
             if (outcome.Total > 0)
             {
                 logger.LogInformation(
-                    "[BookingRetention] Anonymised {Bookings} bookings, {Tickets} waitlist tickets; removed {Devices} reminder devices and {Failures} failed-mail records.",
-                    outcome.Bookings, outcome.WaitlistEntries, outcome.PushSubscriptions, outcome.EmailFailures);
+                    "[BookingRetention] Anonymised {Bookings} bookings, {Tickets} waitlist tickets and {Notifications} notifications; removed {Devices} reminder devices and {Failures} failed-mail records.",
+                    outcome.Bookings, outcome.WaitlistEntries, outcome.Notifications, outcome.PushSubscriptions, outcome.EmailFailures);
             }
         }
         catch (Exception ex)

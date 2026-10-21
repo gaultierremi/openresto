@@ -93,6 +93,11 @@ BRAND = {
 # Sections/tables/groups are nested so ids are assigned by build_dataset()
 # rather than hand-numbered. `group.tables` refers to member tables by name.
 #
+# `retention_months` is the guest-data retention. A location that omits it is stored as NULL,
+# which is "no automatic erasure until a period is fixed": that is what every establishment
+# that predates the setting holds, so the seven Paddy's Pub locations show that state, while
+# the Belgian ones (12, 6 and 12 months) show a fixed period.
+#
 # Between them these eight locations (the last a French-language Belgian brasserie) cover: per-day opening hours (including a
 # past-midnight wrap), both booking-reference formats, all three contact
 # fallback states, every slot interval (15/30/60), walk-in-only both globally
@@ -325,8 +330,10 @@ LOCATIONS = [
         ],
         "groups": [],
         # Run by a restaurateur account (see DEMO_RESTAURATEUR_*): the published restaurant whose
-        # owner has finished the assistant, keeps the default 12-month retention and has a VAT number.
+        # owner has finished the assistant, has a fixed 12-month retention (the default a new
+        # restaurant starts at) and has a VAT number.
         "vat": "BE0123456789",
+        "retention_months": 12,
         "onboarding_steps": "info:done,hours:done,layout:done,menu:done,branding:done",
     },
     {
@@ -381,6 +388,8 @@ LOCATIONS = [
         "sections": [],
         "groups": [],
         "status": "Draft",
+        # Created by the platform, so it starts at the default period like any new restaurant.
+        "retention_months": 12,
         "onboarding_steps": "info:done,hours:done",
     },
 ]
@@ -856,7 +865,7 @@ def build_dataset(now_utc):
                     "PublicToken": public_token(),
                     "Status": spec.get("status", "Published"),
                     "VatNumber": spec.get("vat"),
-                    "BookingRetentionMonths": spec.get("retention_months", 12),
+                    "BookingRetentionMonths": spec.get("retention_months"),
                     "OnboardingSteps": spec.get("onboarding_steps"),
                     "PublishedAt": None if spec.get("status") == "Draft" else stamp,
                     "SuspendedAt": stamp if spec.get("status") == "Suspended" else None,

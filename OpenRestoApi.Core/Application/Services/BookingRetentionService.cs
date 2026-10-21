@@ -9,12 +9,15 @@ namespace OpenRestoApi.Core.Application.Services;
 /// booking loses the name, address and notes of the person who made it and keeps its date, party
 /// size and table. Archived and suspended restaurants are included: their guests' clock does not stop.
 /// <para>
-/// A restaurant whose stored period is out of bounds is passed over rather than anonymised with
-/// it — a bad value must never shorten anyone's retention to nothing.
+/// A restaurant with no period (null) or an out-of-bounds one is passed over rather than
+/// anonymised with it — neither may ever be read as zero or as the default, because that would
+/// erase guests nobody agreed to erase.
 /// </para>
 /// </summary>
 /// <seealso>BookingRetentionServiceTests.Run_AnonymisesOnlyWhatIsPastEachRestaurantsOwnPeriod</seealso>
 /// <seealso>BookingRetentionServiceTests.Run_SkipsARestaurantWhoseStoredPeriodIsOutOfBounds</seealso>
+/// <seealso>BookingRetentionServiceTests.Run_SkipsARestaurantWithNoPeriod_EvenWhenItHoldsFiveYearOldBookings</seealso>
+/// <seealso>PlatformRepositoryTests.ARestaurantWithNoPeriod_IsNeverErasedFrom_UntilOneIsFixed</seealso>
 public class BookingRetentionService(IPlatformRepository repository, ISystemClock clock)
 {
     private readonly IPlatformRepository _repo = repository;
@@ -23,23 +26,24 @@ public class BookingRetentionService(IPlatformRepository repository, ISystemCloc
     public async Task<RetentionOutcome> RunAsync()
     {
         DateTime now = _clock.UtcNow;
-        int bookings = 0, tickets = 0, devices = 0, failures = 0;
+        int bookings = 0, tickets = 0, devices = 0, failures = 0, notifications = 0;
 
         foreach (Restaurant restaurant in await _repo.GetAllRestaurantsAsync())
         {
-            if (!BookingRetention.IsValid(restaurant.BookingRetentionMonths))
+            if (restaurant.BookingRetentionMonths is not { } months || !BookingRetention.IsValid(months))
             {
                 continue;
             }
 
             RetentionOutcome outcome = await _repo.AnonymizeBeforeAsync(
-                restaurant.Id, BookingRetention.CutoffUtc(now, restaurant.BookingRetentionMonths), now);
+                restaurant.Id, BookingRetention.CutoffUtc(now, months), now);
             bookings += outcome.Bookings;
             tickets += outcome.WaitlistEntries;
             devices += outcome.PushSubscriptions;
             failures += outcome.EmailFailures;
+            notifications += outcome.Notifications;
         }
 
-        return new RetentionOutcome(bookings, tickets, devices, failures);
+        return new RetentionOutcome(bookings, tickets, devices, failures, notifications);
     }
 }

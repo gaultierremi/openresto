@@ -91,8 +91,17 @@ instance, many restaurants »).
 
 ## Conservation des données
 
-Chaque établissement garde le nom, l'e-mail et les remarques de ses clients **12 mois après le
-repas** par défaut (réglable de 1 à 60 mois dans l'assistant, étape 1). Passé ce délai, une tâche
-quotidienne efface ces champs : la réservation reste pour les statistiques (date, couverts,
-table). Les appareils de rappel, les e-mails en échec et les tickets de liste d'attente fermés
-liés à ces réservations disparaissent avec. Le journal d'activité garde ses 365 jours habituels.
+Un **nouvel** établissement garde le nom, l'e-mail et les remarques de ses clients **12 mois après
+le repas** par défaut (réglable de 1 à 60 mois dans l'assistant, étape 1). Passé ce délai, une
+tâche quotidienne efface ces champs : la réservation reste pour les statistiques (date, couverts,
+table). Les appareils de rappel, les e-mails en échec, le nom du client dans les notifications de
+l'administration et les tickets de liste d'attente fermés liés à ces réservations disparaissent
+avec. Le journal d'activité garde ses 365 jours habituels.
+
+**Les établissements qui existaient avant ce réglage n'ont aucune durée** : tant qu'on n'en fixe
+pas une, rien n'est effacé automatiquement. La plateforme la fixe depuis la liste (action
+**Conservation…** : de 1 à 60 mois, ou « Aucun effacement automatique »), ce qui est journalisé
+dans le journal d'activité (ancienne et nouvelle valeur). Le restaurateur qui enregistre l'étape 1
+de l'assistant la fixe aussi (12 mois proposés quand il n'y en avait pas). **Fixer une durée plus
+courte que l'âge de vos réservations les anonymise au prochain passage quotidien, sans retour
+possible** : vérifiez la durée avant de l'enregistrer.

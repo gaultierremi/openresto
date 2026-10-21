@@ -35,6 +35,15 @@ public class PlatformRestaurantDto
 
     /// <summary>The first setup step still to do (<c>info</c>, <c>hours</c>, …); null when all are settled.</summary>
     public string? NextStep { get; set; }
+
+    /// <summary>Months a guest stays identifiable after the sitting; null is no automatic erasure.</summary>
+    public int? BookingRetentionMonths { get; set; }
+}
+
+public class SetRetentionRequest
+{
+    /// <summary>1 to 60 months, or null for no automatic erasure.</summary>
+    public int? Months { get; set; }
 }
 
 public class PlatformInvitationDto

@@ -4712,6 +4712,68 @@
         }
       }
     },
+    "/api/platform/restaurants/{restaurantId}/retention": {
+      "put": {
+        "tags": [
+          "Platform"
+        ],
+        "summary": "Sets how long the restaurant\u0027s guests stay identifiable; a null \u0060months\u0060 is no automatic erasure.",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetRetentionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetRetentionRequest"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/SetRetentionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformRestaurantDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformRestaurantDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformRestaurantDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/platform/restaurants/{restaurantId}/guest-data-access": {
       "post": {
         "tags": [
@@ -8451,6 +8513,7 @@
               "integer",
               "string"
             ],
+            "description": "The restaurant\u0027s period; a restaurant with none yet shows the default of 12, which saving the step then fixes.",
             "format": "int32"
           }
         }
@@ -9110,6 +9173,16 @@
               "string"
             ],
             "description": "The first setup step still to do (\u0060info\u0060, \u0060hours\u0060, \u2026); null when all are settled."
+          },
+          "bookingRetentionMonths": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Months a guest stays identifiable after the sitting; null is no automatic erasure.",
+            "format": "int32"
           }
         }
       },
@@ -9747,7 +9820,7 @@
               "integer",
               "string"
             ],
-            "description": "Months a guest stays identifiable after the sitting (1 to 60). Missing keeps the current value.",
+            "description": "Months a guest stays identifiable after the sitting (1 to 60). Missing keeps the current value, or fixes the default on a restaurant that has none.",
             "format": "int32"
           }
         }
@@ -9940,6 +10013,21 @@
           "status": {
             "type": "string",
             "description": "Booked, Arrived, Seated, Finished or NoShow, case-insensitive."
+          }
+        }
+      },
+      "SetRetentionRequest": {
+        "type": "object",
+        "properties": {
+          "months": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "1 to 60 months, or null for no automatic erasure.",
+            "format": "int32"
           }
         }
       },

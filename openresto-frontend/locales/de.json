@@ -1854,7 +1854,10 @@
         "nextStep": "Nächster Schritt: {{step}}",
         "setupComplete": "Einrichtung abgeschlossen",
         "suspendedSince": "Gesperrt seit {{date}}",
-        "suspensionReason": "Dem Gastronomen angezeigter Grund: {{reason}}"
+        "suspensionReason": "Dem Gastronomen angezeigter Grund: {{reason}}",
+        "retention_one": "Aufbewahrung: {{count}} Monat",
+        "retention_other": "Aufbewahrung: {{count}} Monate",
+        "retentionNone": "Aufbewahrung: keine automatische Löschung"
       },
       "actions": {
         "invite": "Einladen",
@@ -1862,7 +1865,8 @@
         "suspend": "Sperren",
         "reactivate": "Freigeben",
         "consents": "Einwilligungen",
-        "guestData": "Gästedaten …"
+        "guestData": "Gästedaten …",
+        "retention": "Aufbewahrung …"
       },
       "locales": {
         "fr": "Français",
@@ -1909,6 +1913,17 @@
         "confirmBody": "Das Restaurant verschwindet sofort für Gäste. Sie können es jederzeit wieder freigeben.",
         "confirm": "Ja, sperren",
         "back": "Zurück"
+      },
+      "retention": {
+        "title": "Aufbewahrung der Daten von {{name}}",
+        "intro": "Wie lange die Gäste dieses Restaurants identifizierbar bleiben. Liegt ein Service länger zurück als diese Frist, behält die Reservierung Datum, Gruppengröße und Tisch und verliert Name, E-Mail-Adresse und Notizen des Gastes.",
+        "optionsLabel": "Aufbewahrungsfrist",
+        "periodOption": "Nach einer festgelegten Frist löschen",
+        "noneOption": "Keine automatische Löschung",
+        "noneHint": "Nichts wird automatisch gelöscht, solange keine Frist festgelegt ist. So stehen alle Restaurants da, die vor dieser Einstellung bestanden.",
+        "monthsLabel": "Monate nach dem Service ({{min}} bis {{max}})",
+        "warning": "Reservierungen, die älter als die Frist sind, werden beim nächsten täglichen Durchlauf anonymisiert. Das lässt sich nicht rückgängig machen.",
+        "save": "Speichern"
       },
       "reactivate": {
         "title": "{{name}} freigeben?",

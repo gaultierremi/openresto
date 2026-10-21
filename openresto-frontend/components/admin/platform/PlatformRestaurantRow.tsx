@@ -13,7 +13,8 @@ import { styles } from "./PlatformRestaurantRow.styles";
 /** The theme's arrived green is tuned for a light card; on a dark one the lighter step reads. */
 const REACTIVATE_COLOR_DARK = "#4ade80";
 
-export type PlatformRowAction = "invite" | "suspend" | "reactivate" | "consents" | "guestData";
+export type PlatformRowAction =
+  "invite" | "suspend" | "reactivate" | "consents" | "guestData" | "retention";
 
 /**
  * One restaurant of the platform list. It reads named fields of the row and nothing else, so a
@@ -22,8 +23,9 @@ export type PlatformRowAction = "invite" | "suspend" | "reactivate" | "consents"
  * guest-data modal behind a stated reason.
  *
  * @see [PlatformRestaurantRow.test.tsx](../../../tests/components/admin/platform/PlatformRestaurantRow.test.tsx)
- * — pins the owner-or-invitation line, the "never" sign-in, the setup progress, the action
- * offered for each status, and that no guest field is ever drawn.
+ * — pins the owner-or-invitation line, the "never" sign-in, the setup progress, the retention
+ * (a period, or no automatic erasure), the action offered for each status, and that no guest
+ * field is ever drawn.
  */
 export function PlatformRestaurantRow({
   restaurant,
@@ -97,6 +99,11 @@ export function PlatformRestaurantRow({
             ? t("admin.platform.row.nextStep", { step: stepLabel(t, restaurant.nextStep) })
             : t("admin.platform.row.setupComplete")}
         </ThemedText>
+        <ThemedText style={[styles.fact, muted]}>
+          {restaurant.bookingRetentionMonths === null
+            ? t("admin.platform.row.retentionNone")
+            : t("admin.platform.row.retention", { count: restaurant.bookingRetentionMonths })}
+        </ThemedText>
         {suspended && restaurant.suspendedAt && (
           <ThemedText style={[styles.fact, muted]}>
             {t("admin.platform.row.suspendedSince", {
@@ -126,6 +133,11 @@ export function PlatformRestaurantRow({
           label={t("admin.platform.actions.guestData")}
           color={colors.muted}
           onPress={() => onAction("guestData", restaurant)}
+        />
+        <RowTextButton
+          label={t("admin.platform.actions.retention")}
+          color={colors.muted}
+          onPress={() => onAction("retention", restaurant)}
         />
         {suspended ? (
           <RowTextButton

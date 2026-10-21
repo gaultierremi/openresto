@@ -74,6 +74,18 @@ public sealed class PlatformServiceTests(TestWebAppFactory factory) : IClassFixt
     }
 
     [Fact]
+    public async Task List_ShowsEachRestaurantsRetention_AndNullForOneWithNoPeriodYet()
+    {
+        int none = await PublishedRestaurantAsync("Sans Durée", r => r.BookingRetentionMonths = null);
+        int six = await PublishedRestaurantAsync("Six Mois", r => r.BookingRetentionMonths = 6);
+
+        List<PlatformRestaurantDto> rows = await AsOperatorAsync((s, _) => s.GetRestaurantsAsync());
+
+        Assert.Null(rows.Single(r => r.Id == none).BookingRetentionMonths);
+        Assert.Equal(6, rows.Single(r => r.Id == six).BookingRetentionMonths);
+    }
+
+    [Fact]
     public async Task List_NeverListsAnArchivedRestaurant()
     {
         int id = await PublishedRestaurantAsync("Archivé Discret", r => r.IsArchived = true);
@@ -90,7 +102,7 @@ public sealed class PlatformServiceTests(TestWebAppFactory factory) : IClassFixt
             nameof(PlatformRestaurantDto.PublishedAt), nameof(PlatformRestaurantDto.SuspendedAt), nameof(PlatformRestaurantDto.SuspensionReason),
             nameof(PlatformRestaurantDto.OwnerEmail), nameof(PlatformRestaurantDto.Invitation), nameof(PlatformRestaurantDto.LastLoginAt),
             nameof(PlatformRestaurantDto.TotalBookings), nameof(PlatformRestaurantDto.UpcomingBookings), nameof(PlatformRestaurantDto.StepsDone),
-            nameof(PlatformRestaurantDto.StepsTotal), nameof(PlatformRestaurantDto.NextStep),
+            nameof(PlatformRestaurantDto.StepsTotal), nameof(PlatformRestaurantDto.NextStep), nameof(PlatformRestaurantDto.BookingRetentionMonths),
         ];
 
         Assert.Equal(allowed.Order(), typeof(PlatformRestaurantDto).GetProperties().Select(p => p.Name).Order());
@@ -218,6 +230,7 @@ public sealed class PlatformServiceTests(TestWebAppFactory factory) : IClassFixt
                 s => s.SendInvitationAsync(id, new SendInvitationRequest { Email = "x@y.example" }),
                 s => s.SuspendAsync(id, new SuspendRestaurantRequest()),
                 s => s.ReactivateAsync(id),
+                s => s.SetRetentionAsync(id, new SetRetentionRequest { Months = 6 }),
                 s => s.AccessGuestDataAsync(id, new GuestDataAccessRequest { Reason = "Ticket 1 : valid reason" }),
                 s => s.GetAcceptancesAsync(id),
             };
@@ -229,7 +242,64 @@ public sealed class PlatformServiceTests(TestWebAppFactory factory) : IClassFixt
             }
         }
 
-        Assert.Equal(RestaurantStatus.Published, (await _h.InDbAsync(db => db.Restaurants.AsNoTracking().FirstAsync(r => r.Id == archived))).Status);
+        Restaurant stored = await _h.InDbAsync(db => db.Restaurants.AsNoTracking().FirstAsync(r => r.Id == archived));
+        Assert.Equal(RestaurantStatus.Published, stored.Status);
+        Assert.Equal(BookingRetention.DefaultMonths, stored.BookingRetentionMonths);
+    }
+
+    // ── Retention ────────────────────────────────────────────────────────────
+
+    private Task<int?> StoredRetentionAsync(int id)
+        => _h.InDbAsync(db => db.Restaurants.AsNoTracking().Where(r => r.Id == id).Select(r => r.BookingRetentionMonths).FirstAsync());
+
+    [Fact]
+    public async Task SetRetention_FixesThePeriod_AndNullSwitchesTheErasureOff()
+    {
+        int id = await PublishedRestaurantAsync("Durée Fixée", r => r.BookingRetentionMonths = null);
+
+        (PlatformRestaurantDto fixedTo6, AuditScope fixedAudit) = await AsOperatorAsync(async (s, a) =>
+            (await s.SetRetentionAsync(id, new SetRetentionRequest { Months = 6 }), a));
+        int? afterFix = await StoredRetentionAsync(id);
+        PlatformRestaurantDto off = await AsOperatorAsync((s, _) => s.SetRetentionAsync(id, new SetRetentionRequest { Months = null }));
+
+        Assert.Equal(6, fixedTo6.BookingRetentionMonths);
+        Assert.Equal(6, afterFix);
+        Assert.Null(off.BookingRetentionMonths);
+        Assert.Null(await StoredRetentionAsync(id));
+
+        Assert.Equal(AuditActions.PlatformRetentionSet, fixedAudit.Action);
+        Assert.Equal(id, fixedAudit.RestaurantId);
+        Assert.Contains("6", fixedAudit.Summary);
+        Assert.Contains("bookingRetentionMonths", fixedAudit.ChangesJson());
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(60)]
+    public async Task SetRetention_AcceptsBothEdgesOfTheRange(int months)
+    {
+        int id = await PublishedRestaurantAsync("Bornes Permises" + months);
+
+        await AsOperatorAsync((s, _) => s.SetRetentionAsync(id, new SetRetentionRequest { Months = months }));
+
+        Assert.Equal(months, await StoredRetentionAsync(id));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(61)]
+    public async Task SetRetention_RefusesAPeriodOutsideTheBounds_AndWritesNothing(int months)
+    {
+        int id = await PublishedRestaurantAsync("Bornes Refusées" + months, r => r.BookingRetentionMonths = 18);
+
+        (AuditScope audit, ValidationException refused) = await AsOperatorAsync(async (s, a) =>
+            (a, await Assert.ThrowsAsync<ValidationException>(() => s.SetRetentionAsync(id, new SetRetentionRequest { Months = months }))));
+
+        Assert.Equal(ErrorCodes.PlatformRetentionInvalid, refused.Code);
+        Assert.Equal(18, await StoredRetentionAsync(id));
+        Assert.False(audit.IsDescribed);
+        Assert.Null(audit.ChangesJson());
     }
 
     [Fact]

@@ -786,10 +786,8 @@ namespace OpenRestoApi.Migrations
                     b.Property<int>("BookingRefFormat")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("BookingRetentionMonths")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(12);
+                    b.Property<int?>("BookingRetentionMonths")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("BookingSlotIntervalMinutes")
                         .HasColumnType("INTEGER");

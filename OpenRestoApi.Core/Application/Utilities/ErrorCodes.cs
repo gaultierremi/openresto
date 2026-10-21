@@ -236,6 +236,7 @@ public static class ErrorCodes
     public const string PlatformSuspendReasonTooLong = "platform.suspend_reason_too_long";
     public const string PlatformAlreadySuspended = "platform.already_suspended";
     public const string PlatformNotSuspended = "platform.not_suspended";
+    public const string PlatformRetentionInvalid = "platform.retention_invalid";
     public const string OnboardingConsentRequired = "onboarding.consent_required";
     public const string OnboardingConsentOutdated = "onboarding.consent_outdated";
     public const string OnboardingSuspended = "onboarding.suspended";

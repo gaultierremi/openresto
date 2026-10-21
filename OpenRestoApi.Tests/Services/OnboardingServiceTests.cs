@@ -426,6 +426,50 @@ public sealed class OnboardingServiceTests(TestWebAppFactory factory) : IClassFi
         Assert.Equal(months, (await StoredAsync(c.RestaurantId)).BookingRetentionMonths);
     }
 
+    private Task SetStoredRetentionAsync(int restaurantId, int? months)
+        => _h.InDbAsync(db => db.Restaurants.Where(r => r.Id == restaurantId)
+            .ExecuteUpdateAsync(set => set.SetProperty(r => r.BookingRetentionMonths, months)));
+
+    [Fact]
+    public async Task ARestaurantWithNoPeriod_ShowsTheDefaultInTheInfoStep_WithoutStoringItByBeingRead()
+    {
+        Caller c = await RunningAsync();
+        await SetStoredRetentionAsync(c.RestaurantId, null);
+
+        OnboardingStateDto state = await AsAsync(c.User, s => s.GetStateAsync(c.RestaurantId));
+
+        Assert.Equal(BookingRetention.DefaultMonths, state.Info.BookingRetentionMonths);
+        Assert.Null((await StoredAsync(c.RestaurantId)).BookingRetentionMonths);
+    }
+
+    [Fact]
+    public async Task SavingTheInfoStep_FixesThePeriodOfARestaurantThatHadNone_AtTheDefaultOrAtTheChosenValue()
+    {
+        Caller c = await RunningAsync();
+        await SetStoredRetentionAsync(c.RestaurantId, null);
+
+        OnboardingStateDto atDefault = await AsAsync(c.User, s => s.SaveInfoAsync(c.RestaurantId, InfoRequest()));
+
+        Assert.Equal(BookingRetention.DefaultMonths, atDefault.Info.BookingRetentionMonths);
+        Assert.Equal(BookingRetention.DefaultMonths, (await StoredAsync(c.RestaurantId)).BookingRetentionMonths);
+
+        await SetStoredRetentionAsync(c.RestaurantId, null);
+        await AsAsync(c.User, s => s.SaveInfoAsync(c.RestaurantId, InfoRequest(r => r.BookingRetentionMonths = 36)));
+
+        Assert.Equal(36, (await StoredAsync(c.RestaurantId)).BookingRetentionMonths);
+    }
+
+    [Fact]
+    public async Task SavingTheInfoStep_WithoutAPeriod_KeepsTheOneThePlatformFixed()
+    {
+        Caller c = await RunningAsync();
+        await SetStoredRetentionAsync(c.RestaurantId, 6);
+
+        await AsAsync(c.User, s => s.SaveInfoAsync(c.RestaurantId, InfoRequest()));
+
+        Assert.Equal(6, (await StoredAsync(c.RestaurantId)).BookingRetentionMonths);
+    }
+
     // ── Step 2 ───────────────────────────────────────────────────────────────
 
     [Fact]

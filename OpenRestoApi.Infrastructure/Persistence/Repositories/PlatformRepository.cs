@@ -27,6 +27,7 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
                 r.SuspendedAt,
                 r.SuspensionReason,
                 r.OnboardingSteps,
+                r.BookingRetentionMonths,
                 Total = _db.Bookings.Count(b => b.RestaurantId == r.Id && !b.IsCancelled),
                 Upcoming = _db.Bookings.Count(b => b.RestaurantId == r.Id && !b.IsCancelled && b.Date > nowUtc),
             })
@@ -56,6 +57,7 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
                 runners.Max(m => m.LastLoginAt),
                 r.Total,
                 r.Upcoming,
+                r.BookingRetentionMonths,
                 invitations.Where(i => i.RestaurantId == r.Id).OrderByDescending(i => i.CreatedAt).ThenByDescending(i => i.Id).FirstOrDefault());
         })];
     }
@@ -127,10 +129,12 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
     public async Task<int> CountBookingsAsync(int restaurantId)
         => await _db.Bookings.CountAsync(b => b.RestaurantId == restaurantId);
 
+    /// <seealso>PlatformRepositoryTests.ANotificationStaysIntact_WhileItsBookingIsInsideTheRetention_AndLosesTheNameOneSecondAfter</seealso>
+    /// <seealso>PlatformRepositoryTests.TheNotificationOfAFutureBooking_OrAnotherRestaurantsExpiredOne_IsNeverTouched</seealso>
     public async Task<RetentionOutcome> AnonymizeBeforeAsync(int restaurantId, DateTime cutoffUtc, DateTime nowUtc)
     {
-        // The devices and failed-mail rows go first: both are found through the bookings that are
-        // about to lose the marker that identifies them as still to do.
+        // The devices, failed-mail rows and notifications go first: all are found through the
+        // bookings that are about to lose the marker that identifies them as still to do.
         IQueryable<Booking> expired = _db.Bookings.Where(b =>
             b.RestaurantId == restaurantId
             && b.AnonymizedAt == null
@@ -143,6 +147,15 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
         int failures = await _db.EmailFailures
             .Where(f => f.BookingRef != null && expired.Select(b => b.BookingRef).Contains(f.BookingRef))
             .ExecuteDeleteAsync();
+
+        // The notification keeps its date, size and restaurant; only the name goes. The UI draws
+        // nothing for an empty name (as it already does for "nearly full"), so there is no fallback.
+        int notifications = await _db.AdminNotifications
+            .Where(n => n.RestaurantId == restaurantId
+                && n.BookingId != null
+                && n.CustomerName != string.Empty
+                && expired.Select(b => b.Id).Contains(n.BookingId.Value))
+            .ExecuteUpdateAsync(set => set.SetProperty(n => n.CustomerName, string.Empty));
 
         int bookings = await expired.ExecuteUpdateAsync(set => set
             .SetProperty(b => b.CustomerName, (string?)null)
@@ -163,7 +176,7 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
                 .SetProperty(w => w.PushP256dh, (string?)null)
                 .SetProperty(w => w.PushAuth, (string?)null));
 
-        return new RetentionOutcome(bookings, tickets, devices, failures);
+        return new RetentionOutcome(bookings, tickets, devices, failures, notifications);
     }
 
     public async Task SaveChangesAsync() => await _db.SaveChangesAsync();

@@ -100,6 +100,8 @@ public class OnboardingInfoDto
     public string? LegalName { get; set; }
     public string? CompanyNumber { get; set; }
     public string? VatNumber { get; set; }
+
+    /// <summary>The restaurant's period; a restaurant with none yet shows the default of 12, which saving the step then fixes.</summary>
     public int BookingRetentionMonths { get; set; }
 }
 
@@ -135,7 +137,7 @@ public class SaveOnboardingInfoRequest
     [StringLength(20)]
     public string? VatNumber { get; set; }
 
-    /// <summary>Months a guest stays identifiable after the sitting (1 to 60). Missing keeps the current value.</summary>
+    /// <summary>Months a guest stays identifiable after the sitting (1 to 60). Missing keeps the current value, or fixes the default on a restaurant that has none.</summary>
     public int? BookingRetentionMonths { get; set; }
 }
 

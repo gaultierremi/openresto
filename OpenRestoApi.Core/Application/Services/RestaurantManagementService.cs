@@ -80,6 +80,7 @@ public class RestaurantManagementService(
             BookingSlotIntervalMinutes = dto.BookingSlotIntervalMinutes,
             MaxTableOversizeSeats = dto.MaxTableOversizeSeats,
             MaxCoversPerSlot = dto.MaxCoversPerSlot,
+            BookingRetentionMonths = BookingRetention.DefaultMonths,
             BookingRefFormat = string.IsNullOrWhiteSpace(dto.BookingRefFormat)
                 ? BookingRefFormat.AlphaNumeric
                 : ParseBookingRefFormat(dto.BookingRefFormat),

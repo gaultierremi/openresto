@@ -37,6 +37,7 @@ public sealed class PlatformControllerTests(TestWebAppFactory factory) : IClassF
             Assert.Equal(expected, (await client.GetAsync("/api/platform/restaurants")).StatusCode);
             Assert.Equal(expected, (await client.PostAsJsonAsync("/api/platform/restaurants", new { name = "X", ownerEmail = "x@y.example" })).StatusCode);
             Assert.Equal(expected, (await client.PostAsJsonAsync("/api/platform/restaurants/1/suspend", new { })).StatusCode);
+            Assert.Equal(expected, (await client.PutAsJsonAsync("/api/platform/restaurants/1/retention", new { months = 6 })).StatusCode);
             Assert.Equal(expected, (await client.PostAsJsonAsync("/api/platform/restaurants/1/guest-data-access", new { reason = "a long enough reason" })).StatusCode);
         }
     }
@@ -55,6 +56,7 @@ public sealed class PlatformControllerTests(TestWebAppFactory factory) : IClassF
         key.DefaultRequestHeaders.Add("X-API-Key", secret);
 
         Assert.Equal(HttpStatusCode.Forbidden, (await key.GetAsync("/api/platform/restaurants")).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await key.PutAsJsonAsync("/api/platform/restaurants/1/retention", new { months = 6 })).StatusCode);
     }
 
     [Fact]
@@ -284,6 +286,117 @@ public sealed class PlatformControllerTests(TestWebAppFactory factory) : IClassF
 
         HttpResponseMessage cancel = await _h.Client().PostAsJsonAsync($"/api/bookings/ref/{bookingRef}/cancel", new { email = "camille@example.com" });
         Assert.True(cancel.IsSuccessStatusCode, await cancel.Content.ReadAsStringAsync());
+    }
+
+    // ── Retention ────────────────────────────────────────────────────────────
+
+    private async Task<int> RestaurantWithRetentionAsync(string name, int? months)
+        => await _h.InDbAsync(async db =>
+        {
+            var restaurant = new Restaurant { Name = name, Timezone = "Europe/Brussels", PublishedAt = DateTime.UtcNow, BookingRetentionMonths = months };
+            db.Restaurants.Add(restaurant);
+            await db.SaveChangesAsync();
+            return restaurant.Id;
+        });
+
+    private Task<int?> StoredRetentionAsync(int id)
+        => _h.InDbAsync(db => db.Restaurants.AsNoTracking().Where(r => r.Id == id).Select(r => r.BookingRetentionMonths).FirstAsync());
+
+    private Task<int> RetentionAuditCountAsync(int id)
+        => _h.InDbAsync(db => db.AdminAuditEntries.CountAsync(a => a.Action == AuditActions.PlatformRetentionSet && a.TargetId == id.ToString()));
+
+    [Fact]
+    public async Task SetRetention_FixesThePeriodOfAnExistingRestaurant_AndTheAuditEntryRecordsBeforeAndAfter()
+    {
+        int id = await RestaurantWithRetentionAsync("Durée Posée", null);
+
+        HttpResponseMessage response = await _h.Operator().PutAsJsonAsync($"/api/platform/restaurants/{id}/retention", new { months = 6 });
+
+        response.EnsureSuccessStatusCode();
+        PlatformRestaurantDto row = (await response.Content.ReadFromJsonAsync<PlatformRestaurantDto>(Json))!;
+        Assert.Equal(6, row.BookingRetentionMonths);
+        Assert.Equal(6, await StoredRetentionAsync(id));
+
+        AdminAuditEntry entry = await _h.InDbAsync(db => db.AdminAuditEntries
+            .OrderByDescending(a => a.Id).FirstAsync(a => a.Action == AuditActions.PlatformRetentionSet && a.TargetId == id.ToString()));
+        Assert.Equal(TestWebAppFactory.AdminEmail, entry.ActorEmail);
+        Assert.Contains("bookingRetentionMonths", entry.ChangesJson);
+        Assert.Contains("6", entry.Summary);
+    }
+
+    [Fact]
+    public async Task SetRetention_WithANullPeriod_SwitchesTheAutomaticErasureOff()
+    {
+        int id = await RestaurantWithRetentionAsync("Durée Retirée", 12);
+
+        HttpResponseMessage response = await _h.Operator().PutAsJsonAsync($"/api/platform/restaurants/{id}/retention", new { months = (int?)null });
+
+        response.EnsureSuccessStatusCode();
+        Assert.Null((await response.Content.ReadFromJsonAsync<PlatformRestaurantDto>(Json))!.BookingRetentionMonths);
+        Assert.Null(await StoredRetentionAsync(id));
+        Assert.Equal(1, await RetentionAuditCountAsync(id));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(61)]
+    [InlineData(-3)]
+    public async Task SetRetention_RefusesAPeriodOutsideOneToSixty_WithItsCode_AndWritesNothing(int months)
+    {
+        int id = await RestaurantWithRetentionAsync("Durée Refusée" + months, 18);
+
+        HttpResponseMessage response = await _h.Operator().PutAsJsonAsync($"/api/platform/restaurants/{id}/retention", new { months });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(ErrorCodes.PlatformRetentionInvalid, Code(await ErrorOf(response)));
+        Assert.Equal(18, await StoredRetentionAsync(id));
+        Assert.Equal(0, await RetentionAuditCountAsync(id));
+    }
+
+    [Fact]
+    public async Task SetRetention_OnAnUnknownOrArchivedRestaurant_IsTheSameNotFound_AndWritesNothing()
+    {
+        int archived = await _h.InDbAsync(async db =>
+        {
+            var restaurant = new Restaurant { Name = "Archivé Durée", IsArchived = true, BookingRetentionMonths = 18 };
+            db.Restaurants.Add(restaurant);
+            await db.SaveChangesAsync();
+            return restaurant.Id;
+        });
+
+        HttpResponseMessage unknown = await _h.Operator().PutAsJsonAsync("/api/platform/restaurants/987654/retention", new { months = 6 });
+        HttpResponseMessage gone = await _h.Operator().PutAsJsonAsync($"/api/platform/restaurants/{archived}/retention", new { months = 6 });
+
+        Assert.Equal(HttpStatusCode.NotFound, unknown.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, gone.StatusCode);
+        Assert.Equal(ErrorCodes.PlatformNotFound, Code(await ErrorOf(unknown)));
+        Assert.Equal(ErrorCodes.PlatformNotFound, Code(await ErrorOf(gone)));
+        Assert.Equal(18, await StoredRetentionAsync(archived));
+        Assert.Equal(0, await RetentionAuditCountAsync(archived));
+    }
+
+    [Fact]
+    public async Task SetRetention_RefusedToAManager_LeavesThePeriodAsItWas()
+    {
+        int id = await RestaurantWithRetentionAsync("Durée Intacte", null);
+
+        HttpResponseMessage response = await (await _h.ManagerAsync()).PutAsJsonAsync($"/api/platform/restaurants/{id}/retention", new { months = 6 });
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Null(await StoredRetentionAsync(id));
+        Assert.Equal(0, await RetentionAuditCountAsync(id));
+    }
+
+    [Fact]
+    public async Task List_CarriesEachRestaurantsRetention_NullWhenNoPeriodIsFixed()
+    {
+        int none = await RestaurantWithRetentionAsync("Liste Sans Durée", null);
+        int six = await RestaurantWithRetentionAsync("Liste Six Mois", 6);
+
+        List<PlatformRestaurantDto> rows = (await _h.Operator().GetFromJsonAsync<List<PlatformRestaurantDto>>("/api/platform/restaurants", Json))!;
+
+        Assert.Null(rows.Single(r => r.Id == none).BookingRetentionMonths);
+        Assert.Equal(6, rows.Single(r => r.Id == six).BookingRetentionMonths);
     }
 
     // ── The list ─────────────────────────────────────────────────────────────

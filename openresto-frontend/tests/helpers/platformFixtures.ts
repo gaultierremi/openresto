@@ -31,6 +31,7 @@ export function restaurant(overrides: Partial<PlatformRestaurant> = {}): Platfor
     stepsDone: 5,
     stepsTotal: 5,
     nextStep: null,
+    bookingRetentionMonths: 12,
     ...overrides,
   };
 }

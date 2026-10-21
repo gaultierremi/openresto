@@ -4668,6 +4668,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/restaurants/{restaurantId}/retention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Sets how long the restaurant's guests stay identifiable; a null `months` is no automatic erasure. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetRetentionRequest"];
+                    "text/json": components["schemas"]["SetRetentionRequest"];
+                    "application/*+json": components["schemas"]["SetRetentionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformRestaurantDto"];
+                        "application/json": components["schemas"]["PlatformRestaurantDto"];
+                        "text/json": components["schemas"]["PlatformRestaurantDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/restaurants/{restaurantId}/guest-data-access": {
         parameters: {
             query?: never;
@@ -7214,7 +7260,10 @@ export interface components {
             legalName?: null | string;
             companyNumber?: null | string;
             vatNumber?: null | string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description The restaurant's period; a restaurant with none yet shows the default of 12, which saving the step then fixes.
+             */
             bookingRetentionMonths?: number | string;
         };
         OnboardingLayoutDto: {
@@ -7426,6 +7475,11 @@ export interface components {
             stepsTotal?: number | string;
             /** @description The first setup step still to do (`info`, `hours`, …); null when all are settled. */
             nextStep?: null | string;
+            /**
+             * Format: int32
+             * @description Months a guest stays identifiable after the sitting; null is no automatic erasure.
+             */
+            bookingRetentionMonths?: null | number | string;
         };
         ProblemDetails: {
             type?: null | string;
@@ -7601,7 +7655,7 @@ export interface components {
             vatNumber?: null | string;
             /**
              * Format: int32
-             * @description Months a guest stays identifiable after the sitting (1 to 60). Missing keeps the current value.
+             * @description Months a guest stays identifiable after the sitting (1 to 60). Missing keeps the current value, or fixes the default on a restaurant that has none.
              */
             bookingRetentionMonths?: null | number | string;
         };
@@ -7656,6 +7710,13 @@ export interface components {
         SetBookingStatusRequest: {
             /** @description Booked, Arrived, Seated, Finished or NoShow, case-insensitive. */
             status?: string;
+        };
+        SetRetentionRequest: {
+            /**
+             * Format: int32
+             * @description 1 to 60 months, or null for no automatic erasure.
+             */
+            months?: null | number | string;
         };
         SetupPvqRequest: {
             question?: string;

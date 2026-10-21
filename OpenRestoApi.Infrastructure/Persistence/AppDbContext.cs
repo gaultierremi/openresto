@@ -80,11 +80,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
               .OnDelete(DeleteBehavior.Cascade);
             rb.Property(r => r.PublicToken).IsRequired().HasMaxLength(PublicTokenGenerator.MaxLength);
             rb.HasIndex(r => r.PublicToken).IsUnique();
-            // Stored defaults, so the migration backfills the rows that already exist: a restaurant
-            // that predates onboarding is live, and keeps the retention every guest was promised.
+            // A stored default, so the migration backfills the rows that already exist: a restaurant
+            // that predates onboarding is live. BookingRetentionMonths has none on purpose: those rows
+            // stay NULL (no automatic erasure) until a period is fixed, and a stored default would
+            // also turn a 0 assigned in C# into that default.
             rb.Property(r => r.Status).HasConversion<string>().HasMaxLength(RestaurantStatusExtensions.MaxLength)
               .HasDefaultValue(RestaurantStatus.Published);
-            rb.Property(r => r.BookingRetentionMonths).HasDefaultValue(BookingRetention.DefaultMonths);
             rb.Property(r => r.VatNumber).HasMaxLength(PlatformFields.MaxVatLength);
             rb.Property(r => r.OnboardingSteps).HasMaxLength(OnboardingProgress.MaxLength);
             rb.Property(r => r.SuspensionReason).HasMaxLength(PlatformFields.MaxSuspensionReasonLength);
