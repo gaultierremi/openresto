@@ -60,16 +60,23 @@ instance, many restaurants »).
   l'assistant (modifiable à tout moment). Voir ses réservations, les annuler, tenir la salle exige
   de cloisonner l'espace d'administration par restaurant : c'est le prochain chantier. D'ici là,
   c'est vous (Owner/Manager) qui avez accès aux réservations de tous.
-- **Les écrans d'administration montrent encore les clients à tout Owner/Manager.** Seul l'espace
-  Plateforme respecte la règle « jamais sans motif journalisé ». Les écrans Réservations,
-  Tableau de bord et Liste d'attente, eux, sont ceux d'avant.
+- **Les écrans d'administration montrent encore les clients à tout Owner/Manager**, sans motif
+  demandé et sans limite à un établissement. Seul l'espace Plateforme exige un motif. Ce que les
+  autres écrans (Réservations, Tableau de bord, Liste d'attente, Notifications, conflits d'horaires,
+  échecs d'e-mail) font désormais : **chaque lecture laisse une ligne** `guests.read` dans le
+  journal d'activité (qui, quel écran, quel établissement, jamais ce qui a été lu), une seule ligne
+  par personne, écran et établissement pour dix minutes. Les documents légaux disent exactement
+  cela, ni plus ni moins : tant que l'administration n'est pas cloisonnée par établissement,
+  aucune clause ne doit promettre un motif sur chaque lecture.
 - **La couleur choisie par le restaurateur peint son site vitrine**, pas la page de réservation ni
   la carte QR, qui gardent la couleur de l'instance.
 - **Mot de passe oublié** : pas de lien automatique pour un restaurateur ; il passe par une
   nouvelle invitation que vous renvoyez.
 - **Néerlandais** : tout ce que voit un client, plus l'e-mail de confirmation et les sites. Pas
   l'administration ni l'assistant (ils retombent sur le français). Les documents légaux sont en
-  français seulement.
+  français seulement, **y compris la politique de confidentialité (partie B) que lit un client
+  flamand** : elle n'est pas traduite avant relecture juridique, et chaque page légale l'annonce
+  dans la langue du lecteur. La traduire fait partie de la validation juridique, pas avant.
 - **L'import de la carte depuis une photo ou un PDF** n'existe pas : seul son emplacement est
   prévu.
 - **Fin de relation** : pas de procédure automatique. Suspendre l'établissement le retire du

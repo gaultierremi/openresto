@@ -32,6 +32,7 @@ How each feature behaves, its API fields and its error codes are in
 - A booking now records the guest's language, and its confirmation mail is written in it (French, Dutch or English; it was English only). Existing bookings keep no language and use the instance default.
 - The restaurants' websites answer in French or Dutch from `?lang=` or the browser's language, and the booking button keeps the choice.
 - The setup of a restaurant's website can carry its own colour; the booking and menu pages keep the instance's.
+- Reading a guest's name or e-mail through the admin now leaves a trail: the bookings list and detail, today's bookings on the dashboard, the waitlist, notifications, schedule conflicts and e-mail failures each land one `guests.read` row in **Activity** (who, which screen, which location; never what was read), once per ten minutes per person, screen and location. Only the platform's **Guest data…** asks for a reason; the legal documents now say so instead of promising a reason on every read.
 
 ## [2.4.1] - 2026-10-14
 
