@@ -124,6 +124,14 @@ resolve_config() {
     registry="$(env_get OPENRESTO_REGISTRY "$(example_value OPENRESTO_REGISTRY)")"
     data_dir="$(env_get DATA_DIR "$(example_value DATA_DIR)")"
     backup_dir="$(env_get BACKUP_DIR "$(example_value BACKUP_DIR)")"
+    if [ "$registry" = localhost ]; then
+      # An install made with --build has no registry behind its image names: rerunning it
+      # without the flag must rebuild, not fail on a pull.
+      [ "$build_from_source" = 1 ] || log "OPENRESTO_REGISTRY=localhost: this install was built from source, so it is rebuilt, not pulled"
+      build_from_source=1
+    elif [ "$build_from_source" = 1 ]; then
+      die "--build, but $ENV_FILE names the registry '$registry', so the built images would take that registry's name; set OPENRESTO_REGISTRY=localhost in the file first"
+    fi
   else
     [ -n "$domain" ] || { usage >&2; die "--domain is required"; }
     [ -n "$acme_email" ] || { usage >&2; die "--email is required"; }

@@ -24,6 +24,8 @@ readonly DISK_FAIL_FREE_PERCENT=8
 # A daily backup is at most a day old; a missed night is a warning, a missed weekend is not.
 readonly BACKUP_WARN_HOURS=36
 readonly BACKUP_FAIL_HOURS=72
+# A TLS handshake with a host that accepts the connection and never answers would hang forever.
+readonly CERT_PROBE_TIMEOUT_SECONDS="${HEALTH_CERT_TIMEOUT:-10}"
 
 warnings=0
 failures=0
@@ -50,7 +52,7 @@ check_stack() {
 # expires, negative once it has.
 cert_days_left() {
   local host="${HEALTH_HOST:-$domain}" port="${HEALTH_PORT:-443}" end
-  end="$(echo | openssl s_client -connect "$host:$port" -servername "$domain" 2>/dev/null \
+  end="$(echo | timeout "$CERT_PROBE_TIMEOUT_SECONDS" openssl s_client -connect "$host:$port" -servername "$domain" 2>/dev/null \
     | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2 || true)"
   [ -n "$end" ] || return 1
   echo $(( ($(date -d "$end" +%s) - $(date +%s)) / 86400 ))
@@ -87,11 +89,21 @@ check_disk() { # label directory
   fi
 }
 
+# Hours since .env was written: the age of the install, for judging a missing first backup.
+instance_age_hours() { echo $(( ($(date +%s) - $(stat -c %Y "$ENV_FILE")) / 3600 )); }
+
 check_backup() {
   local newest age_hours
   newest="$(find "$backup_dir/daily" -maxdepth 1 -name 'openresto-*.tar.gz' 2>/dev/null | sort | tail -n 1 || true)"
   if [ -z "$newest" ]; then
-    fail "no backup in $backup_dir/daily"
+    # A fresh install has had no night yet (or was told not to install the timer); only an
+    # instance old enough to have had its first backup is failing.
+    age_hours="$(instance_age_hours)"
+    if [ "$age_hours" -gt "$BACKUP_WARN_HOURS" ]; then
+      fail "no backup in $backup_dir/daily and the instance is ${age_hours}h old"
+    else
+      warn "no backup yet in $backup_dir/daily (the instance is ${age_hours}h old); take one with backup/backup.sh"
+    fi
     return
   fi
   age_hours=$(( ($(date +%s) - $(stat -c %Y "$newest")) / 3600 ))

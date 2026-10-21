@@ -15,7 +15,8 @@ set -Eeuo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 work="$(mktemp -d)"
-trap 'rm -rf "$work"' EXIT
+tls_pid=""
+trap '[ -z "$tls_pid" ] || kill "$tls_pid" 2>/dev/null; rm -rf "$work"' EXIT
 passed=0; failed=0
 
 pass() { passed=$((passed + 1)); printf 'PASS  %s\n' "$*"; }
@@ -48,8 +49,10 @@ esac'
 stub systemctl '
 if [ "$1 $2" = "start openresto-backup.service" ] && [ -e "$STUB_STATE/backup-ok" ]; then
   mkdir -p "$STUB_BACKUP_DIR/daily"; : > "$STUB_BACKUP_DIR/daily/openresto-20260101-030000.tar.gz"
+  (cd "$STUB_BACKUP_DIR/daily" && sha256sum openresto-20260101-030000.tar.gz > openresto-20260101-030000.tar.gz.sha256)
 fi
 exit 0'
+stub df 'printf "Filesystem 1024-blocks Used Available Capacity Mounted on\n/dev/stub 100000000 50000000 50000000 50%% /\n"'
 stub apt-get 'case "$*" in *docker-ce*) : > "$STUB_STATE/docker-installed" ;; esac'
 stub ufw 'exit 0'
 stub dpkg 'echo amd64'
@@ -82,7 +85,7 @@ reset() {
 }
 std=(--domain resto.example.be --email ops@example.be --data-dir "$data" --backup-dir "$backups")
 
-out=""; code=0
+out=""; code=0; extra_env=()
 run_install() {
   : > "$calls"
   set +e
@@ -91,7 +94,7 @@ run_install() {
     ENV_FILE="$env_file" INSTALL_UID="$uid" OS_RELEASE_FILE="$os_file" MEMINFO_FILE="$mem_file" \
     SYSTEMD_DIR="$units" APT_KEYRINGS_DIR="$work/apt/keyrings" APT_SOURCES_DIR="$work/apt/sources" \
     INSTALL_SMOKE="$work/smoke" INSTALL_HEALTH="$work/health" INSTALL_RETRY_SLEEP=0 \
-    "$here/install.sh" "$@" 2>&1)"
+    "${extra_env[@]}" "$here/install.sh" "$@" 2>&1)"
   code=$?
   set -e
 }
@@ -273,6 +276,45 @@ reset; run_install "${std[@]}" --preflight-only
 expect "preflight only: exit 0" 0 "$code"
 expect_in "preflight only: says nothing was written" "nothing was written" "$out"
 { [ ! -e "$env_file" ] && [ ! -e "$data" ] && [ ! -e "$units" ] && ! touched_machine; } && pass "preflight only: no trace" || fail "preflight only: left a trace"
+
+# --- with the real health.sh behind it ------------------------------------------------------------
+# The stand-in health check hides what the install actually ends on. These runs use the real one,
+# against a real local TLS server, so an install the health check would fail cannot pass here.
+openssl req -x509 -newkey rsa:2048 -nodes -days 60 -subj "/CN=resto.example.be" \
+  -keyout "$work/key.pem" -out "$work/cert.pem" >/dev/null 2>&1
+tls_port="$(python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')"
+openssl s_server -accept "127.0.0.1:$tls_port" -cert "$work/cert.pem" -key "$work/key.pem" -www -quiet >/dev/null 2>&1 &
+tls_pid=$!
+for _ in $(seq 1 50); do (exec 3<>"/dev/tcp/127.0.0.1/$tls_port") 2>/dev/null && break; sleep 0.1; done
+real_health=(INSTALL_HEALTH="$here/health.sh" HEALTH_SMOKE="$work/smoke" HEALTH_HOST=127.0.0.1
+  HEALTH_PORT="$tls_port" HEALTH_CERT_TIMEOUT=10 REBOOT_REQUIRED_FILE="$work/no-reboot")
+
+reset; extra_env=("${real_health[@]}"); run_install "${std[@]}"
+expect "real health check, default install: exit 0" 0 "$code"
+expect_in "real health check, default install: healthy" "HEALTH OK" "$out"
+
+reset; extra_env=("${real_health[@]}"); run_install "${std[@]}" --no-backup-timer
+expect "--no-backup-timer: exit 0 (it used to end on 2)" 0 "$code"
+expect_in "--no-backup-timer: the missing first backup is a warning" "WARN  no backup yet" "$out"
+grep -q '^systemctl' "$calls" && fail "--no-backup-timer: talked to systemd" || pass "--no-backup-timer: systemd untouched"
+
+# A rerun after --build must not demand the flag again, and the other way round is refused.
+reset; extra_env=(); run_install "${std[@]}" --build
+before="$(sha256sum "$env_file")"; : > "$state/stack-running"; busy="80,443"
+run_install "${std[@]}"
+expect "rerun without --build after a --build install: exit 0" 0 "$code"
+expect_in "rerun without --build after a --build install: says it rebuilds" "built from source" "$out"
+grep -qE 'docker-compose\.build\.yml build$' "$calls" && pass "rerun after --build: rebuilds with the override" || fail "rerun after --build: no rebuild"
+grep -q ' pull$' "$calls" && fail "rerun after --build: tried to pull localhost images" || pass "rerun after --build: never pulls"
+expect "rerun after --build: .env untouched" "$before" "$(sha256sum "$env_file")"
+
+reset; run_install "${std[@]}"
+before="$(sha256sum "$env_file")"; : > "$state/stack-running"; busy="80,443"
+run_install "${std[@]}" --build
+expect "--build on a registry install: exit 1" 1 "$code"
+expect_in "--build on a registry install: says what to set" "OPENRESTO_REGISTRY=localhost" "$out"
+expect "--build on a registry install: .env untouched" "$before" "$(sha256sum "$env_file")"
+grep -qE ' (pull|build|up)( |$)' "$calls" && fail "--build on a registry install: started something" || pass "--build on a registry install: nothing started"
 
 # --- warnings do not stop it; failures after the start have their own exit codes ---------------
 reset; mem_file="$work/mem-low"; run_install "${std[@]}"

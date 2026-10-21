@@ -92,12 +92,13 @@ ENV
   serve_cert 60
 }
 
-out=""; code=0
+out=""; code=0; cert_timeout=10; run_limit=120
 run_health() {
   set +e
   out="$(env -i PATH="$bin:$PATH" HOME="$work" STUB_STATE="$state" STUB_DF_USED_PCT="$used_pct" \
     ENV_FILE="$env_file" HEALTH_SMOKE="$work/smoke" HEALTH_HOST=127.0.0.1 HEALTH_PORT="$port" \
-    REBOOT_REQUIRED_FILE="$work/reboot" "$here/health.sh" 2>&1)"
+    HEALTH_CERT_TIMEOUT="$cert_timeout" REBOOT_REQUIRED_FILE="$work/reboot" \
+    timeout "$run_limit" "$here/health.sh" 2>&1)"
   code=$?
   set -e
 }
@@ -129,6 +130,28 @@ stop_server; port="$(free_port)"; run_health
 expect "no TLS answer at all: failure" 2 "$code"
 expect_in "no TLS answer at all: says so" "cannot read the certificate" "$out"
 
+# A host that takes the connection and never speaks must cost the probe its timeout, not hang the
+# check. `run_limit` is the harness's own guard: a probe with no timeout is killed there (code 124)
+# and fails the assertion instead of hanging the suite.
+cat > "$work/hang.py" <<'PY'
+import socket, sys
+s = socket.socket()
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind(("127.0.0.1", int(sys.argv[1])))
+s.listen(5)
+held = []
+while True:
+    held.append(s.accept()[0])
+PY
+healthy_baseline; stop_server; port="$(free_port)"
+python3 "$work/hang.py" "$port" & server_pid=$!
+for _ in $(seq 1 50); do (exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null && break; sleep 0.1; done
+cert_timeout=2; run_limit=15; SECONDS=0; run_health; elapsed=$SECONDS; cert_timeout=10; run_limit=120
+expect "silent TLS host: failure, not a hang" 2 "$code"
+expect_in "silent TLS host: says it cannot read the certificate" "cannot read the certificate" "$out"
+[ "$elapsed" -lt 12 ] && pass "silent TLS host: gave up after the 2 s timeout (${elapsed}s in all)" || fail "silent TLS host: took ${elapsed}s"
+stop_server
+
 # --- disk: warn under 20% free, fail under 8% ---------------------------------------------------------
 healthy_baseline; used_pct=80; run_health
 expect "20% free: ok" 0 "$code"
@@ -151,9 +174,17 @@ backup_aged 72; run_health
 expect "72 hours old: still a warning" 1 "$code"
 backup_aged 73; run_health
 expect "73 hours old: failure" 2 "$code"
-rm -f "$backups"/daily/*; run_health
-expect "no backup at all: failure" 2 "$code"
-expect_in "no backup at all: says so" "no backup in" "$out"
+
+# No backup at all: a warning on a fresh install, a failure once the instance is old enough to
+# have had its first one (same 36 hour line as a stale backup).
+healthy_baseline; rm -f "$backups"/daily/*; run_health
+expect "fresh install, no backup yet: warning, not failure" 1 "$code"
+expect_in "fresh install, no backup yet: says so" "no backup yet" "$out"
+touch -d "36 hours ago" "$env_file"; run_health
+expect "instance 36 hours old, no backup: still a warning" 1 "$code"
+touch -d "37 hours ago" "$env_file"; run_health
+expect "instance 37 hours old, no backup: failure" 2 "$code"
+expect_in "instance 37 hours old, no backup: says how old" "the instance is 37h old" "$out"
 
 healthy_baseline; echo "tampered" >> "$backups/daily/openresto-20260101-030000.tar.gz"; run_health
 expect "checksum mismatch: failure" 2 "$code"

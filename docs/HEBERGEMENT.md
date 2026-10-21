@@ -162,7 +162,10 @@ installe la sauvegarde quotidienne, prend une première sauvegarde et termine pa
   connexion.
 - **Relançable sans risque** : un `.env` existant n'est jamais réécrit (une nouvelle `JWT_KEY`
   déconnecterait tout le monde) ; un drapeau qui le contredit (`--domain`, `--version`…) est refusé.
-  Pour changer de version, c'est `update.sh` (§7).
+  Pour changer de version, c'est `update.sh` (§7). Une installation faite avec `--build` se relance
+  **sans** `--build` : le registre `localhost` du `.env` dit qu'elle est construite, le script
+  reconstruit au lieu de tirer. L'inverse (`--build` sur une installation par registre) est refusé
+  avec la ligne à mettre dans le `.env`.
 - **`--firewall`** n'active ufw qu'après avoir autorisé le port SSH réellement utilisé par `sshd`
   (`--ssh-port` si ce n'est pas 22 : sans lui le script s'arrête plutôt que de te verrouiller dehors).
 - **Pas fait par le script** : SSH par clés seulement, fail2ban, mises à jour automatiques (§5.2),
@@ -494,8 +497,10 @@ Le strict nécessaire, sans installer de pile de monitoring :
 cron : conteneurs et adresse publique (`smoke.sh`), jours restants du certificat (avertissement
 sous 14, échec sous 3), espace disque libre (avertissement sous 20 %, échec sous 8 %), âge et
 somme de contrôle de la dernière sauvegarde (avertissement au-delà de 36 h, échec au-delà de
-72 h), minuterie de sauvegarde, droits du `.env`, version épinglée, redémarrage en attente. Code
-de sortie : `0` tout va bien, `1` avertissements, `2` au moins un échec. Il ne remplace pas la
+72 h ; **aucune sauvegarde** est un avertissement tant que l'installation a moins de 36 h, un
+échec ensuite), minuterie de sauvegarde, droits du `.env`, version épinglée, redémarrage en attente.
+La lecture du certificat est bornée à 10 s (`HEALTH_CERT_TIMEOUT`) : un serveur qui ne répond pas
+est un échec, pas un blocage. Code de sortie : `0` tout va bien, `1` avertissements, `2` au moins un échec. Il ne remplace pas la
 sonde externe du point 1 : si la VM est éteinte, rien ne s'exécute dessus.
 
 Commandes utiles :
