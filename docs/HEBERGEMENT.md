@@ -131,6 +131,45 @@ extrapole. Le trafic d'un restaurant est faible (quelques dizaines de réservati
 Hypothèses : VM Debian 12 / Ubuntu 24.04 neuve, un utilisateur `deploy` avec `sudo`, un nom de
 domaine dont tu contrôles la zone DNS. Exemple : `reservations.example.be`.
 
+### 5.0 En une commande (`deploy/install.sh`)
+
+Le DNS (§5.1) doit déjà pointer sur la VM. Le reste des étapes 5.3 à 5.8 se résume à :
+
+```bash
+sudo apt-get update && sudo apt-get install -y git
+sudo git clone --depth 1 https://github.com/gaultierremi/openresto.git /opt/openresto
+cd /opt/openresto/deploy
+sudo ./install.sh --domain reservations.example.be --email ops@example.be --install-docker --firewall
+```
+
+Le script **contrôle d'abord la machine et n'écrit rien tant que tout n'est pas bon** : droits root,
+Debian ou Ubuntu, nom de domaine valide et résolu, ports 80 et 443 libres, mémoire et disque,
+Docker présent (ou `--install-docker`), port SSH réel si `--firewall`. `--preflight-only` s'arrête
+là. Ensuite il crée le `.env` (droits 600, `JWT_KEY` et mot de passe administrateur générés),
+les dossiers de données, tire les images, démarre la pile, attend que `https://<DOMAIN>` réponde,
+installe la sauvegarde quotidienne, prend une première sauvegarde et termine par `health.sh`.
+
+- **Le mot de passe administrateur n'est jamais affiché** : il est dans la ligne `ADMIN_PASSWORD`
+  de `.env` (`sudo grep ADMIN_PASSWORD /opt/openresto/deploy/.env`). Le changer à la première
+  connexion.
+- **Relançable sans risque** : un `.env` existant n'est jamais réécrit (une nouvelle `JWT_KEY`
+  déconnecterait tout le monde) ; un drapeau qui le contredit (`--domain`, `--version`…) est refusé.
+  Pour changer de version, c'est `update.sh` (§7).
+- **`--firewall`** n'active ufw qu'après avoir autorisé le port SSH réellement utilisé par `sshd`
+  (`--ssh-port` si ce n'est pas 22 : sans lui le script s'arrête plutôt que de te verrouiller dehors).
+- **Pas fait par le script** : SSH par clés seulement, fail2ban, mises à jour automatiques (§5.2),
+  réglage SMTP dans l'admin (§6), copie hors VM (§8.3).
+- Codes de sortie : `1` refusé ou échoué avant le démarrage, `2` démarré mais pas sain, `3` sain
+  mais première sauvegarde échouée.
+
+Ce que les tests (`deploy/tests/install.test.sh`, `health.test.sh`) vérifient est le
+comportement du script face à une machine simulée ; **il n'a pas été exécuté sur un vrai serveur**
+(ni le temps d'installation mesuré) : la première exécution réelle est l'essai que Chris doit
+faire sur une VM jetable avant la VM du restaurant.
+
+Les étapes détaillées ci-dessous restent la référence pour comprendre ce que fait le script ou
+pour installer à la main.
+
 ### 5.1 DNS (avant tout)
 
 Chez le registrar : un enregistrement **A** `reservations.example.be → <IP fixe de la VM>`. Ne pas
@@ -443,9 +482,18 @@ Le strict nécessaire, sans installer de pile de monitoring :
    relance un conteneur qui tombe ; les journaux sont limités à 3 × 10 Mo par conteneur.
 5. **Certificat** — Caddy le renouvelle seul ; l'outil d'uptime peut aussi alerter à l'expiration.
 
+**`deploy/health.sh` regroupe les points 2 à 5 en une commande** et se lance à la main ou depuis
+cron : conteneurs et adresse publique (`smoke.sh`), jours restants du certificat (avertissement
+sous 14, échec sous 3), espace disque libre (avertissement sous 20 %, échec sous 8 %), âge et
+somme de contrôle de la dernière sauvegarde (avertissement au-delà de 36 h, échec au-delà de
+72 h), minuterie de sauvegarde, droits du `.env`, version épinglée, redémarrage en attente. Code
+de sortie : `0` tout va bien, `1` avertissements, `2` au moins un échec. Il ne remplace pas la
+sonde externe du point 1 : si la VM est éteinte, rien ne s'exécute dessus.
+
 Commandes utiles :
 
 ```bash
+./health.sh
 docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml logs --tail=100 backend
 docker stats --no-stream
