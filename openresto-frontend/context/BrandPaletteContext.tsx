@@ -23,7 +23,9 @@ export function BrandPaletteScope({
   children,
 }: {
   mode: BrandPaletteMode;
-  children: ReactNode;
+  // Optional so a caller that cannot write JSX (a hook test's wrapper) can pass it as the third
+  // argument of `createElement` without lint's no-children-prop and tsc disagreeing.
+  children?: ReactNode;
 }) {
   return <BrandPaletteContext.Provider value={mode}>{children}</BrandPaletteContext.Provider>;
 }
