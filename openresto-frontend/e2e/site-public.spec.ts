@@ -5,7 +5,8 @@ const RESTAURANT_ID = 1;
 const SLUG = "e2e-site-vitrine";
 const CONTACT_EMAIL = "contact@e2e-site.example";
 const siteApi = `/api/admin/restaurants/${RESTAURANT_ID}/site`;
-const locationApi = `/api/admin/restaurants/${RESTAURANT_ID}`;
+// PATCH on /api/admin/restaurants/{id} only reads `isArchived`; a location's fields go through PUT.
+const locationApi = `/api/restaurants/${RESTAURANT_ID}`;
 
 interface SiteDto {
   slug: string;
@@ -23,8 +24,12 @@ const settings = (overrides: Record<string, unknown> = {}) => ({
 });
 
 async function setContactEmail(request: APIRequestContext, email: string) {
-  const res = await request.patch(locationApi, { data: { emailAddress: email } });
+  const { name } = (await (await request.get(locationApi)).json()) as { name: string };
+  const res = await request.put(locationApi, { data: { name, emailAddress: email } });
   expect(res.ok()).toBeTruthy();
+  // The write must have landed: an ignored field answers 2xx too.
+  const saved = (await (await request.get(locationApi)).json()) as { emailAddress?: string | null };
+  expect(saved.emailAddress ?? "").toBe(email);
 }
 
 /**
