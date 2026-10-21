@@ -242,6 +242,7 @@
       "cancel": "Abbrechen",
       "close": "Schließen",
       "confirm": "Bestätigen",
+      "delete": "Löschen",
       "goHome": "Zur Startseite",
       "scrollToTop": "Nach oben scrollen",
       "tryAgain": "Erneut versuchen"
@@ -293,6 +294,36 @@
     },
     "language": {
       "switcherLabel": "Sprache"
+    },
+    "menu": {
+      "allergens": {
+        "Celery": "Sellerie",
+        "Crustaceans": "Krebstiere",
+        "Eggs": "Eier",
+        "Fish": "Fisch",
+        "Gluten": "Gluten",
+        "Lupin": "Lupinen",
+        "Milk": "Milch",
+        "Molluscs": "Weichtiere",
+        "Mustard": "Senf",
+        "Nuts": "Schalenfrüchte",
+        "Peanuts": "Erdnüsse",
+        "Sesame": "Sesam",
+        "Soybeans": "Soja",
+        "Sulphites": "Sulfite"
+      },
+      "availability": {
+        "Available": "Verfügbar",
+        "Hidden": "Ausgeblendet",
+        "SoldOut": "Ausverkauft"
+      },
+      "dietary": {
+        "GlutenFree": "Glutenfrei",
+        "Vegan": "Vegan",
+        "Vegetarian": "Vegetarisch"
+      },
+      "free": "Kostenlos",
+      "priceOnRequest": "Preis auf Anfrage"
     },
     "modalCard": {
       "defaultDismissLabel": "Schließen"
@@ -432,6 +463,23 @@
       "unsupported_image_type": "Es werden nur JPEG-, PNG- und WebP-Bilder akzeptiert.",
       "unsupported_menu_type": "Es werden nur Menüdateien im PDF-Format akzeptiert."
     },
+    "menu": {
+      "allergen_invalid": "Allergene müssen zu den 14 EU-Hauptallergenen gehören, z. B. „Gluten“.",
+      "availability_invalid": "Die Verfügbarkeit muss Available, SoldOut oder Hidden sein.",
+      "category_name_required": "Der Kategoriename darf nicht leer sein.",
+      "category_name_too_long": "Der Kategoriename darf höchstens {{max}} Zeichen lang sein.",
+      "currency_invalid": "Die Währung muss ein dreistelliger ISO-4217-Code sein, z. B. EUR.",
+      "description_too_long": "Die Beschreibung darf höchstens {{max}} Zeichen lang sein.",
+      "dietary_tag_invalid": "Ernährungshinweise müssen Vegetarian, Vegan oder GlutenFree sein.",
+      "item_image_too_large": "Das Foto des Gerichts muss kleiner als 2 MB sein.",
+      "item_name_required": "Der Name des Gerichts darf nicht leer sein.",
+      "item_name_too_long": "Der Name des Gerichts darf höchstens {{max}} Zeichen lang sein.",
+      "name_required": "Der Name der Speisekarte darf nicht leer sein.",
+      "name_too_long": "Der Name der Speisekarte darf höchstens {{max}} Zeichen lang sein.",
+      "not_found": "Speisekarte nicht gefunden.",
+      "price_invalid": "Der Preis muss null oder höher sein (höchstens {{max}} in der kleinsten Währungseinheit) oder leer bleiben für „Preis auf Anfrage“.",
+      "reorder_ids_mismatch": "Die neue Reihenfolge muss jeden Eintrag genau einmal enthalten, ohne Ergänzungen."
+    },
     "restaurant": {
       "archive_before_delete": "Archivieren Sie diesen Standort, bevor Sie ihn löschen. Das Archivieren nimmt ihn von der öffentlichen Website und lässt sich rückgängig machen – das Löschen nicht.",
       "booking_ref_format_invalid": "BookingRefFormat muss einer dieser Werte sein: {{allowed}}.",
@@ -452,6 +500,26 @@
       "turn_time_seats_out_of_range": "Die Gruppengröße einer Tischzeit muss zwischen {{min}} und {{max}} liegen.",
       "walk_in_days_invalid": "WalkInDays muss eine durch Kommas getrennte Liste von ISO-Tagesnummern von 1 (Montag) bis 7 (Sonntag) sein.",
       "max_covers_invalid": "Die maximale Gästezahl pro Zeitfenster muss mindestens 1 sein oder leer bleiben (kein Limit)."
+    },
+    "site": {
+      "not_found": "Webseite nicht gefunden.",
+      "slug_invalid": "Die Adresse der Webseite muss 3 bis 60 Zeichen lang sein: Kleinbuchstaben, Ziffern und einzelne Bindestriche.",
+      "slug_taken": "Eine andere Webseite verwendet diese Adresse bereits.",
+      "theme_invalid": "Dieses Design gibt es nicht.",
+      "tagline_too_long": "Der Slogan darf höchstens {{max}} Zeichen lang sein.",
+      "social_invalid": "Ein Netzwerk-Link braucht ein bekanntes Netzwerk, eine https://-Adresse und darf nur einmal vorkommen.",
+      "social_too_many": "Es gibt zu viele Links zu sozialen Netzwerken.",
+      "legal_too_long": "Dieses Impressumsfeld darf höchstens {{max}} Zeichen lang sein.",
+      "legal_invalid": "Dieses Impressumsfeld akzeptiert nur Buchstaben, Ziffern, Leerzeichen, Punkte, Bindestriche und Schrägstriche.",
+      "photo_alt_required": "Jedes Foto braucht eine Beschreibung.",
+      "photo_alt_too_long": "Die Fotobeschreibung darf höchstens {{max}} Zeichen lang sein.",
+      "photos_full": "Eine Galerie enthält höchstens {{max}} Fotos.",
+      "reorder_ids_mismatch": "Die Liste muss jedes Foto genau einmal nennen, ohne weitere hinzuzufügen.",
+      "image_too_large": "Das Bild darf höchstens 6 MB groß sein.",
+      "image_dimensions_too_large": "Das Bild hat zu viele Pixel (höchstens {{maxSide}} Pixel pro Seite).",
+      "image_unreadable": "Diese Datei ist kein lesbares Bild.",
+      "not_publishable": "Die Webseite kann erst veröffentlicht werden, wenn Impressum und Kontakt-E-Mail-Adresse ausgefüllt sind.",
+      "location_archived": "Ein archivierter Standort kann keine Webseite online haben."
     },
     "social_link": {
       "label_required": "Die Bezeichnung des Social-Media-Links darf nicht leer sein.",
@@ -640,6 +708,31 @@
       "tuesday": "Dienstag",
       "walkIn": "Ohne Reservierung",
       "wednesday": "Mittwoch"
+    },
+    "publicMenu": {
+      "bookCta": "Tisch reservieren",
+      "contains": "Enthält: {{list}}",
+      "documentTitle": "{{name}} — Speisekarte",
+      "emptyMenu": "Auf dieser Speisekarte steht noch nichts.",
+      "error": {
+        "body": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+        "title": "Die Speisekarte konnte nicht geladen werden"
+      },
+      "filters": {
+        "avoid": "Allergene meiden",
+        "avoidWithCount_one": "{{count}} Allergen wird gemieden",
+        "avoidWithCount_other": "{{count}} Allergene werden gemieden",
+        "clear": "Filter zurücksetzen",
+        "diets": "Ernährung",
+        "disclaimer": "Die Filter beruhen auf den Angaben des Restaurants. Bei einer Allergie sagen Sie dem Personal vor der Bestellung Bescheid."
+      },
+      "loading": "Speisekarte wird geladen…",
+      "noMatch": "Kein Gericht passt zu Ihren Filtern.",
+      "notFound": {
+        "body": "Diese Speisekarte ist im Moment nicht verfügbar. Bitte fragen Sie das Personal.",
+        "title": "Speisekarte nicht verfügbar"
+      },
+      "tableLabel": "Tisch {{name}}"
     },
     "seatingMap": {
       "combinableHeading": "Tische, die wir kombinieren können",
@@ -1244,6 +1337,101 @@
       },
       "backLabel": "Zurück"
     },
+    "menus": {
+      "actions": {
+        "qrCodes": "QR-Codes",
+        "service": "Servicemodus",
+        "viewPublic": "Öffentliche Seite ansehen"
+      },
+      "addCategory": "Kategorie hinzufügen",
+      "addCategoryPlaceholder": "Name der Kategorie, z. B. Vorspeisen",
+      "addItem": "Gericht hinzufügen",
+      "addItemPlaceholder": "Name des Gerichts",
+      "addItemPrice": "Preis",
+      "addMenu": "Speisekarte hinzufügen",
+      "addMenuPlaceholder": "Name der Speisekarte, z. B. Mittagstisch",
+      "category": {
+        "deleteMessage_one": "„{{name}}“ und sein {{count}} Gericht werden gelöscht. Das lässt sich nicht rückgängig machen.",
+        "deleteMessage_other": "„{{name}}“ und seine {{count}} Gerichte werden gelöscht. Das lässt sich nicht rückgängig machen.",
+        "deleteNamed": "{{name}} löschen",
+        "deleteTitle": "Diese Kategorie löschen?",
+        "descriptionLabel": "Beschreibung der Kategorie",
+        "descriptionPlaceholder": "Beschreibung (optional)",
+        "hidden": "Ausgeblendet",
+        "hideNamed": "{{name}} für Gäste ausblenden",
+        "nameLabel": "Name der Kategorie",
+        "nameRequired": "Geben Sie der Kategorie einen Namen, um Ihre Änderungen zu speichern.",
+        "noItems": "In dieser Kategorie gibt es noch keine Gerichte.",
+        "showNamed": "{{name}} für Gäste anzeigen",
+        "visible": "Sichtbar"
+      },
+      "couldntLoad": "Die Speisekarten konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "empty": "Noch keine Speisekarte. Legen Sie die erste an: Ihre Gäste sehen sie, sobald Sie sie veröffentlichen.",
+      "item": {
+        "addPriceInvalid": "Geben Sie einen Preis wie 12,50 ein oder lassen Sie das Feld für „Preis auf Anfrage“ leer.",
+        "allergensHint": "Haken Sie jedes Allergen an, das im Gericht enthalten ist. Ihre Gäste verlassen sich darauf: Lassen Sie alles frei, nur wenn das Gericht keines der 14 EU-Allergene enthält.",
+        "allergensLabel": "Allergene",
+        "availabilityLabel": "Verfügbarkeit",
+        "close": "Schließen",
+        "closeNamed": "{{name}} schließen",
+        "delete": "Gericht löschen",
+        "deleteMessage": "„{{name}}“ und sein Foto werden gelöscht. Das lässt sich nicht rückgängig machen.",
+        "deleteTitle": "Dieses Gericht löschen?",
+        "descriptionLabel": "Beschreibung (optional)",
+        "dietaryLabel": "Ernährung",
+        "edit": "Bearbeiten",
+        "editNamed": "{{name}} bearbeiten",
+        "markAvailable": "{{name}} wieder als verfügbar markieren",
+        "markSoldOut": "{{name}} als ausverkauft markieren",
+        "nameLabel": "Name des Gerichts",
+        "nameRequired": "Geben Sie dem Gericht einen Namen, um Ihre Änderungen zu speichern.",
+        "photoAdd": "Foto hinzufügen",
+        "photoHint": "JPEG, PNG oder WebP, höchstens 2 MB.",
+        "photoLabel": "Foto",
+        "photoRemove": "Foto entfernen",
+        "photoReplace": "Foto ersetzen",
+        "priceInvalid": "Geben Sie einen gültigen Preis ein oder haken Sie „Preis auf Anfrage“ an, um Ihre Änderungen zu speichern.",
+        "priceLabel": "Preis ({{currency}})"
+      },
+      "menu": {
+        "categoryCount_one": "{{count}} Kategorie",
+        "categoryCount_other": "{{count}} Kategorien",
+        "close": "Schließen",
+        "closeNamed": "{{name}} schließen",
+        "currencyHint": "Preise werden in der kleinsten Einheit der Währung gespeichert. Prüfen Sie sie nach einem Währungswechsel.",
+        "currencyLabel": "Währung",
+        "delete": "Speisekarte löschen",
+        "deleteMessage": "„{{name}}“ wird mit allen Kategorien und Gerichten gelöscht, Fotos eingeschlossen. Das lässt sich nicht rückgängig machen.",
+        "deleteTitle": "Diese Speisekarte löschen?",
+        "descriptionLabel": "Beschreibung (optional)",
+        "draft": "Entwurf",
+        "itemCount_one": "{{count}} Gericht",
+        "itemCount_other": "{{count}} Gerichte",
+        "nameLabel": "Name der Speisekarte",
+        "nameRequired": "Geben Sie der Speisekarte einen Namen, um Ihre Änderungen zu speichern.",
+        "open": "Bearbeiten",
+        "openNamed": "{{name}} bearbeiten",
+        "publish": "Veröffentlichen",
+        "published": "Veröffentlicht",
+        "unpublish": "Zurückziehen"
+      },
+      "moveDown": "{{name}} nach unten",
+      "moveUp": "{{name}} nach oben",
+      "noLocations": "Fügen Sie einen Standort hinzu, um eine Speisekarte zu erstellen.",
+      "service": {
+        "editMenus": "Speisekarten bearbeiten",
+        "filterAll": "Alle Gerichte",
+        "filterSoldOut": "Ausverkauft ({{count}})",
+        "noMatch": "Kein Gericht passt.",
+        "nothingPublished": "Für diesen Standort ist keine Speisekarte veröffentlicht. Veröffentlichen Sie eine, um sie hier zu verwalten.",
+        "search": "Gericht suchen",
+        "subtitle": "Tippen Sie auf ein Gericht, um es als ausverkauft zu markieren, und noch einmal, um es zurückzuholen. Ihre Gäste sehen die Änderung sofort.",
+        "title": "Servicemodus",
+        "updateFailed": "„{{name}}“ konnte nicht aktualisiert werden. Es blieb unverändert."
+      },
+      "subtitle": "Erstellen Sie die Speisekarte, die Ihre Gäste über Ihre QR-Codes öffnen.",
+      "title": "Speisekarten"
+    },
     "notifications": {
       "pageTitle": "Benachrichtigungen",
       "totalCount_one": "{{count}} Benachrichtigung insgesamt",
@@ -1326,6 +1514,45 @@
         "enable": "Aktivieren",
         "enableLabel": "Push-Benachrichtigungen aktivieren"
       }
+    },
+    "qrCodes": {
+      "codeLabel": "QR-Code für {{name}}",
+      "couldntLoad": "Die QR-Codes konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "downloadFailed": "Das Bild konnte nicht erstellt werden. Versuchen Sie es mit der SVG-Datei.",
+      "downloadPng": "PNG",
+      "downloadSvg": "SVG",
+      "noLocations": "Fügen Sie einen Standort hinzu, um QR-Codes zu erstellen.",
+      "printA4": "A4-Bogen drucken",
+      "printA6": "A6-Aufsteller drucken",
+      "printRestaurant": "A6-Aufsteller drucken",
+      "regenerate": "Neu erzeugen",
+      "regenerateConfirm": "Neu erzeugen und alten Code sperren",
+      "regenerateMessage": "Der aktuelle Code für „{{name}}“ funktioniert sofort nicht mehr: Wer eine gedruckte Kopie scannt, sieht „Speisekarte nicht verfügbar“. Drucken Sie den neuen Code und ersetzen Sie alle Kopien.",
+      "regenerateTitle": "Diesen QR-Code neu erzeugen?",
+      "regenerated": "Neuer Code bereit. Der alte funktioniert nicht mehr: Drucken Sie den neuen.",
+      "restaurant": {
+        "description": "Ein Code für das ganze Restaurant: Eingang, Flyer, Schaufenster.",
+        "title": "Restaurant-Code"
+      },
+      "sheet": {
+        "back": "Zurück",
+        "hintA4": "Wählen Sie das Papierformat A4, Ränder „Keine“ und deaktivieren Sie Kopf- und Fußzeilen.",
+        "hintA6": "Wählen Sie das Papierformat A6, Ränder „Keine“ und deaktivieren Sie Kopf- und Fußzeilen.",
+        "noApp": "Keine App nötig: die Handykamera genügt.",
+        "print": "Drucken",
+        "restaurantLabel": "Unsere Speisekarte",
+        "scan": "Scannen und unsere Speisekarte ansehen",
+        "unavailable": "Dieser Bogen kann nicht angezeigt werden: Der Standort wurde nicht gefunden oder es gibt nichts zu drucken."
+      },
+      "subtitle": "Drucken Sie einen Code pro Tisch: Ihre Gäste scannen ihn, um Ihre Speisekarte zu öffnen.",
+      "tableFallback": "Tisch {{id}}",
+      "tableNamed": "Tisch {{name}}",
+      "tables": {
+        "description": "Ein Code pro Tisch. Beim Scannen öffnet sich die Speisekarte mit dem Namen des Tisches.",
+        "empty": "Dieser Standort hat noch keine Tische. Fügen Sie unter Standorte welche hinzu.",
+        "title": "Tisch-Codes"
+      },
+      "title": "QR-Codes"
     },
     "settings": {
       "weekdays": {
@@ -1815,7 +2042,9 @@
           "users": "Benutzer",
           "audit": "Aktivitätsprotokoll",
           "guests": "Gäste",
-          "email": "E-Mail-Status"
+          "email": "E-Mail-Status",
+          "menus": "Speisekarten",
+          "sites": "Webseite"
         },
         "scopeLevel": {
           "none": "Keine"
@@ -1828,7 +2057,9 @@
           "users": "Administratorkonten auflisten; Schreiben aktiviert und deaktiviert sie. Konten anlegen, Rollen ändern und Passwörter zurücksetzen sind mit einem Schlüssel nie erreichbar.",
           "audit": "Das Administrations-Aktivitätsprotokoll",
           "guests": "Kundennamen und E-Mails auf Reservierungen. Ohne dies kommen sie leer zurück.",
-          "email": "Ob der E-Mail-Versand eingerichtet ist und was nicht zugestellt werden konnte. Niemals die SMTP-Zugangsdaten."
+          "email": "Ob der E-Mail-Versand eingerichtet ist und was nicht zugestellt werden konnte. Niemals die SMTP-Zugangsdaten.",
+          "menus": "Speisekarten, ihre Kategorien, Gerichte und Fotos sowie die Links hinter den QR-Codes. Einen Link neu zu erzeugen erfordert zusätzlich den Schlüssel eines Inhabers.",
+          "sites": "Die Webseite eines Standorts: Design, Slogan, Fotos, Impressum, Veröffentlichung und Vorschau."
         },
         "expiryLabel": "Ablauf",
         "expiryHint": "Standardmäßig 1 Jahr. Wähle „Kein Ablauf“ für einen Schlüssel, der nie abläuft.",
@@ -2074,6 +2305,135 @@
         "serverUnreachable": "Server konnte nicht erreicht werden."
       }
     },
+    "site": {
+      "title": "Meine Webseite",
+      "subtitle": "Eine kleine Webseite für jeden Standort, erstellt aus Ihren Öffnungszeiten, Ihrer Speisekarte und Ihren Kontaktdaten.",
+      "noLocations": "Fügen Sie einen Standort hinzu, um seine Webseite zu erstellen.",
+      "couldntLoad": "Die Webseite konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "themes": {
+        "label": "Design der Webseite",
+        "brasserie": {
+          "name": "Brasserie",
+          "description": "Warm und einladend: cremefarbenes Papier, Überschriften mit Serifen."
+        },
+        "gastronomique": {
+          "name": "Gehobene Küche",
+          "description": "Zurückhaltend und elegant: dunkler Hintergrund, gesperrte Schrift."
+        },
+        "cafe": {
+          "name": "Café",
+          "description": "Hell und abgerundet: Akzente in Ihrer Farbe, sehr gut lesbar."
+        }
+      },
+      "social": {
+        "kindLabel": "Netzwerk",
+        "urlPlaceholder": "https://…",
+        "urlLabel": "Adresse der {{network}}-Seite",
+        "remove": "Entfernen",
+        "removeNamed": "{{network}} entfernen",
+        "add": "Netzwerk hinzufügen"
+      },
+      "settings": {
+        "problem": {
+          "slug": "Die Adresse der Webseite muss 3 bis 60 Zeichen lang sein: Kleinbuchstaben, Ziffern und einzelne Bindestriche. Gespeichert wird erst, wenn sie gültig ist.",
+          "socialUrl": "Jeder Netzwerk-Link muss eine https://-Adresse sein. Gespeichert wird erst, wenn sie gültig ist.",
+          "socialDuplicate": "Ein Netzwerk darf nur einmal vorkommen. Ändern oder entfernen Sie das Duplikat, um zu speichern.",
+          "identifier": "Unternehmens- und USt-Nummer akzeptieren nur Buchstaben, Ziffern, Leerzeichen, Punkte, Bindestriche und Schrägstriche.",
+          "legalRequired": "Die Webseite ist veröffentlicht: Firmenname und Unternehmensnummer müssen ausgefüllt bleiben. Nehmen Sie die Webseite offline, um sie zu löschen."
+        },
+        "appearance": {
+          "title": "Erscheinungsbild",
+          "description": "Drei zurückhaltende Designs. Ihre Wahl erscheint sofort in der Vorschau und lässt sich direkt danach rückgängig machen."
+        },
+        "brandColor": "Hauptfarbe: {{color}}, aus der Marke übernommen. Die Webseite macht sie in jedem Design lesbar.",
+        "changeBrandColor": "In Marke ändern",
+        "content": {
+          "title": "Slogan und Adresse",
+          "description": "Der Slogan erscheint unter dem Namen des Standorts und in den Suchergebnissen."
+        },
+        "taglineLabel": "Slogan",
+        "taglinePlaceholder": "z. B. Belgische Saisonküche und Abteibiere",
+        "taglineCount": "{{count}} / {{max}} Zeichen",
+        "addressLabel": "Adresse der Webseite",
+        "addressHint": "Wird diese Adresse geändert, funktionieren bereits geteilte oder gedruckte Links nicht mehr.",
+        "social": {
+          "title": "Soziale Netzwerke",
+          "description": "Die Links erscheinen im Abschnitt „So finden Sie uns“."
+        },
+        "legal": {
+          "title": "Impressum",
+          "description": "Zum Veröffentlichen erforderlich: Es erscheint am Ende der Webseite.",
+          "nameLabel": "Firmenname",
+          "companyNumberLabel": "Unternehmensnummer",
+          "vatNumberLabel": "USt-Nummer (optional)",
+          "addressLabel": "Firmensitz (optional)",
+          "addressHint": "Bleibt das Feld leer, wird die Adresse des Standorts verwendet."
+        }
+      },
+      "images": {
+        "title": "Logo und Titelbild",
+        "description": "Bilder werden automatisch verkleinert und komprimiert: Ein Handyfoto genügt.",
+        "logo": {
+          "title": "Logo",
+          "hint": "JPEG, PNG oder WebP, höchstens 6 MB. Ein transparenter Hintergrund bleibt erhalten.",
+          "add": "Logo hinzufügen",
+          "replace": "Logo ersetzen",
+          "remove": "Logo entfernen"
+        },
+        "cover": {
+          "title": "Titelbild",
+          "hint": "JPEG, PNG oder WebP, höchstens 6 MB. Ein breites Querformat wirkt am besten.",
+          "add": "Titelbild hinzufügen",
+          "replace": "Bild ersetzen",
+          "remove": "Bild entfernen"
+        }
+      },
+      "gallery": {
+        "title": "Galerie",
+        "description": "Einige Fotos vom Gastraum, der Terrasse oder den Gerichten.",
+        "count_one": "{{count}} Foto von möglichen {{max}} ({{min}} bis {{max}} empfohlen)",
+        "count_other": "{{count}} Fotos von möglichen {{max}} ({{min}} bis {{max}} empfohlen)",
+        "altLabel": "Beschreibung des Fotos",
+        "altRequired": "Beschreiben Sie das Foto, um zu speichern: Ein Screenreader liest dies an seiner Stelle vor.",
+        "remove": "Löschen",
+        "removeNamed": "Foto „{{name}}“ löschen",
+        "removeTitle": "Dieses Foto löschen?",
+        "removeMessage": "Das Foto „{{name}}“ verschwindet aus der Galerie. Dies kann nicht rückgängig gemacht werden.",
+        "full": "Die Galerie ist voll ({{max}} Fotos). Löschen Sie ein Foto, um ein anderes hinzuzufügen.",
+        "newAltLabel": "Beschreibung des neuen Fotos",
+        "newAltPlaceholder": "z. B. Der Gastraum mit Ledersitzbänken",
+        "newAltHint": "Pflichtfeld: Beschreiben Sie, was das Foto zeigt, für Menschen, die es nicht sehen können.",
+        "choose": "Foto auswählen",
+        "add": "Foto hinzufügen"
+      },
+      "publish": {
+        "title": "Veröffentlichung",
+        "description": "Solange die Webseite nicht veröffentlicht ist, kann nur Sie sie sehen.",
+        "live": "Online",
+        "draft": "Entwurf",
+        "checklistTitle": "Vor der Veröffentlichung auszufüllen",
+        "todo": {
+          "legalName": "Firmennamen angeben (Impressum)",
+          "companyNumber": "Unternehmensnummer angeben (Impressum)",
+          "contactEmail": "Eine Kontakt-E-Mail-Adresse hinterlegen, am Standort oder in der Marke",
+          "publicUrl": "Die Webadresse der Instanz in den Markeneinstellungen eintragen (Links der Seite und ihr Suchmaschineneintrag brauchen sie)"
+        },
+        "blockedHint": "Die Schaltfläche wird freigeschaltet, sobald die Liste oben leer ist.",
+        "publish": "Webseite veröffentlichen",
+        "unpublish": "Offline nehmen",
+        "view": "Webseite ansehen",
+        "copy": "Link kopieren",
+        "copied": "Link kopiert"
+      },
+      "preview": {
+        "title": "Vorschau",
+        "phone": "Smartphone",
+        "desktop": "Computer",
+        "loading": "Vorschau wird geladen …",
+        "failed": "Die Vorschau konnte nicht geladen werden.",
+        "frameTitle": "Vorschau der Webseite"
+      }
+    },
     "sidebar": {
       "nav": {
         "sections": {
@@ -2084,6 +2444,9 @@
           "overview": "Übersicht",
           "bookings": "Buchungen",
           "locations": "Standorte",
+          "menus": "Speisekarten",
+          "qrCodes": "QR-Codes",
+          "site": "Meine Webseite",
           "notifications": "Benachrichtigungen",
           "activity": "Aktivität",
           "brand": "Marke",

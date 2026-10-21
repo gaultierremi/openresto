@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent, act } from "@testing-library/react-native";
+import { usePathname } from "expo-router";
 import AdminSidebar from "@/components/layout/AdminSidebar";
 import { AuthProvider } from "@/context/AuthContext";
 
@@ -254,5 +255,142 @@ describe("AdminSidebar", () => {
       </AuthProvider>
     );
     await waitFor(() => expect(screen.getByText("Managing 1 location")).toBeTruthy());
+  });
+
+  describe("menus and QR codes", () => {
+    afterEach(() => {
+      (usePathname as jest.Mock).mockImplementation(() => "/dashboard");
+    });
+
+    const renderAt = async (pathname: string) => {
+      (usePathname as jest.Mock).mockImplementation(() => pathname);
+      render(
+        <AuthProvider>
+          <AdminSidebar />
+        </AuthProvider>
+      );
+      await screen.findByText("Menus");
+    };
+
+    const selected = (name: string) =>
+      screen.getByRole("link", { name }).props.accessibilityState.selected;
+
+    it("navigates to the menus editor when Menus is pressed", async () => {
+      await renderAt("/admin/dashboard");
+      fireEvent.press(screen.getByText("Menus"));
+      expect(mockPush).toHaveBeenCalledWith("/admin/menus");
+    });
+
+    it("navigates to the QR codes page when QR codes is pressed", async () => {
+      await renderAt("/admin/dashboard");
+      fireEvent.press(screen.getByText("QR codes"));
+      expect(mockPush).toHaveBeenCalledWith("/admin/qr-codes");
+    });
+
+    it("lists both entries for a Manager, neither being owner-only", async () => {
+      const { checkSession } = require("@/api/auth");
+      (checkSession as jest.Mock).mockResolvedValueOnce({
+        id: 2,
+        email: "manager@test.com",
+        displayName: "Manager Person",
+        role: "Manager",
+      });
+      await renderAt("/admin/dashboard");
+      expect(screen.getByText("Menus")).toBeTruthy();
+      expect(screen.getByText("QR codes")).toBeTruthy();
+    });
+
+    it("lights Menus on its own page", async () => {
+      await renderAt("/admin/menus");
+      expect(selected("Menus")).toBe(true);
+      expect(selected("QR codes")).toBe(false);
+    });
+
+    it("keeps Menus lit on a sub-route", async () => {
+      await renderAt("/admin/menus/service");
+      expect(selected("Menus")).toBe(true);
+      expect(selected("QR codes")).toBe(false);
+    });
+
+    it("lights QR codes on its own page", async () => {
+      await renderAt("/admin/qr-codes");
+      expect(selected("QR codes")).toBe(true);
+      expect(selected("Menus")).toBe(false);
+    });
+
+    it("keeps QR codes lit on the print sheet beneath it", async () => {
+      await renderAt("/admin/qr-codes/print");
+      expect(selected("QR codes")).toBe(true);
+      expect(selected("Menus")).toBe(false);
+    });
+
+    it("lights neither on an unrelated route", async () => {
+      await renderAt("/admin/bookings");
+      expect(selected("Menus")).toBe(false);
+      expect(selected("QR codes")).toBe(false);
+      expect(selected("Bookings")).toBe(true);
+    });
+
+    it("does not light them for a route that only starts with the same letters", async () => {
+      await renderAt("/admin/menus-archive");
+      expect(selected("Menus")).toBe(false);
+    });
+
+    it("does not light QR codes for a lookalike prefix", async () => {
+      await renderAt("/admin/qr-codes-old");
+      expect(selected("QR codes")).toBe(false);
+    });
+  });
+
+  describe("my website", () => {
+    afterEach(() => {
+      (usePathname as jest.Mock).mockImplementation(() => "/dashboard");
+    });
+
+    const renderAt = async (pathname: string) => {
+      (usePathname as jest.Mock).mockImplementation(() => pathname);
+      render(
+        <AuthProvider>
+          <AdminSidebar />
+        </AuthProvider>
+      );
+      await screen.findByText("My website");
+    };
+
+    const selected = () =>
+      screen.getByRole("link", { name: "My website" }).props.accessibilityState.selected;
+
+    it("navigates to the website screen when it is pressed", async () => {
+      await renderAt("/admin/dashboard");
+      fireEvent.press(screen.getByText("My website"));
+      expect(mockPush).toHaveBeenCalledWith("/admin/site");
+    });
+
+    it("is listed for a Manager, as the backend lets a Manager edit a site", async () => {
+      const { checkSession } = require("@/api/auth");
+      (checkSession as jest.Mock).mockResolvedValueOnce({
+        id: 2,
+        email: "manager@test.com",
+        displayName: "Manager Person",
+        role: "Manager",
+      });
+      await renderAt("/admin/dashboard");
+      expect(screen.getByText("My website")).toBeTruthy();
+    });
+
+    it("is lit on its own page and on a route beneath it", async () => {
+      await renderAt("/admin/site");
+      expect(selected()).toBe(true);
+    });
+
+    it("is lit beneath its path", async () => {
+      await renderAt("/admin/site/photos");
+      expect(selected()).toBe(true);
+    });
+
+    it("is not lit on a route that only starts with the same letters", async () => {
+      await renderAt("/admin/sites-archive");
+      expect(selected()).toBe(false);
+    });
   });
 });

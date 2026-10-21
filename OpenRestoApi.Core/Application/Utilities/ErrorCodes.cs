@@ -174,6 +174,53 @@ public static class ErrorCodes
     public const string ContactEmailTooLong = "contact.email_too_long";
     public const string ContactEmailInvalid = "contact.email_invalid";
 
+    // ── Menus ────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Shared by every menu lookup, admin and public alike: an unknown id, one belonging to
+    /// another restaurant, and (publicly) an unknown token, an archived location or nothing
+    /// published all answer with this, so the response says nothing about which it was.
+    /// </summary>
+    public const string MenuNotFound = "menu.not_found";
+    public const string MenuNameRequired = "menu.name_required";
+    public const string MenuNameTooLong = "menu.name_too_long";
+    /// <summary>Shared by menus, categories and items: one cap, one rule.</summary>
+    public const string MenuDescriptionTooLong = "menu.description_too_long";
+    public const string MenuCurrencyInvalid = "menu.currency_invalid";
+    public const string MenuCategoryNameRequired = "menu.category_name_required";
+    public const string MenuCategoryNameTooLong = "menu.category_name_too_long";
+    public const string MenuItemNameRequired = "menu.item_name_required";
+    public const string MenuItemNameTooLong = "menu.item_name_too_long";
+    public const string MenuPriceInvalid = "menu.price_invalid";
+    public const string MenuAvailabilityInvalid = "menu.availability_invalid";
+    public const string MenuAllergenInvalid = "menu.allergen_invalid";
+    public const string MenuDietaryTagInvalid = "menu.dietary_tag_invalid";
+    public const string MenuReorderIdsMismatch = "menu.reorder_ids_mismatch";
+    public const string MenuItemImageTooLarge = "menu.item_image_too_large";
+
+    // ── Sites ────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Shared by the admin lookup of a photo and the whole public side: an unknown or foreign photo,
+    /// an unknown slug, an unpublished site and an archived location all answer with this.
+    /// </summary>
+    public const string SiteNotFound = "site.not_found";
+    public const string SiteSlugInvalid = "site.slug_invalid";
+    public const string SiteSlugTaken = "site.slug_taken";
+    public const string SiteThemeInvalid = "site.theme_invalid";
+    public const string SiteTaglineTooLong = "site.tagline_too_long";
+    public const string SiteSocialInvalid = "site.social_invalid";
+    public const string SiteSocialTooMany = "site.social_too_many";
+    public const string SiteLegalTooLong = "site.legal_too_long";
+    public const string SiteLegalInvalid = "site.legal_invalid";
+    public const string SitePhotoAltRequired = "site.photo_alt_required";
+    public const string SitePhotoAltTooLong = "site.photo_alt_too_long";
+    public const string SitePhotosFull = "site.photos_full";
+    public const string SiteReorderIdsMismatch = "site.reorder_ids_mismatch";
+    public const string SiteImageTooLarge = "site.image_too_large";
+    public const string SiteImageDimensionsTooLarge = "site.image_dimensions_too_large";
+    public const string SiteImageUnreadable = "site.image_unreadable";
+    public const string SiteNotPublishable = "site.not_publishable";
+    public const string SiteLocationArchived = "site.location_archived";
+
     // ── Media ────────────────────────────────────────────────────────────────
     public const string MediaUnsupportedImageType = "media.unsupported_image_type";
     public const string MediaHeroTooLarge = "media.hero_too_large";

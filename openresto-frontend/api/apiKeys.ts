@@ -14,6 +14,8 @@ export const SCOPE_RESOURCES = [
   "audit",
   "guests",
   "email",
+  "menus",
+  "sites",
 ] as const;
 
 export type ScopeResource = (typeof SCOPE_RESOURCES)[number];

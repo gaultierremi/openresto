@@ -11,6 +11,13 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 export const DEFAULT_LOCALE: SupportedLocale = "en";
 
 /**
+ * The language the public menu page opens in for a guest who has not picked one. The page is
+ * what a QR code on a table opens, so it answers to the restaurant's guests rather than to the
+ * instance's admin-side default.
+ */
+export const MENU_DEFAULT_LOCALE: SupportedLocale = "fr";
+
+/**
  * Each label is written in its OWN language, not translated — the convention every
  * language picker on the web uses, so a viewer who cannot read the current UI language
  * can still find theirs.

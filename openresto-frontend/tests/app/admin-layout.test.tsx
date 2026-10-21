@@ -117,4 +117,128 @@ describe("AdminLayout", () => {
     await waitFor(() => expect(screen.getByTestId("sidebar")).toBeTruthy());
     expect(screen.queryByText("Screen too small")).toBeNull();
   });
+
+  describe("routes built for a phone or for paper", () => {
+    const signedIn = () => (checkSession as jest.Mock).mockResolvedValue({ user: "admin" });
+    const at = (pathname: string, width: number) => {
+      (usePathname as jest.Mock).mockReturnValue(pathname);
+      (useWindowDimensions as jest.Mock).mockReturnValue({ width, height: 800 });
+    };
+
+    describe("the desktop-only wall", () => {
+      it("is shown on a phone for an ordinary admin screen", async () => {
+        signedIn();
+        at("/admin/menus", 400);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByText("Screen too small")).toBeTruthy());
+      });
+
+      it("is not shown on a phone for the sign-in", async () => {
+        (checkSession as jest.Mock).mockResolvedValue(null);
+        at("/admin/login", 400);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByTestId("slot")).toBeTruthy());
+        expect(screen.queryByText("Screen too small")).toBeNull();
+      });
+
+      it("is not shown on a phone for the service screen", async () => {
+        signedIn();
+        at("/admin/menus/service", 400);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByTestId("slot")).toBeTruthy());
+        expect(screen.queryByText("Screen too small")).toBeNull();
+      });
+
+      it("is still shown on a phone for the print sheet", async () => {
+        signedIn();
+        at("/admin/qr-codes/print", 400);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByText("Screen too small")).toBeTruthy());
+      });
+
+      it("is shown for the menus list one pixel under the boundary and not at it", async () => {
+        signedIn();
+        at("/admin/menus", 599);
+        const narrow = render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByText("Screen too small")).toBeTruthy());
+        narrow.unmount();
+
+        at("/admin/menus", 600);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByTestId("sidebar")).toBeTruthy());
+        expect(screen.queryByText("Screen too small")).toBeNull();
+      });
+    });
+
+    describe("the sidebar", () => {
+      it("is hidden on the service screen below 600px, which has no width to spare", async () => {
+        signedIn();
+        at("/admin/menus/service", 599);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByTestId("slot")).toBeTruthy());
+        expect(screen.queryByTestId("sidebar")).toBeNull();
+      });
+
+      it("is shown on the service screen from 600px up", async () => {
+        signedIn();
+        at("/admin/menus/service", 600);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByTestId("sidebar")).toBeTruthy());
+        expect(screen.getByTestId("slot")).toBeTruthy();
+      });
+
+      it("is shown on the menus editor at desktop width", async () => {
+        signedIn();
+        at("/admin/menus", 1024);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByTestId("sidebar")).toBeTruthy());
+      });
+
+      it("is hidden on the print sheet at any width, since it is printed from the browser", async () => {
+        signedIn();
+        for (const width of [600, 1024, 1920]) {
+          at("/admin/qr-codes/print", width);
+          const view = render(<AdminLayout />);
+          await waitFor(() => expect(screen.getByTestId("slot")).toBeTruthy());
+          expect(screen.queryByTestId("sidebar")).toBeNull();
+          view.unmount();
+        }
+      });
+
+      it("is shown on the QR codes page itself, which is not the sheet", async () => {
+        signedIn();
+        at("/admin/qr-codes", 1024);
+        render(<AdminLayout />);
+        await waitFor(() => expect(screen.getByTestId("sidebar")).toBeTruthy());
+        expect(screen.getByTestId("slot")).toBeTruthy();
+      });
+
+      it("does not let a signed-out visitor see the print sheet or the service screen", async () => {
+        for (const path of ["/admin/qr-codes/print", "/admin/menus/service"]) {
+          (checkSession as jest.Mock).mockResolvedValue(null);
+          mockRouter.replace.mockClear();
+          at(path, 1024);
+          const view = render(<AdminLayout />);
+          await waitFor(() => expect(mockRouter.replace).toHaveBeenCalledWith("/admin/login"));
+          expect(screen.queryByTestId("slot")).toBeNull();
+          view.unmount();
+        }
+      });
+    });
+
+    describe("the tab title", () => {
+      it.each([
+        ["/admin/menus", "Menus | Test App"],
+        ["/admin/menus/service", "Service mode | Test App"],
+        ["/admin/qr-codes", "QR codes | Test App"],
+        ["/admin/qr-codes/print", "QR sheet | Test App"],
+      ])("names %s", async (pathname, title) => {
+        signedIn();
+        at(pathname, 1024);
+        document.title = "";
+        render(<AdminLayout />);
+        await waitFor(() => expect(document.title).toBe(title));
+      });
+    });
+  });
 });

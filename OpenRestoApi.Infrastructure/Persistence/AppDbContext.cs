@@ -26,6 +26,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<AdminApiKey> AdminApiKeys { get; set; } = null!;
     public DbSet<NativeClientStat> NativeClientStats { get; set; } = null!;
     public DbSet<WaitlistEntry> WaitlistEntries { get; set; } = null!;
+    public DbSet<Menu> Menus { get; set; } = null!;
+    public DbSet<MenuCategory> MenuCategories { get; set; } = null!;
+    public DbSet<MenuItem> MenuItems { get; set; } = null!;
+    public DbSet<RestaurantSite> RestaurantSites { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -67,6 +71,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
               .WithOne(g => g.Restaurant!)
               .HasForeignKey(g => g.RestaurantId)
               .OnDelete(DeleteBehavior.Cascade);
+            rb.HasMany(r => r.Menus)
+              .WithOne(m => m.Restaurant!)
+              .HasForeignKey(m => m.RestaurantId)
+              .OnDelete(DeleteBehavior.Cascade);
+            rb.Property(r => r.PublicToken).IsRequired().HasMaxLength(PublicTokenGenerator.MaxLength);
+            rb.HasIndex(r => r.PublicToken).IsUnique();
         });
 
         modelBuilder.Entity<Section>(sb =>
@@ -84,6 +94,61 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             tb.HasKey(t => t.Id);
             tb.Property(t => t.Seats).IsRequired();
             tb.Property(t => t.Name);
+            tb.Property(t => t.PublicToken).IsRequired().HasMaxLength(PublicTokenGenerator.MaxLength);
+            tb.HasIndex(t => t.PublicToken).IsUnique();
+        });
+
+        modelBuilder.Entity<Menu>(mb =>
+        {
+            mb.HasKey(m => m.Id);
+            mb.Property(m => m.Name).IsRequired().HasMaxLength(MenuFields.MaxNameLength);
+            mb.Property(m => m.Description).HasMaxLength(MenuFields.MaxDescriptionLength);
+            mb.Property(m => m.Currency).IsRequired().HasMaxLength(MenuFields.CurrencyLength);
+            mb.HasMany(m => m.Categories)
+              .WithOne(c => c.Menu!)
+              .HasForeignKey(c => c.MenuId)
+              .OnDelete(DeleteBehavior.Cascade);
+            mb.HasIndex(m => new { m.RestaurantId, m.SortOrder });
+        });
+
+        modelBuilder.Entity<MenuCategory>(cb =>
+        {
+            cb.HasKey(c => c.Id);
+            cb.Property(c => c.Name).IsRequired().HasMaxLength(MenuFields.MaxNameLength);
+            cb.Property(c => c.Description).HasMaxLength(MenuFields.MaxDescriptionLength);
+            cb.HasMany(c => c.Items)
+              .WithOne(i => i.Category!)
+              .HasForeignKey(i => i.CategoryId)
+              .OnDelete(DeleteBehavior.Cascade);
+            cb.HasIndex(c => new { c.MenuId, c.SortOrder });
+        });
+
+        modelBuilder.Entity<MenuItem>(ib =>
+        {
+            ib.HasKey(i => i.Id);
+            ib.Property(i => i.Name).IsRequired().HasMaxLength(MenuFields.MaxNameLength);
+            ib.Property(i => i.Description).HasMaxLength(MenuFields.MaxDescriptionLength);
+            ib.Property(i => i.Availability).HasConversion<string>().HasMaxLength(MenuFields.MaxAvailabilityLength);
+            ib.HasIndex(i => new { i.CategoryId, i.SortOrder });
+        });
+
+        modelBuilder.Entity<RestaurantSite>(sb =>
+        {
+            sb.HasKey(s => s.Id);
+            // One site per location, gone with it. The unique slug is the page's address.
+            sb.HasOne(s => s.Restaurant)
+              .WithOne()
+              .HasForeignKey<RestaurantSite>(s => s.RestaurantId)
+              .OnDelete(DeleteBehavior.Cascade);
+            sb.HasIndex(s => s.RestaurantId).IsUnique();
+            sb.Property(s => s.Slug).IsRequired().HasMaxLength(SiteSlug.MaxLength);
+            sb.HasIndex(s => s.Slug).IsUnique();
+            sb.Property(s => s.Theme).HasConversion<string>().HasMaxLength(SiteFields.MaxThemeLength);
+            sb.Property(s => s.Tagline).HasMaxLength(SiteFields.MaxTaglineLength);
+            sb.Property(s => s.LegalName).HasMaxLength(SiteFields.MaxLegalNameLength);
+            sb.Property(s => s.CompanyNumber).HasMaxLength(SiteFields.MaxCompanyNumberLength);
+            sb.Property(s => s.VatNumber).HasMaxLength(SiteFields.MaxVatNumberLength);
+            sb.Property(s => s.LegalAddress).HasMaxLength(SiteFields.MaxLegalAddressLength);
         });
 
         modelBuilder.Entity<Booking>(bb =>

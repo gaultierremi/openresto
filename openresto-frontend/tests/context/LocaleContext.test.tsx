@@ -4,10 +4,10 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react-native";
 import { Platform, Text } from "react-native";
-import { LocaleProvider, useLocale } from "@/context/LocaleContext";
+import { LocaleProvider, useLocale, useRouteDefaultLocale } from "@/context/LocaleContext";
 import i18n from "@/i18n";
 import { setActiveLocale } from "@/utils/locale";
-import { LOCALE_DIRECTIONS } from "@/constants/locales";
+import { LOCALE_DIRECTIONS, MENU_DEFAULT_LOCALE, type SupportedLocale } from "@/constants/locales";
 
 // StorageService (and therefore localStorage["openresto.locale"]) only reads on web.
 Object.defineProperty(Platform, "OS", { value: "web", configurable: true });
@@ -162,6 +162,14 @@ describe("LocaleContext", () => {
     expect(screen.getByTestId("locale").props.children).toBe("en");
   });
 
+  it("setLocale outside a provider changes nothing and persists nothing", () => {
+    render(<TestConsumer />);
+    fireEvent.press(screen.getByTestId("switch-to-fr"));
+
+    expect(screen.getByTestId("locale").props.children).toBe("en");
+    expect(localStorage.getItem("openresto.locale")).toBeNull();
+  });
+
   it("setLocale updates the context live, persists the pick, and re-applies i18next/formatters", async () => {
     render(
       <LocaleProvider>
@@ -178,5 +186,97 @@ describe("LocaleContext", () => {
     expect(i18n.changeLanguage).toHaveBeenCalledWith("fr");
     expect(setActiveLocale).toHaveBeenCalledWith("fr");
     expect(document.documentElement.lang).toBe("fr");
+  });
+
+  describe("route default (useRouteDefaultLocale)", () => {
+    function RouteDefault({ locale }: { locale: SupportedLocale }) {
+      useRouteDefaultLocale(locale);
+      return null;
+    }
+
+    function Harness({ route }: { route: SupportedLocale | null }) {
+      return (
+        <LocaleProvider>
+          <TestConsumer />
+          {route ? <RouteDefault locale={route} /> : null}
+        </LocaleProvider>
+      );
+    }
+
+    const shown = () => screen.getByTestId("locale").props.children;
+
+    it("is French for the public menu", () => {
+      expect(MENU_DEFAULT_LOCALE).toBe("fr");
+    });
+
+    it("applies while the route is mounted, below the brand default it replaces", async () => {
+      mockBrand = { defaultLocale: "es" };
+      render(<Harness route="fr" />);
+
+      await waitFor(() => expect(shown()).toBe("fr"));
+      expect(i18n.changeLanguage).toHaveBeenLastCalledWith("fr");
+      expect(setActiveLocale).toHaveBeenLastCalledWith("fr");
+      expect(document.documentElement.lang).toBe("fr");
+    });
+
+    it("applies when the brand has no default of its own", async () => {
+      render(<Harness route="fr" />);
+      await waitFor(() => expect(shown()).toBe("fr"));
+    });
+
+    it("loses to a language the visitor has saved", async () => {
+      localStorage.setItem("openresto.locale", "de");
+      mockBrand = { defaultLocale: "es" };
+      render(<Harness route="fr" />);
+
+      await waitFor(() => expect(shown()).toBe("de"));
+      expect(i18n.changeLanguage).not.toHaveBeenCalledWith("fr");
+      expect(setActiveLocale).not.toHaveBeenCalledWith("fr");
+    });
+
+    it("yields to a pick made while the route is open, and does not persist its own", async () => {
+      render(<Harness route="de" />);
+      await waitFor(() => expect(shown()).toBe("de"));
+      expect(localStorage.getItem("openresto.locale")).toBeNull();
+
+      fireEvent.press(screen.getByTestId("switch-to-fr"));
+
+      expect(shown()).toBe("fr");
+      expect(localStorage.getItem("openresto.locale")).toBe("fr");
+    });
+
+    it("hands the brand default back when the route unmounts", async () => {
+      mockBrand = { defaultLocale: "es" };
+      const { rerender } = render(<Harness route="fr" />);
+      await waitFor(() => expect(shown()).toBe("fr"));
+
+      rerender(<Harness route={null} />);
+
+      await waitFor(() => expect(shown()).toBe("es"));
+      expect(i18n.changeLanguage).toHaveBeenLastCalledWith("es");
+      expect(setActiveLocale).toHaveBeenLastCalledWith("es");
+    });
+
+    it("hands back English when there is no brand default either", async () => {
+      const { rerender } = render(<Harness route="fr" />);
+      await waitFor(() => expect(shown()).toBe("fr"));
+
+      rerender(<Harness route={null} />);
+
+      await waitFor(() => expect(shown()).toBe("en"));
+    });
+
+    it("follows the route when it asks for another language", async () => {
+      const { rerender } = render(<Harness route="fr" />);
+      await waitFor(() => expect(shown()).toBe("fr"));
+
+      rerender(<Harness route="de" />);
+
+      await waitFor(() => expect(shown()).toBe("de"));
+    });
+
+    it("does nothing outside a provider", () => {
+      expect(() => render(<RouteDefault locale="fr" />)).not.toThrow();
+    });
   });
 });

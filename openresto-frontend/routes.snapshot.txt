@@ -35,7 +35,11 @@
 /admin/dashboard
 /admin/locations
 /admin/login
+/admin/menus/index
+/admin/menus/service
 /admin/notifications
+/admin/qr-codes/index
+/admin/qr-codes/print
 /admin/settings/account
 /admin/settings/api-keys
 /admin/settings/brand
@@ -43,6 +47,7 @@
 /admin/settings/index
 /admin/settings/native-app
 /admin/settings/users
+/admin/site/index
 /admin/waitlist
 /book
 /book/[restaurantId]
@@ -51,6 +56,8 @@
 /locations/[id]
 /locations/index
 /lookup
+/menu/r/[token]
+/menu/t/[token]
 /restaurant/[id]
 /search
 /waitlist/[ref]

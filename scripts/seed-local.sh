@@ -129,6 +129,14 @@ trap 'rm -f "$SQL_FILE" "$ACCOUNTS_SQL_FILE"' EXIT
 
 # Location images and the hero are linked from whatever is actually in the
 # media directory, so an image uploaded through the admin UI survives a reseed.
+#
+# The demo brasserie's website artwork (scripts/demo-media) is committed, so a fresh checkout
+# has something to show: copy what the media directory does not have yet, never overwrite.
+if [[ "$SECTION" != "bookings" && -d "$SCRIPT_DIR/demo-media" ]]; then
+  mkdir -p "$MEDIA_DIR"
+  cp -n "$SCRIPT_DIR"/demo-media/* "$MEDIA_DIR"/ 2>/dev/null || true
+fi
+
 MEDIA_ARGS=()
 if [[ "$SECTION" != "bookings" && -d "$MEDIA_DIR" ]]; then
   MEDIA_ARGS=(--media-dir "$MEDIA_DIR")

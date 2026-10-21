@@ -29,6 +29,26 @@ describe("roles", () => {
       expect(roleCan(ROLES.manager, "delete:location")).toBe(false);
     });
 
+    it("lets only an Owner regenerate a QR code's token", () => {
+      expect(roleCan(ROLES.owner, "regenerate:qr-token")).toBe(true);
+      expect(roleCan(ROLES.legacyAdmin, "regenerate:qr-token")).toBe(true);
+      expect(roleCan(ROLES.manager, "regenerate:qr-token")).toBe(false);
+    });
+
+    it("lets an Owner and a Manager manage the website, as the backend's RequireAdmin does", () => {
+      expect(roleCan(ROLES.owner, "manage:site")).toBe(true);
+      expect(roleCan(ROLES.legacyAdmin, "manage:site")).toBe(true);
+      expect(roleCan(ROLES.manager, "manage:site")).toBe(true);
+      expect(roleCan("Host", "manage:site")).toBe(false);
+      expect(roleCan(null, "manage:site")).toBe(false);
+    });
+
+    it("grants the QR token capability to nobody without a recognised role", () => {
+      expect(roleCan(null, "regenerate:qr-token")).toBe(false);
+      expect(roleCan("", "regenerate:qr-token")).toBe(false);
+      expect(roleCan("Host", "regenerate:qr-token")).toBe(false);
+    });
+
     it("treats the retired Admin claim as an Owner", () => {
       // A session started before multi-user existed belongs to what is now an Owner.
       expect(roleCan(ROLES.legacyAdmin, "manage:users")).toBe(true);

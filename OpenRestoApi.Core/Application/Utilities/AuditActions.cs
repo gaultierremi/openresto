@@ -42,6 +42,34 @@ public static class AuditActions
     public const string TableGroupUpdate = "table_group.update";
     public const string TableGroupDelete = "table_group.delete";
 
+    // ── Menus ────────────────────────────────────────────────────────────────
+    public const string MenuCreate = "menu.create";
+    public const string MenuUpdate = "menu.update";
+    public const string MenuDelete = "menu.delete";
+    public const string MenuPublish = "menu.publish";
+    public const string MenuUnpublish = "menu.unpublish";
+    public const string MenuReorder = "menu.reorder";
+    public const string MenuCategoryCreate = "menu.category_create";
+    public const string MenuCategoryUpdate = "menu.category_update";
+    public const string MenuCategoryDelete = "menu.category_delete";
+    public const string MenuCategoryReorder = "menu.category_reorder";
+    public const string MenuItemCreate = "menu.item_create";
+    public const string MenuItemUpdate = "menu.item_update";
+    public const string MenuItemDelete = "menu.item_delete";
+    public const string MenuItemReorder = "menu.item_reorder";
+    public const string MenuItemPhotoUpload = "menu.item_photo_upload";
+    public const string MenuItemPhotoDelete = "menu.item_photo_delete";
+    public const string MenuTokenRegenerate = "menu.token_regenerate";
+
+    // ── Sites ────────────────────────────────────────────────────────────────
+    public const string SiteUpdate = "site.update";
+    public const string SitePublish = "site.publish";
+    public const string SiteUnpublish = "site.unpublish";
+    public const string SiteImageUpload = "site.image_upload";
+    public const string SiteImageDelete = "site.image_delete";
+    public const string SitePhotoUpdate = "site.photo_update";
+    public const string SitePhotoReorder = "site.photo_reorder";
+
     // ── Waitlist ─────────────────────────────────────────────────────────────
     public const string WaitlistAdd = "waitlist.add";
     public const string WaitlistNotify = "waitlist.notify";
@@ -119,4 +147,8 @@ public static class AuditTargets
     public const string SocialLink = "SocialLink";
     public const string Notification = "Notification";
     public const string WaitlistEntry = "WaitlistEntry";
+    public const string Menu = "Menu";
+    public const string MenuCategory = "MenuCategory";
+    public const string MenuItem = "MenuItem";
+    public const string Site = "Site";
 }

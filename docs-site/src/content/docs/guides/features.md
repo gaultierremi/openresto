@@ -130,6 +130,112 @@ week are unaffected, and the message the guest sees names the local time the pau
   confirmation shows how many upcoming bookings are affected.
 - Seat counts are 1–50.
 
+## Menus
+
+Each location can have any number of menus ("Lunch", "Drinks"), each with ordered categories
+and dishes. Guests see a menu only once it is **published**. Menus are edited in the admin under
+**Menus** (Owners and Managers), or through the API under `/api/admin/restaurants/{id}/menus`
+with an API key carrying the `menus` scope (`read` or `write`).
+
+In the editor, categories and dishes are reordered with the arrows beside them, and dishes,
+categories and menus save as you edit. **Service mode** lists every dish of the published menus
+as one large button that flips it between available and sold out; it is the one admin screen
+built for a phone, so it opens below the admin's usual 600px width.
+
+- **Prices** are whole numbers in the currency's smallest unit (`priceMinor`: 1250 is €12.50).
+  Leave the price empty for "price on request"; 0 means free. Each menu has one ISO 4217
+  currency (`EUR` by default, set per menu in the editor). A new menu in the admin starts in
+  the currency of the location's first menu. In French, euros read `9,00 €`.
+- **Allergens** are the 14 the EU requires a menu to declare (`Gluten`, `Crustaceans`, `Eggs`,
+  `Fish`, `Peanuts`, `Soybeans`, `Milk`, `Nuts`, `Celery`, `Mustard`, `Sesame`, `Sulphites`,
+  `Lupin`, `Molluscs`). Dietary tags are `Vegetarian`, `Vegan` and `GlutenFree`.
+- A dish is `Available`, `SoldOut` (shown, marked) or `Hidden` (left out of the public menu). A
+  category can be hidden too.
+- Dish photos are JPEG, PNG or WebP under 2 MB, and the file's own bytes have to match the
+  type it declares. Each is stored under a random name, so the public photo URL does not reveal
+  a dish id. Deleting a dish, a category or a menu deletes
+  the photos that go with it.
+- Reordering takes the full list of ids in the new order; a list that leaves one out, repeats
+  one or names another menu's is refused with `menu.reorder_ids_mismatch`.
+
+**Public menu links.** Every location and every table has a public token, the value a QR code
+carries. `GET /api/menus/r/{token}` returns the location's published menus and
+`GET /api/menus/t/{token}` the same plus the table's name. No account is needed, and no internal
+id appears in the response. An unknown token, an archived location and a location with nothing
+published all return the same 404 (`menu.not_found`). A token never changes on its own: an
+Owner can regenerate it (`POST .../public-token/regenerate`, or
+`.../tables/{tableId}/public-token/regenerate`), which retires every QR code printed with the
+old one.
+
+**QR codes and the public page.** The admin's **QR codes** page draws a code for the location
+and one for each table in the browser (no outside service is called), black on white whatever
+the brand colour. Each can be downloaded as PNG or SVG, and the page prints an A4 sheet with six
+table codes to a page and A6 easel cards, one code each. A code carries the instance's website
+address when one is set under Brand, and the address the admin is open on otherwise; the address
+is printed under every code so you can check it before printing. A code opens
+`/menu/r/{token}` or `/menu/t/{token}`, a page that opens in French for a guest who has not
+picked a language (the language picker is on the page), lets a guest filter by diet and avoid
+allergens, shows sold-out dishes greyed and marked, and ends in a **Book a table** button into
+the booking flow. The filters rely on what the restaurant declared for each dish, and the page
+says so.
+
+## Website ("Mon site")
+
+Every location can have a one-page public website, generated from what the location already
+holds: name, address, opening hours, phone, e-mail, published menus. It lives at
+`/r/{address}` (for example `/r/brasserie-de-la-senne-doree`), in French, with a header (logo,
+cover photo, tagline), a **Book a table** button into the booking flow, the menu, the opening
+hours, a map link, click-to-call, social links, a gallery of up to six photos and the legal
+notice. It is edited in the admin under **Mon site** (Owners and Managers), or through the API
+under `/api/admin/restaurants/{id}/site` with an API key carrying the `sites` scope.
+
+- **Three looks**: `Brasserie` (warm paper, serif headings), `Gastronomique` (dark, spaced
+  capitals) and `Cafe` (light, rounded, tinted with the brand colour). The main colour is the
+  brand colour from **Settings → Brand**. A colour that would be hard to read as text is darkened
+  or lightened, keeping its hue, until it meets WCAG AA contrast on the page.
+- **Preview** shows the page as it would render now, marked as a draft and kept out of search
+  engines, and shows another theme without saving it (`GET .../site/preview?theme=Cafe`).
+- **Publishing** is a switch. A site cannot go live until it has a **legal name**, a **company
+  number**, a **contact e-mail** (the location's, or the brand's) and a public **website
+  address** for the instance (set under **Brand** or `WEBSITE_URL`), because the page's canonical
+  link, Open Graph tags and sitemap must not name `localhost`. The screen lists what is missing,
+  and the API answers `site.not_publishable`. Clearing the legal fields on a live site is refused
+  for the same reason; unpublishing always works. An unpublished site, an unknown address
+  and an archived location all answer the same 404 page.
+- **The address** is derived from the location's name (`Brasserie de la Senne Dorée` becomes
+  `brasserie-de-la-senne-doree`) and can be changed: lower-case letters, digits and single
+  hyphens, 3 to 60 characters, one site per address. Changing it breaks links already given out.
+- **Photos** are JPEG, PNG or WebP up to 6 MB. The server shrinks them for the web (1600 px for
+  the cover, 1200 px for the gallery, 480 px for the logo), turns them into JPEG (the logo stays
+  PNG, so it keeps its transparency), applies the camera's rotation and **drops everything the
+  camera wrote into the file**, GPS position included. Each gallery photo needs a text
+  description, which becomes its `alt`; the gallery holds at most six (`site.photos_full`).
+  Files are stored under random names, so a public photo URL reveals no id.
+- **Social links** are `Facebook`, `Instagram`, `TikTok`, `X`, `YouTube`, `TripAdvisor` and
+  `LinkedIn`, one per network, `https` only.
+- **No cookie, no tracker, no third-party request.** The page is a single HTML document with an
+  inline stylesheet, system fonts and no script (the one exception is a data block for search
+  engines, which is not executable). A `Content-Security-Policy` allows only this origin's images
+  and that one stylesheet, so there is no cookie banner to show. Like any web server, yours still
+  keeps technical access logs (IP address and time of each request), and the page's legal notice
+  says so. The map link is a plain link to OpenStreetMap that the visitor follows; nothing is
+  loaded from it.
+- **Search engines** get a title and description, a canonical address, Open Graph tags, a
+  schema.org `Restaurant` description (hours, address, menu with prices and allergen-related
+  diets, reservation action), and a `/sitemap.xml` of the live sites. `/robots.txt` keeps
+  crawlers out of the admin and the API and names the sitemap. Absolute addresses come from the
+  website address set under **Brand** (or `WEBSITE_URL`).
+- **The booking button** goes to `/r/{address}/reserver`, which redirects into the location's
+  booking flow, so the page itself holds no internal id. A walk-in-only location has no button
+  and says so.
+- **The menu** on the page is the published menus exactly as the QR page shows them: unpublished
+  menus, hidden categories and hidden dishes never appear, sold-out dishes are marked and greyed
+  with the theme's muted text colour (never by fading the row, which would drop the allergen line
+  below readable contrast).
+
+If you run your own reverse proxy instead of the bundled nginx, send `/r/*`, `/sitemap.xml` and
+`/robots.txt` to the backend, next to `/api/`.
+
 ## Booking references
 
 - The **word** format (default) ends in four random digits: `crispy-basil-thyme-0482`. The

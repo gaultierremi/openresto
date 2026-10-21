@@ -28,13 +28,15 @@ public static class ApiKeyScopes
     public const string Audit = "audit";
     public const string Guests = "guests";
     public const string Email = "email";
+    public const string Menus = "menus";
+    public const string Sites = "sites";
 
     public const string Read = "read";
     public const string Write = "write";
 
     /// <summary>The resources a scope pair may name.</summary>
     public static readonly HashSet<string> Resources =
-        new(StringComparer.Ordinal) { Bookings, Locations, Tables, Brand, Users, Audit, Guests, Email };
+        new(StringComparer.Ordinal) { Bookings, Locations, Tables, Brand, Users, Audit, Guests, Email, Menus, Sites };
 
     /// <summary>The access levels a scope pair may name.</summary>
     public static readonly HashSet<string> AccessLevels =
