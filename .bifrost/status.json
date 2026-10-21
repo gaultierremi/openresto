@@ -1,7 +1,7 @@
 {
-  "etat": "Sprint 4 livré en PR 8 (brouillon) : embarquement, espace plateforme, pages légales (modèles), néerlandais. Kit d'hébergement corrigé après relecture ; CI du kit verte sur GitHub.",
+  "etat": "Sprint 4 en PR 8 : embarquement, espace plateforme, pages légales (modèles), néerlandais ; corrections de relecture appliquées. Kit d'hébergement corrigé après relecture ; CI du kit verte sur GitHub.",
   "sante": "actif",
-  "prochaine_etape": "Relecture de la PR 8 par Astra, puis validation juridique des textes et portée admin par restaurant avant le premier vrai restaurant ; choix du modèle d'hébergement et des images du fork.",
+  "prochaine_etape": "Contre-relecture de la PR 8 par Astra, puis validation juridique des textes et portée admin par restaurant avant le premier vrai restaurant ; choix du modèle d'hébergement et des images du fork.",
   "chantiers": [
     {
       "id": "deploy-kit",
@@ -29,8 +29,8 @@
       "branche": "claude/festive-wozniak-b62txe",
       "statut": "En relecture",
       "pr": 8,
-      "etape": "PR ouverte en brouillon contre demo/apercu-complet ; en attente du verdict d'Astra. Les textes légaux sont des modèles : un juriste doit les valider avant tout vrai restaurant.",
-      "maj": "2026-10-20T23:43:56+00:00"
+      "etape": "Corrections de la relecture (CORRIGER) poussées : lectures de données clients journalisées, clauses légales alignées, notifications anonymisées, conservation nulle pour l'existant, état annoncé des radios et onglets, refusion de #7. En attente d'une contre-relecture. Les textes légaux restent des modèles : un juriste doit les valider avant tout vrai restaurant.",
+      "maj": "2026-10-21T08:09:39+00:00"
     }
   ],
   "decisions": [
