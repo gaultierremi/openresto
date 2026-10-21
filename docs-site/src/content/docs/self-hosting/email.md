@@ -11,7 +11,7 @@ bookings still work and guests just don't get a confirmation email.
 
 ## Configure it in the admin
 
-SMTP is set in the admin, not in `.env`. Go to **Settings → Email** and fill in:
+SMTP is set in the admin (the note at the end covers pre-filling it from `.env`). Go to **Settings → Email** and fill in:
 
 | Field                  | Notes |
 | ---------------------- | ----- |
@@ -49,7 +49,8 @@ settings if set, otherwise `WEBSITE_URL`, otherwise the first entry of `CORS_ORI
 3. Look at the backend logs: `docker compose logs backend`.
 
 :::note
-`.env.example` and the compose file still list `EmailSettings__*` / `SMTP_*` variables. The
-backend reads SMTP settings only from the database, so those variables do nothing. Set email
-up in the admin.
+The `EmailSettings__*` variables (`SMTP_HOST`, `SMTP_PORT`, … in the compose files) fill this page
+once: on a start where no email settings have been saved yet and a host is set. After that the
+admin page is the source of truth and the variables are ignored, so change the password here, not
+in `.env`.
 :::

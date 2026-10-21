@@ -1,8 +1,18 @@
 {
-  "etat": "Tourne en local : back .NET et front Expo, tests verts.",
-  "sante": "pause",
-  "prochaine_etape": "Choisir le premier chantier (cartes et menus QR).",
+  "etat": "Kit d'hébergement corrigé après relecture ; CI du kit verte sur GitHub, démo Codespaces lancée par Gaultier.",
+  "sante": "actif",
+  "prochaine_etape": "Relecture de la PR 4, puis choix du modèle d'hébergement (une instance par client) et des images du fork.",
   "chantiers": [
+    {
+      "id": "deploy-kit",
+      "titre": "Mise en production : kit d'hébergement, sauvegardes, CI",
+      "agent": "Claude",
+      "branche": "chore/deploy-kit",
+      "statut": "Prête à merger",
+      "pr": 4,
+      "etape": "Corrections P2 et P3 de la relecture poussées ; en attente d'un nouveau verdict.",
+      "maj": "2026-10-20T20:38:22+00:00"
+    },
     {
       "id": "bifrost-openresto",
       "titre": "Brancher OpenResto sur Heimdall",
@@ -10,29 +20,26 @@
       "branche": "chore/bifrost",
       "statut": "Prête à merger",
       "pr": 3,
-      "maj": "2026-10-20T08:15:17+00:00"
-    },
-    {
-      "id": "menu-api",
-      "titre": "feat(menu): native menu module — API",
-      "agent": "Claude",
-      "branche": "feat/menu-api",
-      "statut": "En cours",
-      "pr": 2,
-      "etape": "Corrections d'Astra 1 poussées (9e124080), contre-vérification en attente.",
-      "maj": "2026-10-19T06:30:17+00:00"
+      "etape": "Mise à jour avec main après la fusion de la PR 4 ; seul conflit : ce fichier.",
+      "maj": "2026-10-21T10:50:56+00:00"
     }
   ],
   "decisions": [
     {
-      "id": "premier-chantier",
-      "titre": "Quel premier chantier : cartes et menus QR (AtlasQR) ou autre ?",
-      "pourquoi": "Le dépôt est en pause en attendant ce choix.",
-      "urgence": "Quand tu veux"
+      "id": "modele-hebergement",
+      "titre": "Une instance par restaurant client, ou une seule instance multi-lieux ?",
+      "pourquoi": "Les comptes admin, la marque et l'expéditeur de mails sont communs à toute une instance : des restaurateurs indépendants ne sont pas isolés (docs/HEBERGEMENT.md, §3).",
+      "urgence": "Cette semaine"
+    },
+    {
+      "id": "images-fork",
+      "titre": "Publier les images Docker du fork sur GHCR, ou tirer les images amont ?",
+      "pourquoi": "Les images amont 2.4.1 ne lisent pas SMTP_* ; il faut les images du fork pour cette fonction et pour tout ce qui diverge.",
+      "urgence": "Cette semaine"
     }
   ],
   "maj": {
-    "at": "2026-10-20T08:15:17+00:00",
+    "at": "2026-10-21T10:50:56+00:00",
     "by": "Claude"
   }
 }
