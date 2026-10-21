@@ -20,8 +20,11 @@ export const styles = StyleSheet.create({
   drawerSection: {
     gap: 12,
   },
-  drawerFooter: {
+  /** The confirm and what it waits on; the sheet's own fill and a hairline set it off while it rides over the form. */
+  confirmBar: {
     gap: 12,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   divider: {
     height: 1,

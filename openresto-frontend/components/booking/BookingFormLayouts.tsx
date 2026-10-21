@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Pressable, View } from "react-native";
+import { Platform, Pressable, View, type ViewStyle } from "react-native";
 import { useTranslation } from "react-i18next";
 import { haptics } from "@/utils/haptics";
 import { ThemedText } from "../themed-text";
@@ -49,6 +49,22 @@ interface LayoutProps {
 }
 
 /**
+ * On the web the confirm rides at the bottom of the sheet's scroll until the form's own end
+ * reaches it, so a guest who has filled in the two fields does not hunt for it past the seating
+ * disclosure and the data notice. It sticks inside the form's own column, which is why it is a
+ * direct child of the form rather than of a footer shaped to its own height. Off the web the
+ * sheet docks the confirm itself (`BookingDockContext`) and nothing here is drawn.
+ *
+ * @see [BookingForm.test.tsx](../../tests/components/booking/BookingForm.test.tsx) — pins that
+ * the confirm bar sticks to the bottom on the web and is left in the flow elsewhere.
+ */
+function stickyToBottom(): ViewStyle | undefined {
+  return Platform.OS === "web"
+    ? ({ position: "sticky", bottom: 0, zIndex: 1 } as unknown as ViewStyle)
+    : undefined;
+}
+
+/**
  * Drawer layout: one column, grouped into headed sections, with the seating controls behind
  * a disclosure — most diners take the auto-assigned table and never open it.
  */
@@ -59,10 +75,13 @@ export function BookingFormDrawerLayout({
   mutedColor,
   primaryColor,
   borderColor,
+  cardColor,
   loadingAvailability,
   seatingOpen,
   onToggleSeating,
 }: LayoutProps & {
+  /** What the sheet is drawn on, so the confirm that rides over the form is not see-through. */
+  cardColor: string;
   loadingAvailability: boolean;
   seatingOpen: boolean;
   onToggleSeating: () => void;
@@ -158,11 +177,20 @@ export function BookingFormDrawerLayout({
       {divider}
       {parts.holdBanner}
 
-      <View style={styles.drawerFooter}>
-        <ThemedText style={[styles.gdpr, { color: mutedColor }]}>{parts.gdprText}</ThemedText>
-        {parts.confirmButton}
-        {parts.holdRequiredHint}
-      </View>
+      <ThemedText style={[styles.gdpr, { color: mutedColor }]}>{parts.gdprText}</ThemedText>
+      {(parts.confirmButton || parts.holdRequiredHint) && (
+        <View
+          testID="booking-confirm-bar"
+          style={[
+            styles.confirmBar,
+            { backgroundColor: cardColor, borderTopColor: borderColor },
+            stickyToBottom(),
+          ]}
+        >
+          {parts.confirmButton}
+          {parts.holdRequiredHint}
+        </View>
+      )}
       {parts.largePartyModal}
     </View>
   );

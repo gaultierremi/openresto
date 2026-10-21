@@ -519,6 +519,7 @@ export default function BookingForm({
         mutedColor={colors.muted}
         primaryColor={PRIMARY}
         borderColor={colors.border}
+        cardColor={colors.card}
         loadingAvailability={loadingAvailability}
         seatingOpen={seatingOpen}
         onToggleSeating={() => setSeatingOpen((o) => !o)}
