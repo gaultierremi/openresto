@@ -52,14 +52,28 @@ test.describe.serial("Onboarding a restaurant", () => {
   let invitationPath = "";
   let publicPath = "";
 
+  let previousWebsiteUrl = "";
+
+  // A website cannot go live on an instance with no public address of its own (its canonical
+  // links would name the dev server), so the platform sets one first, as an operator does.
   test.beforeAll(async ({ browser }) => {
     platform = await signedInAsPlatform(browser);
     restaurateur = await browser.newContext({ baseURL: BASE_URL });
+
+    const brand = (await (await platform.request.get("/api/brand")).json()) as {
+      websiteUrl?: string;
+    };
+    previousWebsiteUrl = brand.websiteUrl ?? "";
+    const set = await platform.request.patch("/api/brand", {
+      data: { websiteUrl: "https://e2e-onboarding.example" },
+    });
+    expect(set.ok(), `setting the instance's public address (HTTP ${set.status()})`).toBeTruthy();
   });
 
-  // The restaurant is archived, then deleted (the Owner's two-step), so the shared instance goes
-  // back to the locations the other specs expect to find first.
+  // The restaurant is archived, then deleted (the Owner's two-step), and the instance's address
+  // put back, so the shared instance goes back to what the other specs expect to find.
   test.afterAll(async () => {
+    await platform.request.patch("/api/brand", { data: { websiteUrl: previousWebsiteUrl } });
     if (restaurantId) {
       await platform.request.patch(`/api/admin/restaurants/${restaurantId}`, {
         data: { isArchived: true },
