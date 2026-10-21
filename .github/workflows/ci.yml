@@ -7,6 +7,19 @@ on:
   pull_request:
     branches:
       - main
+    # A change that only touches prose builds and tests nothing, and the container jobs below
+    # cost the most minutes. Pushes to main are not filtered: deploy and the Coveralls baseline
+    # need the full run. `*.md` is the repository root only; docs-site/ has its own build job.
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - ".bifrost/**"
+
+# A newer push to a pull request makes the run in flight pointless. A push to main is never
+# cancelled: it ends in a deploy.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -23,6 +36,7 @@ jobs:
   changes:
     name: Detect Changes
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       backend: ${{ steps.diff.outputs.backend }}
       frontend: ${{ steps.diff.outputs.frontend }}
@@ -54,6 +68,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.frontend != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: openresto-frontend
@@ -109,6 +124,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.frontend != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: openresto-frontend
@@ -134,6 +150,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.frontend != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: openresto-frontend
@@ -162,6 +179,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.frontend != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: openresto-frontend
@@ -191,6 +209,7 @@ jobs:
   doc-links:
     name: Doc Links
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -211,6 +230,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.docs != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: docs-site
@@ -244,6 +264,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -262,6 +283,7 @@ jobs:
   openapi-drift:
     name: OpenAPI Drift
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -313,6 +335,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.backend != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -384,6 +407,7 @@ jobs:
   coveralls:
     name: Coveralls Finish
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [frontend, backend]
     # A PR that touched one side skips the other; finish whichever upload did happen.
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
@@ -399,6 +423,7 @@ jobs:
   docker:
     name: Docker + ZAP
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [frontend, frontend-android, backend]
     # Runs whenever neither side failed, including when a PR skipped one of them.
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
@@ -522,6 +547,7 @@ jobs:
   e2e-smoke:
     name: Playwright E2E (Smoke)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [frontend, frontend-android, backend]
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
     env:
@@ -607,6 +633,7 @@ jobs:
   e2e-extensive:
     name: Playwright E2E (Extensive)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [frontend, frontend-android, backend]
     # Runs the rest of the suite beyond the @smoke subset (see e2e-smoke) — deliberately
     # main-only so PRs get fast feedback and the full-depth run happens once per merge.
