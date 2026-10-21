@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { gotoAdminDashboard } from "./helpers";
+import { gotoAdminDashboard, expectBrandColourApplied } from "./helpers";
 
 const TEST_APP_NAME = "E2E Bränd Café";
 const TEST_PRIMARY = "#16a34a"; // Tailwind green-600 — distinct from the seeded #0a7ea4
@@ -74,13 +74,8 @@ test.describe("Brand identity (UI)", () => {
 
     // The app-name element in the Navbar uses `color: primaryColor` as an
     // inline style (same assertion technique as brand-colour.spec.ts).
-    const appliedColor = await brandEl.evaluate((el: Element) => window.getComputedStyle(el).color);
-    const [r, g, b] = [
-      TEST_PRIMARY.slice(1, 3),
-      TEST_PRIMARY.slice(3, 5),
-      TEST_PRIMARY.slice(5, 7),
-    ].map((h) => parseInt(h, 16));
-    expect(appliedColor).toBe(`rgb(${r}, ${g}, ${b})`);
+    // The guest sees the picked colour made readable, not the raw hex (see the helper).
+    await expectBrandColourApplied(brandEl, TEST_PRIMARY, original?.primaryColor ?? "#0a7ea4");
 
     // Reload — proves persistence through the API rather than client state.
     await page.reload();
