@@ -14,8 +14,7 @@ import { focusTarget } from "@/utils/focusRegistry";
 import KeyboardShortcutsHelp from "@/components/common/KeyboardShortcutsHelp";
 import { styles } from "@/styles/admin/layout.styles";
 import { Icon } from "@/components/common/Icon";
-
-const MIN_WIDTH = 600;
+import { isChromeless, showsDesktopWall } from "@/utils/adminRoutes";
 
 function DesktopOnlyWall() {
   const { t } = useTranslation();
@@ -43,7 +42,8 @@ export default function AdminLayout() {
 
 function AdminLayoutWeb() {
   const { width } = useWindowDimensions();
-  const showWall = width < MIN_WIDTH;
+  const pathname = usePathname();
+  const showWall = showsDesktopWall(pathname, width);
 
   // AdminLayoutInner stays mounted even when the wall is shown so that auth
   // state is preserved — unmounting it would reset the status to "loading" and
@@ -63,6 +63,7 @@ function AdminLayoutWeb() {
 function AdminLayoutInner() {
   const router = useRouter();
   const pathname = usePathname();
+  const { width } = useWindowDimensions();
   const segments = useSegments();
   // useSegments() reflects the true current URL (a plain state read, no focus-
   // event lifecycle), unlike useIsFocused() which never fires on a cold web
@@ -91,6 +92,10 @@ function AdminLayoutInner() {
       "/admin/bookings": "Bookings",
       "/admin/bookings/new": "New Walk-in",
       "/admin/locations": "Locations",
+      "/admin/menus": "Menus",
+      "/admin/menus/service": "Service mode",
+      "/admin/qr-codes": "QR codes",
+      "/admin/qr-codes/print": "QR sheet",
       "/admin/waitlist": "Waitlist",
       "/admin/notifications": "Notifications",
       "/admin/activity": "Activity",
@@ -172,6 +177,16 @@ function AdminLayoutInner() {
 
   if (authState === "loading") return <PageLoader />;
   if (authState !== "authenticated") return null;
+
+  // The print sheet, and the service screen on a phone, run without the sidebar: the first
+  // because it is printed from the browser, the second because there is no width to spare.
+  if (isChromeless(pathname, width)) {
+    return (
+      <ThemedView style={{ flex: 1 }}>
+        <Slot />
+      </ThemedView>
+    );
+  }
 
   /* istanbul ignore next */
   if (Platform.OS === "web") {

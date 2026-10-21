@@ -65,6 +65,20 @@ function getNavSections(t: TFunction): { heading: string; items: NavItem[] }[] {
           match: (p: string) => p === "/admin/locations",
         },
         {
+          id: "menus",
+          label: t("admin.sidebar.nav.items.menus"),
+          icon: "restaurant-outline" as const,
+          href: "/admin/menus" as const,
+          match: (p: string) => p === "/admin/menus" || p.startsWith("/admin/menus/"),
+        },
+        {
+          id: "qrCodes",
+          label: t("admin.sidebar.nav.items.qrCodes"),
+          icon: "qr-code-outline" as const,
+          href: "/admin/qr-codes" as const,
+          match: (p: string) => p === "/admin/qr-codes" || p.startsWith("/admin/qr-codes/"),
+        },
+        {
           id: "notifications",
           label: t("admin.sidebar.nav.items.notifications"),
           icon: "notifications-outline" as const,

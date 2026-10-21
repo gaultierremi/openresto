@@ -12,8 +12,11 @@ How each feature behaves, its API fields and its error codes are in
 
 ### Added
 
-- Menus: each location can now hold its own menus, with ordered categories and dishes, prices, dish photos, the 14 EU allergens and vegetarian, vegan and gluten-free tags. A menu is visible to guests only once published, and sold-out and hidden dishes are handled. Managed through the API for now (`menus` API key scope); there is no admin screen yet.
-- Public menu links: every location and every table has a stable public token, and `GET /api/menus/r/{token}` / `GET /api/menus/t/{token}` show the published menus without an account. Only an Owner can regenerate a token. These are what the upcoming QR codes will carry.
+- Menus: each location can now hold its own menus, with ordered categories and dishes, prices, dish photos, the 14 EU allergens and vegetarian, vegan and gluten-free tags. A menu is visible to guests only once published, and sold-out and hidden dishes are handled. Managed through the API (`menus` API key scope) and, in the admin, under **Menus**: create and edit menus, categories and dishes, reorder with the arrows, publish and unpublish.
+- Service mode (**Menus → Service mode**): one large press marks a dish sold out or back on, built to be used from a phone during service.
+- Public menu links: every location and every table has a stable public token, and `GET /api/menus/r/{token}` / `GET /api/menus/t/{token}` show the published menus without an account. Only an Owner can regenerate a token.
+- Public menu page at `/menu/r/{token}` and `/menu/t/{token}`: a fast, phone-first page that opens in French unless the guest picks another language, with diet and allergen filters, sold-out dishes greyed, and a "Book a table" button into the booking flow.
+- QR codes (**QR codes** in the admin): one code for the restaurant and one per table, generated in the browser with no outside service, downloadable as PNG or SVG, with a printable A4 sheet of table codes and A6 easel cards. Regenerating a code is for Owners and warns that every printed copy stops working.
 
 ## [2.4.1] - 2026-10-14
 

@@ -93,7 +93,7 @@ BRAND = {
 # Sections/tables/groups are nested so ids are assigned by build_dataset()
 # rather than hand-numbered. `group.tables` refers to member tables by name.
 #
-# Between them these seven locations cover: per-day opening hours (including a
+# Between them these eight locations (the last a French-language Belgian brasserie) cover: per-day opening hours (including a
 # past-midnight wrap), both booking-reference formats, all three contact
 # fallback states, every slot interval (15/30/60), walk-in-only both globally
 # and per-day, a live booking pause, an archived location, the table-oversize
@@ -299,6 +299,32 @@ LOCATIONS = [
         ],
         "groups": [],
     },
+    {
+        # A fictional Belgian brasserie, in French and in euros: the demo for francophone
+        # Belgian restaurateurs, and the location whose native menu (see MENUS) shows a
+        # sold-out dish, a "price on request" dish and a draft. Appended last on purpose, so
+        # every other location keeps its id. Its bookings use BELGIAN_GUESTS.
+        "name": "Brasserie de la Senne Dorée",
+        "address": "Rue des Fabriques 25, 1000 Bruxelles",
+        "timezone": "Europe/Brussels",
+        "open_days": "2,3,4,5,6,7",
+        "open_time": "11:30",
+        "close_time": "22:30",
+        "duration": 90,
+        "slot_interval": 30,
+        "ref_format": 0,
+        "tags": "brasserie,cuisine belge,bières belges",
+        "description": "Cuisine belge de saison, bières d'abbaye et service en terrasse aux beaux jours. Fermé le lundi.",
+        "menu_url": None,
+        "phone": "+32 2 555 01 23",
+        "email": "bonjour@senne-doree.example",
+        "guests": "belgian",
+        "sections": [
+            {"name": "Salle", "tables": [("1", 2), ("2", 2), ("3", 4), ("4", 4), ("5", 6), ("6", 8)]},
+            {"name": "Terrasse", "tables": [("7", 4), ("8", 4), ("9", 2)]},
+        ],
+        "groups": [],
+    },
 ]
 
 # ─── Home page content ───────────────────────────────────────────────────────
@@ -447,6 +473,70 @@ MENUS = {
             ],
         },
     ],
+    # Euros and French, the way a Belgian brasserie would write it. One published carte with
+    # the four courses a guest expects, a sold-out dish (the carbonade), a "price on request"
+    # dish (the fish of the day, which depends on the market) and an unpublished draft.
+    # Allergens are declared the way a kitchen would: the sauce and the breading count.
+    "Brasserie de la Senne Dorée": [
+        {
+            "name": "La carte",
+            "description": "Cuisine belge de saison. Prix en euros, service compris.",
+            "currency": "EUR",
+            "published": True,
+            "categories": [
+                {
+                    "name": "Entrées",
+                    "items": [
+                        ("Croquettes aux crevettes grises", "Deux pièces, persil frit et citron. Crevettes grises de la mer du Nord.", 1650, "Available", ["Crustaceans", "Gluten", "Eggs", "Milk"], []),
+                        ("Croquettes au fromage de Herve", "Fromage de Herve AOP, confiture de poires.", 1350, "Available", ["Gluten", "Eggs", "Milk"], ["Vegetarian"]),
+                        ("Asperges à la flamande", "Asperges blanches, œuf mimosa et beurre noisette.", 1850, "Available", ["Eggs", "Milk"], ["Vegetarian", "GlutenFree"]),
+                        ("Velouté de saison", "Légumes du marché, crème fraîche.", 950, "Available", ["Milk", "Celery"], ["Vegetarian", "GlutenFree"]),
+                    ],
+                },
+                {
+                    "name": "Plats",
+                    "items": [
+                        ("Moules-frites", "Moules de Zélande à la marinière, frites maison.", 2450, "Available", ["Molluscs", "Celery", "Sulphites", "Milk"], []),
+                        ("Carbonade flamande", "Bœuf mijoté à la bière brune et au pain d'épices, frites maison.", 2250, "SoldOut", ["Gluten", "Mustard", "Celery", "Sulphites"], []),
+                        ("Waterzooi de poulet", "Poulet fermier, légumes, crème et jaune d'œuf, pommes vapeur.", 2150, "Available", ["Milk", "Eggs", "Celery"], ["GlutenFree"]),
+                        ("Américain préparé", "Tartare de bœuf à la belge, câpres et oignons, frites maison.", 2250, "Available", ["Eggs", "Mustard", "Celery"], []),
+                        ("Stoemp aux carottes et saucisse", "Purée de pommes de terre et de carottes, saucisse grillée.", 1950, "Available", ["Milk", "Mustard", "Celery"], []),
+                        ("Légumes rôtis et houmous", "Légumes de saison rôtis, houmous, graines.", 1750, "Available", ["Sesame"], ["Vegan", "GlutenFree"]),
+                        ("Poisson du jour", "Selon la criée de Zeebruges. Demandez à la salle.", None, "Available", ["Fish", "Milk"], ["GlutenFree"]),
+                    ],
+                },
+                {
+                    "name": "Desserts",
+                    "items": [
+                        ("Dame blanche", "Glace vanille, chocolat chaud belge, chantilly.", 950, "Available", ["Milk"], ["Vegetarian", "GlutenFree"]),
+                        ("Gaufre de Bruxelles", "Sucre glace, fruits rouges ou chantilly.", 850, "Available", ["Gluten", "Eggs", "Milk"], ["Vegetarian"]),
+                        ("Tarte au sucre", "Tarte à la cassonade, comme à la maison.", 700, "Available", ["Gluten", "Eggs", "Milk"], ["Vegetarian"]),
+                        ("Café liégeois", "Café glacé, glace au café, chantilly.", 800, "Available", ["Milk"], ["Vegetarian", "GlutenFree"]),
+                    ],
+                },
+                {
+                    "name": "Boissons",
+                    "items": [
+                        ("Bière blonde, pression 25 cl", "Brassée en Belgique.", 360, "Available", ["Gluten"], ["Vegan"]),
+                        ("Bière d'abbaye brune, 33 cl", "Ronde et chaude, 7 %.", 520, "Available", ["Gluten"], ["Vegan"]),
+                        ("Kriek, 25 cl", "Bière aux cerises.", 480, "Available", ["Gluten", "Sulphites"], ["Vegan"]),
+                        ("Eau pétillante, 50 cl", None, 350, "Available", [], ["Vegan", "GlutenFree"]),
+                        ("Jus de pomme de Wallonie", "Pressé en Hesbaye.", 350, "Available", [], ["Vegan", "GlutenFree"]),
+                        ("Café", None, 270, "Available", [], ["Vegan", "GlutenFree"]),
+                    ],
+                },
+            ],
+        },
+        {
+            "name": "Suggestions d'hiver",
+            "description": "Brouillon : non publié, les clients ne le voient pas.",
+            "currency": "EUR",
+            "published": False,
+            "categories": [
+                {"name": "Plats d'hiver", "items": [("Boulets sauce lapin", "Boulets de viande, sauce lapin aux pruneaux, frites.", 2250, "Available", ["Gluten", "Eggs", "Mustard", "Celery", "Sulphites"], [])]},
+            ],
+        },
+    ],
 }
 
 SOCIAL_LINKS = [
@@ -484,6 +574,29 @@ GUESTS = [
     ),
     ("Luther McDonald", None, None),
 ]
+
+# The guests of the Belgian brasserie (LOCATIONS' "guests": "belgian"): made-up names and
+# `.example` addresses, in the same mix as GUESTS (no email, no request, one note).
+BELGIAN_GUESTS = [
+    ("Famille Dupont", "famille.dupont@demo.example", None),
+    ("Sophie Lambert", "sophie.lambert@demo.example", "Table près de la fenêtre si possible"),
+    ("Marc Peeters", "marc.peeters@demo.example", None),
+    ("Isabelle Claes", None, "Réservé par téléphone"),
+    ("Thomas Janssens", "thomas.janssens@demo.example", "Une chaise haute, s'il vous plaît"),
+    ("Camille Martin", "camille.martin@demo.example", None),
+    ("Nicolas Wouters", "nicolas.wouters@demo.example", "Allergique aux fruits à coque"),
+    ("Élise Maes", "elise.maes@demo.example", None),
+    ("Olivier Dubois", None, None),
+    ("Laura Hermans", "laura.hermans@demo.example", "Anniversaire : une bougie sur le dessert, merci"),
+]
+
+GUEST_POOLS = {"belgian": BELGIAN_GUESTS}
+
+
+def guest_pool(spec):
+    """The guests a location's generated bookings draw from; the default pool unless it names one."""
+    return GUEST_POOLS[spec["guests"]] if spec.get("guests") else GUESTS
+
 
 REF_ADJECTIVES = [
     "crispy", "golden", "smoky", "rustic", "zesty", "tender", "glazed", "roasted",
@@ -1192,7 +1305,8 @@ def emit_bookings(ds, now_utc, days_back, days_forward, occupancy, rng):
                 covers_by_slot[minutes] = covers_by_slot.get(minutes, 0) + seats
                 placed += 1
 
-                name, email, special = GUESTS[guest_idx % len(GUESTS)]
+                pool = guest_pool(spec)
+                name, email, special = pool[guest_idx % len(pool)]
                 guest_idx += 1
                 if walk_in:
                     special = "Walk-in, recorded at the door"
