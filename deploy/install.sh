@@ -44,7 +44,7 @@ Usage: sudo ./install.sh --domain <host> --email <contact> [options]
   --email <address>      contact Let's Encrypt writes to before a certificate expires
   --admin-email <addr>   first Owner account (default: --email)
   --version <x.y.z>      release to run (default: the one in .env.example; never "latest")
-  --registry <path>      image registry (default: the one in .env.example; "local" with --build)
+  --registry <path>      image registry (default: the one in .env.example; "localhost" with --build)
   --build                build the images from this checkout instead of pulling them (needed for
                          anything newer than the upstream 2.4.1 images; wants about 4 GB of RAM)
   --data-dir <path>      database and keys (default /srv/openresto)
@@ -129,9 +129,10 @@ resolve_config() {
     [ -n "$acme_email" ] || { usage >&2; die "--email is required"; }
     admin_email="${admin_email:-$acme_email}"
     version="${version:-$(example_value OPENRESTO_VERSION)}"
-    # Built images must not carry the upstream registry's name: `local` keeps them apart from
-    # anything a later `docker compose pull` would fetch.
-    if [ "$build_from_source" = 1 ]; then registry="${registry:-local}"; fi
+    # Built images must not be named like anything a registry could serve. "localhost" is read by
+    # Docker as a registry host, so a stray `docker compose pull` fails; a plain "local" is an
+    # ordinary Docker Hub namespace, which anyone could register and fill.
+    if [ "$build_from_source" = 1 ]; then registry="${registry:-localhost}"; fi
     registry="${registry:-$(example_value OPENRESTO_REGISTRY)}"
     data_dir="${data_dir:-$(example_value DATA_DIR)}"
     backup_dir="${backup_dir:-$(example_value BACKUP_DIR)}"

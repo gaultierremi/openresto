@@ -18,8 +18,16 @@ version="$(env_get OPENRESTO_VERSION)"
 log "backing up before the upgrade"
 "$here/backup/backup.sh"
 
-log "pulling $version"
-compose pull
+# An install made with `install.sh --build` has images named localhost/openresto-*: there is no
+# registry behind that name, so the upgrade rebuilds from the checkout (git pull it first).
+if [ "$(env_get OPENRESTO_REGISTRY)" = localhost ]; then
+  COMPOSE_OVERRIDE="$here/docker-compose.build.yml"
+  log "building $version from this checkout"
+  compose build
+else
+  log "pulling $version"
+  compose pull
+fi
 log "restarting"
 compose up -d --remove-orphans
 

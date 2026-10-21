@@ -246,7 +246,7 @@ reset; run_install "${std[@]}" --build
 expect "--build: exit 0" 0 "$code"
 grep -qE '^docker compose .*docker-compose\.build\.yml build$' "$calls" && pass "--build: builds with the build override" || fail "--build: no build call with docker-compose.build.yml"
 grep -q ' pull$' "$calls" && fail "--build: pulled upstream images as well" || pass "--build: pulls nothing"
-expect "--build: images get the local registry name" local "$(val OPENRESTO_REGISTRY)"
+expect "--build: images get a registry name that cannot be pulled (localhost)" localhost "$(val OPENRESTO_REGISTRY)"
 build_line="$(grep -n ' build$' "$calls" | head -n 1 | cut -d: -f1)"; up_line="$(grep -n ' up -d --wait' "$calls" | head -n 1 | cut -d: -f1)"
 [ -n "$build_line" ] && [ -n "$up_line" ] && [ "$build_line" -lt "$up_line" ] && pass "--build: builds, then starts" || fail "--build: build/up order ($build_line, $up_line)"
 grep ' up -d --wait' "$calls" | grep -q 'docker-compose.build.yml' && pass "--build: starts with the same override (so up does not pull)" || fail "--build: up without the override"
