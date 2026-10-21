@@ -128,6 +128,12 @@ expect_refused "invalid e-mail" "is not an e-mail address"
 reset; run_install "${std[@]}" --version latest
 expect_refused "version latest" "is not an exact release"
 
+reset; run_install "${std[@]}" --registry local
+expect_refused "registry 'local' (a Docker Hub namespace)" "Docker Hub namespace"
+
+reset; run_install "${std[@]}" --registry local --build
+expect_refused "registry 'local' with --build" "Docker Hub namespace"
+
 reset; uid=1000; run_install "${std[@]}"
 expect_refused "not root" "run as root"
 
