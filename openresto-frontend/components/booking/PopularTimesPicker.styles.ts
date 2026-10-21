@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { theme } from "@/theme/theme";
 
 export const styles = StyleSheet.create({
   container: {
@@ -13,6 +14,8 @@ export const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: 16,
     paddingVertical: 8,
+    minHeight: theme.a11y.minTouchTarget,
+    justifyContent: "center",
     borderRadius: 20,
     borderWidth: 1,
   },
