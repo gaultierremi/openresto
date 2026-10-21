@@ -15,14 +15,24 @@ interface BookingFactsBandProps {
   borderColor: string;
   /** Cancelled: the sitting is no longer happening, so its facts read as struck. */
   negated?: boolean;
+  /**
+   * The restaurant's IANA timezone. The sitting is read on the restaurant's clock, the one the
+   * booking form announced; without it the guest's phone decides, and a guest abroad would read
+   * an hour other than the one they booked.
+   *
+   * @see [BookingFactsBand.test.tsx](../../tests/components/booking/BookingFactsBand.test.tsx)
+   * — pins that the band reads the restaurant's clock when given its zone and the device's
+   * without one.
+   */
+  timezone?: string;
 }
 
 export type Fact = { key: string; value: string; sub?: string };
 
-const formatTime = (value: string): string | undefined => {
+const formatTime = (value: string, timeZone?: string): string | undefined => {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return undefined;
-  return fmtTime(d);
+  return fmtTime(d, timeZone);
 };
 
 /**
@@ -32,12 +42,13 @@ const formatTime = (value: string): string | undefined => {
 export function buildFacts(
   booking: BookingDto,
   compact: boolean,
-  t: TFunction = i18n.t.bind(i18n)
+  t: TFunction = i18n.t.bind(i18n),
+  timeZone?: string
 ): Fact[] {
   const date = new Date(booking.date);
-  const day = fmtDate(date);
-  const time = formatTime(booking.date) ?? "";
-  const until = booking.endTime ? formatTime(booking.endTime) : undefined;
+  const day = fmtDate(date, timeZone);
+  const time = formatTime(booking.date, timeZone) ?? "";
+  const until = booking.endTime ? formatTime(booking.endTime, timeZone) : undefined;
   const party = {
     key: t("booking.factsBand.guestsKey"),
     value: String(booking.seats),
@@ -51,7 +62,7 @@ export function buildFacts(
   }
 
   return [
-    { key: t("booking.factsBand.dateKey"), value: day, sub: fmtYear(date) },
+    { key: t("booking.factsBand.dateKey"), value: day, sub: fmtYear(date, timeZone) },
     {
       key: t("booking.factsBand.timeKey"),
       value: time,
@@ -72,12 +83,13 @@ export default function BookingFactsBand({
   mutedColor,
   borderColor,
   negated = false,
+  timezone,
 }: BookingFactsBandProps) {
   const { t } = useTranslation();
 
   return (
     <FactsBand
-      facts={buildFacts(booking, compact, t)}
+      facts={buildFacts(booking, compact, t, timezone)}
       mutedColor={mutedColor}
       borderColor={borderColor}
       negated={negated}

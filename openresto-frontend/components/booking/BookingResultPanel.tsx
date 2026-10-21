@@ -132,7 +132,7 @@ export default function BookingResultPanel({
     const message = t("booking.result.shareMessage", {
       ref,
       name: restaurant?.name ?? t("booking.result.unnamedRestaurant"),
-      when: fmtDateTime(new Date(booking.date)),
+      when: fmtDateTime(new Date(booking.date), restaurant?.timezone),
       count: booking.seats,
     });
     const url = bookingConfirmationLink(ref, booking.customerEmail, brand.websiteUrl);
@@ -183,6 +183,7 @@ export default function BookingResultPanel({
         mutedColor={colors.muted}
         borderColor={colors.border}
         negated={booking.isCancelled}
+        timezone={restaurant?.timezone}
       />
 
       {/* Stated once. The reference used to appear as a badge in the header and again as a

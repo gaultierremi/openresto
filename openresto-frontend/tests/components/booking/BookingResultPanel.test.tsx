@@ -8,6 +8,7 @@ import BookingResultPanel from "@/components/booking/BookingResultPanel";
 import { renderWithProviders } from "@/tests/helpers/renderWithProviders";
 import { BookingDto } from "@/api/bookings";
 import { RestaurantDto } from "@/api/restaurants";
+import { setActiveLocale } from "@/utils/locale";
 
 jest.mock("@expo/vector-icons", () => ({ Ionicons: () => null }));
 
@@ -46,6 +47,46 @@ describe("BookingResultPanel", () => {
     expect(screen.getByText("Booking Found")).toBeTruthy();
     expect(screen.getByText("REF123")).toBeTruthy();
     expect(screen.getByText("Cancel This Booking")).toBeTruthy();
+  });
+
+  describe("the hour it shows", () => {
+    // 19:00 UTC: 15:00 in New York, 21:00 in Brussels. Pinned far ahead so the booking is
+    // upcoming for as long as the suite is run.
+    const sitting = "2099-10-10T19:00:00Z";
+    const render = (restaurant: RestaurantDto | null) =>
+      renderWithProviders(
+        <BookingResultPanel
+          booking={{ ...mockBooking, date: sitting, endTime: "2099-10-10T21:00:00Z" }}
+          restaurant={restaurant}
+          compact={false}
+          cancelling={false}
+          onCancelPress={jest.fn()}
+        />
+      );
+
+    afterEach(() => setActiveLocale(undefined));
+
+    it("is the hour on the restaurant's clock, whatever zone the guest's phone is set to", () => {
+      setActiveLocale("en-GB");
+      render({ ...mockRestaurant, timezone: "America/New_York" });
+      expect(screen.getByText("15:00")).toBeTruthy();
+    });
+
+    it("is the hour on the clock of whichever zone the restaurant keeps", () => {
+      setActiveLocale("en-GB");
+      render({ ...mockRestaurant, timezone: "Europe/Brussels" });
+      expect(screen.getByText("21:00")).toBeTruthy();
+    });
+
+    it("is the device's hour while the restaurant has not loaded", () => {
+      setActiveLocale("en-GB");
+      render(null);
+      const deviceClock = new Date(sitting).toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      expect(screen.getByText(deviceClock)).toBeTruthy();
+    });
   });
 
   it("shows 'Booking Confirmed' instead when justBooked", () => {
