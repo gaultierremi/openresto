@@ -221,6 +221,44 @@ describe("formatters - relativeTime", () => {
   });
 });
 
+/**
+ * Dutch is passed to `Intl` as the bare `nl`, like every other locale here: Belgian and Dutch
+ * conventions render identically for every shape these formatters ask for, so no `nl-BE`
+ * mapping is needed.
+ */
+describe("formatters - nl", () => {
+  const d = new Date(2026, 3, 18, 19, 30, 0); // Saturday, April 18, 2026
+
+  beforeEach(() => setActiveLocale("nl"));
+
+  it("names the weekday and month in Dutch", () => {
+    expect(fmtDate(d)).toBe("za 18 apr");
+    expect(fmtLongDate(d)).toBe("zaterdag 18 april 2026");
+    expect(fmtWeekday(d)).toBe("za");
+    expect(fmtMonthDay(d)).toBe("18 apr");
+  });
+
+  it("writes the time on the 24-hour clock", () => {
+    expect(fmtTime(d)).toBe("19:30");
+  });
+
+  it("groups thousands with a dot and decimals with a comma", () => {
+    expect(fmtNumber(1234567.5)).toBe("1.234.567,5");
+  });
+
+  it("words a relative time in Dutch", () => {
+    const iso = new Date(Date.now() - 5 * 60_000).toISOString();
+    expect(relativeTime(iso)).toBe("5 min. geleden");
+  });
+
+  it("is not the English rendering of the same instant", () => {
+    setActiveLocale("en-GB");
+    const english = fmtLongDate(d);
+    setActiveLocale("nl");
+    expect(fmtLongDate(d)).not.toBe(english);
+  });
+});
+
 describe("formatters - initials", () => {
   it("returns first and last initials for a multi-word name", () => {
     expect(initials("John Doe")).toBe("JD");

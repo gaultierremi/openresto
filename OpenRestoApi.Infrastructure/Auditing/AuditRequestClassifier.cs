@@ -13,7 +13,7 @@ namespace OpenRestoApi.Infrastructure.Auditing;
 /// </para>
 /// <seealso>AuditCoverageTests.EveryAuthorizedMutatingAction_IsGatedByANamedAdminPolicy</seealso>
 /// <seealso>AuditCoverageTests.EveryMutatingAdminEndpoint_IsGatedOrAnAuthenticationPath</seealso>
-/// <seealso>AuditRequestClassifierTests.RequiresAdminPolicy_RecognisesBothAdminPolicies</seealso>
+/// <seealso>AuditRequestClassifierTests.RequiresAdminPolicy_RecognisesEveryGatedPolicy</seealso>
 /// <seealso>AuditRequestClassifierTests.RequiresAdminPolicy_RejectsAGateThatNamesNoPolicy</seealso>
 /// </summary>
 public static class AuditRequestClassifier
@@ -22,7 +22,13 @@ public static class AuditRequestClassifier
         new(StringComparer.OrdinalIgnoreCase) { "GET", "HEAD", "OPTIONS", "TRACE" };
 
     private static readonly HashSet<string> AdminPolicies =
-        new(StringComparer.Ordinal) { AuthPolicies.RequireAdmin, AuthPolicies.RequireOwner };
+        new(StringComparer.Ordinal)
+        {
+            AuthPolicies.RequireAdmin,
+            AuthPolicies.RequireOwner,
+            AuthPolicies.RequirePlatform,
+            AuthPolicies.RequireRestaurateur,
+        };
 
     /// <summary>
     /// Reads are out of scope: every dashboard poll would otherwise be a row.

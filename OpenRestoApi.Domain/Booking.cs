@@ -44,6 +44,19 @@ public class Booking
     public string? CustomerName { get; set; }
     public int Seats { get; set; }
     public string? SpecialRequests { get; set; }
+
+    /// <summary>
+    /// The UI locale the guest booked under, so the mails about this booking read in their
+    /// language. Null for a booking taken before the language was recorded or by staff.
+    /// </summary>
+    public string? Locale { get; set; }
+
+    /// <summary>
+    /// Set when the guest's name, address and notes were removed at the end of the restaurant's
+    /// retention period. The booking itself stays for its counts.
+    /// </summary>
+    public DateTime? AnonymizedAt { get; set; }
+
     public string BookingRef { get; set; } = string.Empty;
     public DateTime? EndTime { get; set; }
     public bool IsCancelled { get; set; }

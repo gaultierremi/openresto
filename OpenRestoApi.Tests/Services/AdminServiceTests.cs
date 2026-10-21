@@ -1655,6 +1655,7 @@ public partial class AdminServiceTests : IDisposable
         RestaurantDto r = await svc.CreateRestaurantAsync(" New ", " Addr ");
         Assert.Equal("New", r.Name);
         Assert.Equal("Addr", r.Address);
+        Assert.Equal(BookingRetention.DefaultMonths, (await _db.Restaurants.AsNoTracking().FirstAsync(x => x.Id == r.Id)).BookingRetentionMonths);
     }
 
     [Fact]

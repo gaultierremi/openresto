@@ -3,6 +3,7 @@ import {
   adminListApiKeys,
   adminRevokeApiKey,
   READ_ONLY_SCOPE_RESOURCES,
+  SCOPE_RESOURCES,
   type ApiKeyDto,
   type CreatedApiKey,
 } from "@/api/apiKeys";
@@ -38,6 +39,16 @@ describe("READ_ONLY_SCOPE_RESOURCES", () => {
     expect(READ_ONLY_SCOPE_RESOURCES.has("audit")).toBe(true);
     expect(READ_ONLY_SCOPE_RESOURCES.has("guests")).toBe(true);
     expect(READ_ONLY_SCOPE_RESOURCES.has("bookings")).toBe(false);
+  });
+
+  it("offers menus at both levels, as the backend's ApiKeyScopes does", () => {
+    expect(SCOPE_RESOURCES).toContain("menus");
+    expect(READ_ONLY_SCOPE_RESOURCES.has("menus")).toBe(false);
+  });
+
+  it("offers sites at both levels, as the backend's ApiKeyScopes does", () => {
+    expect(SCOPE_RESOURCES).toContain("sites");
+    expect(READ_ONLY_SCOPE_RESOURCES.has("sites")).toBe(false);
   });
 });
 

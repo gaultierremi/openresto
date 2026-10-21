@@ -1,13 +1,14 @@
 import {
   DEFAULT_LOCALE,
   isSupportedLocale,
+  LOCALE_DIRECTIONS,
   LOCALE_LABELS,
   SUPPORTED_LOCALES,
 } from "@/constants/locales";
 
 describe("constants/locales", () => {
-  it("lists the four launch locales", () => {
-    expect(SUPPORTED_LOCALES).toEqual(["en", "fr", "es", "de"]);
+  it("lists the four launch locales and Dutch", () => {
+    expect(SUPPORTED_LOCALES).toEqual(["en", "fr", "es", "de", "nl"]);
   });
 
   it("defaults to en", () => {
@@ -22,6 +23,13 @@ describe("constants/locales", () => {
     expect(LOCALE_LABELS.fr).toBe("Français");
     expect(LOCALE_LABELS.es).toBe("Español");
     expect(LOCALE_LABELS.de).toBe("Deutsch");
+    expect(LOCALE_LABELS.nl).toBe("Nederlands");
+  });
+
+  it("writes every supported locale left to right", () => {
+    for (const locale of SUPPORTED_LOCALES) {
+      expect(LOCALE_DIRECTIONS[locale]).toBe("ltr");
+    }
   });
 
   describe("isSupportedLocale", () => {

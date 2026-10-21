@@ -113,6 +113,15 @@ server {
         return 500 '{"error": "Internal Server Error", "message": "Service unavailable"}';
     }
 
+    # Restaurant websites — server-rendered HTML, so the backend answers, not the Expo app.
+    # Cache-Control is left as the backend set it (one minute) so an unpublish shows up fast.
+    location ~ ^/(?:r/[a-z0-9-]+(?:/reserver)?|sitemap\.xml|robots\.txt)$ {
+        include /etc/nginx/conf.d/security-headers.conf;
+
+        set $backend_host ${BACKEND_HOST};
+        proxy_pass http://$backend_host:${BACKEND_PORT};
+    }
+
     # Frontend — Proxy to Static Server
     location / {
         include /etc/nginx/conf.d/security-headers.conf;

@@ -69,6 +69,19 @@ describe("RowTextButton", () => {
     expect(resolvedStyle().opacity).toBeUndefined();
   });
 
+  it("dims to 0.6 under the finger and not at rest", () => {
+    render(<RowTextButton {...baseProps} />);
+    // The rendered node carries the style already resolved for "not pressed", so the press state
+    // is reached through the callback the Pressable was handed.
+    let node = screen.getByRole("button").parent;
+    while (node && typeof node.props?.style !== "function") {
+      node = node.parent;
+    }
+    const styleFn = node?.props.style as (state: { pressed: boolean }) => unknown[];
+    expect(styleFn({ pressed: true })).toContainEqual({ opacity: 0.6 });
+    expect(styleFn({ pressed: false })).not.toContainEqual({ opacity: 0.6 });
+  });
+
   it("dims to 0.5 when disabled", () => {
     render(<RowTextButton {...baseProps} disabled />);
     expect(resolvedStyle().opacity).toBe(0.5);
@@ -104,6 +117,78 @@ describe("RowTextButton", () => {
     render(<RowTextButton {...baseProps} label="Pin" selected={false} />);
     expect(resolvedStyle().backgroundColor).toBeUndefined();
     expect(screen.getByRole("button").props.accessibilityState).toMatchObject({ selected: false });
+  });
+
+  describe("as a radio", () => {
+    // The `aria-*` prop is only visible on the component element, not on the host node.
+    const ariaChecked = (testID: string) =>
+      screen
+        .UNSAFE_getAllByProps({ testID })
+        .map((node) => node.props["aria-checked"])
+        .find((value) => value !== undefined);
+
+    it("is a radio announcing checked through aria-checked and accessibilityState when selected", () => {
+      render(<RowTextButton {...baseProps} radio selected testID="pill" />);
+      expect(screen.getByRole("radio")).toBeTruthy();
+      expect(screen.queryByRole("button")).toBeNull();
+      expect(ariaChecked("pill")).toBe(true);
+      expect(screen.getByRole("radio").props.accessibilityState).toEqual({
+        disabled: false,
+        checked: true,
+      });
+    });
+
+    it("announces unchecked when it is the one not chosen", () => {
+      render(<RowTextButton {...baseProps} radio selected={false} testID="pill" />);
+      expect(screen.getByRole("radio")).toBeTruthy();
+      expect(ariaChecked("pill")).toBe(false);
+      expect(screen.getByRole("radio").props.accessibilityState).toEqual({
+        disabled: false,
+        checked: false,
+      });
+    });
+
+    it("moves the checked state with the selection and still presses", () => {
+      const onPress = jest.fn();
+      const view = render(
+        <RowTextButton {...baseProps} radio selected={false} testID="pill" onPress={onPress} />
+      );
+      fireEvent.press(screen.getByRole("radio"));
+      expect(onPress).toHaveBeenCalledTimes(1);
+      view.rerender(
+        <RowTextButton {...baseProps} radio selected testID="pill" onPress={onPress} />
+      );
+      expect(ariaChecked("pill")).toBe(true);
+    });
+
+    it("keeps announcing a disabled radio as disabled", () => {
+      render(<RowTextButton {...baseProps} radio selected disabled />);
+      expect(screen.getByRole("radio").props.accessibilityState).toEqual({
+        disabled: true,
+        checked: true,
+      });
+    });
+
+    it("stays a plain button when there is no selection to announce", () => {
+      render(<RowTextButton {...baseProps} radio testID="pill" />);
+      expect(screen.getByRole("button").props.accessibilityState).toEqual({ disabled: false });
+      expect(screen.queryByRole("radio")).toBeNull();
+      expect(ariaChecked("pill")).toBeUndefined();
+    });
+
+    it.each([true, false])(
+      "is not a radio without the radio prop, even when selected=%s",
+      (selected) => {
+        render(<RowTextButton {...baseProps} selected={selected} testID="pill" />);
+        expect(screen.getByRole("button")).toBeTruthy();
+        expect(screen.queryByRole("radio")).toBeNull();
+        expect(ariaChecked("pill")).toBeUndefined();
+        expect(screen.getByRole("button").props.accessibilityState).toEqual({
+          disabled: false,
+          selected,
+        });
+      }
+    );
   });
 
   it("reaches the 44px touch target through hitSlop", () => {

@@ -38,6 +38,9 @@ public class AuthService(
         if (!CredentialHelper.VerifyPassword(cred, password, _passwordService))
             return RecordFailedLogin(attempted);
 
+        cred.LastLoginAt = DateTime.UtcNow;
+        await _credentialRepository.SaveChangesAsync();
+
         AttributeTo(cred);
         Describe(AuditActions.AuthLogin, cred, "Signed in");
         return Mint(cred);
