@@ -501,6 +501,26 @@
       "walk_in_days_invalid": "WalkInDays debe ser una lista de números de día ISO del 1 (lunes) al 7 (domingo), separados por comas.",
       "max_covers_invalid": "El máximo de comensales por franja debe ser 1 o más, o quedar vacío para no tener límite."
     },
+    "site": {
+      "not_found": "Sitio web no encontrado.",
+      "slug_invalid": "La dirección del sitio debe tener de 3 a 60 caracteres: minúsculas, cifras y guiones simples.",
+      "slug_taken": "Otro sitio web ya usa esta dirección.",
+      "theme_invalid": "Ese tema no existe.",
+      "tagline_too_long": "El eslogan no puede superar los {{max}} caracteres.",
+      "social_invalid": "Un enlace de red necesita una red conocida, una dirección https:// y solo puede aparecer una vez.",
+      "social_too_many": "Hay demasiados enlaces de redes sociales.",
+      "legal_too_long": "Este campo del aviso legal no puede superar los {{max}} caracteres.",
+      "legal_invalid": "Este campo del aviso legal solo admite letras, cifras, espacios, puntos, guiones y barras.",
+      "photo_alt_required": "Cada foto necesita una descripción.",
+      "photo_alt_too_long": "La descripción de la foto no puede superar los {{max}} caracteres.",
+      "photos_full": "Una galería contiene como máximo {{max}} fotos.",
+      "reorder_ids_mismatch": "La lista debe nombrar cada foto exactamente una vez, sin añadir ninguna.",
+      "image_too_large": "La imagen debe pesar menos de 6 MB.",
+      "image_dimensions_too_large": "La imagen es demasiado grande en píxeles (como máximo {{maxSide}} píxeles por lado).",
+      "image_unreadable": "Ese archivo no es una imagen legible.",
+      "not_publishable": "El sitio no se puede publicar mientras no estén rellenados su aviso legal y su correo electrónico de contacto.",
+      "location_archived": "Un local archivado no puede tener un sitio en línea."
+    },
     "social_link": {
       "label_required": "La etiqueta del enlace social no puede estar vacía.",
       "label_too_long": "La etiqueta del enlace social no puede superar los {{max}} caracteres.",
@@ -2023,7 +2043,8 @@
           "audit": "Registro de actividad",
           "guests": "Comensales",
           "email": "Estado del correo",
-          "menus": "Cartas"
+          "menus": "Cartas",
+          "sites": "Sitio web"
         },
         "scopeLevel": {
           "none": "Ninguno"
@@ -2037,7 +2058,8 @@
           "audit": "El registro de actividad de administración",
           "guests": "Nombres y correos de los clientes en las reservas. Sin esto vuelven vacíos.",
           "email": "Si el envío de correo está configurado y qué no se ha podido enviar. Nunca las credenciales SMTP.",
-          "menus": "Las cartas, sus categorías, platos y fotos, y los enlaces de los códigos QR. Regenerar un enlace requiere además la clave de un propietario."
+          "menus": "Las cartas, sus categorías, platos y fotos, y los enlaces de los códigos QR. Regenerar un enlace requiere además la clave de un propietario.",
+          "sites": "El sitio web de un local: tema, eslogan, fotos, aviso legal, publicación y vista previa."
         },
         "expiryLabel": "Caducidad",
         "expiryHint": "El valor predeterminado es 1 año. Elige «Sin caducidad» para una clave que nunca expire.",
@@ -2283,6 +2305,135 @@
         "serverUnreachable": "No se pudo contactar con el servidor."
       }
     },
+    "site": {
+      "title": "Mi sitio web",
+      "subtitle": "Un pequeño sitio web para cada local, creado a partir de su horario, su carta y sus datos de contacto.",
+      "noLocations": "Añada un local para crear su sitio web.",
+      "couldntLoad": "No se pudo cargar el sitio web. Compruebe su conexión e inténtelo de nuevo.",
+      "themes": {
+        "label": "Tema del sitio",
+        "brasserie": {
+          "name": "Cervecería",
+          "description": "Cálido y acogedor: papel crema, títulos con serifa."
+        },
+        "gastronomique": {
+          "name": "Alta cocina",
+          "description": "Sobrio y elegante: fondo oscuro, letras espaciadas."
+        },
+        "cafe": {
+          "name": "Café",
+          "description": "Claro y redondeado: toques de su color, muy legible."
+        }
+      },
+      "social": {
+        "kindLabel": "Red",
+        "urlPlaceholder": "https://…",
+        "urlLabel": "Dirección de la página de {{network}}",
+        "remove": "Quitar",
+        "removeNamed": "Quitar {{network}}",
+        "add": "Añadir una red"
+      },
+      "settings": {
+        "problem": {
+          "slug": "La dirección del sitio debe tener de 3 a 60 caracteres: minúsculas, cifras y guiones simples. No se guarda nada hasta que sea válida.",
+          "socialUrl": "Cada enlace de red debe ser una dirección https://. No se guarda nada hasta que sea válida.",
+          "socialDuplicate": "Una red solo puede aparecer una vez. Cambie o quite el duplicado para guardar.",
+          "identifier": "Los números de empresa y de IVA solo admiten letras, cifras, espacios, puntos, guiones y barras.",
+          "legalRequired": "El sitio está publicado: la razón social y el número de empresa deben seguir rellenados. Despublique el sitio para borrarlos."
+        },
+        "appearance": {
+          "title": "Apariencia",
+          "description": "Tres temas sobrios. Su elección se aplica enseguida a la vista previa y puede deshacerla justo después."
+        },
+        "brandColor": "Color principal: {{color}}, tomado de la marca. El sitio lo hace legible en cada tema.",
+        "changeBrandColor": "Cambiar en Marca",
+        "content": {
+          "title": "Eslogan y dirección",
+          "description": "El eslogan aparece bajo el nombre del local y en los resultados de búsqueda."
+        },
+        "taglineLabel": "Eslogan",
+        "taglinePlaceholder": "p. ej. Cocina belga de temporada y cervezas de abadía",
+        "taglineCount": "{{count}} / {{max}} caracteres",
+        "addressLabel": "Dirección del sitio",
+        "addressHint": "Cambiar esta dirección rompe los enlaces ya compartidos o impresos.",
+        "social": {
+          "title": "Redes sociales",
+          "description": "Los enlaces aparecen en la sección «Cómo encontrarnos»."
+        },
+        "legal": {
+          "title": "Aviso legal",
+          "description": "Obligatorio para publicar: aparece al pie del sitio.",
+          "nameLabel": "Razón social",
+          "companyNumberLabel": "Número de empresa",
+          "vatNumberLabel": "Número de IVA (opcional)",
+          "addressLabel": "Domicilio social (opcional)",
+          "addressHint": "Si se deja vacío, se usa la dirección del local."
+        }
+      },
+      "images": {
+        "title": "Logotipo y foto de portada",
+        "description": "Las imágenes se reducen y aligeran automáticamente: basta una foto de teléfono.",
+        "logo": {
+          "title": "Logotipo",
+          "hint": "JPEG, PNG o WebP, 6 MB como máximo. Se conserva el fondo transparente.",
+          "add": "Añadir un logotipo",
+          "replace": "Sustituir el logotipo",
+          "remove": "Quitar el logotipo"
+        },
+        "cover": {
+          "title": "Foto de portada",
+          "hint": "JPEG, PNG o WebP, 6 MB como máximo. Una foto ancha, en horizontal, queda mejor.",
+          "add": "Añadir una foto de portada",
+          "replace": "Sustituir la foto",
+          "remove": "Quitar la foto"
+        }
+      },
+      "gallery": {
+        "title": "Galería",
+        "description": "Algunas fotos del comedor, la terraza o los platos.",
+        "count_one": "{{count}} foto de {{max}} posibles ({{min}} a {{max}} recomendadas)",
+        "count_other": "{{count}} fotos de {{max}} posibles ({{min}} a {{max}} recomendadas)",
+        "altLabel": "Descripción de la foto",
+        "altRequired": "Describa la foto para guardarla: es lo que lee un lector de pantalla en su lugar.",
+        "remove": "Eliminar",
+        "removeNamed": "Eliminar la foto «{{name}}»",
+        "removeTitle": "¿Eliminar esta foto?",
+        "removeMessage": "La foto «{{name}}» desaparecerá de la galería. Esta acción no se puede deshacer.",
+        "full": "La galería está completa ({{max}} fotos). Elimine una foto para añadir otra.",
+        "newAltLabel": "Descripción de la nueva foto",
+        "newAltPlaceholder": "p. ej. El comedor con bancos de cuero",
+        "newAltHint": "Obligatoria: describa lo que muestra la foto para quienes no pueden verla.",
+        "choose": "Elegir la foto",
+        "add": "Añadir una foto"
+      },
+      "publish": {
+        "title": "Publicación",
+        "description": "Mientras el sitio no esté publicado, nadie más que usted puede verlo.",
+        "live": "En línea",
+        "draft": "Borrador",
+        "checklistTitle": "Por completar antes de publicar",
+        "todo": {
+          "legalName": "Indicar la razón social (aviso legal)",
+          "companyNumber": "Indicar el número de empresa (aviso legal)",
+          "contactEmail": "Indicar un correo electrónico de contacto, en el local o en la marca",
+          "publicUrl": "Indicar la dirección web de la instancia en los ajustes de la marca (los enlaces del sitio y su ficha en los buscadores la necesitan)"
+        },
+        "blockedHint": "El botón se desbloquea en cuanto la lista de arriba esté vacía.",
+        "publish": "Publicar el sitio",
+        "unpublish": "Despublicar",
+        "view": "Ver el sitio",
+        "copy": "Copiar el enlace",
+        "copied": "Enlace copiado"
+      },
+      "preview": {
+        "title": "Vista previa",
+        "phone": "Teléfono",
+        "desktop": "Ordenador",
+        "loading": "Cargando la vista previa…",
+        "failed": "No se pudo cargar la vista previa.",
+        "frameTitle": "Vista previa del sitio"
+      }
+    },
     "sidebar": {
       "nav": {
         "sections": {
@@ -2295,6 +2446,7 @@
           "locations": "Locales",
           "menus": "Cartas",
           "qrCodes": "Códigos QR",
+          "site": "Mi sitio web",
           "notifications": "Notificaciones",
           "activity": "Actividad",
           "brand": "Marca",

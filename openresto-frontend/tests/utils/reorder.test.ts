@@ -22,6 +22,11 @@ describe("moveId", () => {
     expect(moveId([1, 2, 3], -1, 1)).toBeNull();
   });
 
+  it("moves string ids too, as the gallery's photo tokens are", () => {
+    expect(moveId(["a", "b", "c"], 2, -1)).toEqual(["a", "c", "b"]);
+    expect(moveId(["a", "b", "c"], 2, 1)).toBeNull();
+  });
+
   it("leaves the original list as it was", () => {
     const ids = [1, 2, 3];
     moveId(ids, 0, 1);

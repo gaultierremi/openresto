@@ -41,7 +41,8 @@ public class AdminService(
     INotificationQueue? notificationQueue = null,
     IAuditScope? audit = null,
     ICurrentUserService? currentUser = null,
-    MenuService? menuService = null)
+    MenuService? menuService = null,
+    SiteService? siteService = null)
 {
     /// <summary>
     /// Castle's generated proxy constructors drop default values, so a Moq class mock reaches only
@@ -73,6 +74,7 @@ public class AdminService(
     private readonly BrandService? _brandService = brandService;
     private readonly INotificationQueue? _notificationQueue = notificationQueue;
     private readonly MenuService? _menuService = menuService;
+    private readonly SiteService? _siteService = siteService;
 
     public virtual async Task<AdminOverviewDto> GetOverviewAsync()
     {
@@ -853,10 +855,12 @@ public class AdminService(
         // in a single SaveChanges — faithful to the original ".Where(b => b.RestaurantId == id)" semantics.
         List<Booking> bookings = (await _bookingRepository.GetBookingsByRestaurantIdAsync(id)).ToList();
         List<string> dishPhotos = _menuService == null ? [] : await _menuService.GetDishPhotoUrlsAsync(id);
+        List<string> sitePictures = _siteService == null ? [] : await _siteService.GetPictureUrlsAsync(id);
         _bookingRepository.RemoveRange(bookings);
         _restaurantRepository.Remove(restaurant);
         await _restaurantRepository.SaveChangesAsync();
         _menuService?.DeleteDishPhotos(dishPhotos);
+        _siteService?.DeletePictures(sitePictures);
 
         DescribeRestaurant(AuditActions.RestaurantDelete, restaurant,
             $"Permanently deleted the location \"{restaurant.Name}\" and its {bookings.Count} bookings");

@@ -210,6 +210,8 @@ export function ApiKeysCard({
         return t("admin.settings.apiKeys.scopeResource.email");
       case "menus":
         return t("admin.settings.apiKeys.scopeResource.menus");
+      case "sites":
+        return t("admin.settings.apiKeys.scopeResource.sites");
     }
   };
 
@@ -247,6 +249,8 @@ export function ApiKeysCard({
         return t("admin.settings.apiKeys.scopeDescription.email");
       case "menus":
         return t("admin.settings.apiKeys.scopeDescription.menus");
+      case "sites":
+        return t("admin.settings.apiKeys.scopeDescription.sites");
     }
   };
 

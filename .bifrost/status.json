@@ -22,6 +22,16 @@
       "pr": 2,
       "etape": "Relue MERGE (0282e76 pour #2, 15b7ef1 pour #5) ; main fusionné pour lever le conflit de status.json.",
       "maj": "2026-10-21T15:24:40+00:00"
+    },
+    {
+      "id": "site-vitrine",
+      "titre": "Sprint 3 — mini-site vitrine par restaurant (#7, rouvert vers main)",
+      "agent": "Claude",
+      "branche": "feat/site-vitrine",
+      "statut": "Prête à merger",
+      "pr": 18,
+      "etape": "Relue MERGE (948dc05) ; le travail de #7 avait été fusionné dans sa branche empilée, pas dans main.",
+      "maj": "2026-10-21T15:25:02+00:00"
     }
   ],
   "decisions": [
@@ -39,7 +49,7 @@
     }
   ],
   "maj": {
-    "at": "2026-10-21T15:24:40+00:00",
+    "at": "2026-10-21T15:25:02+00:00",
     "by": "Claude"
   }
 }
