@@ -32,8 +32,14 @@ public class ApiKeyScopesTests
     [InlineData(ApiKeyScopes.Tables, ApiKeyScopes.Write)]
     [InlineData(ApiKeyScopes.Brand, ApiKeyScopes.Write)]
     [InlineData(ApiKeyScopes.Users, ApiKeyScopes.Write)]
+    [InlineData(ApiKeyScopes.Menus, ApiKeyScopes.Write)]
+    [InlineData(ApiKeyScopes.Sites, ApiKeyScopes.Write)]
     public void IsValid_AcceptsWriteOnAWritableResource(string resource, string access)
         => Assert.True(ApiKeyScopes.IsValid(resource, access));
+
+    [Fact]
+    public void IsValid_AcceptsReadOnSites()
+        => Assert.True(ApiKeyScopes.IsValid(ApiKeyScopes.Sites, ApiKeyScopes.Read));
 
     [Fact]
     public void IsValid_RejectsAnUnknownResource()

@@ -71,7 +71,7 @@ public class SectionSortOrderMigrationTests : IDisposable
 
         using var insert = _connection.CreateCommand();
         insert.CommandText = @"
-            INSERT INTO Restaurants (Name, OpenTime, CloseTime, OpenDays, Timezone) VALUES ('R', '09:00', '22:00', '1,2,3,4,5,6,7', 'UTC');
+            INSERT INTO Restaurants (Name, OpenTime, CloseTime, OpenDays, Timezone, PublicToken) VALUES ('R', '09:00', '22:00', '1,2,3,4,5,6,7', 'UTC', 'section-sort-order-test');
             INSERT INTO Sections (Name, RestaurantId) VALUES ('NoExplicitSortOrder', last_insert_rowid());";
         await insert.ExecuteNonQueryAsync();
 

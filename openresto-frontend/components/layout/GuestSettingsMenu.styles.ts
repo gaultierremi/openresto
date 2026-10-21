@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { theme } from "@/theme/theme";
 
-/** Wide enough for the longest row label in all four locales, narrow enough to read as a menu. */
+/** Wide enough for the longest row label in every locale, narrow enough to read as a menu. */
 export const MENU_WIDTH = 260;
 
 export const styles = StyleSheet.create({

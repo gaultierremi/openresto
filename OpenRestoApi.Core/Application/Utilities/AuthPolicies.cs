@@ -14,4 +14,16 @@ public static class AuthPolicies
 
     /// <summary>Owner-only capabilities — currently user management.</summary>
     public const string RequireOwner = "RequireOwner";
+
+    /// <summary>
+    /// The platform's own space: the restaurants list, suspension, invitations. Today the same
+    /// people as <see cref="RequireOwner"/>, kept as its own name so the two can part ways.
+    /// </summary>
+    public const string RequirePlatform = "RequirePlatform";
+
+    /// <summary>
+    /// A restaurateur: the account an invitation creates. Deliberately not an admin — it never
+    /// satisfies <see cref="RequireAdmin"/>, so none of the admin endpoints are reachable with it.
+    /// </summary>
+    public const string RequireRestaurateur = "RequireRestaurateur";
 }

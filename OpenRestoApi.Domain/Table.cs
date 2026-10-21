@@ -14,6 +14,9 @@ public class Table
     /// </summary>
     public bool WalkInOnly { get; set; }
 
+    /// <summary>What the table's QR code carries; see <see cref="PublicTokenGenerator"/>.</summary>
+    public string PublicToken { get; set; } = PublicTokenGenerator.New();
+
     // Relation to Section
     public int SectionId { get; set; }
     public Section? Section { get; set; }

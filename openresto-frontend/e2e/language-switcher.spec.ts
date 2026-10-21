@@ -67,6 +67,30 @@ test.describe("Language switcher", () => {
     await expect(page.getByRole("link", { name: "My Bookings" })).toBeVisible();
   });
 
+  test.describe("a Belgian Dutch browser", () => {
+    test.use({ locale: "nl-BE" });
+
+    test("renders the guest surface in Dutch with no saved pick, and keeps the admin on the instance default", async ({
+      page,
+    }) => {
+      // No localStorage seeding: the browser's own language (navigator.languages) is the only
+      // input, and it outranks brand.defaultLocale (LocaleContext).
+      await page.goto("/");
+      await expect(page.getByRole("link", { name: "Vestigingen" })).toBeVisible({
+        timeout: 15_000,
+      });
+      await expect(page.getByRole("link", { name: "Mijn reservaties" })).toBeVisible();
+      await expect(page.getByText("Onze vestigingen", { exact: true })).toBeVisible();
+
+      // The admin ships no Dutch and opts out of the browser's language, so it speaks the
+      // instance default (English on the e2e stack) and never French, nl's fallback.
+      await page.goto("/admin/login");
+      await expect(page.getByText("Manage your restaurant bookings.")).toBeVisible({
+        timeout: 15_000,
+      });
+    });
+  });
+
   test("the overflow menu trigger is reachable and opens the language modal at a mobile web width", async ({
     page,
   }) => {
