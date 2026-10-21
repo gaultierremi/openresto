@@ -18,7 +18,7 @@ public class BookingRetentionServiceTests
         public DateTime UtcNow => Now;
     }
 
-    private static Restaurant Restaurant(int id, int months) => new() { Id = id, Name = $"R{id}", BookingRetentionMonths = months };
+    private static Restaurant Restaurant(int id, int? months) => new() { Id = id, Name = $"R{id}", BookingRetentionMonths = months };
 
     [Fact]
     public async Task Run_AnonymisesOnlyWhatIsPastEachRestaurantsOwnPeriod()
@@ -32,14 +32,29 @@ public class BookingRetentionServiceTests
                 cutoffs[id] = cutoff;
                 Assert.Equal(Now, now);
             })
-            .ReturnsAsync((int id, DateTime _, DateTime _) => new RetentionOutcome(id, id * 10, id * 100, id * 1000));
+            .ReturnsAsync((int id, DateTime _, DateTime _) => new RetentionOutcome(id, id * 10, id * 100, id * 1000, id * 10000));
 
         RetentionOutcome total = await new BookingRetentionService(repository.Object, new FixedClock()).RunAsync();
 
         Assert.Equal(new DateTime(2026, 3, 31, 12, 0, 0, DateTimeKind.Utc), cutoffs[1]);
         Assert.Equal(new DateTime(2025, 3, 31, 12, 0, 0, DateTimeKind.Utc), cutoffs[2]);
         Assert.Equal(new DateTime(2027, 2, 28, 12, 0, 0, DateTimeKind.Utc), cutoffs[3]);
-        Assert.Equal(new RetentionOutcome(6, 60, 600, 6000), total);
+        Assert.Equal(new RetentionOutcome(6, 60, 600, 6000, 60000), total);
+    }
+
+    [Fact]
+    public async Task Run_SkipsARestaurantWithNoPeriod_EvenWhenItHoldsFiveYearOldBookings()
+    {
+        var repository = new Mock<IPlatformRepository>();
+        repository.Setup(r => r.GetAllRestaurantsAsync()).ReturnsAsync([Restaurant(1, null), Restaurant(2, 12)]);
+        repository.Setup(r => r.AnonymizeBeforeAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new RetentionOutcome(1, 0, 0, 0, 0));
+
+        RetentionOutcome total = await new BookingRetentionService(repository.Object, new FixedClock()).RunAsync();
+
+        repository.Verify(r => r.AnonymizeBeforeAsync(1, It.IsAny<DateTime>(), It.IsAny<DateTime>()), Times.Never);
+        repository.Verify(r => r.AnonymizeBeforeAsync(2, BookingRetention.CutoffUtc(Now, 12), Now), Times.Once);
+        Assert.Equal(1, total.Bookings);
     }
 
     [Theory]
@@ -51,7 +66,7 @@ public class BookingRetentionServiceTests
         var repository = new Mock<IPlatformRepository>();
         repository.Setup(r => r.GetAllRestaurantsAsync()).ReturnsAsync([Restaurant(1, months), Restaurant(2, 12)]);
         repository.Setup(r => r.AnonymizeBeforeAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync(new RetentionOutcome(1, 0, 0, 0));
+            .ReturnsAsync(new RetentionOutcome(1, 0, 0, 0, 0));
 
         RetentionOutcome total = await new BookingRetentionService(repository.Object, new FixedClock()).RunAsync();
 
@@ -67,7 +82,7 @@ public class BookingRetentionServiceTests
     {
         var repository = new Mock<IPlatformRepository>();
         repository.Setup(r => r.GetAllRestaurantsAsync()).ReturnsAsync([Restaurant(1, months)]);
-        repository.Setup(r => r.AnonymizeBeforeAsync(1, It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(new RetentionOutcome(0, 0, 0, 0));
+        repository.Setup(r => r.AnonymizeBeforeAsync(1, It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(new RetentionOutcome(0, 0, 0, 0, 0));
 
         await new BookingRetentionService(repository.Object, new FixedClock()).RunAsync();
 

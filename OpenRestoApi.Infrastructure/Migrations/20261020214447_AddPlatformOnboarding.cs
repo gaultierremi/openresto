@@ -22,8 +22,7 @@ namespace OpenRestoApi.Migrations
                 name: "BookingRetentionMonths",
                 table: "Restaurants",
                 type: "INTEGER",
-                nullable: false,
-                defaultValue: 12);
+                nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "OnboardingSteps",

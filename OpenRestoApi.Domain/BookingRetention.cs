@@ -3,7 +3,8 @@ namespace OpenRestoApi.Core.Domain;
 /// <summary>
 /// How long a restaurant's guests stay identifiable. After <see cref="Restaurant.BookingRetentionMonths"/>
 /// a booking keeps its date, party size and table, which is what statistics need, and loses the
-/// name, address and notes of the person who made it.
+/// name, address and notes of the person who made it. A restaurant whose period is null is never
+/// erased from.
 /// </summary>
 /// <seealso>BookingRetentionTests.IsExpired_False_JustInsideTheRetention</seealso>
 /// <seealso>BookingRetentionTests.IsExpired_True_JustOutsideTheRetention</seealso>

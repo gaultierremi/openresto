@@ -15,12 +15,13 @@ public sealed record PlatformRestaurantRow(
     DateTime? LastLoginAt,
     int TotalBookings,
     int UpcomingBookings,
+    int? BookingRetentionMonths,
     RestaurantInvitation? LatestInvitation);
 
 /// <summary>What the retention pass removed in one run, for the log line (counts only).</summary>
-public sealed record RetentionOutcome(int Bookings, int WaitlistEntries, int PushSubscriptions, int EmailFailures)
+public sealed record RetentionOutcome(int Bookings, int WaitlistEntries, int PushSubscriptions, int EmailFailures, int Notifications)
 {
-    public int Total => Bookings + WaitlistEntries + PushSubscriptions + EmailFailures;
+    public int Total => Bookings + WaitlistEntries + PushSubscriptions + EmailFailures + Notifications;
 }
 
 /// <summary>
@@ -69,7 +70,8 @@ public interface IPlatformRepository
     /// <summary>
     /// Strips name, address and notes from the restaurant's bookings that ended before
     /// <paramref name="cutoffUtc"/>, drops the reminder devices and failed-mail records that
-    /// belonged to them, and does the same for closed waitlist tickets. The booking rows stay.
+    /// belonged to them, blanks the guest's name on the admin notifications about them, and does
+    /// the same for closed waitlist tickets. The booking rows stay.
     /// </summary>
     Task<RetentionOutcome> AnonymizeBeforeAsync(int restaurantId, DateTime cutoffUtc, DateTime nowUtc);
 

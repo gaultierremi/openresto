@@ -86,8 +86,13 @@ public class Restaurant
     /// <summary>Belgian VAT number as <c>BE0123456789</c>; null when the restaurant has none.</summary>
     public string? VatNumber { get; set; }
 
-    /// <summary>Months a guest stays identifiable after the sitting; see <see cref="BookingRetention"/>.</summary>
-    public int BookingRetentionMonths { get; set; } = BookingRetention.DefaultMonths;
+    /// <summary>
+    /// Months a guest stays identifiable after the sitting; see <see cref="BookingRetention"/>.
+    /// Null is no automatic erasure until the platform or the restaurateur fixes a period: that is
+    /// what every restaurant that predates the setting holds. A new restaurant starts at
+    /// <see cref="BookingRetention.DefaultMonths"/>.
+    /// </summary>
+    public int? BookingRetentionMonths { get; set; } = BookingRetention.DefaultMonths;
 
     /// <summary>The setup assistant's progress; read it through <see cref="OnboardingProgress"/>.</summary>
     public string? OnboardingSteps { get; set; }

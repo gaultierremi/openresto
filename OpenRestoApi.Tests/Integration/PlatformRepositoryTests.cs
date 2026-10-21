@@ -27,18 +27,37 @@ public sealed class PlatformRepositoryTests(TestWebAppFactory factory) : IClassF
         return await action(scope.ServiceProvider.GetRequiredService<AppDbContext>());
     }
 
-    private async Task<int> RestaurantAsync(int retentionMonths = 12)
+    private async Task<int> RestaurantAsync(int? retentionMonths = 12)
         => await InDbAsync(async db =>
         {
             var restaurant = new Restaurant { Name = "Rétention " + Guid.NewGuid().ToString("N")[..6], BookingRetentionMonths = retentionMonths };
             db.Restaurants.Add(restaurant);
             await db.SaveChangesAsync();
-
-            // A stored default stands in for a 0 on insert, so an out-of-bounds value can only be
-            // put there by writing over the row, which is what a bad import or a hand edit would do.
-            await db.Restaurants.Where(r => r.Id == restaurant.Id).ExecuteUpdateAsync(set => set.SetProperty(r => r.BookingRetentionMonths, retentionMonths));
             return restaurant.Id;
         });
+
+    private async Task<int> NotificationAsync(int restaurantId, Booking booking, string name = "Zoé Martin")
+        => await InDbAsync(async db =>
+        {
+            var notification = new AdminNotification
+            {
+                RestaurantId = restaurantId,
+                BookingId = booking.Id,
+                BookingRef = booking.BookingRef,
+                Type = NotificationType.BookingCreated,
+                CustomerName = name,
+                BookingDate = booking.Date,
+                Seats = booking.Seats,
+                RestaurantName = "Rétention",
+                CreatedAt = Now.AddMonths(-14),
+            };
+            db.AdminNotifications.Add(notification);
+            await db.SaveChangesAsync();
+            return notification.Id;
+        });
+
+    private Task<AdminNotification> ReloadNotificationAsync(int id)
+        => InDbAsync(db => db.AdminNotifications.AsNoTracking().FirstAsync(n => n.Id == id));
 
     private async Task<Booking> BookingAsync(int restaurantId, DateTime start, DateTime? end, bool cancelled = false, string name = "Zoé Martin")
         => await InDbAsync(async db =>
@@ -231,6 +250,76 @@ public sealed class PlatformRepositoryTests(TestWebAppFactory factory) : IClassF
     }
 
     [Fact]
+    public async Task TheNotificationOfAnExpiredBooking_LosesTheGuestsName_AndKeepsEverythingElse()
+    {
+        int restaurant = await RestaurantAsync();
+        DateTime start = Now.AddMonths(-13);
+        Booking old = await BookingAsync(restaurant, start, start.AddHours(1));
+        int id = await NotificationAsync(restaurant, old);
+
+        RetentionOutcome outcome = await RunAsync(restaurant, 12);
+
+        AdminNotification after = await ReloadNotificationAsync(id);
+        Assert.Equal(1, outcome.Notifications);
+        Assert.Equal(string.Empty, after.CustomerName);
+        Assert.Equal(old.BookingRef, after.BookingRef);
+        Assert.Equal(old.Id, after.BookingId);
+        Assert.Equal(start, after.BookingDate);
+        Assert.Equal(4, after.Seats);
+        Assert.Equal(NotificationType.BookingCreated, after.Type);
+        Assert.Equal("Rétention", after.RestaurantName);
+    }
+
+    [Fact]
+    public async Task ANotificationStaysIntact_WhileItsBookingIsInsideTheRetention_AndLosesTheNameOneSecondAfter()
+    {
+        int restaurant = await RestaurantAsync();
+        DateTime cutoff = BookingRetention.CutoffUtc(Now, 12);
+        Booking atCutoff = await BookingAsync(restaurant, cutoff.AddHours(-1), cutoff);
+        Booking justBefore = await BookingAsync(restaurant, cutoff.AddHours(-2), cutoff.AddSeconds(-1));
+        int inside = await NotificationAsync(restaurant, atCutoff);
+        int outside = await NotificationAsync(restaurant, justBefore);
+
+        RetentionOutcome outcome = await RunAsync(restaurant, 12);
+
+        Assert.Equal(1, outcome.Notifications);
+        Assert.Equal("Zoé Martin", (await ReloadNotificationAsync(inside)).CustomerName);
+        Assert.Equal(string.Empty, (await ReloadNotificationAsync(outside)).CustomerName);
+    }
+
+    [Fact]
+    public async Task TheNotificationOfAFutureBooking_OrAnotherRestaurantsExpiredOne_IsNeverTouched()
+    {
+        int mine = await RestaurantAsync();
+        int other = await RestaurantAsync();
+        Booking future = await BookingAsync(mine, Now.AddMonths(14), Now.AddMonths(14).AddHours(1));
+        Booking theirs = await BookingAsync(other, Now.AddMonths(-30), Now.AddMonths(-30).AddHours(1));
+        int futureNotification = await NotificationAsync(mine, future);
+        int theirNotification = await NotificationAsync(other, theirs);
+
+        RetentionOutcome outcome = await RunAsync(mine, 12);
+
+        Assert.Equal(0, outcome.Notifications);
+        Assert.Equal("Zoé Martin", (await ReloadNotificationAsync(futureNotification)).CustomerName);
+        Assert.Equal("Zoé Martin", (await ReloadNotificationAsync(theirNotification)).CustomerName);
+    }
+
+    [Fact]
+    public async Task ASecondPass_FindsNoNotificationLeftToBlank()
+    {
+        int restaurant = await RestaurantAsync();
+        Booking old = await BookingAsync(restaurant, Now.AddMonths(-20), Now.AddMonths(-20).AddHours(1));
+        await NotificationAsync(restaurant, old);
+
+        RetentionOutcome first = await RunAsync(restaurant, 12);
+        RetentionOutcome second = await RunAsync(restaurant, 12);
+
+        Assert.Equal(1, first.Notifications);
+        Assert.Equal(0, second.Notifications);
+        Assert.Equal(0, second.Total);
+    }
+
+    [Fact]
     public async Task EachRestaurantIsHeldToItsOwnPeriod_AndABadStoredPeriodIsPassedOver()
     {
         int short12 = await RestaurantAsync(12);
@@ -248,4 +337,53 @@ public sealed class PlatformRepositoryTests(TestWebAppFactory factory) : IClassF
         Assert.Equal("Zoé Martin", (await ReloadAsync(b.Id)).CustomerName);
         Assert.Equal("Zoé Martin", (await ReloadAsync(c.Id)).CustomerName);
     }
+
+    [Fact]
+    public async Task ARestaurantWithNoPeriod_IsNeverErasedFrom_UntilOneIsFixed()
+    {
+        int restaurant = await RestaurantAsync(retentionMonths: null);
+        Booking ancient = await BookingAsync(restaurant, Now.AddYears(-5), Now.AddYears(-5).AddHours(1));
+        Booking thirteenMonths = await BookingAsync(restaurant, Now.AddMonths(-13), Now.AddMonths(-13).AddHours(1));
+        int notification = await NotificationAsync(restaurant, ancient);
+
+        await RunServiceAsync();
+
+        Assert.Null(await StoredRetentionAsync(restaurant));
+        Assert.Equal("Zoé Martin", (await ReloadAsync(ancient.Id)).CustomerName);
+        Assert.Equal("Zoé Martin", (await ReloadAsync(thirteenMonths.Id)).CustomerName);
+        Assert.Equal("Zoé Martin", (await ReloadNotificationAsync(notification)).CustomerName);
+
+        await InDbAsync(db => db.Restaurants.Where(r => r.Id == restaurant)
+            .ExecuteUpdateAsync(set => set.SetProperty(r => r.BookingRetentionMonths, 12)));
+        await RunServiceAsync();
+
+        Assert.Null((await ReloadAsync(ancient.Id)).CustomerName);
+        Assert.Null((await ReloadAsync(thirteenMonths.Id)).CustomerName);
+        Assert.Equal(string.Empty, (await ReloadNotificationAsync(notification)).CustomerName);
+    }
+
+    [Fact]
+    public async Task AStoredNull_IsReadBackAsNull_NotAsTheDefaultOfANewRestaurant()
+    {
+        int restaurant = await RestaurantAsync(retentionMonths: null);
+        int fresh = await InDbAsync(async db =>
+        {
+            var created = new Restaurant { Name = "Neuf " + Guid.NewGuid().ToString("N")[..6] };
+            db.Restaurants.Add(created);
+            await db.SaveChangesAsync();
+            return created.Id;
+        });
+
+        Assert.Null(await StoredRetentionAsync(restaurant));
+        Assert.Equal(BookingRetention.DefaultMonths, await StoredRetentionAsync(fresh));
+    }
+
+    private async Task RunServiceAsync()
+    {
+        using IServiceScope scope = factory.Services.CreateScope();
+        await ActivatorUtilities.CreateInstance<BookingRetentionService>(scope.ServiceProvider, new FixedClock(Now)).RunAsync();
+    }
+
+    private Task<int?> StoredRetentionAsync(int restaurantId)
+        => InDbAsync(db => db.Restaurants.AsNoTracking().Where(r => r.Id == restaurantId).Select(r => r.BookingRetentionMonths).FirstAsync());
 }

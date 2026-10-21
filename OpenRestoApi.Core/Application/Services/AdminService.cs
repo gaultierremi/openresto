@@ -791,7 +791,12 @@ public class AdminService(
 
     public virtual async Task<RestaurantDto> CreateRestaurantAsync(string name, string? address)
     {
-        var restaurant = new Restaurant { Name = name.Trim(), Address = address?.Trim() };
+        var restaurant = new Restaurant
+        {
+            Name = name.Trim(),
+            Address = address?.Trim(),
+            BookingRetentionMonths = BookingRetention.DefaultMonths,
+        };
         await _restaurantRepository.AddAsync(restaurant);
 
         DescribeRestaurant(AuditActions.RestaurantCreate, restaurant,

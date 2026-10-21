@@ -210,7 +210,7 @@ public class OnboardingService(
         string companyNumber = BelgianBusinessNumber.NormalizeCompanyNumber(req.CompanyNumber, ErrorCodes.OnboardingCompanyNumberInvalid)
             ?? throw new ValidationException("The company number is required.") { Code = ErrorCodes.OnboardingCompanyNumberRequired };
         string? vat = BelgianBusinessNumber.NormalizeVat(req.VatNumber, ErrorCodes.OnboardingVatInvalid);
-        int retention = req.BookingRetentionMonths ?? restaurant.BookingRetentionMonths;
+        int retention = req.BookingRetentionMonths ?? restaurant.BookingRetentionMonths ?? BookingRetention.DefaultMonths;
         if (!BookingRetention.IsValid(retention))
         {
             throw new ValidationException("The retention period must be between 1 and 60 months.")
@@ -534,7 +534,7 @@ public class OnboardingService(
                 LegalName = site.Legal.Name,
                 CompanyNumber = site.Legal.CompanyNumber,
                 VatNumber = restaurant.VatNumber,
-                BookingRetentionMonths = restaurant.BookingRetentionMonths,
+                BookingRetentionMonths = restaurant.BookingRetentionMonths ?? BookingRetention.DefaultMonths,
             },
             Hours = new OnboardingHoursDto
             {

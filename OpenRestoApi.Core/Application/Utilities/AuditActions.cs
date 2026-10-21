@@ -116,6 +116,7 @@ public static class AuditActions
     public const string PlatformSuspend = "platform.suspend";
     public const string PlatformReactivate = "platform.reactivate";
     public const string PlatformGuestDataAccess = "platform.guest_data_access";
+    public const string PlatformRetentionSet = "platform.retention_set";
     public const string OnboardingInvitationAccept = "onboarding.invitation_accept";
     public const string OnboardingSave = "onboarding.save";
     public const string OnboardingPublish = "onboarding.publish";

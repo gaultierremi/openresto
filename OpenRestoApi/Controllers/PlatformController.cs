@@ -42,6 +42,11 @@ public class PlatformController(PlatformService platform) : ControllerBase
     public async Task<ActionResult<PlatformRestaurantDto>> Reactivate(int restaurantId)
         => Ok(await _platform.ReactivateAsync(restaurantId));
 
+    /// <summary>Sets how long the restaurant's guests stay identifiable; a null <c>months</c> is no automatic erasure.</summary>
+    [HttpPut("restaurants/{restaurantId:int}/retention")]
+    public async Task<ActionResult<PlatformRestaurantDto>> SetRetention(int restaurantId, [FromBody] SetRetentionRequest req)
+        => Ok(await _platform.SetRetentionAsync(restaurantId, req));
+
     /// <summary>A POST although it reads: opening a restaurant's guests is an act that lands in the audit trail, with its reason.</summary>
     [HttpPost("restaurants/{restaurantId:int}/guest-data-access")]
     public async Task<ActionResult<GuestDataAccessDto>> AccessGuestData(int restaurantId, [FromBody] GuestDataAccessRequest req)
