@@ -81,6 +81,39 @@ describe("formatters - fmtDateTime", () => {
   });
 });
 
+describe("formatters - the restaurant's clock", () => {
+  // 19:00 UTC: 15:00 in New York (UTC-4 in October), 21:00 in Brussels (UTC+2).
+  const instant = new Date("2026-10-10T19:00:00Z");
+
+  it("reads the same instant as the hour of whichever zone it is given", () => {
+    setActiveLocale("en-GB");
+    expect(fmtTime(instant, "America/New_York")).toBe("15:00");
+    expect(fmtTime(instant, "Europe/Brussels")).toBe("21:00");
+  });
+
+  it("reads the day on that zone's clock too, not only the hour", () => {
+    setActiveLocale("en-GB");
+    const justAfterMidnightInBrussels = new Date("2026-10-10T22:30:00Z");
+    expect(fmtDate(justAfterMidnightInBrussels, "America/New_York")).toContain("10");
+    expect(fmtDate(justAfterMidnightInBrussels, "Europe/Brussels")).toContain("11");
+    expect(fmtDateTime(instant, "America/New_York")).toContain("15:00");
+    expect(fmtYear(justAfterMidnightInBrussels, "Europe/Brussels")).toBe("2026");
+  });
+
+  it("follows the device when no zone is given", () => {
+    setActiveLocale("en-GB");
+    expect(fmtTime(instant)).toBe(
+      instant.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
+    );
+    expect(fmtTime(instant, undefined)).toBe(fmtTime(instant));
+  });
+
+  it("follows the device rather than throwing on a zone the platform does not know", () => {
+    setActiveLocale("en-GB");
+    expect(fmtTime(instant, "Not/AZone")).toBe(fmtTime(instant));
+  });
+});
+
 describe("formatters - fmtDateTimeInZone", () => {
   it("renders the instant in the given IANA timezone rather than the active locale's default", () => {
     setActiveLocale("en-GB");
