@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.Utilities;
+using OpenRestoApi.Infrastructure.Auditing;
 using OpenRestoApi.Infrastructure.Auth;
 
 namespace OpenRestoApi.Controllers;
@@ -25,6 +26,7 @@ public class NotificationsController(INotificationService notificationService) :
     /// type values: BookingCreated | BookingCancelled | RestaurantNearlyFull
     /// </summary>
     [HttpGet("notifications")]
+    [ReadsGuestData("Notifications")]
     public async Task<IActionResult> GetNotifications(
         [FromQuery] int? restaurantId,
         [FromQuery] string? type,

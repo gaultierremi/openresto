@@ -17,6 +17,12 @@ export interface RowTextButtonProps {
    * is announced. Left undefined the button is a plain action and announces nothing extra.
    */
   selected?: boolean;
+  /**
+   * For one of a group of pills of which exactly one is chosen (inside a `radiogroup`): the
+   * button becomes a radio and `selected` is what it announces as checked. Without `selected`
+   * there is no state to announce, so it stays a plain button.
+   */
+  radio?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -37,18 +43,25 @@ export function RowTextButton({
   disabled = false,
   icon,
   selected,
+  radio = false,
   style,
 }: RowTextButtonProps) {
   const contentColor = selected ? theme.colors.white : color;
+  const asRadio = radio && selected !== undefined;
+  // react-native-web reads the `aria-*` prop, not `accessibilityState`, so a radio states its
+  // choice through both.
+  const stateProps = asRadio
+    ? { accessibilityState: { disabled, checked: selected }, "aria-checked": selected }
+    : { accessibilityState: { disabled, ...(selected === undefined ? {} : { selected }) } };
 
   return (
     <Pressable
       testID={testID}
       onPress={onPress}
       disabled={disabled}
-      accessibilityRole="button"
+      accessibilityRole={asRadio ? "radio" : "button"}
       accessibilityLabel={accessibilityLabel ?? label}
-      accessibilityState={{ disabled, ...(selected === undefined ? {} : { selected }) }}
+      {...stateProps}
       hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
       style={({ pressed }) => [
         styles.pill,

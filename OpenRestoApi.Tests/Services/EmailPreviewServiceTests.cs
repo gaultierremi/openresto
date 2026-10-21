@@ -22,6 +22,7 @@ public class EmailPreviewServiceTests
 
     private readonly Mock<IRestaurantRepository> _restaurants = new();
     private readonly Mock<IBrandSettingsRepository> _brandRepo = new();
+    private string? _defaultLocale;
 
     private static Restaurant Location(int id, string name) => new()
     {
@@ -43,7 +44,9 @@ public class EmailPreviewServiceTests
             WebsiteUrl = "https://bookings.example.com",
         });
 
-        var configuration = new ConfigurationBuilder().Build();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(_defaultLocale is null ? [] : [new("Locale:Default", _defaultLocale)])
+            .Build();
         return new EmailPreviewService(
             _restaurants.Object,
             new BrandService(_brandRepo.Object, configuration),
@@ -104,6 +107,19 @@ public class EmailPreviewServiceTests
         EmailPreviewResult result = await Service(location).BuildConfirmationPreviewAsync(null);
 
         Assert.Equal(new EmailTemplateService().BuildConfirmationSubject(location), result.Subject);
+    }
+
+    [Theory]
+    [InlineData("nl", "Reservatie bevestigd")]
+    [InlineData("fr", "Réservation confirmée")]
+    [InlineData("es", "Booking confirmed")]
+    public async Task Preview_IsWrittenInTheInstanceDefaultLanguage(string defaultLocale, string expectedSubjectStart)
+    {
+        _defaultLocale = defaultLocale;
+
+        EmailPreviewResult result = await Service(Location(1, "Riverside")).BuildConfirmationPreviewAsync(null);
+
+        Assert.StartsWith(expectedSubjectStart, result.Subject, StringComparison.Ordinal);
     }
 
     [Fact]

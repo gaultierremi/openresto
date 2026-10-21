@@ -19,6 +19,7 @@ public class GuestReminderCopyTests
     [InlineData("fr", "Votre table chez Bistro", "Demain à 19:30", "Aujourd'hui à 19:30", " à 19:30", "2 convives", "Réf. crispy-basil-truffle")]
     [InlineData("es", "Su mesa en Bistro", "Mañana a las 19:30", "Hoy a las 19:30", " a las 19:30", "2 comensales", "Ref. crispy-basil-truffle")]
     [InlineData("de", "Ihr Tisch im Bistro", "Morgen um 19:30", "Heute um 19:30", " um 19:30", "2 Gäste", "Ref. crispy-basil-truffle")]
+    [InlineData("nl", "Uw tafel bij Bistro", "Morgen om 19:30", "Vandaag om 19:30", " om 19:30", "2 gasten", "Ref. crispy-basil-truffle")]
     public void Build_UsesTheGuestsLocale(
         string locale, string title, string tomorrow, string today, string datedInfix, string guests, string reference)
     {
@@ -40,6 +41,7 @@ public class GuestReminderCopyTests
     [InlineData("fr", "1 convive")]
     [InlineData("es", "1 comensal")]
     [InlineData("de", "1 Gast")]
+    [InlineData("nl", "1 gast")]
     public void Build_UsesTheSingularForOneGuest(string locale, string oneGuest)
     {
         (_, string body) = GuestReminderCopy.Build(locale, Restaurant, Sitting, Sitting.AddDays(-1), 1, Ref);

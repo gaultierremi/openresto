@@ -63,6 +63,8 @@ public partial class BookingMapper
     [MapperIgnoreTarget(nameof(Booking.BookingRef))]
     [MapperIgnoreTarget(nameof(Booking.EndTime))]
     [MapperIgnoreTarget(nameof(Booking.TableGroup))]
+    [MapperIgnoreTarget(nameof(Booking.Locale))]
+    [MapperIgnoreSource(nameof(BookingDto.Locale))]
     [MapperIgnoreSource(nameof(BookingDto.isHeld))]
     [MapperIgnoreSource(nameof(BookingDto.HoldId))]
     [MapperIgnoreSource(nameof(BookingDto.MemberTableIds))]
