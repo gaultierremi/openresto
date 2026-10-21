@@ -6,7 +6,8 @@ const RESTAURANT_ID = 1;
 const SLUG = "e2e-mon-site";
 const CONTACT_EMAIL = "contact@e2e-mon-site.example";
 const siteApi = `/api/admin/restaurants/${RESTAURANT_ID}/site`;
-const locationApi = `/api/admin/restaurants/${RESTAURANT_ID}`;
+// PATCH on /api/admin/restaurants/{id} only reads `isArchived`; a location's fields go through PUT.
+const locationApi = `/api/restaurants/${RESTAURANT_ID}`;
 
 interface SiteDto {
   isPublished: boolean;
@@ -17,6 +18,15 @@ interface SiteDto {
 
 const getSite = async (request: APIRequestContext) =>
   (await (await request.get(siteApi)).json()) as SiteDto;
+
+async function setContactEmail(request: APIRequestContext, email: string) {
+  const { name } = (await (await request.get(locationApi)).json()) as { name: string };
+  const res = await request.put(locationApi, { data: { name, emailAddress: email } });
+  expect(res.ok()).toBe(true);
+  // The write must have landed: an ignored field answers 2xx too.
+  const saved = (await (await request.get(locationApi)).json()) as { emailAddress?: string | null };
+  expect(saved.emailAddress ?? "").toBe(email);
+}
 
 /**
  * The "Mon site" screen through the real admin UI: what stops a site going live, the autosaved
@@ -37,9 +47,7 @@ test.describe("Mon site: fill in, publish, preview", () => {
       emailAddress?: string | null;
     }[];
     previousEmail = all.find((r) => r.id === RESTAURANT_ID)?.emailAddress ?? "";
-    expect((await request.patch(locationApi, { data: { emailAddress: CONTACT_EMAIL } })).ok()).toBe(
-      true
-    );
+    await setContactEmail(request, CONTACT_EMAIL);
     await request.post(`${siteApi}/unpublish`);
     const reset = await request.put(siteApi, {
       data: { slug: SLUG, theme: "Brasserie", tagline: "Cuisine belge", legal: {} },
@@ -49,7 +57,7 @@ test.describe("Mon site: fill in, publish, preview", () => {
 
   test.afterAll(async ({ request }) => {
     await request.post(`${siteApi}/unpublish`);
-    await request.patch(locationApi, { data: { emailAddress: previousEmail } });
+    await setContactEmail(request, previousEmail);
   });
 
   test.beforeEach(async ({ page }) => {
