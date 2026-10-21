@@ -196,6 +196,11 @@ try {
     .last()
     .click();
 
+  await row.getByRole("button", { name: "Conservation…" }).click();
+  await space.getByRole("dialog").waitFor();
+  await shot(space, "plateforme-conservation-pc.png");
+  await space.getByRole("dialog").getByRole("button", { name: "Annuler" }).last().click();
+
   // The admin shell refuses a phone-width screen on purpose, so the narrow capture is a tablet.
   const tablet = await session(TABLET, { locale: "fr" });
   await tablet.page.request.post("/api/admin/auth/login", {
