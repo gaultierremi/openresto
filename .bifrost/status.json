@@ -29,7 +29,7 @@
       "agent": "Claude",
       "branche": "feat/site-vitrine",
       "statut": "Prête à merger",
-      "pr": 11,
+      "pr": 18,
       "etape": "Relue MERGE (948dc05) ; le travail de #7 avait été fusionné dans sa branche empilée, pas dans main.",
       "maj": "2026-10-21T15:25:02+00:00"
     }
