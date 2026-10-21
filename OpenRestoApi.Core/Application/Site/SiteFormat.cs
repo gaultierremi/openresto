@@ -5,17 +5,11 @@ using OpenRestoApi.Core.Domain;
 namespace OpenRestoApi.Core.Application.Site;
 
 /// <summary>
-/// The French wording and number formats of a site. Fixed rather than looked up in culture data:
-/// the slim images this ships in carry no ICU, so <c>fr-BE</c> would quietly format like the
-/// invariant culture there.
+/// The number formats and link builders of a site; its wording is <see cref="SiteCopy"/>'s.
 /// </summary>
 public static class SiteFormat
 {
     private const string NoBreakSpace = " ";
-    private const string NarrowNoBreakSpace = " ";
-
-    private static readonly string[] _days =
-        ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
     private static readonly string[] _schemaDays =
         ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -31,52 +25,36 @@ public static class SiteFormat
         "BHD", "IQD", "JOD", "KWD", "LYD", "OMR", "TND",
     };
 
-    private static readonly (Allergens Flag, string Label)[] _allergens =
-    [
-        (Allergens.Gluten, "gluten"), (Allergens.Crustaceans, "crustacés"), (Allergens.Eggs, "œufs"),
-        (Allergens.Fish, "poisson"), (Allergens.Peanuts, "arachides"), (Allergens.Soybeans, "soja"),
-        (Allergens.Milk, "lait"), (Allergens.Nuts, "fruits à coque"), (Allergens.Celery, "céleri"),
-        (Allergens.Mustard, "moutarde"), (Allergens.Sesame, "sésame"), (Allergens.Sulphites, "sulfites"),
-        (Allergens.Lupin, "lupin"), (Allergens.Molluscs, "mollusques"),
-    ];
-
-    private static readonly (DietaryTags Flag, string Label)[] _diets =
-    [
-        (DietaryTags.Vegetarian, "Végétarien"), (DietaryTags.Vegan, "Végan"), (DietaryTags.GlutenFree, "Sans gluten"),
-    ];
-
     private static readonly HashSet<string> _httpsOnly = new(StringComparer.OrdinalIgnoreCase) { "https" };
 
     /// <summary>The one test a link to someone else's site passes before it is written to a page, whether as a link or as structured data.</summary>
     public static bool IsSecureUrl(string? url) => OpenRestoApi.Core.Application.Utilities.UrlValidator.IsValid(url, _httpsOnly);
 
-    public static string DayName(int isoDay) => _days[isoDay - 1];
+    /// <summary>The day's name in <paramref name="copy"/>'s language, French when none is given.</summary>
+    public static string DayName(int isoDay, SiteCopy? copy = null) => (copy ?? SiteCopy.French).Day(isoDay);
 
     /// <summary>The English day name schema.org's <c>dayOfWeek</c> asks for.</summary>
     public static string SchemaDay(int isoDay) => _schemaDays[isoDay - 1];
 
-    public static IReadOnlyList<string> AllergenLabels(Allergens allergens)
-        => _allergens.Where(a => allergens.HasFlag(a.Flag)).Select(a => a.Label).ToList();
+    public static IReadOnlyList<string> AllergenLabels(Allergens allergens, SiteCopy? copy = null)
+        => (copy ?? SiteCopy.French).AllergenLabels(allergens);
 
-    public static IReadOnlyList<string> DietLabels(DietaryTags tags)
-        => _diets.Where(d => tags.HasFlag(d.Flag)).Select(d => d.Label).ToList();
+    public static IReadOnlyList<string> DietLabels(DietaryTags tags, SiteCopy? copy = null)
+        => (copy ?? SiteCopy.French).DietLabels(tags);
 
     /// <summary>
-    /// A price the Belgian way: comma decimals, a space before the sign, and a narrow space between
-    /// thousands (<c>1 250,00 €</c>). The euro prints as its sign; any other currency as its code,
-    /// which is unambiguous where a dollar sign is not.
+    /// A price the Belgian way, in <paramref name="copy"/>'s language (French when none is given):
+    /// French writes <c>1 250,00 €</c> (narrow space between thousands, sign after), Dutch
+    /// <c>€ 1.250,00</c> (dot between thousands, sign before). The euro prints as its sign; any
+    /// other currency as its code, which is unambiguous where a dollar sign is not.
     /// </summary>
     /// <seealso>SiteFormatTests.Price_PrintsEurosTheBelgianWay</seealso>
-    public static string Price(long minor, string currency)
+    /// <seealso>SiteFormatTests.Price_PrintsEurosTheDutchSpeakingBelgianWay</seealso>
+    public static string Price(long minor, string currency, SiteCopy? copy = null)
     {
         int digits = Digits(currency);
         decimal divisor = (decimal)Math.Pow(10, digits);
-        decimal amount = minor / divisor;
-
-        string text = amount.ToString("N" + digits, CultureInfo.InvariantCulture)
-            .Replace(",", NarrowNoBreakSpace, StringComparison.Ordinal)
-            .Replace(".", ",", StringComparison.Ordinal);
-        return $"{text}{NoBreakSpace}{(currency == "EUR" ? "€" : currency)}";
+        return (copy ?? SiteCopy.French).Money(minor / divisor, digits, currency);
     }
 
     /// <summary>The amount for schema.org's <c>price</c>: a plain decimal with a dot, no sign or grouping.</summary>

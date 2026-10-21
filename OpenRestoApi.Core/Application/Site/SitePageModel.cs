@@ -48,6 +48,9 @@ public sealed record SitePageModel
 
     /// <summary>Set for the admin's preview of a site that is not live: noindex, and a banner saying so.</summary>
     public bool IsDraft { get; init; }
+
+    /// <summary>The language the page is written in, one of <see cref="SiteLanguage"/>'s; anything else is read as French.</summary>
+    public string Language { get; init; } = SiteLanguage.Default;
 }
 
 /// <param name="IsoDay">1 = Monday … 7 = Sunday.</param>

@@ -27,8 +27,9 @@ public class UserService(
 
     public async Task<List<UserDto>> GetAllAsync()
     {
+        // Restaurateurs belong to the platform space, not to this team list.
         List<AdminCredential> users = await _credentialRepository.GetAllAsync();
-        return users.Select(UserMapper.ToDto).ToList();
+        return users.Where(u => u.Role != UserRoles.Restaurateur).Select(UserMapper.ToDto).ToList();
     }
 
     public async Task<UserDto> CreateAsync(CreateUserRequest req)

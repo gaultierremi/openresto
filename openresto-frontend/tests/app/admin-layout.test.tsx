@@ -50,6 +50,11 @@ jest.mock("@/context/BrandContext", () => ({
   useBrand: () => ({ appName: "Test App", primaryColor: "#000" }),
 }));
 
+const mockBrowserLocaleOptOut = jest.fn();
+jest.mock("@/context/LocaleContext", () => ({
+  useBrowserLocaleOptOut: () => mockBrowserLocaleOptOut(),
+}));
+
 describe("AdminLayout", () => {
   const mockRouter = {
     replace: jest.fn(),
@@ -83,12 +88,20 @@ describe("AdminLayout", () => {
     expect(screen.getByTestId("slot")).toBeTruthy();
   });
 
+  it("keeps the admin off the browser's language while it is mounted on web", async () => {
+    (checkSession as jest.Mock).mockResolvedValue({ user: "admin" });
+    render(<AdminLayout />);
+    await waitFor(() => expect(screen.getByTestId("sidebar")).toBeTruthy());
+    expect(mockBrowserLocaleOptOut).toHaveBeenCalled();
+  });
+
   it("sends a native visitor to the guest home rather than mounting the admin", async () => {
     const { Platform } = require("react-native");
     Platform.OS = "ios";
     (checkSession as jest.Mock).mockResolvedValue({ user: "admin" });
     render(<AdminLayout />);
     expect(screen.getByTestId("redirect-/")).toBeTruthy();
+    expect(mockBrowserLocaleOptOut).not.toHaveBeenCalled();
     expect(screen.queryByTestId("sidebar")).toBeNull();
     expect(screen.queryByTestId("slot")).toBeNull();
     // No session check either — the admin never mounts, so nothing asks who is signed in.

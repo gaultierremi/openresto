@@ -166,6 +166,114 @@ public class AdminAuditRepositoryTests : IDisposable
         Assert.Equal(1, inRange);
     }
 
+    private static AdminAuditEntry ReadEntry(DateTime at, int actorUserId, string label, int? restaurantId) => new()
+    {
+        OccurredAt = at,
+        ActorUserId = actorUserId,
+        ActorEmail = "admin@test.com",
+        ActorRole = UserRoles.Owner,
+        Action = AuditActions.GuestDataRead,
+        TargetLabel = label,
+        RestaurantId = restaurantId,
+        HttpMethod = "GET",
+        Path = "/api/admin/bookings",
+        StatusCode = 200,
+    };
+
+    /// <summary>Two accounts and two consecutive locations, so a foreign key never refuses a row.</summary>
+    private static async Task<(int Actor, int OtherActor, int Location, int OtherLocation)> SeedActorsAndLocationsAsync(AppDbContext db)
+    {
+        var first = new AdminCredential { Email = "reader-one@test.com", PasswordHash = "h", PasswordSalt = "s" };
+        var second = new AdminCredential { Email = "reader-two@test.com", PasswordHash = "h", PasswordSalt = "s" };
+        var oneLocation = new Restaurant { Name = "Audit One" };
+        var otherLocation = new Restaurant { Name = "Audit Two" };
+        db.AdminCredentials.AddRange(first, second);
+        db.Restaurants.AddRange(oneLocation, otherLocation);
+        await db.SaveChangesAsync();
+        return (first.Id, second.Id, oneLocation.Id, otherLocation.Id);
+    }
+
+    /// <summary>
+    /// A repeated read of guest data is one row only for the same person, screen and location,
+    /// and only from the moment it falls inside the window. Each axis is pinned on its own.
+    /// </summary>
+    [Theory]
+    [InlineData(7, "Bookings", 3, 100, true)]
+    [InlineData(7, "Bookings", 3, 99, false)]
+    [InlineData(8, "Bookings", 3, 100, false)]
+    [InlineData(7, "Waitlist", 3, 100, false)]
+    [InlineData(7, "Bookings", 4, 100, false)]
+    public async Task ExistsSinceAsync_MatchesOnlyTheSamePersonScreenLocationAndWindow(
+        int actor, string label, int restaurantId, int windowStartsSecondsBeforeNoon, bool expected)
+    {
+        using AppDbContext db = CreateContext();
+        var repo = new AdminAuditRepository(db);
+        (int firstActor, _, int firstLocation, _) = await SeedActorsAndLocationsAsync(db);
+        DateTime readAt = Noon.AddSeconds(-100);
+        await repo.AddAsync(ReadEntry(readAt, firstActor, "Bookings", firstLocation));
+
+        // The theory's 7/8 and 3/4 stand for "the same one" and "another one".
+        int askingActor = actor == 7 ? firstActor : firstActor + 1;
+        int askingLocation = restaurantId == 3 ? firstLocation : firstLocation + 1;
+        bool found = await repo.ExistsSinceAsync(
+            askingActor, "admin@test.com", null, AuditActions.GuestDataRead, label, askingLocation,
+            Noon.AddSeconds(-windowStartsSecondsBeforeNoon));
+
+        Assert.Equal(expected, found);
+    }
+
+    /// <summary>
+    /// The same account reading through an API key is a different "who" than its browser session:
+    /// the key's name rides on the display name, and the read must not be absorbed by the earlier row.
+    /// </summary>
+    [Theory]
+    [InlineData(null, true)]
+    [InlineData("Casey", false)]
+    [InlineData("Casey (API key \"reports\")", false)]
+    public async Task ExistsSinceAsync_DoesNotMatchAnotherCredentialOfTheSameAccount(string? askingDisplayName, bool expected)
+    {
+        using AppDbContext db = CreateContext();
+        var repo = new AdminAuditRepository(db);
+        (int actor, _, int location, _) = await SeedActorsAndLocationsAsync(db);
+        await repo.AddAsync(ReadEntry(Noon, actor, "Bookings", location));
+
+        bool found = await repo.ExistsSinceAsync(
+            actor, "admin@test.com", askingDisplayName, AuditActions.GuestDataRead, "Bookings", location, Noon.AddMinutes(-1));
+
+        Assert.Equal(expected, found);
+    }
+
+    [Fact]
+    public async Task ExistsSinceAsync_MatchesTheSameApiKey_AndNotAnother()
+    {
+        using AppDbContext db = CreateContext();
+        var repo = new AdminAuditRepository(db);
+        (int actor, _, int location, _) = await SeedActorsAndLocationsAsync(db);
+        AdminAuditEntry viaKey = ReadEntry(Noon, actor, "Bookings", location);
+        viaKey.ActorDisplayName = "Casey (API key \"reports\")";
+        await repo.AddAsync(viaKey);
+
+        Assert.True(await repo.ExistsSinceAsync(
+            actor, "admin@test.com", "Casey (API key \"reports\")", AuditActions.GuestDataRead, "Bookings", location, Noon.AddMinutes(-1)));
+        Assert.False(await repo.ExistsSinceAsync(
+            actor, "admin@test.com", "Casey (API key \"other\")", AuditActions.GuestDataRead, "Bookings", location, Noon.AddMinutes(-1)));
+    }
+
+    [Fact]
+    public async Task ExistsSinceAsync_MatchesAnActorWithNoIdByEmail()
+    {
+        using AppDbContext db = CreateContext();
+        var repo = new AdminAuditRepository(db);
+        AdminAuditEntry legacy = ReadEntry(Noon, actorUserId: 0, "Bookings", restaurantId: null);
+        legacy.ActorUserId = null;
+        await repo.AddAsync(legacy);
+
+        Assert.True(await repo.ExistsSinceAsync(
+            null, "admin@test.com", null, AuditActions.GuestDataRead, "Bookings", null, Noon.AddMinutes(-1)));
+        Assert.False(await repo.ExistsSinceAsync(
+            null, "someone-else@test.com", null, AuditActions.GuestDataRead, "Bookings", null, Noon.AddMinutes(-1)));
+    }
+
     [Fact]
     public async Task DeleteOlderThanAsync_RemovesOnlyEntriesBeforeTheCutoff()
     {

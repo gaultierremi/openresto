@@ -24,11 +24,12 @@ internal class SiteRepository(AppDbContext db) : ISiteRepository
     public async Task<RestaurantSite?> FindPublishedBySlugAsync(string slug)
         => await _db.RestaurantSites
             .Include(s => s.Restaurant)
-            .FirstOrDefaultAsync(s => s.Slug == slug && s.IsPublished && !s.Restaurant!.IsArchived);
+            .FirstOrDefaultAsync(s => s.Slug == slug && s.IsPublished
+                && !s.Restaurant!.IsArchived && s.Restaurant.Status == RestaurantStatus.Published);
 
     public async Task<List<RestaurantSite>> GetPublishedAsync()
         => await _db.RestaurantSites
-            .Where(s => s.IsPublished && !s.Restaurant!.IsArchived)
+            .Where(s => s.IsPublished && !s.Restaurant!.IsArchived && s.Restaurant.Status == RestaurantStatus.Published)
             .ToListAsync();
 
     public void Add(RestaurantSite site) => _db.RestaurantSites.Add(site);

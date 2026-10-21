@@ -220,6 +220,44 @@ public static class ErrorCodes
     public const string SiteImageUnreadable = "site.image_unreadable";
     public const string SiteNotPublishable = "site.not_publishable";
     public const string SiteLocationArchived = "site.location_archived";
+    public const string SiteColorInvalid = "site.color_invalid";
+
+    // ── Platform & onboarding ────────────────────────────────────────────────
+    /// <summary>
+    /// A restaurateur's lookup of a restaurant they are not a member of, an unknown id and an
+    /// unusable invitation token all answer with this, so nothing says which it was.
+    /// </summary>
+    public const string PlatformNotFound = "platform.not_found";
+    public const string PlatformInvitationInvalid = "platform.invitation_invalid";
+    public const string PlatformInvitationEmailInvalid = "platform.invitation_email_invalid";
+    public const string PlatformInvitationAlreadyAccepted = "platform.invitation_already_accepted";
+    public const string PlatformRestaurantNameRequired = "platform.restaurant_name_required";
+    public const string PlatformAccessReasonRequired = "platform.access_reason_required";
+    public const string PlatformSuspendReasonTooLong = "platform.suspend_reason_too_long";
+    public const string PlatformAlreadySuspended = "platform.already_suspended";
+    public const string PlatformNotSuspended = "platform.not_suspended";
+    public const string PlatformRetentionInvalid = "platform.retention_invalid";
+    public const string OnboardingConsentRequired = "onboarding.consent_required";
+    public const string OnboardingConsentOutdated = "onboarding.consent_outdated";
+    public const string OnboardingSuspended = "onboarding.suspended";
+    public const string OnboardingNotPublishable = "onboarding.not_publishable";
+    public const string OnboardingStepUnknown = "onboarding.step_unknown";
+    public const string OnboardingStepRequired = "onboarding.step_required";
+    public const string OnboardingNameRequired = "onboarding.name_required";
+    public const string OnboardingAddressRequired = "onboarding.address_required";
+    public const string OnboardingPhoneRequired = "onboarding.phone_required";
+    public const string OnboardingEmailRequired = "onboarding.email_required";
+    public const string OnboardingLegalNameRequired = "onboarding.legal_name_required";
+    public const string OnboardingCompanyNumberRequired = "onboarding.company_number_required";
+    public const string OnboardingCompanyNumberInvalid = "onboarding.company_number_invalid";
+    public const string OnboardingVatInvalid = "onboarding.vat_invalid";
+    public const string OnboardingRetentionInvalid = "onboarding.retention_invalid";
+    public const string OnboardingLayoutEmpty = "onboarding.layout_empty";
+    public const string OnboardingLayoutInvalid = "onboarding.layout_invalid";
+    public const string OnboardingHoursNoOpenDay = "onboarding.hours_no_open_day";
+    public const string OnboardingLayoutInUse = "onboarding.layout_in_use";
+    public const string OnboardingMenuInvalid = "onboarding.menu_invalid";
+    public const string LegalDocumentNotFound = "legal.document_not_found";
 
     // ── Media ────────────────────────────────────────────────────────────────
     public const string MediaUnsupportedImageType = "media.unsupported_image_type";

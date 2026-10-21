@@ -37,14 +37,15 @@ public sealed class EmailPreviewService(
         string websiteUrl = _brandService.GetWebsiteUrl(brand);
 
         Booking booking = EmailPreviewSample.BookingFor(restaurant, _clock.UtcNow);
+        string language = GuestLanguage.ForEmail(null, _brandService.GetDefaultLocale(brand));
 
         return new EmailPreviewResult
         {
             RestaurantId = restaurant.Id == 0 ? null : restaurant.Id,
             RestaurantName = restaurant.Name,
             RecipientEmail = EmailPreviewSample.CustomerEmail,
-            Subject = _templateService.BuildConfirmationSubject(restaurant),
-            Html = _templateService.BuildConfirmationEmail(booking, restaurant, brand, websiteUrl),
+            Subject = _templateService.BuildConfirmationSubject(restaurant, language),
+            Html = _templateService.BuildConfirmationEmail(booking, restaurant, brand, websiteUrl, language),
         };
     }
 }

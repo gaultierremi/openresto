@@ -125,6 +125,92 @@ public class AuditCoverageTests
         Assert.True(stale.Count == 0, "Stale audit exemptions: " + string.Join(", ", stale));
     }
 
+    /// <summary>
+    /// The admin GET endpoints that hand guest identity (names, e-mail addresses) to the caller.
+    /// Each lands a <c>guests.read</c> row, so adding one here is the decision that it does. An
+    /// action returning one of <see cref="GuestIdentityTypes"/> that is not on this list fails
+    /// <see cref="EveryAdminReadReturningAGuestType_DeclaresItself"/>; the ones that answer with
+    /// a bare <c>IActionResult</c> cannot be seen that way, which is what this list is for.
+    /// </summary>
+    private static readonly HashSet<string> GuestDataReads =
+    [
+        "AdminController.Overview",
+        "AdminController.GetBookings",
+        "AdminController.GetBooking",
+        "BookingsController.GetBookings",
+        "BookingsController.GetBooking",
+        "WaitlistController.GetBoard",
+        "RestaurantsController.GetScheduleConflicts",
+        "NotificationsController.GetNotifications",
+        "EmailStatusController.GetFailures",
+    ];
+
+    private static readonly Type[] GuestIdentityTypes =
+    [
+        typeof(OpenRestoApi.Core.Application.DTOs.BookingDetailDto),
+        typeof(OpenRestoApi.Core.Application.DTOs.BookingDto),
+        typeof(OpenRestoApi.Core.Application.DTOs.ScheduleConflictDto),
+        typeof(OpenRestoApi.Core.Application.DTOs.WaitlistEntryDto),
+        typeof(OpenRestoApi.Core.Application.DTOs.AdminNotificationDto),
+    ];
+
+    private static IEnumerable<(string Name, MethodInfo Method, Type Controller)> AdminReads()
+    {
+        IEnumerable<Type> controllers = typeof(OpenRestoApi.Controllers.AdminController).Assembly
+            .GetTypes()
+            .Where(t => t is { IsAbstract: false } && typeof(ControllerBase).IsAssignableFrom(t));
+
+        foreach (Type controller in controllers)
+        {
+            foreach (MethodInfo method in controller.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            {
+                bool isRead = method.GetCustomAttributes().OfType<IActionHttpMethodProvider>()
+                    .Any(v => v.HttpMethods.Contains("GET"));
+                if (isRead && AuditRequestClassifier.RequiresAdminPolicy(AuthorizeDataFor(controller, method)))
+                {
+                    yield return ($"{controller.Name}.{method.Name}", method, controller);
+                }
+            }
+        }
+    }
+
+    private static IEnumerable<Type> TypesReturnedBy(Type type)
+    {
+        yield return type;
+        if (!type.IsGenericType) yield break;
+        foreach (Type argument in type.GetGenericArguments())
+        {
+            foreach (Type inner in TypesReturnedBy(argument)) yield return inner;
+        }
+    }
+
+    [Fact]
+    public void TheDeclaredGuestDataReads_AreExactlyTheOnesListedHere()
+    {
+        HashSet<string> declared = AdminReads()
+            .Where(a => a.Method.GetCustomAttribute<ReadsGuestDataAttribute>() is not null)
+            .Select(a => a.Name)
+            .ToHashSet();
+
+        Assert.True(declared.SetEquals(GuestDataReads),
+            "Declared but not listed: " + string.Join(", ", declared.Except(GuestDataReads))
+            + "\nListed but not declared (or no longer an admin read): " + string.Join(", ", GuestDataReads.Except(declared)));
+    }
+
+    [Fact]
+    public void EveryAdminReadReturningAGuestType_DeclaresItself()
+    {
+        List<string> silent = AdminReads()
+            .Where(a => TypesReturnedBy(a.Method.ReturnType).Any(t => GuestIdentityTypes.Contains(t)))
+            .Where(a => a.Method.GetCustomAttribute<ReadsGuestDataAttribute>() is null)
+            .Select(a => a.Name)
+            .ToList();
+
+        Assert.True(silent.Count == 0,
+            "These admin reads return a guest's identity and land no audit row; add [ReadsGuestData]:\n  "
+            + string.Join("\n  ", silent));
+    }
+
     [Fact]
     public void TheAuditTrailItselfIsOwnerOnlyAndReadOnly()
     {

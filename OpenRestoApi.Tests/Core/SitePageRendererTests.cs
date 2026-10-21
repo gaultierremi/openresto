@@ -51,7 +51,7 @@ public partial class SitePageRendererTests
         Assert.Contains("<h1>Brasserie de la Senne Dorée</h1>", html, StringComparison.Ordinal);
         Assert.Contains("<p class=\"tagline\">Cuisine belge de saison et bières d&#39;abbaye</p>", html, StringComparison.Ordinal);
         Assert.Contains("alt=\"Logo de Brasserie de la Senne Dorée\"", html, StringComparison.Ordinal);
-        Assert.Contains("<a class=\"btn\" href=\"/r/brasserie-de-la-senne-doree/reserver\">Réserver une table</a>", html, StringComparison.Ordinal);
+        Assert.Contains("<a class=\"btn\" href=\"/r/brasserie-de-la-senne-doree/reserver?lang=fr\">Réserver une table</a>", html, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public partial class SitePageRendererTests
     {
         string html = Html();
 
-        Assert.Equal(3, Regex.Matches(html, "href=\"/r/brasserie-de-la-senne-doree/reserver\"").Count);
+        Assert.Equal(3, Regex.Matches(html, "href=\"/r/brasserie-de-la-senne-doree/reserver\\?lang=fr\"").Count);
         Assert.Contains("class=\"book-bar\"", html, StringComparison.Ordinal);
     }
 
@@ -196,10 +196,12 @@ public partial class SitePageRendererTests
 
     // ── Nothing third-party, nothing executable ──────────────────────────────
 
-    [Fact]
-    public void Render_LoadsNothingFromAnotherOrigin()
+    [Theory]
+    [InlineData("fr")]
+    [InlineData("nl")]
+    public void Render_LoadsNothingFromAnotherOrigin(string language)
     {
-        string html = Html();
+        string html = Html(m => m with { Language = language });
 
         // Every absolute reference is a link the visitor follows (maps, social, privacy policy, the
         // canonical address); none is a resource the page fetches by itself.
@@ -285,12 +287,15 @@ public partial class SitePageRendererTests
 
     // ── Escaping ─────────────────────────────────────────────────────────────
 
-    [Fact]
-    public void Render_EscapesEveryTextFieldAThirdPartyCanWrite()
+    [Theory]
+    [InlineData("fr")]
+    [InlineData("nl")]
+    public void Render_EscapesEveryTextFieldAThirdPartyCanWrite(string language)
     {
         const string attack = "<script>alert(1)</script>\"'&";
         string html = Html(m => m with
         {
+            Language = language,
             Name = attack,
             Tagline = attack,
             Address = attack,

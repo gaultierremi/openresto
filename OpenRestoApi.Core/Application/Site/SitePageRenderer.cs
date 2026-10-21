@@ -6,7 +6,18 @@ using OpenRestoApi.Core.Domain;
 namespace OpenRestoApi.Core.Application.Site;
 
 /// <summary>A rendered page and the policy that goes with it, which hashes the page's one stylesheet.</summary>
-public sealed record RenderedSitePage(string Html, string ContentSecurityPolicy);
+public sealed record RenderedSitePage(string Html, string ContentSecurityPolicy)
+{
+    /// <summary>What the page was written from, so a caller can write the same page again in another <see cref="SitePageModel.Language"/>.</summary>
+    public SitePageModel? Model { get; init; }
+
+    /// <summary>This page in <paramref name="language"/>: itself when it is already written in it, or when it carries no model to write again.</summary>
+    /// <seealso>SitePageRendererTests.In_WritesTheSamePageInTheOtherLanguage</seealso>
+    public RenderedSitePage In(string language)
+        => Model is null || SiteCopy.For(language) == SiteCopy.For(Model.Language)
+            ? this
+            : SitePageRenderer.Render(Model with { Language = language });
+}
 
 /// <summary>
 /// Writes a site as one self-contained HTML document: inline stylesheet, no script, no web font,
@@ -26,19 +37,22 @@ public static class SitePageRenderer
 
     public static RenderedSitePage Render(SitePageModel m)
     {
+        SiteCopy c = SiteCopy.For(m.Language);
         string css = SiteThemes.Css(m.Theme, m.PrimaryColor);
         string policy = ContentSecurityPolicyFor(css);
 
-        string canonical = SiteFormat.AbsoluteUrl(m.BaseUrl, $"/r/{m.Slug}");
-        string bookPath = $"/r/{m.Slug}/reserver";
+        string pagePath = $"/r/{m.Slug}";
+        string canonical = SiteFormat.AbsoluteUrl(m.BaseUrl, pagePath);
+        string bookPath = $"{pagePath}/reserver";
+        string bookHref = SiteLanguage.WithLanguage(bookPath, c.Language);
         bool canBook = !m.WalkInOnly;
         string? phoneHref = SiteFormat.PhoneHref(m.Phone);
-        string title = $"{m.Name} – Carte, horaires et {(canBook ? "réservation" : "contact")}";
-        string description = Description(m, canBook);
+        string title = c.TitleFor(m.Name, canBook);
+        string description = Description(m, c, canBook);
         string? shareImage = m.CoverUrl ?? m.Photos.FirstOrDefault()?.Url ?? m.LogoUrl;
 
         var sb = new StringBuilder(16 * 1024);
-        sb.Append("<!doctype html>\n<html lang=\"fr\">\n<head>\n<meta charset=\"utf-8\">\n");
+        sb.Append("<!doctype html>\n<html lang=\"").Append(c.Language).Append("\">\n<head>\n<meta charset=\"utf-8\">\n");
         sb.Append("<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n");
         sb.Append("<meta http-equiv=\"Content-Security-Policy\" content=\"").Append(E(MetaContentSecurityPolicyFor(css))).Append("\">\n");
         sb.Append("<meta name=\"referrer\" content=\"strict-origin-when-cross-origin\">\n");
@@ -49,8 +63,14 @@ public static class SitePageRenderer
             : "<meta name=\"robots\" content=\"index,follow,max-image-preview:large\">\n");
         sb.Append("<meta name=\"theme-color\" content=\"").Append(E(SiteThemes.PaletteFor(m.Theme, m.PrimaryColor).Background.Hex)).Append("\">\n");
         sb.Append("<link rel=\"canonical\" href=\"").Append(E(canonical)).Append("\">\n");
+        foreach (string language in new[] { SiteLanguage.French, SiteLanguage.Dutch })
+        {
+            sb.Append("<link rel=\"alternate\" hreflang=\"").Append(language).Append("\" href=\"")
+                .Append(E(SiteLanguage.WithLanguage(canonical, language))).Append("\">\n");
+        }
+        sb.Append("<link rel=\"alternate\" hreflang=\"x-default\" href=\"").Append(E(canonical)).Append("\">\n");
         sb.Append("<meta property=\"og:type\" content=\"restaurant.restaurant\">\n");
-        sb.Append("<meta property=\"og:locale\" content=\"fr_BE\">\n");
+        sb.Append("<meta property=\"og:locale\" content=\"").Append(c.OgLocale).Append("\">\n");
         sb.Append("<meta property=\"og:site_name\" content=\"").Append(E(m.Name)).Append("\">\n");
         sb.Append("<meta property=\"og:title\" content=\"").Append(E(title)).Append("\">\n");
         sb.Append("<meta property=\"og:description\" content=\"").Append(E(description)).Append("\">\n");
@@ -63,28 +83,40 @@ public static class SitePageRenderer
         sb.Append("<style>").Append(css).Append("</style>\n");
         sb.Append("<script type=\"application/ld+json\">").Append(SiteStructuredData.Build(m, canonical, bookPath)).Append("</script>\n");
         sb.Append("</head>\n<body>\n");
-        sb.Append("<a class=\"skip\" href=\"#contenu\">Aller au contenu</a>\n");
+        sb.Append("<a class=\"skip\" href=\"#contenu\">").Append(E(c.SkipLink)).Append("</a>\n");
         if (m.IsDraft)
         {
-            sb.Append("<div class=\"draft\" role=\"status\">Aperçu – ce site n’est pas publié : personne d’autre que vous ne le voit.</div>\n");
+            sb.Append("<div class=\"draft\" role=\"status\">").Append(E(c.DraftBanner)).Append("</div>\n");
         }
 
-        AppendHeader(sb, m, bookPath, canBook, phoneHref);
-        AppendNav(sb, m);
+        AppendLanguageSwitch(sb, c, pagePath);
+        AppendHeader(sb, m, c, bookHref, canBook, phoneHref);
+        AppendNav(sb, m, c);
         sb.Append("<main id=\"contenu\">\n");
-        AppendMenu(sb, m);
-        AppendHours(sb, m);
-        AppendGallery(sb, m);
-        AppendContact(sb, m, bookPath, canBook, phoneHref);
+        AppendMenu(sb, m, c);
+        AppendHours(sb, m, c);
+        AppendGallery(sb, m, c);
+        AppendContact(sb, m, c, bookHref, canBook, phoneHref);
         sb.Append("</main>\n");
-        AppendFooter(sb, m);
+        AppendFooter(sb, m, c);
         if (canBook)
         {
-            sb.Append("<div class=\"book-bar\"><a class=\"btn\" href=\"").Append(E(bookPath)).Append("\">Réserver une table</a></div>\n");
+            sb.Append("<div class=\"book-bar\"><a class=\"btn\" href=\"").Append(E(bookHref)).Append("\">").Append(E(c.BookTable)).Append("</a></div>\n");
         }
         sb.Append("</body>\n</html>\n");
 
-        return new RenderedSitePage(sb.ToString(), policy);
+        return new RenderedSitePage(sb.ToString(), policy) { Model = m };
+    }
+
+    /// <summary>The bare page an unknown, unpublished or archived address answers: it names no site, so it says nothing about which sites exist.</summary>
+    /// <seealso>SitePageRendererTests.NotFoundPage_IsWrittenInTheRequestedLanguage_AndNamesNoSite</seealso>
+    public static string NotFoundPage(string? language)
+    {
+        SiteCopy c = SiteCopy.For(language);
+        return "<!doctype html><html lang=\"" + c.Language + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+            + "<meta name=\"robots\" content=\"noindex\"><title>" + E(c.NotFoundTitle) + "</title></head>"
+            + "<body style=\"font:1.1rem/1.6 system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1rem\">"
+            + "<h1>" + E(c.NotFoundTitle) + "</h1><p>" + E(c.NotFoundBody) + "</p></body></html>";
     }
 
     /// <summary>
@@ -107,7 +139,25 @@ public static class SitePageRenderer
 
     private const string FrameAncestors = "frame-ancestors 'none'";
 
-    private static void AppendHeader(StringBuilder sb, SitePageModel m, string bookPath, bool canBook, string? phoneHref)
+    /// <summary>Plain links rather than a control: the page runs no script, and a link to the same page with the other language is what a crawler follows too.</summary>
+    private static void AppendLanguageSwitch(StringBuilder sb, SiteCopy current, string pagePath)
+    {
+        sb.Append("<nav class=\"lang\" aria-label=\"").Append(E(current.SwitchLabel)).Append("\"><div class=\"wrap\">");
+        foreach (SiteCopy option in new[] { SiteCopy.French, SiteCopy.Dutch })
+        {
+            if (option.Language != SiteCopy.French.Language)
+            {
+                sb.Append("<span aria-hidden=\"true\">|</span>");
+            }
+            sb.Append("<a href=\"").Append(E(SiteLanguage.WithLanguage(pagePath, option.Language))).Append("\" lang=\"").Append(option.Language)
+                .Append("\" hreflang=\"").Append(option.Language).Append("\" aria-label=\"").Append(E(option.LanguageName)).Append('"')
+                .Append(option == current ? " aria-current=\"true\"" : "").Append('>')
+                .Append(option.Language.ToUpperInvariant()).Append("</a>");
+        }
+        sb.Append("</div></nav>\n");
+    }
+
+    private static void AppendHeader(StringBuilder sb, SitePageModel m, SiteCopy c, string bookHref, bool canBook, string? phoneHref)
     {
         string? cover = MediaPath(m.CoverUrl);
         string? logo = MediaPath(m.LogoUrl);
@@ -120,7 +170,7 @@ public static class SitePageRenderer
         sb.Append("<div class=\"wrap\">\n");
         if (logo is not null)
         {
-            sb.Append("<img class=\"logo\" src=\"").Append(E(logo)).Append("\" alt=\"Logo de ").Append(E(m.Name)).Append("\">\n");
+            sb.Append("<img class=\"logo\" src=\"").Append(E(logo)).Append("\" alt=\"").Append(E(c.LogoAlt(m.Name))).Append("\">\n");
         }
         sb.Append("<h1>").Append(E(m.Name)).Append("</h1>\n");
         if (!string.IsNullOrWhiteSpace(m.Tagline))
@@ -130,52 +180,52 @@ public static class SitePageRenderer
         sb.Append("<div class=\"actions\">\n");
         if (canBook)
         {
-            sb.Append("<a class=\"btn\" href=\"").Append(E(bookPath)).Append("\">Réserver une table</a>\n");
+            sb.Append("<a class=\"btn\" href=\"").Append(E(bookHref)).Append("\">").Append(E(c.BookTable)).Append("</a>\n");
         }
         if (m.Menus.Count > 0)
         {
-            sb.Append("<a class=\"btn alt\" href=\"#carte\">Voir la carte</a>\n");
+            sb.Append("<a class=\"btn alt\" href=\"#carte\">").Append(E(c.SeeMenu)).Append("</a>\n");
         }
         if (phoneHref is not null)
         {
-            sb.Append("<a class=\"btn alt\" href=\"").Append(E(phoneHref)).Append("\">Appeler</a>\n");
+            sb.Append("<a class=\"btn alt\" href=\"").Append(E(phoneHref)).Append("\">").Append(E(c.Call)).Append("</a>\n");
         }
         sb.Append("</div>\n");
         if (!canBook)
         {
-            sb.Append("<p class=\"note\">Pas de réservation en ligne : venez directement, la table est à vous dès qu’elle est libre.</p>\n");
+            sb.Append("<p class=\"note\">").Append(E(c.NoOnlineBooking)).Append("</p>\n");
         }
         sb.Append("</div>\n</header>\n");
     }
 
-    private static void AppendNav(StringBuilder sb, SitePageModel m)
+    private static void AppendNav(StringBuilder sb, SitePageModel m, SiteCopy c)
     {
         var links = new List<(string Href, string Label)>();
-        if (m.Menus.Count > 0) links.Add(("#carte", "Carte"));
-        links.Add(("#horaires", "Horaires"));
-        if (m.Photos.Count > 0) links.Add(("#galerie", "Galerie"));
-        links.Add(("#contact", "Contact"));
+        if (m.Menus.Count > 0) links.Add(("#carte", c.NavMenu));
+        links.Add(("#horaires", c.NavHours));
+        if (m.Photos.Count > 0) links.Add(("#galerie", c.NavGallery));
+        links.Add(("#contact", c.NavContact));
 
-        sb.Append("<nav class=\"sections\" aria-label=\"Sections de la page\"><div class=\"wrap\"><ul>");
+        sb.Append("<nav class=\"sections\" aria-label=\"").Append(E(c.NavLabel)).Append("\"><div class=\"wrap\"><ul>");
         foreach ((string href, string label) in links)
         {
-            sb.Append("<li><a href=\"").Append(href).Append("\">").Append(label).Append("</a></li>");
+            sb.Append("<li><a href=\"").Append(href).Append("\">").Append(E(label)).Append("</a></li>");
         }
         sb.Append("</ul></div></nav>\n");
     }
 
-    private static void AppendMenu(StringBuilder sb, SitePageModel m)
+    private static void AppendMenu(StringBuilder sb, SitePageModel m, SiteCopy c)
     {
         if (m.Menus.Count == 0)
         {
             return;
         }
 
-        sb.Append("<section id=\"carte\" aria-labelledby=\"t-carte\"><div class=\"wrap\">\n<h2 id=\"t-carte\">La carte</h2>\n");
-        sb.Append("<p class=\"lede\">Les allergènes sont indiqués sous chaque plat ; en cas de doute, demandez à l’équipe.</p>\n");
+        sb.Append("<section id=\"carte\" aria-labelledby=\"t-carte\"><div class=\"wrap\">\n<h2 id=\"t-carte\">").Append(E(c.MenuHeading)).Append("</h2>\n");
+        sb.Append("<p class=\"lede\">").Append(E(c.AllergenNote)).Append("</p>\n");
         foreach (PublicMenuView menu in m.Menus)
         {
-            // One menu is "La carte" already; a heading only earns its place when it tells menus apart.
+            // One menu is the section's own heading already; a heading only earns its place when it tells menus apart.
             if (m.Menus.Count > 1)
             {
                 sb.Append("<h3>").Append(E(menu.Name)).Append("</h3>\n");
@@ -195,7 +245,7 @@ public static class SitePageRenderer
                 sb.Append("<ul class=\"dishes\">\n");
                 foreach (PublicMenuItemView item in category.Items)
                 {
-                    AppendDish(sb, item, menu.Currency);
+                    AppendDish(sb, item, c, menu.Currency);
                 }
                 sb.Append("</ul>\n");
             }
@@ -203,26 +253,26 @@ public static class SitePageRenderer
         sb.Append("</div></section>\n");
     }
 
-    private static void AppendDish(StringBuilder sb, PublicMenuItemView item, string currency)
+    private static void AppendDish(StringBuilder sb, PublicMenuItemView item, SiteCopy c, string currency)
     {
         sb.Append(item.SoldOut ? "<li class=\"dish off\">" : "<li class=\"dish\">");
         sb.Append("<span class=\"nm\">").Append(E(item.Name)).Append("</span>");
         sb.Append("<span class=\"pr\">")
-            .Append(item.PriceMinor is { } price ? E(SiteFormat.Price(price, currency)) : "Prix sur demande")
+            .Append(item.PriceMinor is { } price ? E(SiteFormat.Price(price, currency, c)) : E(c.PriceOnRequest))
             .Append("</span>");
         if (!string.IsNullOrWhiteSpace(item.Description))
         {
             sb.Append("<p class=\"ds\">").Append(E(item.Description)).Append("</p>");
         }
 
-        IReadOnlyList<string> diets = SiteFormat.DietLabels(item.DietaryTags);
-        IReadOnlyList<string> allergens = SiteFormat.AllergenLabels(item.Allergens);
+        IReadOnlyList<string> diets = c.DietLabels(item.DietaryTags);
+        IReadOnlyList<string> allergens = c.AllergenLabels(item.Allergens);
         if (item.SoldOut || diets.Count > 0 || allergens.Count > 0)
         {
             sb.Append("<p class=\"meta\">");
-            if (item.SoldOut) sb.Append("<span class=\"badge\">Épuisé</span>");
+            if (item.SoldOut) sb.Append("<span class=\"badge\">").Append(E(c.SoldOut)).Append("</span>");
             foreach (string diet in diets) sb.Append("<span class=\"badge\">").Append(E(diet)).Append("</span>");
-            if (allergens.Count > 0) sb.Append("Allergènes : ").Append(E(string.Join(", ", allergens)));
+            if (allergens.Count > 0) sb.Append(E(c.AllergensPrefix)).Append(E(string.Join(", ", allergens)));
             sb.Append("</p>");
         }
 
@@ -233,22 +283,22 @@ public static class SitePageRenderer
         sb.Append("</li>\n");
     }
 
-    private static void AppendHours(StringBuilder sb, SitePageModel m)
+    private static void AppendHours(StringBuilder sb, SitePageModel m, SiteCopy c)
     {
-        sb.Append("<section id=\"horaires\" aria-labelledby=\"t-horaires\"><div class=\"wrap\">\n<h2 id=\"t-horaires\">Horaires d’ouverture</h2>\n");
-        sb.Append("<table class=\"hours\"><caption class=\"sr-only\">Horaires d’ouverture, du lundi au dimanche</caption><tbody>\n");
+        sb.Append("<section id=\"horaires\" aria-labelledby=\"t-horaires\"><div class=\"wrap\">\n<h2 id=\"t-horaires\">").Append(E(c.HoursHeading)).Append("</h2>\n");
+        sb.Append("<table class=\"hours\"><caption class=\"sr-only\">").Append(E(c.HoursCaption)).Append("</caption><tbody>\n");
         foreach (SiteDayHours day in m.Hours)
         {
-            sb.Append("<tr><th scope=\"row\">").Append(SiteFormat.DayName(day.IsoDay)).Append("</th><td>");
+            sb.Append("<tr><th scope=\"row\">").Append(c.Day(day.IsoDay)).Append("</th><td>");
             sb.Append(day.Open is { } open && day.Close is { } close
                 ? E(SiteFormat.TimeRange(open, close))
-                : "<span class=\"closed\">Fermé</span>");
+                : $"<span class=\"closed\">{E(c.Closed)}</span>");
             sb.Append("</td></tr>\n");
         }
         sb.Append("</tbody></table>\n</div></section>\n");
     }
 
-    private static void AppendGallery(StringBuilder sb, SitePageModel m)
+    private static void AppendGallery(StringBuilder sb, SitePageModel m, SiteCopy c)
     {
         List<SitePhoto> photos = m.Photos.Where(p => MediaPath(p.Url) is not null).ToList();
         if (photos.Count == 0)
@@ -256,7 +306,7 @@ public static class SitePageRenderer
             return;
         }
 
-        sb.Append("<section id=\"galerie\" aria-labelledby=\"t-galerie\"><div class=\"wrap\">\n<h2 id=\"t-galerie\">Galerie</h2>\n<ul class=\"gallery\">\n");
+        sb.Append("<section id=\"galerie\" aria-labelledby=\"t-galerie\"><div class=\"wrap\">\n<h2 id=\"t-galerie\">").Append(E(c.GalleryHeading)).Append("</h2>\n<ul class=\"gallery\">\n");
         foreach (SitePhoto photo in photos)
         {
             sb.Append("<li><img src=\"").Append(E(photo.Url)).Append("\" alt=\"").Append(E(photo.Alt))
@@ -266,55 +316,57 @@ public static class SitePageRenderer
         sb.Append("</ul>\n</div></section>\n");
     }
 
-    private static void AppendContact(StringBuilder sb, SitePageModel m, string bookPath, bool canBook, string? phoneHref)
+    private static void AppendContact(StringBuilder sb, SitePageModel m, SiteCopy c, string bookHref, bool canBook, string? phoneHref)
     {
-        sb.Append("<section id=\"contact\" aria-labelledby=\"t-contact\"><div class=\"wrap\">\n<h2 id=\"t-contact\">Nous trouver</h2>\n<div class=\"contact\">\n<div>\n");
+        string newTab = $"<span class=\"sr-only\">{E(c.OpensInNewTab)}</span>";
+        sb.Append("<section id=\"contact\" aria-labelledby=\"t-contact\"><div class=\"wrap\">\n<h2 id=\"t-contact\">").Append(E(c.FindUsHeading)).Append("</h2>\n<div class=\"contact\">\n<div>\n");
         if (!string.IsNullOrWhiteSpace(m.Address))
         {
             sb.Append("<address>").Append(E(m.Address)).Append("</address>\n");
-            sb.Append("<p><a href=\"").Append(E(SiteFormat.MapUrl(m.Address))).Append("\" target=\"_blank\" rel=\"noopener noreferrer\">Voir sur la carte<span class=\"sr-only\"> (s’ouvre dans un nouvel onglet)</span></a></p>\n");
+            sb.Append("<p><a href=\"").Append(E(SiteFormat.MapUrl(m.Address))).Append("\" target=\"_blank\" rel=\"noopener noreferrer\">").Append(E(c.ViewOnMap)).Append(newTab).Append("</a></p>\n");
         }
         if (phoneHref is not null)
         {
-            sb.Append("<p>Téléphone : <a href=\"").Append(E(phoneHref)).Append("\">").Append(E(m.Phone)).Append("</a></p>\n");
+            sb.Append("<p>").Append(E(c.PhonePrefix)).Append("<a href=\"").Append(E(phoneHref)).Append("\">").Append(E(m.Phone)).Append("</a></p>\n");
         }
         if (!string.IsNullOrWhiteSpace(m.Email) && EmailValidator.IsValid(m.Email))
         {
-            sb.Append("<p>E-mail : <a href=\"mailto:").Append(E(m.Email)).Append("\">").Append(E(m.Email)).Append("</a></p>\n");
+            sb.Append("<p>").Append(E(c.EmailPrefix)).Append("<a href=\"mailto:").Append(E(m.Email)).Append("\">").Append(E(m.Email)).Append("</a></p>\n");
         }
         sb.Append("</div>\n<div>\n");
         if (canBook)
         {
-            sb.Append("<p><a class=\"btn\" href=\"").Append(E(bookPath)).Append("\">Réserver une table</a></p>\n");
+            sb.Append("<p><a class=\"btn\" href=\"").Append(E(bookHref)).Append("\">").Append(E(c.BookTable)).Append("</a></p>\n");
         }
         List<SiteSocialLink> links = m.SocialLinks.Where(l => SiteFormat.IsSecureUrl(l.Url)).ToList();
         if (links.Count > 0)
         {
-            sb.Append("<ul class=\"social\" aria-label=\"Réseaux sociaux\">\n");
+            sb.Append("<ul class=\"social\" aria-label=\"").Append(E(c.SocialLabel)).Append("\">\n");
             foreach (SiteSocialLink link in links)
             {
                 sb.Append("<li><a href=\"").Append(E(link.Url)).Append("\" target=\"_blank\" rel=\"noopener noreferrer me\">")
-                    .Append(E(link.Kind)).Append("<span class=\"sr-only\"> (s’ouvre dans un nouvel onglet)</span></a></li>\n");
+                    .Append(E(link.Kind)).Append(newTab).Append("</a></li>\n");
             }
             sb.Append("</ul>\n");
         }
         sb.Append("</div>\n</div>\n</div></section>\n");
     }
 
-    private static void AppendFooter(StringBuilder sb, SitePageModel m)
+    private static void AppendFooter(StringBuilder sb, SitePageModel m, SiteCopy c)
     {
-        sb.Append("<footer><div class=\"wrap\">\n<h2 id=\"mentions-legales\">Mentions légales</h2>\n<dl>\n");
-        Row(sb, "Établissement", m.Name);
-        Row(sb, "Raison sociale", m.LegalName);
-        Row(sb, "N° d’entreprise", m.CompanyNumber);
-        Row(sb, "N° de TVA", m.VatNumber);
-        Row(sb, "Siège", m.LegalAddress ?? m.Address);
-        Row(sb, "Contact", m.Email ?? m.Phone);
+        sb.Append("<footer><div class=\"wrap\">\n<h2 id=\"mentions-legales\">").Append(E(c.LegalHeading)).Append("</h2>\n<dl>\n");
+        Row(sb, c.LegalEstablishment, m.Name);
+        Row(sb, c.LegalCompanyName, m.LegalName);
+        Row(sb, c.LegalCompanyNumber, m.CompanyNumber);
+        Row(sb, c.LegalVatNumber, m.VatNumber);
+        Row(sb, c.LegalSeat, m.LegalAddress ?? m.Address);
+        Row(sb, c.LegalContact, m.Email ?? m.Phone);
         sb.Append("</dl>\n");
-        sb.Append("<p>Ce site n’utilise aucun cookie et n’intègre aucun traceur ni service tiers. Comme tout serveur web, il conserve dans ses journaux techniques l’adresse IP et l’heure de chaque requête, pour assurer sa sécurité et son bon fonctionnement.</p>\n");
+        sb.Append("<p>").Append(E(c.NoCookies)).Append("</p>\n");
         if (m.PrivacyPolicyUrl is { } privacy && UrlValidator.IsValid(privacy, UrlValidator.WebSchemes))
         {
-            sb.Append("<p><a href=\"").Append(E(privacy)).Append("\" target=\"_blank\" rel=\"noopener noreferrer\">Politique de confidentialité<span class=\"sr-only\"> (s’ouvre dans un nouvel onglet)</span></a></p>\n");
+            sb.Append("<p><a href=\"").Append(E(privacy)).Append("\" target=\"_blank\" rel=\"noopener noreferrer\">").Append(E(c.PrivacyPolicy))
+                .Append("<span class=\"sr-only\">").Append(E(c.OpensInNewTab)).Append("</span></a></p>\n");
         }
         sb.Append("</div></footer>\n");
     }
@@ -323,18 +375,17 @@ public static class SitePageRenderer
     {
         if (!string.IsNullOrWhiteSpace(value))
         {
-            sb.Append("<dt>").Append(label).Append("</dt><dd>").Append(E(value)).Append("</dd>\n");
+            sb.Append("<dt>").Append(E(label)).Append("</dt><dd>").Append(E(value)).Append("</dd>\n");
         }
     }
 
-    private static string Description(SitePageModel m, bool canBook)
+    private static string Description(SitePageModel m, SiteCopy c, bool canBook)
     {
         string lead = !string.IsNullOrWhiteSpace(m.Tagline)
             ? m.Tagline.Trim().TrimEnd('.') + "."
-            : $"{m.Name}, restaurant.";
+            : c.DefaultLead(m.Name);
         string where = string.IsNullOrWhiteSpace(m.Address) ? "" : $" {m.Address.Trim().TrimEnd('.')}.";
-        string tail = canBook ? " Carte, horaires et réservation en ligne." : " Carte, horaires et contact.";
-        return SiteFormat.Truncate(lead + where + tail, 160);
+        return SiteFormat.Truncate(lead + where + c.DescriptionTail(canBook), 160);
     }
 
     /// <summary>The path when it points into this instance's media directory, otherwise null: an image is never loaded from anywhere else.</summary>

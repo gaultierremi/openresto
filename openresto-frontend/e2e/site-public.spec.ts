@@ -136,7 +136,9 @@ test.describe("Website: publish, read as a guest, unpublish", () => {
 
     await page.getByRole("link", { name: "Réserver une table" }).first().click();
 
-    await expect(page).toHaveURL(new RegExp(`/locations/${RESTAURANT_ID}$`));
+    // The page is French, and the redirect hands that language to the app (`?lang=` is forwarded
+    // only when it is exactly fr or nl), so the booking flow opens in the language that was read.
+    await expect(page).toHaveURL(new RegExp(`/locations/${RESTAURANT_ID}\\?lang=fr$`));
   });
 
   test("the sitemap lists the live site, and unpublishing removes both", async ({

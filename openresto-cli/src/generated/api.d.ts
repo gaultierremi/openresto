@@ -2394,6 +2394,162 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/onboarding/invitations/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    token: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["InvitationPreviewDto"];
+                        "application/json": components["schemas"]["InvitationPreviewDto"];
+                        "text/json": components["schemas"]["InvitationPreviewDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/invitations/{token}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    token: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AcceptInvitationRequest"];
+                    "text/json": components["schemas"]["AcceptInvitationRequest"];
+                    "application/*+json": components["schemas"]["AcceptInvitationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/legal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["LegalDocumentSummaryDto"][];
+                        "application/json": components["schemas"]["LegalDocumentSummaryDto"][];
+                        "text/json": components["schemas"]["LegalDocumentSummaryDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/legal/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["LegalDocumentDto"];
+                        "application/json": components["schemas"]["LegalDocumentDto"];
+                        "text/json": components["schemas"]["LegalDocumentDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/media/hero": {
         parameters: {
             query?: never;
@@ -3753,6 +3909,896 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/onboarding/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingMeDto"];
+                        "application/json": components["schemas"]["OnboardingMeDto"];
+                        "text/json": components["schemas"]["OnboardingMeDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveOnboardingInfoRequest"];
+                    "text/json": components["schemas"]["SaveOnboardingInfoRequest"];
+                    "application/*+json": components["schemas"]["SaveOnboardingInfoRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/hours": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveOnboardingHoursRequest"];
+                    "text/json": components["schemas"]["SaveOnboardingHoursRequest"];
+                    "application/*+json": components["schemas"]["SaveOnboardingHoursRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/layout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveOnboardingLayoutRequest"];
+                    "text/json": components["schemas"]["SaveOnboardingLayoutRequest"];
+                    "application/*+json": components["schemas"]["SaveOnboardingLayoutRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/menu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveOnboardingMenuRequest"];
+                    "text/json": components["schemas"]["SaveOnboardingMenuRequest"];
+                    "application/*+json": components["schemas"]["SaveOnboardingMenuRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/branding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveOnboardingBrandingRequest"];
+                    "text/json": components["schemas"]["SaveOnboardingBrandingRequest"];
+                    "application/*+json": components["schemas"]["SaveOnboardingBrandingRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/logo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file?: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/steps/{step}/skip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    step: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingPreviewDto"];
+                        "application/json": components["schemas"]["OnboardingPreviewDto"];
+                        "text/json": components["schemas"]["OnboardingPreviewDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/preview/site": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The website as it renders now, as HTML for the frame in step 5. */
+        get: {
+            parameters: {
+                query?: {
+                    theme?: string;
+                };
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/html": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OnboardingStateDto"];
+                        "application/json": components["schemas"]["OnboardingStateDto"];
+                        "text/json": components["schemas"]["OnboardingStateDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/restaurants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformRestaurantDto"][];
+                        "application/json": components["schemas"]["PlatformRestaurantDto"][];
+                        "text/json": components["schemas"]["PlatformRestaurantDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreatePlatformRestaurantRequest"];
+                    "text/json": components["schemas"]["CreatePlatformRestaurantRequest"];
+                    "application/*+json": components["schemas"]["CreatePlatformRestaurantRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformInvitationResultDto"];
+                        "application/json": components["schemas"]["PlatformInvitationResultDto"];
+                        "text/json": components["schemas"]["PlatformInvitationResultDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/restaurants/{restaurantId}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SendInvitationRequest"];
+                    "text/json": components["schemas"]["SendInvitationRequest"];
+                    "application/*+json": components["schemas"]["SendInvitationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformInvitationResultDto"];
+                        "application/json": components["schemas"]["PlatformInvitationResultDto"];
+                        "text/json": components["schemas"]["PlatformInvitationResultDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/restaurants/{restaurantId}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SuspendRestaurantRequest"];
+                    "text/json": components["schemas"]["SuspendRestaurantRequest"];
+                    "application/*+json": components["schemas"]["SuspendRestaurantRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformRestaurantDto"];
+                        "application/json": components["schemas"]["PlatformRestaurantDto"];
+                        "text/json": components["schemas"]["PlatformRestaurantDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/restaurants/{restaurantId}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformRestaurantDto"];
+                        "application/json": components["schemas"]["PlatformRestaurantDto"];
+                        "text/json": components["schemas"]["PlatformRestaurantDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/restaurants/{restaurantId}/retention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Sets how long the restaurant's guests stay identifiable; a null `months` is no automatic erasure. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetRetentionRequest"];
+                    "text/json": components["schemas"]["SetRetentionRequest"];
+                    "application/*+json": components["schemas"]["SetRetentionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformRestaurantDto"];
+                        "application/json": components["schemas"]["PlatformRestaurantDto"];
+                        "text/json": components["schemas"]["PlatformRestaurantDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/restaurants/{restaurantId}/guest-data-access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A POST although it reads: opening a restaurant's guests is an act that lands in the audit trail, with its reason. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GuestDataAccessRequest"];
+                    "text/json": components["schemas"]["GuestDataAccessRequest"];
+                    "application/*+json": components["schemas"]["GuestDataAccessRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GuestDataAccessDto"];
+                        "application/json": components["schemas"]["GuestDataAccessDto"];
+                        "text/json": components["schemas"]["GuestDataAccessDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/restaurants/{restaurantId}/consents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["LegalAcceptanceDto"][];
+                        "application/json": components["schemas"]["LegalAcceptanceDto"][];
+                        "text/json": components["schemas"]["LegalAcceptanceDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/menus/r/{restaurantToken}": {
         parameters: {
             query?: never;
@@ -3838,9 +4884,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * The restaurant's public page, in French or Dutch: `?lang=fr|nl` first, then the browser's
+         *     `Accept-Language`, then French.
+         */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    lang?: string;
+                };
                 header?: never;
                 path: {
                     slug: string;
@@ -3873,9 +4925,15 @@ export interface paths {
         post?: never;
         delete?: never;
         options?: never;
+        /**
+         * The restaurant's public page, in French or Dutch: `?lang=fr|nl` first, then the browser's
+         *     `Accept-Language`, then French.
+         */
         head: {
             parameters: {
-                query?: never;
+                query?: {
+                    lang?: string;
+                };
                 header?: never;
                 path: {
                     slug: string;
@@ -3914,10 +4972,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id. */
+        /**
+         * The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.
+         *     `?lang=fr|nl` is passed on to the booking page; any other value is dropped.
+         */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    lang?: string;
+                };
                 header?: never;
                 path: {
                     slug: string;
@@ -3950,10 +5013,15 @@ export interface paths {
         post?: never;
         delete?: never;
         options?: never;
-        /** The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id. */
+        /**
+         * The booking button. A redirect rather than a link into the app, so the page itself never holds an internal id.
+         *     `?lang=fr|nl` is passed on to the booking page; any other value is dropped.
+         */
         head: {
             parameters: {
-                query?: never;
+                query?: {
+                    lang?: string;
+                };
                 header?: never;
                 path: {
                     slug: string;
@@ -5790,6 +6858,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AcceptInvitationRequest: {
+            password: string;
+            displayName?: null | string;
+            /** @description Every document of `LegalDocumentKeys.AcceptedAtSignUp`, at its current version. */
+            acceptedDocuments: components["schemas"]["LegalDocumentRefDto"][];
+        };
         AdminCreateBookingRequest: {
             /** Format: int32 */
             restaurantId?: number | string;
@@ -5881,6 +6955,11 @@ export interface components {
              *     Not returned in responses.
              */
             holdId?: null | string;
+            /**
+             * @description The language the guest was using when booking, one of SupportedLocales. Chooses
+             *     the language of the confirmation email; an unsupported value is ignored rather than refused.
+             */
+            locale?: null | string;
         };
         bookingStatus: number;
         BrandRequest: {
@@ -5939,6 +7018,12 @@ export interface components {
             /** Format: int32 */
             sortOrder?: number | string;
             link?: null | string;
+        };
+        CreatePlatformRestaurantRequest: {
+            name: string;
+            ownerEmail: string;
+            /** @description The language of the invitation mail: `fr`, `nl` or `en`. Missing means `fr`. */
+            locale?: null | string;
         };
         CreateRestaurantRequest: {
             name?: string;
@@ -6008,6 +7093,26 @@ export interface components {
             /** Format: int32 */
             minutes?: number | string;
         };
+        GuestDataAccessDto: {
+            /** Format: int32 */
+            restaurantId?: number | string;
+            restaurantName?: string;
+            /** Format: date-time */
+            grantedAt?: string;
+            /**
+             * Format: int32
+             * @description All the restaurant's bookings; List&lt;PlatformGuestBookingDto&gt; GuestDataAccessDto.Bookings holds only the most recent ones.
+             */
+            totalBookings?: number | string;
+            bookings?: components["schemas"]["PlatformGuestBookingDto"][];
+        };
+        GuestDataAccessRequest: {
+            /**
+             * @description Why the platform needs to read this restaurant's guests. Recorded in the audit trail.
+             *     Bounded by the service rather than by model validation, so a refusal carries its code.
+             */
+            reason?: null | string;
+        };
         /**
          * @description A guest asking to be reminded about a booking. `Email` is the second half of the
          *     guest's identity alongside the reference in the route, exactly as on lookup and cancel.
@@ -6028,6 +7133,15 @@ export interface components {
         };
         /** Format: binary */
         IFormFile: string;
+        InvitationPreviewDto: {
+            restaurantName?: string;
+            email?: string;
+            locale?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+            /** @description The documents the restaurateur must accept, at the versions in force now. */
+            documents?: components["schemas"]["LegalDocumentRefDto"][];
+        };
         JoinWaitlistRequest: {
             name: string;
             /** Format: int32 */
@@ -6035,6 +7149,41 @@ export interface components {
             /** @description Optional. Where the "table ready" email goes. */
             email?: null | string;
             locale?: null | string;
+        };
+        LegalAcceptanceDto: {
+            documentKey?: string;
+            version?: string;
+            email?: string;
+            contentSha256?: string;
+            /** Format: date-time */
+            acceptedAt?: string;
+        };
+        /**
+         * @description One legal document. They are templates: bool LegalDocumentDto.NeedsLegalReview stays true until a
+         *     lawyer has validated the text, and every client must say so wherever it shows one.
+         */
+        LegalDocumentDto: {
+            key?: string;
+            version?: string;
+            title?: string;
+            language?: string;
+            needsLegalReview?: boolean;
+            updatedOn?: string;
+            sections?: components["schemas"]["LegalSectionDto"][];
+            /** @description SHA-256 of the text, hex: what a consent record refers to. */
+            contentSha256?: string;
+        };
+        LegalDocumentRefDto: {
+            key?: string;
+            version?: string;
+        };
+        LegalDocumentSummaryDto: {
+            key?: string;
+            version?: string;
+        };
+        LegalSectionDto: {
+            heading?: string;
+            paragraphs?: string[];
         };
         LoginRequest: {
             email?: string;
@@ -6083,6 +7232,149 @@ export interface components {
             restaurantToken?: string;
             tables?: components["schemas"]["TablePublicTokenDto"][];
         };
+        OnboardingBrandingDto: {
+            /** @description `Brasserie`, `Gastronomique` or `Cafe`. */
+            theme?: string;
+            /** @description `#rrggbb`; null keeps the instance's colour. */
+            primaryColor?: null | string;
+            tagline?: null | string;
+            logoUrl?: null | string;
+        };
+        OnboardingCapabilitiesDto: {
+            /** @description Reserved: importing the first menu from a photo or a PDF. False until it exists. */
+            menuImport?: boolean;
+        };
+        OnboardingHoursDto: {
+            openHours?: components["schemas"]["DayHoursDto"][];
+            /**
+             * Format: int32
+             * @description The days the restaurant is closed are simply absent from List&lt;DayHoursDto&gt; OnboardingHoursDto.OpenHours.
+             */
+            defaultBookingDurationMinutes?: number | string;
+        };
+        OnboardingInfoDto: {
+            name?: string;
+            address?: null | string;
+            phoneNumber?: null | string;
+            emailAddress?: null | string;
+            legalName?: null | string;
+            companyNumber?: null | string;
+            vatNumber?: null | string;
+            /**
+             * Format: int32
+             * @description The restaurant's period; a restaurant with none yet shows the default of 12, which saving the step then fixes.
+             */
+            bookingRetentionMonths?: number | string;
+        };
+        OnboardingLayoutDto: {
+            sections?: components["schemas"]["OnboardingSectionDto"][];
+        };
+        OnboardingLinksDto: {
+            /** @description Public paths on this instance, set once the restaurant is published; null before. */
+            sitePath?: null | string;
+            bookingPath?: null | string;
+            menuPath?: null | string;
+            /** @description The QR menu link and the booking link exist as soon as the restaurant does, for the preview. */
+            menuToken?: null | string;
+        };
+        OnboardingMeDto: {
+            email?: string;
+            displayName?: null | string;
+            restaurants?: components["schemas"]["OnboardingRestaurantSummaryDto"][];
+        };
+        OnboardingMenuCategoryDto: {
+            /** Format: int32 */
+            id?: null | number | string;
+            name?: string;
+            items?: components["schemas"]["OnboardingMenuItemDto"][];
+        };
+        OnboardingMenuDto: {
+            /** Format: int32 */
+            menuId?: null | number | string;
+            name?: string;
+            categories?: components["schemas"]["OnboardingMenuCategoryDto"][];
+        };
+        OnboardingMenuItemDto: {
+            /** Format: int32 */
+            id?: null | number | string;
+            name?: string;
+            description?: null | string;
+            /**
+             * Format: int64
+             * @description Cents. Null means "price on request".
+             */
+            priceMinor?: null | number | string;
+        };
+        /** @description What step 5 shows: the menu page and the booking page as a guest will meet them. */
+        OnboardingPreviewDto: {
+            restaurantName?: string;
+            address?: null | string;
+            phoneNumber?: null | string;
+            openHours?: components["schemas"]["DayHoursDto"][];
+            /** Format: int32 */
+            tableCount?: number | string;
+            /** Format: int32 */
+            largestParty?: number | string;
+            /** Format: int32 */
+            slotIntervalMinutes?: number | string;
+            /** Format: int32 */
+            bookingDurationMinutes?: number | string;
+            sampleSlots?: string[];
+            menu?: components["schemas"]["OnboardingMenuDto"];
+            primaryColor?: null | string;
+            logoUrl?: null | string;
+            tagline?: null | string;
+        };
+        OnboardingRestaurantSummaryDto: {
+            /** Format: int32 */
+            id?: number | string;
+            name?: string;
+            status?: string;
+        };
+        OnboardingSectionDto: {
+            /**
+             * Format: int32
+             * @description Null for a section that does not exist yet.
+             */
+            id?: null | number | string;
+            name?: string;
+            tables?: components["schemas"]["OnboardingTableDto"][];
+        };
+        OnboardingStateDto: {
+            /** Format: int32 */
+            id?: number | string;
+            name?: string;
+            /** @description `Draft`, `Published` or `Suspended`. */
+            status?: string;
+            /** @description What the platform told the restaurateur when it suspended the restaurant. */
+            suspensionReason?: null | string;
+            steps?: components["schemas"]["OnboardingStepDto"][];
+            /** @description Where "resume" lands: the first step still to do; null when every step is settled. */
+            nextStep?: null | string;
+            canPublish?: boolean;
+            /** @description The step keys that stand between the restaurant and going live. */
+            publishBlockers?: string[];
+            info?: components["schemas"]["OnboardingInfoDto"];
+            hours?: components["schemas"]["OnboardingHoursDto"];
+            layout?: components["schemas"]["OnboardingLayoutDto"];
+            menu?: components["schemas"]["OnboardingMenuDto"];
+            branding?: components["schemas"]["OnboardingBrandingDto"];
+            links?: components["schemas"]["OnboardingLinksDto"];
+            capabilities?: components["schemas"]["OnboardingCapabilitiesDto"];
+        };
+        OnboardingStepDto: {
+            key?: string;
+            /** @description `Todo`, `Done` or `Skipped`. */
+            state?: string;
+            canSkip?: boolean;
+        };
+        OnboardingTableDto: {
+            /** Format: int32 */
+            id?: null | number | string;
+            name?: null | string;
+            /** Format: int32 */
+            seats?: number | string;
+        };
         PauseRestaurantRequest: {
             /** Format: int32 */
             minutes?: number | string;
@@ -6122,6 +7414,72 @@ export interface components {
             date?: string;
             /** @description If the caller already holds this ID, the backend atomically replaces it. */
             currentHoldId?: null | string;
+        };
+        PlatformGuestBookingDto: {
+            bookingRef?: string;
+            /** Format: date-time */
+            date?: string;
+            /** Format: int32 */
+            seats?: number | string;
+            customerName?: null | string;
+            customerEmail?: null | string;
+            specialRequests?: null | string;
+            isCancelled?: boolean;
+            isAnonymized?: boolean;
+        };
+        PlatformInvitationDto: {
+            email?: string;
+            /** @description `Pending`, `Accepted`, `Expired` or `Revoked`. */
+            state?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+        };
+        /**
+         * @description What an invitation call returns. string PlatformInvitationResultDto.InvitationUrl is shown once: only a hash of the
+         *     token is stored, so a link that was not copied now is a link that has to be re-sent.
+         */
+        PlatformInvitationResultDto: {
+            restaurant?: components["schemas"]["PlatformRestaurantDto"];
+            invitationUrl?: string;
+            /** @description False when no mail went out (no SMTP configured, or it refused): the link has to be passed on by hand. */
+            emailSent?: boolean;
+        };
+        PlatformRestaurantDto: {
+            /** Format: int32 */
+            id?: number | string;
+            name?: string;
+            /** @description `Draft`, `Published` or `Suspended`. */
+            status?: string;
+            /** Format: date-time */
+            publishedAt?: null | string;
+            /** Format: date-time */
+            suspendedAt?: null | string;
+            suspensionReason?: null | string;
+            /** @description The restaurateur's sign-in address, once their account exists. */
+            ownerEmail?: null | string;
+            invitation?: null | components["schemas"]["PlatformInvitationDto"];
+            /**
+             * Format: date-time
+             * @description The most recent sign-in of any account that runs the restaurant.
+             */
+            lastLoginAt?: null | string;
+            /** Format: int32 */
+            totalBookings?: number | string;
+            /** Format: int32 */
+            upcomingBookings?: number | string;
+            /** Format: int32 */
+            stepsDone?: number | string;
+            /** Format: int32 */
+            stepsTotal?: number | string;
+            /** @description The first setup step still to do (`info`, `hours`, …); null when all are settled. */
+            nextStep?: null | string;
+            /**
+             * Format: int32
+             * @description Months a guest stays identifiable after the sitting; null is no automatic erasure.
+             */
+            bookingRetentionMonths?: null | number | string;
         };
         ProblemDetails: {
             type?: null | string;
@@ -6272,6 +7630,43 @@ export interface components {
             description?: null | string;
             currency?: null | string;
         };
+        SaveOnboardingBrandingRequest: {
+            theme: string;
+            /** @description `#rrggbb`. A blank value goes back to the instance's colour. */
+            primaryColor?: null | string;
+            tagline?: null | string;
+        };
+        SaveOnboardingHoursRequest: {
+            /** @description One entry per open day; a day with no entry is closed. At least one day is required. */
+            openHours: components["schemas"]["DayHoursDto"][];
+            /** Format: int32 */
+            defaultBookingDurationMinutes?: null | number | string;
+        };
+        SaveOnboardingInfoRequest: {
+            name: string;
+            address: string;
+            phoneNumber: string;
+            emailAddress: string;
+            /** @description The company as the legal notice names it. */
+            legalName: string;
+            /** @description The Belgian enterprise number (BCE/KBO), checked by its control digits. */
+            companyNumber: string;
+            /** @description Optional. A blank value clears it. */
+            vatNumber?: null | string;
+            /**
+             * Format: int32
+             * @description Months a guest stays identifiable after the sitting (1 to 60). Missing keeps the current value, or fixes the default on a restaurant that has none.
+             */
+            bookingRetentionMonths?: null | number | string;
+        };
+        SaveOnboardingLayoutRequest: {
+            /** @description The whole layout: what is missing from it is removed, and removing a table that has an upcoming booking is refused. */
+            sections: components["schemas"]["OnboardingSectionDto"][];
+        };
+        SaveOnboardingMenuRequest: {
+            name?: null | string;
+            categories: components["schemas"]["OnboardingMenuCategoryDto"][];
+        };
         SavePhotoAltRequest: {
             alt?: null | string;
         };
@@ -6283,6 +7678,8 @@ export interface components {
             slug?: null | string;
             theme?: string;
             tagline?: null | string;
+            /** @description `#rrggbb`. Unlike the other fields, null leaves it unchanged and a blank value clears it. */
+            primaryColor?: null | string;
             socialLinks?: null | components["schemas"]["SiteSocialLinkDto"][];
             legal?: null | components["schemas"]["SiteLegalDto"];
         };
@@ -6305,9 +7702,21 @@ export interface components {
             subject?: string;
             body?: string;
         };
+        SendInvitationRequest: {
+            /** @description Another address to invite instead of the one on the previous invitation. */
+            email?: null | string;
+            locale?: null | string;
+        };
         SetBookingStatusRequest: {
             /** @description Booked, Arrived, Seated, Finished or NoShow, case-insensitive. */
             status?: string;
+        };
+        SetRetentionRequest: {
+            /**
+             * Format: int32
+             * @description 1 to 60 months, or null for no automatic erasure.
+             */
+            months?: null | number | string;
         };
         SetupPvqRequest: {
             question?: string;
@@ -6330,6 +7739,8 @@ export interface components {
             /** @description `Brasserie`, `Gastronomique` or `Cafe`. */
             theme?: string;
             tagline?: null | string;
+            /** @description The restaurant's own `#rrggbb` for this site; null means the instance's brand colour. */
+            primaryColor?: null | string;
             logoUrl?: null | string;
             coverUrl?: null | string;
             photos?: components["schemas"]["SitePhotoDto"][];
@@ -6365,6 +7776,10 @@ export interface components {
             kind?: string;
             /** @description An https address. */
             url?: string;
+        };
+        SuspendRestaurantRequest: {
+            /** @description Shown to the restaurateur, so it states a fact and carries nothing internal. */
+            reason?: null | string;
         };
         TableDto: {
             /** Format: int32 */

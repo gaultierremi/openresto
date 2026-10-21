@@ -110,6 +110,24 @@ public static class AuditActions
     public const string SocialLinkUpdate = "social_link.update";
     public const string SocialLinkDelete = "social_link.delete";
 
+    // ── Platform & onboarding ────────────────────────────────────────────────
+    public const string PlatformRestaurantCreate = "platform.restaurant_create";
+    public const string PlatformInvitationSend = "platform.invitation_send";
+    public const string PlatformSuspend = "platform.suspend";
+    public const string PlatformReactivate = "platform.reactivate";
+    public const string PlatformGuestDataAccess = "platform.guest_data_access";
+    public const string PlatformRetentionSet = "platform.retention_set";
+    public const string OnboardingInvitationAccept = "onboarding.invitation_accept";
+    public const string OnboardingSave = "onboarding.save";
+    public const string OnboardingPublish = "onboarding.publish";
+    public const string OnboardingUnpublish = "onboarding.unpublish";
+
+    /// <summary>
+    /// A read of guest identity through the admin. Reads are not audited as a rule, so this is the
+    /// one action a GET lands, and only on an endpoint declared <c>ReadsGuestData</c>.
+    /// </summary>
+    public const string GuestDataRead = "guests.read";
+
     public const string NotificationDelete = "notification.delete";
     public const string PushSubscribe = "push.subscribe";
     public const string PushUnsubscribe = "push.unsubscribe";
@@ -134,6 +152,7 @@ public static class AuditTargets
     public static string IdOf(int id) => id.ToString(CultureInfo.InvariantCulture);
 
     public const string Booking = "Booking";
+    public const string GuestData = "GuestData";
     public const string Restaurant = "Restaurant";
     public const string Section = "Section";
     public const string Table = "Table";

@@ -43,6 +43,8 @@ export interface BookingCreationDto {
   date: string;
   holdId?: string | null;
   specialRequests?: string | null;
+  /** The guest's UI language, so the confirmation email can be written in it. */
+  locale?: string;
 }
 
 /** Normalize PascalCase API responses to camelCase BookingDto */

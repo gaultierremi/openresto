@@ -54,14 +54,26 @@ internal sealed class AuditLogMiddleware(
     }
 
     /// <summary>
-    /// The read early-out is first so the overwhelming majority of requests leave without
-    /// resolving anything; auditing reads would mean lifting it.
+    /// How long a read of the same guest data by the same person stays one row. A dashboard that
+    /// polls its notifications would otherwise write one row a minute; this keeps the answer to
+    /// "who looked at this location's guests, and when" readable without losing either fact.
+    /// </summary>
+    public static readonly TimeSpan GuestDataReadWindow = TimeSpan.FromMinutes(10);
+
+    /// <summary>
+    /// Reads leave without resolving anything unless the endpoint declares that it returns guest
+    /// identity (<see cref="ReadsGuestDataAttribute"/>); the overwhelming majority of requests
+    /// are reads and take that early exit.
     /// <seealso>AuditTrailTests.ReadRequest_LandsNoEntry</seealso>
     /// <seealso>AuditTrailTests.MutatingAdminRequest_LandsAnEntryCarryingTheActorAndTheHttpFacts</seealso>
     /// </summary>
     private async Task RecordAsync(HttpContext context)
     {
-        if (!AuditRequestClassifier.IsMutatingMethod(context.Request.Method)) return;
+        if (!AuditRequestClassifier.IsMutatingMethod(context.Request.Method))
+        {
+            await RecordGuestDataReadAsync(context);
+            return;
+        }
 
         AuditScope? scope = context.RequestServices.GetService<AuditScope>();
         if (scope is null) return;
@@ -75,6 +87,73 @@ internal sealed class AuditLogMiddleware(
         AuditActor actor = await ResolveActorAsync(context, scope, writeScope.ServiceProvider);
 
         await repository.AddAsync(Build(context, scope, actor, clock.UtcNow));
+    }
+
+    /// <summary>
+    /// A successful read of an endpoint declared <see cref="ReadsGuestDataAttribute"/> lands a
+    /// <c>guests.read</c> row naming who, which screen and which location, never what was read.
+    /// A refused or failed read lands nothing: nothing was handed over.
+    /// <seealso>GuestDataReadAuditTests.ReadingGuestData_LandsOneRowNamingTheLocation</seealso>
+    /// <seealso>GuestDataReadAuditTests.RepeatedReads_WithinTheWindow_LandOneRow</seealso>
+    /// <seealso>GuestDataReadAuditTests.ARefusedRead_LandsNoRow</seealso>
+    /// </summary>
+    private async Task RecordGuestDataReadAsync(HttpContext context)
+    {
+        ReadsGuestDataAttribute? declared = context.GetEndpoint()?.Metadata.GetMetadata<ReadsGuestDataAttribute>();
+        if (declared is null) return;
+        if (context.User?.Identity?.IsAuthenticated != true) return;
+        if (context.Response.StatusCode is < 200 or >= 300) return;
+
+        AuditScope? scope = context.RequestServices.GetService<AuditScope>();
+        if (scope is null) return;
+
+        int? restaurantId = scope.RestaurantId ?? RestaurantIdOf(context, declared.RestaurantRouteKey);
+
+        await using AsyncServiceScope writeScope = scopeFactory.CreateAsyncScope();
+        var repository = writeScope.ServiceProvider.GetRequiredService<IAdminAuditRepository>();
+        var clock = writeScope.ServiceProvider.GetRequiredService<ISystemClock>();
+
+        AuditActor actor = await ResolveActorAsync(context, scope, writeScope.ServiceProvider);
+        DateTime now = clock.UtcNow;
+
+        // The credential is part of "who": a read through an API key names the key, and must not
+        // be swallowed by the same person's browser session having read the same screen a minute
+        // ago.
+        string? displayName = AuditFields.Sanitize(actor.DisplayName, AuditFields.MaxActorDisplayNameLength);
+        if (await repository.ExistsSinceAsync(
+                actor.UserId, actor.Email, displayName, AuditActions.GuestDataRead, declared.Label, restaurantId, now - GuestDataReadWindow))
+        {
+            return;
+        }
+
+        AdminAuditEntry entry = Build(context, scope, actor, now);
+        entry.Action = AuditActions.GuestDataRead;
+        entry.TargetType = AuditTargets.GuestData;
+        entry.TargetId = null;
+        entry.TargetLabel = AuditFields.Sanitize(declared.Label, AuditFields.MaxTargetLabelLength);
+        entry.RestaurantId = restaurantId;
+        entry.Summary = AuditFields.Sanitize(
+            $"Read guest data: {declared.Label}{(restaurantId is null ? " (all locations)" : string.Empty)}",
+            AuditFields.MaxSummaryLength);
+        entry.ChangesJson = null;
+
+        await repository.AddAsync(entry);
+    }
+
+    /// <summary>
+    /// The location the way the action's own binder reads it: a route value as it is, else the
+    /// <em>first</em> query value (a repeated parameter binds its first, so joining them would
+    /// name "all locations" for a read that was in fact scoped to one), parsed as an integer.
+    /// <seealso>GuestDataReadAuditTests.ARepeatedLocationParameter_IsAttributedToTheOneTheActionBound</seealso>
+    /// </summary>
+    private static int? RestaurantIdOf(HttpContext context, string key)
+    {
+        string? raw = context.Request.RouteValues.TryGetValue(key, out object? route)
+            ? route?.ToString()
+            : context.Request.Query[key].FirstOrDefault();
+        return int.TryParse(raw, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int id) && id > 0
+            ? id
+            : null;
     }
 
     private sealed record AuditActor(int? UserId, string Email, string? DisplayName, string Role);

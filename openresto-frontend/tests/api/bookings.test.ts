@@ -46,6 +46,16 @@ describe("createBooking", () => {
     expect(result).toMatchObject(created);
   });
 
+  it("sends the guest's locale in the body when given one, and no locale key when not", async () => {
+    mockFetch.mockResolvedValue({ ok: true, status: 200, json: async () => ({ id: 1 }) });
+
+    await createBooking({ ...validBooking, locale: "nl" });
+    await createBooking(validBooking);
+
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toMatchObject({ locale: "nl" });
+    expect(JSON.parse(mockFetch.mock.calls[1][1].body)).not.toHaveProperty("locale");
+  });
+
   it("throws with server message on 409 conflict", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,

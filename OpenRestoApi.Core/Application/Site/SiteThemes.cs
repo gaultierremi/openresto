@@ -96,6 +96,10 @@ public static class SiteThemes
         nav.sections{border-bottom:1px solid var(--line);background:var(--surface)}
         nav.sections ul{display:flex;flex-wrap:wrap;gap:.25rem 1.25rem;list-style:none;margin:0;padding:.35rem 0}
         nav.sections a{display:inline-block;padding:.55rem 0;color:var(--text);font-weight:600}
+        nav.lang{border-bottom:1px solid var(--line);background:var(--surface);font-size:.9rem}
+        nav.lang .wrap{display:flex;justify-content:flex-end;align-items:center;gap:.5rem}
+        nav.lang a{display:inline-block;padding:.5rem .25rem;color:var(--text);font-weight:600;text-decoration:none}
+        nav.lang a[aria-current]{text-decoration:underline;text-decoration-thickness:2px}
         section{padding:clamp(2rem,6vw,3.5rem) 0}
         section+section{border-top:1px solid var(--line)}
         h2{margin:0 0 1.25rem;font-size:clamp(1.5rem,4.5vw,2rem);line-height:1.2}

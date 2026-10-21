@@ -163,6 +163,31 @@ public class SiteStructuredDataTests
     }
 
     [Fact]
+    public void Build_WritesTheMenuAndTheReserveActionInTheLanguageOfThePage()
+    {
+        JsonElement french = Parse(SiteSamples.Full());
+        JsonElement dutch = Parse(SiteSamples.Full(m => m with { Language = "nl" }));
+
+        Assert.Equal("Carte de Brasserie de la Senne Dorée", french.GetProperty("hasMenu").GetProperty("name").GetString());
+        Assert.Equal("fr", french.GetProperty("hasMenu").GetProperty("inLanguage").GetString());
+        Assert.Equal("Réserver une table", french.GetProperty("potentialAction").GetProperty("name").GetString());
+        Assert.Equal("fr", french.GetProperty("potentialAction").GetProperty("target").GetProperty("inLanguage").GetString());
+
+        Assert.Equal("Menukaart van Brasserie de la Senne Dorée", dutch.GetProperty("hasMenu").GetProperty("name").GetString());
+        Assert.Equal("nl", dutch.GetProperty("hasMenu").GetProperty("inLanguage").GetString());
+        Assert.Equal("Reserveer een tafel", dutch.GetProperty("potentialAction").GetProperty("name").GetString());
+        Assert.Equal("nl", dutch.GetProperty("potentialAction").GetProperty("target").GetProperty("inLanguage").GetString());
+    }
+
+    [Fact]
+    public void Build_KeepsTheEnglishDayNamesSchemaOrgAsksFor_InEveryLanguage()
+    {
+        SitePageModel model = SiteSamples.Full(m => m with { Language = "nl", Hours = [new SiteDayHours(1, "10:00", "12:00")] });
+
+        Assert.Equal("Monday", Parse(model).GetProperty("openingHoursSpecification")[0].GetProperty("dayOfWeek").GetString());
+    }
+
+    [Fact]
     public void TheRenderedPage_CarriesTheSameStructuredDataBlock()
     {
         string html = SiteSamples.Html();

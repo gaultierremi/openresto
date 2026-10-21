@@ -295,6 +295,30 @@
     "language": {
       "switcherLabel": "Idioma"
     },
+    "legal": {
+      "reviewBanner": "Modelo pendiente de validación por un jurista: no utilizar tal cual",
+      "indexTitle": "Documentos legales",
+      "indexIntro": "Los documentos que regulan el uso de la plataforma por parte de los restaurantes y de sus clientes.",
+      "versionLine": "Versión {{version}} · actualizada el {{date}}",
+      "languageNote": "Estos documentos están redactados en francés.",
+      "otherDocuments": "Otros documentos",
+      "openDocument": "Leer",
+      "back": "Volver a los documentos legales",
+      "notFoundTitle": "Documento no encontrado",
+      "notFoundBody": "Este documento legal no existe. Elige uno de la lista.",
+      "loadFailed": "No se pudo cargar el documento.",
+      "documents": {
+        "terms": "Condiciones de uso",
+        "privacy": "Política de privacidad",
+        "dpa": "Acuerdo de encargo de tratamiento de datos",
+        "legalNotice": "Aviso legal"
+      },
+      "footer": {
+        "terms": "Condiciones",
+        "privacy": "Privacidad",
+        "legalNotice": "Aviso legal"
+      }
+    },
     "menu": {
       "allergens": {
         "Celery": "Apio",
@@ -456,12 +480,37 @@
     "icon": {
       "invalid": "La clave del icono debe ser uno de los iconos admitidos."
     },
+    "legal": {
+      "document_not_found": "Documento no encontrado."
+    },
     "media": {
       "hero_too_large": "La imagen principal debe ocupar menos de 5 MB.",
       "location_image_too_large": "La imagen del local debe ocupar menos de 2 MB.",
       "menu_too_large": "El archivo del menú debe ocupar menos de 10 MB.",
       "unsupported_image_type": "Solo se aceptan imágenes JPEG, PNG y WebP.",
       "unsupported_menu_type": "Solo se aceptan menús en formato PDF."
+    },
+    "onboarding": {
+      "address_required": "La dirección es obligatoria.",
+      "company_number_invalid": "Este número de empresa no es válido. Compruébalo (formato 0123.456.749).",
+      "company_number_required": "El número de empresa es obligatorio.",
+      "consent_outdated": "Los documentos se han actualizado desde que se mostraron. Vuelve a leerlos y marca de nuevo las casillas.",
+      "consent_required": "Debes aceptar todos los documentos para crear tu cuenta.",
+      "email_required": "El correo electrónico de contacto es obligatorio.",
+      "hours_no_open_day": "Abre al menos un día de la semana.",
+      "layout_empty": "Añade al menos una mesa.",
+      "layout_in_use": "No se puede quitar una sala o una mesa con reservas próximas ({{bookings}}). No se ha modificado nada.",
+      "layout_invalid": "Cada sala necesita un nombre y cada mesa, entre 1 y 50 plazas.",
+      "legal_name_required": "La razón social es obligatoria.",
+      "menu_invalid": "Cada categoría y cada plato necesitan un nombre, y un precio no puede ser negativo.",
+      "name_required": "El nombre del restaurante es obligatorio.",
+      "not_publishable": "Termina los pasos obligatorios antes de publicar.",
+      "phone_required": "El número de teléfono es obligatorio.",
+      "retention_invalid": "El plazo de conservación debe estar entre {{min}} y {{max}} meses.",
+      "step_required": "Este paso es obligatorio: no se puede omitir.",
+      "step_unknown": "Ese paso no existe.",
+      "suspended": "La plataforma ha suspendido este restaurante: no es posible ningún cambio.",
+      "vat_invalid": "Este número de IVA no es válido. Compruébalo (por ejemplo BE0123.456.749) o deja el campo vacío."
     },
     "menu": {
       "allergen_invalid": "Los alérgenos deben ser de los 14 alérgenos de declaración obligatoria en la UE, p. ej. «Gluten».",
@@ -479,6 +528,17 @@
       "not_found": "Carta no encontrada.",
       "price_invalid": "El precio debe ser cero o más (como máximo {{max}} en la unidad mínima de la moneda), o quedar vacío para «precio a consultar».",
       "reorder_ids_mismatch": "El nuevo orden debe incluir cada elemento una sola vez, sin añadidos."
+    },
+    "platform": {
+      "not_found": "Restaurante no encontrado.",
+      "invitation_invalid": "Este enlace de invitación no es válido o ha caducado. Pide uno nuevo a la plataforma.",
+      "invitation_email_invalid": "Introduce una dirección de correo electrónico válida para la invitación.",
+      "invitation_already_accepted": "Esta invitación ya ha sido aceptada.",
+      "restaurant_name_required": "El nombre del restaurante es obligatorio.",
+      "access_reason_required": "Indica por qué se necesitan los datos de los clientes, en {{min}} a {{max}} caracteres.",
+      "suspend_reason_too_long": "El motivo no puede superar los {{max}} caracteres.",
+      "already_suspended": "Este restaurante ya está suspendido.",
+      "not_suspended": "Este restaurante no está suspendido."
     },
     "restaurant": {
       "archive_before_delete": "Archiva este local antes de eliminarlo. Archivarlo lo retira del sitio público y se puede deshacer; eliminarlo no.",
@@ -519,7 +579,8 @@
       "image_dimensions_too_large": "La imagen es demasiado grande en píxeles (como máximo {{maxSide}} píxeles por lado).",
       "image_unreadable": "Ese archivo no es una imagen legible.",
       "not_publishable": "El sitio no se puede publicar mientras no estén rellenados su aviso legal y su correo electrónico de contacto.",
-      "location_archived": "Un local archivado no puede tener un sitio en línea."
+      "location_archived": "Un local archivado no puede tener un sitio en línea.",
+      "color_invalid": "El color debe escribirse como #rrggbb, por ejemplo #b45309."
     },
     "social_link": {
       "label_required": "La etiqueta del enlace social no puede estar vacía.",
@@ -1432,6 +1493,248 @@
       "subtitle": "Crea la carta que tus clientes abren desde tus códigos QR.",
       "title": "Cartas"
     },
+    "onboarding": {
+      "badge": "Espacio del restaurador",
+      "branding": {
+        "colorClear": "Color de la plataforma",
+        "colorHint": "Elige un color o escríbelo como #rrggbb. Déjalo vacío para usar el color de la plataforma.",
+        "colorLabel": "Color principal",
+        "colorPlaceholder": "#b45309",
+        "description": "Un logotipo, un estilo y un color para tu sitio web. Este paso es opcional: podrás cambiarlo todo más adelante.",
+        "logoAdd": "Añadir un logotipo",
+        "logoHint": "JPEG, PNG o WebP, 6 MB como máximo.",
+        "logoLabel": "Logotipo",
+        "logoRemove": "Quitar el logotipo",
+        "logoReplace": "Reemplazar el logotipo",
+        "note": "El color que elijas se aplica al sitio web de tu restaurante: botones, enlaces y detalles.",
+        "taglineHint": "Una frase llamativa, 140 caracteres como máximo.",
+        "taglineLabel": "Eslogan",
+        "themeLabel": "Estilo del sitio web",
+        "title": "Tu identidad visual"
+      },
+      "common": {
+        "back": "Atrás",
+        "continue": "Continuar",
+        "next": "Siguiente",
+        "signOut": "Cerrar sesión",
+        "skip": "Omitir este paso"
+      },
+      "documentTitle": "Configura tu restaurante",
+      "errors": {
+        "network": "No se pudo contactar con el servidor. Comprueba tu conexión e inténtalo de nuevo.",
+        "requestFailed": "La solicitud ha fallado. Inténtalo de nuevo en unos instantes."
+      },
+      "home": {
+        "chooseBody": "Tu cuenta gestiona varios restaurantes. ¿Cuál quieres configurar?",
+        "chooseTitle": "Elige un restaurante",
+        "emptyBody": "Tu cuenta no está vinculada a ningún restaurante. Un restaurante aparecerá aquí cuando la plataforma te invite a él.",
+        "emptyTitle": "Aún no hay ningún restaurante",
+        "loading": "Cargando…"
+      },
+      "hours": {
+        "closed": "Cerrado",
+        "copyHint": "Copia el horario del primer día abierto en todos los días; los días cerrados siguen cerrados.",
+        "copyToAll": "Copiar a todos los días",
+        "description": "Indica qué días abres y tu horario de servicio. Un día cerrado no admite reservas.",
+        "durationHint": "Cuánto tiempo se reserva una mesa para un grupo.",
+        "durationHours": "{{hours}} h",
+        "durationHoursMinutes": "{{hours}} h {{minutes}}",
+        "durationLabel": "Duración de la mesa",
+        "durationMinutes": "{{minutes}} min",
+        "openSwitch": "{{day}}: abierto",
+        "title": "Tu horario de apertura"
+      },
+      "info": {
+        "addressHint": "Calle y número, código postal, localidad",
+        "addressLabel": "Dirección",
+        "companyNumberHint": "Formato 0123.456.749",
+        "companyNumberLabel": "Número de empresa (BCE/KBO)",
+        "companyTitle": "Tu empresa",
+        "description": "Quién eres y dónde encontrarte. Aparece en tu sitio web, tu página de reservas y tu aviso legal.",
+        "emailHint": "La dirección que ven tus clientes y a la que pueden escribirte.",
+        "emailLabel": "Correo electrónico de contacto",
+        "legalNameHint": "El nombre de la empresa tal como figura en la BCE/KBO.",
+        "legalNameLabel": "Razón social",
+        "nameLabel": "Nombre del restaurante",
+        "phoneLabel": "Teléfono",
+        "retentionHint": "Pasado este plazo, el nombre, el correo electrónico y las notas de tus clientes se borran automáticamente; la reserva se conserva en tus estadísticas.",
+        "retentionLabel": "Conservación de los datos de reserva (en meses)",
+        "title": "Tu restaurante",
+        "vatHint": "Opcional",
+        "vatLabel": "Número de IVA"
+      },
+      "invitation": {
+        "confirmLabel": "Confirma la contraseña",
+        "consent": "He leído y acepto {{document}}",
+        "consentsTitle": "Documentos que aceptar",
+        "displayNameLabel": "Tu nombre (opcional)",
+        "displayNamePlaceholder": "Nombre y apellidos",
+        "documents": {
+          "dpa": {
+            "name": "el acuerdo de tratamiento de datos (DPA)"
+          },
+          "privacy": {
+            "name": "la política de privacidad"
+          },
+          "terms": {
+            "name": "las condiciones de uso"
+          }
+        },
+        "emailHint": "Esta dirección será tu usuario de acceso.",
+        "emailLabel": "Correo electrónico de la cuenta",
+        "errorTitle": "Invitación no disponible temporalmente",
+        "hide": "Ocultar",
+        "hidePassword": "Ocultar la contraseña",
+        "invalidAction": "Ir al inicio de sesión",
+        "invalidBody": "Este enlace de invitación ya no es válido: puede haber caducado, haberse usado ya o haber sido retirado. Pide una nueva invitación a la plataforma.",
+        "invalidTitle": "Invitación no válida o caducada",
+        "loading": "Cargando tu invitación…",
+        "mismatch": "Las dos contraseñas no coinciden.",
+        "passwordLabel": "Contraseña",
+        "passwordRule": "Al menos {{min}} caracteres.",
+        "readDocument": "Leer {{document}}",
+        "restaurantLabel": "Restaurante",
+        "show": "Mostrar",
+        "showPassword": "Mostrar la contraseña",
+        "submit": "Crear mi cuenta",
+        "subtitle": "Crea tu cuenta para configurar tu restaurante.",
+        "title": "Te damos la bienvenida"
+      },
+      "layout": {
+        "addRoom": "Añadir una sala",
+        "addTable": "Añadir una mesa",
+        "defaultRoomName": "Comedor",
+        "description": "Describe dónde se sientan tus clientes: un comedor, una terraza… y las mesas de cada uno. Necesitas al menos una mesa para aceptar reservas.",
+        "fewerSeats": "Una plaza menos",
+        "moreSeats": "Una plaza más",
+        "note": "No se puede quitar una mesa con una reserva próxima.",
+        "removeRoom": "Quitar la sala",
+        "removeTable": "Quitar la mesa",
+        "roomNameLabel": "Nombre de la sala",
+        "seatsLabel": "Número de plazas",
+        "tableNameLabel": "Nombre de la mesa",
+        "tableNamePlaceholder": "Nombre (opcional)",
+        "title": "Salas y mesas"
+      },
+      "login": {
+        "emailLabel": "Correo electrónico",
+        "forgotHint": "¿Olvidaste tu contraseña? Pide una nueva invitación a la plataforma.",
+        "invalidCredentials": "Correo electrónico o contraseña incorrectos.",
+        "notRestaurateur": "Esta no es una cuenta de restaurador. Usa la dirección de correo a la que se envió tu invitación.",
+        "passwordLabel": "Contraseña",
+        "sessionFailed": "Has iniciado sesión, pero no se pudo abrir tu sesión. Inténtalo de nuevo.",
+        "submit": "Iniciar sesión",
+        "subtitle": "Abre la configuración de tu restaurante.",
+        "title": "Iniciar sesión"
+      },
+      "menu": {
+        "addCategory": "Añadir una categoría",
+        "addDish": "Añadir un plato",
+        "categoryNameLabel": "Categoría",
+        "categoryNamePlaceholder": "Entrantes, Principales, Postres…",
+        "description": "Crea tu primera carta: categorías y sus platos. Aparece en tu sitio web y tras tu código QR. Este paso es opcional.",
+        "descriptionLabel": "Descripción del plato",
+        "descriptionPlaceholder": "Descripción (opcional)",
+        "dishNameLabel": "Plato",
+        "importHint": "Envía tu carta actual y la leemos por ti.",
+        "importSoon": "Próximamente",
+        "importTitle": "Importar desde una foto o un PDF",
+        "moveCategoryDown": "Bajar la categoría",
+        "moveCategoryUp": "Subir la categoría",
+        "moveDishDown": "Bajar el plato",
+        "moveDishUp": "Subir el plato",
+        "nameLabel": "Nombre de la carta",
+        "note": "El orden en que introduces los elementos es el orden en que aparecen. Un precio vacío se muestra como «precio a consultar».",
+        "priceInvalid": "Escribe un precio en euros, por ejemplo 12,50, o déjalo vacío para «precio a consultar».",
+        "priceLabel": "Precio (€)",
+        "pricePlaceholder": "12,50",
+        "removeCategory": "Quitar la categoría",
+        "removeDish": "Quitar el plato",
+        "title": "Tu carta"
+      },
+      "preview": {
+        "booking": {
+          "facts": "Mesas: {{tables}} · Duración de la mesa: {{minutes}} min · Una franja cada {{interval}} min",
+          "hours": "Horario de apertura",
+          "label": "Vista previa — la página real estará disponible una vez publicada",
+          "noSlots": "No hay franjas que mostrar: revisa tu horario de apertura.",
+          "party": "Tamaño del grupo",
+          "slots": "Franjas horarias",
+          "text": "La página donde tus clientes eligen su mesa.",
+          "title": "Tu página de reservas"
+        },
+        "description": "Esto es lo que verán tus clientes. Revísalo y publica cuando estés listo: puedes despublicar en cualquier momento.",
+        "loading": "Cargando la vista previa…",
+        "qr": {
+          "codeLabel": "Código QR de tu carta",
+          "empty": "Tu carta está vacía. Vuelve al paso «Carta» para añadir platos.",
+          "noteDraft": "Este código solo funcionará una vez publicado tu restaurante.",
+          "noteLive": "Este código está activo: tus clientes pueden escanearlo ahora mismo.",
+          "priceOnRequest": "Precio a consultar",
+          "text": "El código que debes imprimir para que tus clientes abran tu carta desde el móvil.",
+          "title": "Tu carta con QR"
+        },
+        "site": {
+          "desktop": "Ordenador",
+          "failed": "No se pudo cargar la vista previa del sitio web.",
+          "frameTitle": "Vista previa del sitio web",
+          "loading": "Cargando la vista previa del sitio web…",
+          "phone": "Móvil",
+          "text": "Tu sitio web tal como lo verán tus clientes.",
+          "title": "Tu sitio web"
+        },
+        "title": "Vista previa y publicación"
+      },
+      "publish": {
+        "blockedBody": "Aún quedan pasos obligatorios por completar antes de poder publicar.",
+        "blocker": "Paso por terminar: {{step}}",
+        "bookingLink": "Tu página de reservas",
+        "liveBody": "Estas son las direcciones públicas de tu restaurante.",
+        "liveTitle": "Tu restaurante está en línea",
+        "menuLink": "Tu carta con QR",
+        "open": "Abrir",
+        "publish": "Publicar",
+        "publishConfirm": "Sí, publicar",
+        "publishMessage": "Tu sitio web, tu página de reservas y tu carta con QR estarán abiertos a todo el mundo.",
+        "publishTitle": "¿Publicar tu restaurante?",
+        "readyBody": "Todo está listo. Al publicar, tu sitio web, tu página de reservas y tu carta con QR pasan a estar en línea.",
+        "siteLink": "Tu sitio web",
+        "suspended": "Tu restaurante está suspendido: no se puede publicar ni despublicar hasta que la plataforma lo reabra.",
+        "title": "Publicación",
+        "unpublish": "Despublicar",
+        "unpublishConfirm": "Sí, despublicar",
+        "unpublishMessage": "Tu sitio web, tu página de reservas y tu carta con QR dejarán de estar abiertos a los clientes. Puedes volver a publicarlos en cualquier momento.",
+        "unpublishTitle": "¿Despublicar tu restaurante?"
+      },
+      "status": {
+        "Draft": "Borrador",
+        "Published": "Publicado",
+        "Suspended": "Suspendido"
+      },
+      "stepper": {
+        "done": "Hecho",
+        "label": "Pasos de configuración",
+        "skipped": "Omitido",
+        "todo": "Por hacer"
+      },
+      "steps": {
+        "branding": "Identidad visual",
+        "hours": "Horario",
+        "info": "Datos",
+        "layout": "Salas y mesas",
+        "menu": "Carta",
+        "preview": "Vista previa y publicación"
+      },
+      "wizard": {
+        "errorTitle": "No se pudo cargar",
+        "loading": "Cargando tu restaurante…",
+        "notFoundAction": "Volver a mis restaurantes",
+        "notFoundBody": "Este restaurante no existe o no está vinculado a tu cuenta.",
+        "notFoundTitle": "Restaurante no encontrado",
+        "suspended": "La plataforma ha suspendido tu restaurante. Motivo: {{reason}}. Los formularios son de solo lectura.",
+        "suspendedNoReason": "La plataforma ha suspendido tu restaurante. Los formularios son de solo lectura; contacta con la plataforma para que lo reabra."
+      }
+    },
     "notifications": {
       "pageTitle": "Notificaciones",
       "totalCount_one": "{{count}} notificación en total",
@@ -1513,6 +1816,155 @@
         "enableFailed": "No se pudo activar - inténtalo de nuevo.",
         "enable": "Activar",
         "enableLabel": "Activar notificaciones push"
+      }
+    },
+    "platform": {
+      "title": "Plataforma",
+      "subtitle": "Todos los restaurantes de esta instancia, en qué punto están y las acciones propias de la plataforma.",
+      "addButton": "Añadir un restaurante",
+      "loadFailed": "No se pudieron cargar los restaurantes.",
+      "empty": "Aún no hay ningún restaurante. Añade el primero e invita a su propietario.",
+      "status": {
+        "draft": "Borrador",
+        "published": "Publicado",
+        "suspended": "Suspendido"
+      },
+      "invitationState": {
+        "pending": "Pendiente",
+        "expired": "Caducada",
+        "revoked": "Revocada",
+        "accepted": "Aceptada"
+      },
+      "steps": {
+        "info": "Información",
+        "hours": "Horario de apertura",
+        "layout": "Salas y mesas",
+        "menu": "Carta",
+        "branding": "Identidad visual"
+      },
+      "row": {
+        "account": "Cuenta: {{email}}",
+        "invitation": "Invitación: {{state}} · {{email}}",
+        "invitationExpiry": "Caduca el {{date}}",
+        "noInvitation": "Aún no se ha enviado ninguna invitación",
+        "lastLogin": "Último inicio de sesión: {{when}}",
+        "never": "nunca",
+        "bookings": "Reservas: {{total}} en total, {{upcoming}} próximas",
+        "progress": "Configuración: {{done}}/{{total}} pasos",
+        "nextStep": "Siguiente paso: {{step}}",
+        "setupComplete": "Configuración completada",
+        "suspendedSince": "Suspendido desde el {{date}}",
+        "suspensionReason": "Motivo mostrado al restaurador: {{reason}}",
+        "retention_one": "Conservación: {{count}} mes",
+        "retention_other": "Conservación: {{count}} meses",
+        "retentionNone": "Conservación: sin borrado automático"
+      },
+      "actions": {
+        "invite": "Invitar",
+        "resend": "Reenviar la invitación",
+        "suspend": "Suspender",
+        "reactivate": "Reactivar",
+        "consents": "Consentimientos",
+        "guestData": "Datos de clientes…",
+        "retention": "Conservación…"
+      },
+      "locales": {
+        "fr": "Français",
+        "nl": "Nederlands",
+        "en": "English"
+      },
+      "form": {
+        "nameLabel": "Nombre del restaurante",
+        "emailLabel": "Correo electrónico del propietario",
+        "localeLabel": "Idioma de la invitación",
+        "invalidEmail": "Introduce una dirección de correo electrónico válida.",
+        "nameRequired": "Introduce el nombre del restaurante."
+      },
+      "add": {
+        "title": "Añadir un restaurante",
+        "intro": "Crea el restaurante como borrador e invita a su propietario por correo electrónico. El propietario termina la configuración.",
+        "submit": "Crear e invitar"
+      },
+      "invite": {
+        "titleFirst": "Invitar al propietario de {{name}}",
+        "titleResend": "Reenviar la invitación de {{name}}",
+        "intro": "Un enlace nuevo sustituye a cualquier enlace aún abierto. Es también la vía de regreso para un propietario que ha perdido su contraseña.",
+        "submit": "Enviar la invitación"
+      },
+      "link": {
+        "title": "Enlace de invitación",
+        "label": "Enlace de invitación",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "copyFailed": "No se pudo copiar el enlace automáticamente. Selecciónalo y cópialo a mano.",
+        "emailSent": "El correo de invitación se envió a {{email}}.",
+        "emailNotSent": "No se envió ningún correo: no hay servidor de correo configurado o ha rechazado el mensaje.",
+        "onceNotice": "Este enlace se muestra una sola vez y no se guarda. Si cierras esta ventana, desaparece.",
+        "mustCopy": "Como no se envió ningún correo, copia el enlace ahora y hazlo llegar tú mismo. Si lo pierdes, envía una nueva invitación."
+      },
+      "suspend": {
+        "title": "Suspender {{name}}",
+        "intro": "El restaurador ve el motivo que indiques a continuación, y el restaurante desaparece de inmediato para los clientes: ya no se puede encontrar ni reservar en línea.",
+        "reasonLabel": "Motivo (opcional)",
+        "reasonHint": "Se muestra al restaurador: indica un hecho, nada interno.",
+        "counter": "{{count}} / {{max}}",
+        "next": "Continuar",
+        "confirmTitle": "¿Suspender {{name}}?",
+        "confirmBody": "El restaurante desaparece de inmediato para los clientes. Puedes reactivarlo en cualquier momento.",
+        "confirm": "Sí, suspender",
+        "back": "Atrás"
+      },
+      "retention": {
+        "title": "Conservación de los datos de {{name}}",
+        "intro": "Durante cuánto tiempo los clientes de este restaurante siguen siendo identificables. Cuando un servicio supera ese plazo, la reserva conserva la fecha, el tamaño del grupo y la mesa, y pierde el nombre, el correo electrónico y las notas del cliente.",
+        "optionsLabel": "Plazo de conservación",
+        "periodOption": "Borrar tras un plazo fijado",
+        "noneOption": "Sin borrado automático",
+        "noneHint": "No se borra nada automáticamente mientras no se fije un plazo. Es la situación de todo restaurante anterior a este ajuste.",
+        "monthsLabel": "Meses tras el servicio ({{min}} a {{max}})",
+        "warning": "Las reservas más antiguas que el plazo se anonimizan en la siguiente pasada diaria. No se puede deshacer.",
+        "save": "Guardar"
+      },
+      "reactivate": {
+        "title": "¿Reactivar {{name}}?",
+        "body": "Un restaurante que estaba publicado vuelve a estar publicado; uno que aún se estaba configurando vuelve como borrador.",
+        "confirm": "Reactivar"
+      },
+      "consents": {
+        "title": "Consentimientos de {{name}}",
+        "intro": "Los documentos aceptados al registrarse, con la versión y la huella del texto que se mostró.",
+        "empty": "Aún no hay ningún consentimiento registrado.",
+        "loadFailed": "No se pudieron cargar los consentimientos.",
+        "versionLine": "Versión {{version}}",
+        "emailLine": "Correo electrónico: {{email}}",
+        "dateLine": "Fecha: {{date}}",
+        "fingerprintLine": "Huella: {{hash}}"
+      },
+      "guestData": {
+        "title": "Datos de clientes de {{name}}",
+        "warningTitle": "Lee esto primero",
+        "warningDefault": "La plataforma no consulta por defecto los datos de los clientes de un restaurante.",
+        "warningAudit": "Este acceso queda registrado en el historial de auditoría, con tu motivo y tu nombre.",
+        "warningReason": "El motivo debe describir el ticket o la solicitud a la que responde. No menciones nunca a un cliente por su nombre.",
+        "reasonLabel": "Motivo del acceso",
+        "counter": "{{count}} / {{max}} caracteres (mínimo {{min}})",
+        "submit": "Abrir los datos de clientes",
+        "banner": "Acceso registrado",
+        "bannerDetail": "Abierto el {{date}}. Tu motivo y tu nombre constan en el historial de auditoría. Al cerrar esta ventana se descartan los datos.",
+        "empty": "No hay ninguna reserva en este restaurante.",
+        "truncated": "Se muestran las {{shown}} reservas más recientes de {{total}}.",
+        "columns": {
+          "ref": "Referencia",
+          "date": "Fecha",
+          "seats": "Grupo",
+          "name": "Nombre",
+          "email": "Correo electrónico",
+          "requests": "Peticiones",
+          "status": "Estado"
+        },
+        "anonymised": "Anonimizada",
+        "cancelled": "Cancelada",
+        "close": "Cerrar y descartar"
       }
     },
     "qrCodes": {
@@ -2455,7 +2907,8 @@
           "apiKeys": "Claves de API",
           "nativeApp": "Aplicación nativa",
           "account": "Cuenta",
-          "waitlist": "Lista de espera"
+          "waitlist": "Lista de espera",
+          "platform": "Plataforma"
         },
         "unreadLabel_one": "{{label}}, {{count}} no leída",
         "unreadLabel_other": "{{label}}, {{count}} no leídas"

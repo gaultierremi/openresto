@@ -133,11 +133,17 @@ describe("RootLayout", () => {
 
   // The public menu lives outside (user) so a guest who scanned a QR code gets the dishes
   // without the site's navbar around them; the navigator has to know the route group exists.
-  it("declares the menu route group beside the guest and admin ones", async () => {
+  it("declares the menu, legal and onboarding route groups beside the guest and admin ones", async () => {
     render(<RootLayout />);
     await screen.findByTestId("stack");
     const names = screen.getAllByTestId(/^screen-/).map((node) => node.props.testID);
-    expect(names).toEqual(["screen-(user)", "screen-menu", "screen-admin"]);
+    expect(names).toEqual([
+      "screen-(user)",
+      "screen-menu",
+      "screen-legal",
+      "screen-onboarding",
+      "screen-admin",
+    ]);
   });
 
   it("renders correctly on web and sets title", async () => {

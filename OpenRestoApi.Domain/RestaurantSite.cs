@@ -19,6 +19,12 @@ public class RestaurantSite
 
     public SiteTheme Theme { get; set; } = SiteTheme.Brasserie;
 
+    /// <summary>
+    /// The restaurant's own <c>#rrggbb</c> for this site. Null keeps the instance's brand colour,
+    /// which is also what the booking and menu pages use.
+    /// </summary>
+    public string? PrimaryColor { get; set; }
+
     public string? Tagline { get; set; }
 
     /// <summary>A <c>/media/</c> URL under a random <c>site-</c> name, never the restaurant's id.</summary>

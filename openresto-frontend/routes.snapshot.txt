@@ -38,6 +38,7 @@
 /admin/menus/index
 /admin/menus/service
 /admin/notifications
+/admin/platform/index
 /admin/qr-codes/index
 /admin/qr-codes/print
 /admin/settings/account
@@ -53,11 +54,17 @@
 /book/[restaurantId]
 /booking-confirmation/[bookingRef]
 /index
+/legal/[key]
+/legal/index
 /locations/[id]
 /locations/index
 /lookup
 /menu/r/[token]
 /menu/t/[token]
+/onboarding/index
+/onboarding/invitation/[token]
+/onboarding/login
+/onboarding/restaurant/[id]
 /restaurant/[id]
 /search
 /waitlist/[ref]
