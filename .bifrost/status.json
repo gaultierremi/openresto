@@ -32,6 +32,16 @@
       "pr": 18,
       "etape": "Relue MERGE (948dc05) ; le travail de #7 avait été fusionné dans sa branche empilée, pas dans main.",
       "maj": "2026-10-21T15:25:02+00:00"
+    },
+    {
+      "id": "bifrost-openresto",
+      "titre": "Brancher OpenResto sur Heimdall",
+      "agent": "Claude",
+      "branche": "chore/bifrost",
+      "statut": "Prête à merger",
+      "pr": 3,
+      "etape": "Fusionnée avec la chaîne #2, #7 (PR 18) pour se fusionner sans conflit après elles.",
+      "maj": "2026-10-21T15:26:01+00:00"
     }
   ],
   "decisions": [
@@ -49,7 +59,7 @@
     }
   ],
   "maj": {
-    "at": "2026-10-21T15:25:02+00:00",
+    "at": "2026-10-21T15:26:01+00:00",
     "by": "Claude"
   }
 }

@@ -420,3 +420,22 @@ Booking history is intentionally **GDPR-purgeable** via the existing `PurgeBooki
 - **Date-boundary check** (`.github/workflows/date-boundary.yml`): weekly (and on demand), runs Jest and the full Playwright suite with the runner's clock pinned to the last day of the current month. A test that computes "tomorrow" and expects it on screen passes every day but the 31st, which is how three of them reached `main` at once on 2026-08-31 — the date picker renders one calendar month, so on a month end there is no tomorrow in its grid. Pin the **runner's** clock, never Playwright's `page.clock`: the containers share the host kernel clock and Chromium runs on the host, so `date -s` moves the backend, the frontend and the browser together, where `page.clock` would move only the browser and leave it disagreeing with the server computing availability. The pinned date is computed, not listed, so it rotates through 28-, 29-, 30- and 31-day months over a year. Builds and installs run before the clock moves, since a skewed clock breaks TLS; the clock is restored unconditionally afterwards, and a failure to move it fails the job rather than silently running on today's date.
 - **Migration safety check** (`.github/workflows/migration-check.yml`): triggers on any PR/push that adds or modifies files in `OpenRestoApi.Infrastructure/Migrations/` or `AppDbContext.cs`. Detects which migration files are new, generates baseline SQL (0 → last old migration), generates upgrade-only SQL (last old migration → HEAD), applies both paths to separate SQLite databases, and asserts their schemas match. Also generates an idempotent script as a sanity check. Does not trigger if no migration files changed.
 - **Backup/restore**: see `docs-site/src/content/docs/self-hosting/backup-restore.md` for procedures covering named volumes, bind mounts, WAL checkpointing, automated cron backups, online `.backup` snapshots, and the safe upgrade path.
+
+---
+
+## Bifröst — rendre compte à Heimdall
+
+À la fin de **chaque tâche**, mets à jour `.bifrost/status.json` dans la même PR que ton travail.
+Ce fichier alimente le tableau de bord de Gaultier (Heimdall) : il lit le contenu de la branche par défaut.
+
+Règles :
+
+- Le fichier suit le schéma Bifröst (dépôt Heimdall, bifrost/schema/status.schema.json). JSON valide, aucun champ en plus, dates ISO 8601 avec fuseau (`date -Iseconds`).
+- `etat` : l'état du projet en **une phrase**. `sante` : `actif`, `pause` ou `bloqué`. `prochaine_etape` : une phrase.
+- `chantiers[]` : un chantier par sujet en cours. Renseigne `id`, `titre`, `agent` (`Claude` ou `Codex`), `branche`, `statut` (`En cours`, `Prête à merger`, `Terminé`, `Bloqué`), `pr` (obligatoire si `Prête à merger`), `maj` et, si utile, `etape`. Passe un chantier à `Prête à merger` quand ta PR est ouverte et prête pour relecture. Ne le passe jamais à `Terminé` toi-même tant que Gaultier n'a pas mergé. Retire les chantiers terminés depuis plus d'une semaine.
+- `decisions[]` : ajoute une décision dès que tu as besoin de Gaultier (`id`, `titre` = la question, `pourquoi`, `urgence` : `Ce soir`, `Cette semaine` ou `Quand tu veux`). Retire-la quand elle est tranchée.
+- Mets à jour `maj.at` (maintenant) et `maj.by` (ton nom : `Claude` ou `Codex`) **à chaque tâche**, même si rien d'autre ne change : un statut de plus de 24 h est marqué « ancien ».
+- Si tu **relis** la PR d'un chantier, renseigne `relecture` : { "par", "verdict": "MERGE" | "MERGE APRÈS CORRECTION" | "NE PAS MERGER", "at" }. Quand plusieurs PR attendent, donne à chaque chantier `Prête à merger` un `ordre_merge` (1 = à merger en premier).
+- N'invente rien : si tu ne sais pas, omets `etape`.
+- Aucun secret, jeton, mot de passe ni donnée personnelle dans ce fichier.
+- Ne merge jamais et ne déploie jamais : tu rends compte, Gaultier décide.
