@@ -116,6 +116,41 @@ describe("OnboardingSitePreview (web)", () => {
     expect(frame().props.srcDoc).toBe("<html>again</html>");
   });
 
+  describe("the frame choice as a radio group", () => {
+    // The `aria-*` prop is only visible on the component element, not on the host node.
+    const ariaChecked = () =>
+      ["phone", "desktop"].map((key) =>
+        screen
+          .UNSAFE_getAllByProps({ testID: `onboarding-site-preview-${key}` })
+          .map((node) => node.props["aria-checked"])
+          .find((value) => value !== undefined)
+      );
+
+    it("is a named radiogroup of two radios", async () => {
+      await renderPreview();
+      const group = screen.UNSAFE_getByProps({ accessibilityRole: "radiogroup" });
+      expect(group.props.accessibilityLabel).toBe("Website preview");
+      expect(screen.getAllByRole("radio").map((radio) => radio.props.accessibilityLabel)).toEqual([
+        "Phone",
+        "Computer",
+      ]);
+      expect(screen.queryByRole("button")).toBeNull();
+    });
+
+    it("announces phone as the checked one at first and desktop as unchecked", async () => {
+      await renderPreview();
+      expect(ariaChecked()).toEqual([true, false]);
+    });
+
+    it("moves the checked state to the frame that is chosen", async () => {
+      await renderPreview();
+      fireEvent.press(screen.getByTestId("onboarding-site-preview-desktop"));
+      expect(ariaChecked()).toEqual([false, true]);
+      fireEvent.press(screen.getByTestId("onboarding-site-preview-phone"));
+      expect(ariaChecked()).toEqual([true, false]);
+    });
+  });
+
   it("starts at phone width and switches to the full width and back", async () => {
     await renderPreview();
     expect(frame().props.style.width).toBe(PHONE_WIDTH);

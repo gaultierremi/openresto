@@ -54,6 +54,38 @@ describe("InvitationModal, adding a restaurant", () => {
     expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ id: 9 }));
   });
 
+  describe("the invitation language as a radio group", () => {
+    // The `aria-*` prop is only visible on the component element, not on the host node.
+    const ariaChecked = (label: string) =>
+      screen
+        .UNSAFE_getAllByProps({ accessibilityLabel: label })
+        .map((node) => node.props["aria-checked"])
+        .find((value) => value !== undefined);
+    const languages = ["Français", "Nederlands", "English"];
+
+    it("is a named radiogroup of radios", () => {
+      open();
+      const group = screen.UNSAFE_getByProps({ role: "radiogroup" });
+      expect(group.props.accessibilityLabel).toBe("Language of the invitation");
+      expect(screen.getAllByRole("radio").map((radio) => radio.props.accessibilityLabel)).toEqual(
+        languages
+      );
+    });
+
+    it("announces French as the only checked language at first", () => {
+      open();
+      expect(languages.map(ariaChecked)).toEqual([true, false, false]);
+    });
+
+    it("moves the checked state to the language that is chosen", () => {
+      open();
+      fireEvent.press(screen.getByText("Nederlands"));
+      expect(languages.map(ariaChecked)).toEqual([false, true, false]);
+      fireEvent.press(screen.getByText("English"));
+      expect(languages.map(ariaChecked)).toEqual([false, false, true]);
+    });
+  });
+
   it("defaults the invitation to French", async () => {
     create.mockResolvedValue(ok(invitationResult()));
     open();
