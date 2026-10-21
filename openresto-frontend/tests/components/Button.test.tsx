@@ -3,6 +3,8 @@ import { render, screen, fireEvent } from "@testing-library/react-native";
 import { StyleSheet, type TextStyle, type ViewStyle } from "react-native";
 import Button from "@/components/common/Button";
 import { theme } from "@/theme/theme";
+import { AA_TEXT_CONTRAST, brandPalette } from "@/theme/brandColors";
+import { contrastRatio } from "@/utils/contrast";
 
 jest.mock("@/hooks/use-color-scheme", () => ({
   useColorScheme: jest.fn(() => "light"),
@@ -174,7 +176,40 @@ describe("Button", () => {
           Act
         </Button>
       );
-      expect(surface().backgroundColor).toBe("#0a7ea4");
+      expect(surface().backgroundColor).toBe(brandPalette("#0a7ea4", false).primary);
+    });
+
+    describe("a brand fill's label", () => {
+      const useScheme = (scheme: "light" | "dark") =>
+        (require("@/hooks/use-color-scheme").useColorScheme as jest.Mock).mockReturnValue(scheme);
+      const useBrandColor = (primaryColor: string) =>
+        (require("@/context/BrandContext").useBrand as jest.Mock).mockReturnValue({
+          appName: "Test",
+          primaryColor,
+        });
+
+      afterEach(() => {
+        useScheme("light");
+        useBrandColor("#0a7ea4");
+      });
+
+      // #059669 is 3.76:1 under a white label: the demo brand that failed the audit.
+      it("reads at AA on a light theme even when the brand colour chosen would not", () => {
+        useBrandColor("#059669");
+        render(<Button>Act</Button>);
+        expect(
+          contrastRatio(surface().backgroundColor as string, labelColor().color as string)
+        ).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST);
+      });
+
+      it("reads at AA on a dark theme, where the lifted fill takes a dark label", () => {
+        useScheme("dark");
+        useBrandColor("#059669");
+        render(<Button>Act</Button>);
+        expect(
+          contrastRatio(surface().backgroundColor as string, labelColor().color as string)
+        ).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST);
+      });
     });
 
     it("greys out to the disabled surface regardless of tone", () => {

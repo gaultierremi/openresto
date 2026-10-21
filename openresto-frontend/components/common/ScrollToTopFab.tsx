@@ -57,7 +57,7 @@ export default function ScrollToTopFab(props: Props) {
 }
 
 function StickyFabRail({ visible, onPress }: Props) {
-  const { primaryColor } = useAppTheme();
+  const { primaryColor, onPrimary } = useAppTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   // The rail spans whatever box the FAB was mounted into — the page on most screens, a
@@ -100,7 +100,7 @@ function StickyFabRail({ visible, onPress }: Props) {
           accessibilityLabel={t("common.actions.scrollToTop")}
           accessibilityRole="button"
         >
-          <Icon name="chevron-up" size={22} color="#fff" />
+          <Icon name="chevron-up" size={22} color={onPrimary} />
         </Pressable>
       </Animated.View>
     </View>
