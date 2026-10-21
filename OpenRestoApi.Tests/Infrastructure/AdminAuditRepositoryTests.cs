@@ -216,10 +216,47 @@ public class AdminAuditRepositoryTests : IDisposable
         int askingActor = actor == 7 ? firstActor : firstActor + 1;
         int askingLocation = restaurantId == 3 ? firstLocation : firstLocation + 1;
         bool found = await repo.ExistsSinceAsync(
-            askingActor, "admin@test.com", AuditActions.GuestDataRead, label, askingLocation,
+            askingActor, "admin@test.com", null, AuditActions.GuestDataRead, label, askingLocation,
             Noon.AddSeconds(-windowStartsSecondsBeforeNoon));
 
         Assert.Equal(expected, found);
+    }
+
+    /// <summary>
+    /// The same account reading through an API key is a different "who" than its browser session:
+    /// the key's name rides on the display name, and the read must not be absorbed by the earlier row.
+    /// </summary>
+    [Theory]
+    [InlineData(null, true)]
+    [InlineData("Casey", false)]
+    [InlineData("Casey (API key \"reports\")", false)]
+    public async Task ExistsSinceAsync_DoesNotMatchAnotherCredentialOfTheSameAccount(string? askingDisplayName, bool expected)
+    {
+        using AppDbContext db = CreateContext();
+        var repo = new AdminAuditRepository(db);
+        (int actor, _, int location, _) = await SeedActorsAndLocationsAsync(db);
+        await repo.AddAsync(ReadEntry(Noon, actor, "Bookings", location));
+
+        bool found = await repo.ExistsSinceAsync(
+            actor, "admin@test.com", askingDisplayName, AuditActions.GuestDataRead, "Bookings", location, Noon.AddMinutes(-1));
+
+        Assert.Equal(expected, found);
+    }
+
+    [Fact]
+    public async Task ExistsSinceAsync_MatchesTheSameApiKey_AndNotAnother()
+    {
+        using AppDbContext db = CreateContext();
+        var repo = new AdminAuditRepository(db);
+        (int actor, _, int location, _) = await SeedActorsAndLocationsAsync(db);
+        AdminAuditEntry viaKey = ReadEntry(Noon, actor, "Bookings", location);
+        viaKey.ActorDisplayName = "Casey (API key \"reports\")";
+        await repo.AddAsync(viaKey);
+
+        Assert.True(await repo.ExistsSinceAsync(
+            actor, "admin@test.com", "Casey (API key \"reports\")", AuditActions.GuestDataRead, "Bookings", location, Noon.AddMinutes(-1)));
+        Assert.False(await repo.ExistsSinceAsync(
+            actor, "admin@test.com", "Casey (API key \"other\")", AuditActions.GuestDataRead, "Bookings", location, Noon.AddMinutes(-1)));
     }
 
     [Fact]
@@ -232,9 +269,9 @@ public class AdminAuditRepositoryTests : IDisposable
         await repo.AddAsync(legacy);
 
         Assert.True(await repo.ExistsSinceAsync(
-            null, "admin@test.com", AuditActions.GuestDataRead, "Bookings", null, Noon.AddMinutes(-1)));
+            null, "admin@test.com", null, AuditActions.GuestDataRead, "Bookings", null, Noon.AddMinutes(-1)));
         Assert.False(await repo.ExistsSinceAsync(
-            null, "someone-else@test.com", AuditActions.GuestDataRead, "Bookings", null, Noon.AddMinutes(-1)));
+            null, "someone-else@test.com", null, AuditActions.GuestDataRead, "Bookings", null, Noon.AddMinutes(-1)));
     }
 
     [Fact]

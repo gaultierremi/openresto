@@ -116,8 +116,12 @@ internal sealed class AuditLogMiddleware(
         AuditActor actor = await ResolveActorAsync(context, scope, writeScope.ServiceProvider);
         DateTime now = clock.UtcNow;
 
+        // The credential is part of "who": a read through an API key names the key, and must not
+        // be swallowed by the same person's browser session having read the same screen a minute
+        // ago.
+        string? displayName = AuditFields.Sanitize(actor.DisplayName, AuditFields.MaxActorDisplayNameLength);
         if (await repository.ExistsSinceAsync(
-                actor.UserId, actor.Email, AuditActions.GuestDataRead, declared.Label, restaurantId, now - GuestDataReadWindow))
+                actor.UserId, actor.Email, displayName, AuditActions.GuestDataRead, declared.Label, restaurantId, now - GuestDataReadWindow))
         {
             return;
         }
@@ -136,12 +140,18 @@ internal sealed class AuditLogMiddleware(
         await repository.AddAsync(entry);
     }
 
+    /// <summary>
+    /// The location the way the action's own binder reads it: a route value as it is, else the
+    /// <em>first</em> query value (a repeated parameter binds its first, so joining them would
+    /// name "all locations" for a read that was in fact scoped to one), parsed as an integer.
+    /// <seealso>GuestDataReadAuditTests.ARepeatedLocationParameter_IsAttributedToTheOneTheActionBound</seealso>
+    /// </summary>
     private static int? RestaurantIdOf(HttpContext context, string key)
     {
         string? raw = context.Request.RouteValues.TryGetValue(key, out object? route)
             ? route?.ToString()
-            : context.Request.Query[key].ToString();
-        return int.TryParse(raw, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out int id)
+            : context.Request.Query[key].FirstOrDefault();
+        return int.TryParse(raw, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int id) && id > 0
             ? id
             : null;
     }

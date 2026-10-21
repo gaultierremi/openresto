@@ -22,12 +22,14 @@ internal class AdminAuditRepository(AppDbContext db) : IAdminAuditRepository
     }
 
     public async Task<bool> ExistsSinceAsync(
-        int? actorUserId, string actorEmail, string action, string? targetLabel, int? restaurantId, DateTime sinceUtc)
+        int? actorUserId, string actorEmail, string? actorDisplayName, string action, string? targetLabel,
+        int? restaurantId, DateTime sinceUtc)
         => await _db.AdminAuditEntries.AsNoTracking().AnyAsync(e =>
             e.OccurredAt >= sinceUtc
             && e.Action == action
             && e.TargetLabel == targetLabel
             && e.RestaurantId == restaurantId
+            && e.ActorDisplayName == actorDisplayName
             && (actorUserId != null ? e.ActorUserId == actorUserId : e.ActorEmail == actorEmail));
 
     /// <summary>

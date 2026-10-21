@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OpenRestoApi.Core.Application.Utilities;
@@ -197,6 +198,72 @@ public class GuestDataReadAuditTests(TestWebAppFactory factory) : IClassFixture<
         List<AdminAuditEntry> rows = await ReadRowsAsync(seeded.RestaurantId, "Bookings");
         Assert.Equal(2, rows.Count);
         Assert.Contains(rows, r => r.ActorEmail == "reader-manager@test.example" && r.ActorRole == UserRoles.Manager);
+    }
+
+    /// <summary>
+    /// A key's read names the key, and the same account having read the screen through its browser
+    /// session a moment earlier must not absorb it.
+    /// </summary>
+    [Fact]
+    public async Task ARead_ThroughAnApiKey_LandsItsOwnRowNamingTheKey()
+    {
+        Seeded seeded = await SeedLocationWithABookingAsync("Audit Key Bistro");
+        HttpClient owner = _factory.CreateAuthenticatedClient();
+        await owner.GetAsync($"/api/admin/bookings?restaurantId={seeded.RestaurantId}");
+
+        HttpResponseMessage minted = await owner.PostAsJsonAsync("/api/admin/api-keys", new
+        {
+            name = "reports",
+            scopes = new[] { new { resource = "bookings", access = "read" } },
+        });
+        minted.EnsureSuccessStatusCode();
+        string secret = (await minted.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>())
+            .GetProperty("secret").GetString()!;
+        HttpClient viaKey = _factory.CreateClient();
+        viaKey.DefaultRequestHeaders.Add("X-API-Key", secret);
+
+        Assert.Equal(HttpStatusCode.OK,
+            (await viaKey.GetAsync($"/api/admin/bookings?restaurantId={seeded.RestaurantId}")).StatusCode);
+
+        List<AdminAuditEntry> rows = await ReadRowsAsync(seeded.RestaurantId, "Bookings");
+        Assert.Equal(2, rows.Count);
+        Assert.Contains(rows, r => r.ActorDisplayName != null && r.ActorDisplayName.Contains("API key \"reports\"", StringComparison.Ordinal));
+        Assert.Contains(rows, r => r.ActorDisplayName == null || !r.ActorDisplayName.Contains("API key", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// A repeated parameter binds its first value; the row names that location, not "all of them".
+    /// </summary>
+    [Fact]
+    public async Task ARepeatedLocationParameter_IsAttributedToTheOneTheActionBound()
+    {
+        Seeded first = await SeedLocationWithABookingAsync("Audit First Bistro");
+        Seeded second = await SeedLocationWithABookingAsync("Audit Second Bistro");
+        HttpClient client = _factory.CreateAuthenticatedClient();
+
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync(
+            $"/api/admin/bookings?restaurantId={first.RestaurantId}&restaurantId={second.RestaurantId}")).StatusCode);
+
+        Assert.Single(await ReadRowsAsync(first.RestaurantId, "Bookings"));
+        Assert.Empty(await ReadRowsAsync(second.RestaurantId, "Bookings"));
+    }
+
+    /// <summary>
+    /// A location value that binds but is not a positive id names no location rather than a wrong
+    /// one (a value that does not bind at all is a 400, which lands nothing).
+    /// </summary>
+    [Theory]
+    [InlineData("0")]
+    [InlineData("-5")]
+    public async Task ALocationParameterThatIsNotAPositiveId_NamesNoLocation(string value)
+    {
+        HttpClient client = _factory.CreateAuthenticatedClient();
+        await AgeRowsAsync(restaurantId: null, TimeSpan.FromHours(1));
+        int before = (await ReadRowsAsync(restaurantId: null, "Bookings")).Count;
+
+        await client.GetAsync($"/api/admin/bookings?restaurantId={value}");
+
+        Assert.Equal(before + 1, (await ReadRowsAsync(restaurantId: null, "Bookings")).Count);
     }
 
     [Fact]

@@ -14,10 +14,13 @@ public interface IAdminAuditRepository
     /// <summary>
     /// Whether this actor already has a row for the same action, screen and location since
     /// <paramref name="sinceUtc"/>. A read of guest data is recorded once per such window rather
-    /// than once per poll, so the list stays something a person can read.
+    /// than once per poll, so the list stays something a person can read. The actor is the
+    /// account <em>and</em> the credential it acted through (<paramref name="actorDisplayName"/>
+    /// carries an API key's name), so a key's read is never absorbed by a browser session's.
     /// </summary>
     Task<bool> ExistsSinceAsync(
-        int? actorUserId, string actorEmail, string action, string? targetLabel, int? restaurantId, DateTime sinceUtc);
+        int? actorUserId, string actorEmail, string? actorDisplayName, string action, string? targetLabel,
+        int? restaurantId, DateTime sinceUtc);
 
     Task<(List<AdminAuditEntry> Items, int TotalCount)> QueryPagedAsync(AuditQuery query, int page, int pageSize);
 
