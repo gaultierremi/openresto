@@ -56,4 +56,10 @@ public class BookingDto
     /// Not returned in responses.
     /// </summary>
     public string? HoldId { get; set; }
+
+    /// <summary>
+    /// The language the guest was using when booking, one of <see cref="SupportedLocales"/>. Chooses
+    /// the language of the confirmation email; an unsupported value is ignored rather than refused.
+    /// </summary>
+    public string? Locale { get; set; }
 }

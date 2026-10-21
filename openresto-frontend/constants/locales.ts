@@ -3,12 +3,19 @@
  * mirrors the backend role matrix. Adding a language is one entry here, one entry in
  * `SupportedLocales.cs`, and one JSON file under `locales/`.
  */
-export const SUPPORTED_LOCALES = ["en", "fr", "es", "de"] as const;
+export const SUPPORTED_LOCALES = ["en", "fr", "es", "de", "nl"] as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 /** The locale served when nothing configured resolves to a supported value. */
 export const DEFAULT_LOCALE: SupportedLocale = "en";
+
+/**
+ * The language the public menu page opens in for a guest who has not picked one. The page is
+ * what a QR code on a table opens, so it answers to the restaurant's guests rather than to the
+ * instance's admin-side default.
+ */
+export const MENU_DEFAULT_LOCALE: SupportedLocale = "fr";
 
 /**
  * Each label is written in its OWN language, not translated — the convention every
@@ -20,6 +27,7 @@ export const LOCALE_LABELS: Record<SupportedLocale, string> = {
   fr: "Français",
   es: "Español",
   de: "Deutsch",
+  nl: "Nederlands",
 };
 
 export function isSupportedLocale(value: string | null | undefined): value is SupportedLocale {
@@ -36,4 +44,5 @@ export const LOCALE_DIRECTIONS: Record<SupportedLocale, "ltr" | "rtl"> = {
   fr: "ltr",
   es: "ltr",
   de: "ltr",
+  nl: "ltr",
 };

@@ -403,6 +403,16 @@ public class BrandServiceTests
     }
 
     [Fact]
+    public void GetDefaultLocale_AcceptsDutch()
+    {
+        var config = new Mock<IConfiguration>();
+        config.Setup(c => c["Locale:Default"]).Returns("nl");
+        var svc = CreateService(TestDbFactory.Create(nameof(GetDefaultLocale_AcceptsDutch)), config.Object);
+
+        Assert.Equal("nl", svc.GetDefaultLocale());
+    }
+
+    [Fact]
     public void GetDefaultLocale_FallsBackToEnglish_WhenEnvVarUnsupported()
     {
         var svc = CreateService(TestDbFactory.Create(nameof(GetDefaultLocale_FallsBackToEnglish_WhenEnvVarUnsupported)));

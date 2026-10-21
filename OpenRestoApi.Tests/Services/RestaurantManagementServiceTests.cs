@@ -188,6 +188,16 @@ public class RestaurantManagementServiceTests
     }
 
     [Fact]
+    public async Task CreateAsync_StartsTheRestaurantAtTheDefaultRetention()
+    {
+        using AppDbContext db = TestDbFactory.Create(nameof(CreateAsync_StartsTheRestaurantAtTheDefaultRetention));
+
+        RestaurantDto result = await CreateService(db).CreateAsync(new RestaurantDto { Name = "Neuf", Sections = [] });
+
+        Assert.Equal(BookingRetention.DefaultMonths, (await db.Restaurants.AsNoTracking().FirstAsync(r => r.Id == result.Id)).BookingRetentionMonths);
+    }
+
+    [Fact]
     public async Task CreateAsync_HonorsCallerSuppliedOpenTimeCloseTimeOpenDaysAndTimezone()
     {
         // Regression test (see the comment above the mapping in CreateAsync): hours/days/

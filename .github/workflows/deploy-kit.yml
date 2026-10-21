@@ -41,7 +41,18 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: ShellCheck
-        run: shellcheck -x -P SCRIPTDIR deploy/backup/*.sh deploy/update.sh deploy/smoke.sh deploy/tests/*.sh
+        run: shellcheck -x -P SCRIPTDIR deploy/backup/*.sh deploy/update.sh deploy/smoke.sh deploy/install.sh deploy/health.sh deploy/tests/*.sh
+
+      # These run against stand-ins for the machine (no Docker daemon, no root, no network), so
+      # they cost seconds, not the stack job's build.
+      - name: Installer behaves (stand-ins for the machine)
+        run: deploy/tests/install.test.sh
+
+      - name: Update picks pull or rebuild
+        run: deploy/tests/update.test.sh
+
+      - name: Health check thresholds (real local TLS server)
+        run: deploy/tests/health.test.sh
 
       - name: Compose files resolve
         env:

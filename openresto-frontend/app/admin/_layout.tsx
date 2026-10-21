@@ -8,14 +8,14 @@ import AdminSidebar from "@/components/layout/AdminSidebar";
 import { theme } from "@/theme/theme";
 import { useBrand } from "@/context/BrandContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { useBrowserLocaleOptOut } from "@/context/LocaleContext";
 import PageLoader from "@/components/common/PageLoader";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { focusTarget } from "@/utils/focusRegistry";
 import KeyboardShortcutsHelp from "@/components/common/KeyboardShortcutsHelp";
 import { styles } from "@/styles/admin/layout.styles";
 import { Icon } from "@/components/common/Icon";
-
-const MIN_WIDTH = 600;
+import { isChromeless, showsDesktopWall } from "@/utils/adminRoutes";
 
 function DesktopOnlyWall() {
   const { t } = useTranslation();
@@ -33,8 +33,11 @@ function DesktopOnlyWall() {
  * on ios/android this layout hands the visitor back to the home screen rather than mounting a
  * dashboard whose every screen assumes a pointer, a keyboard and a browser session.
  *
+ * The admin opts out of the browser's language (`useBrowserLocaleOptOut`): Dutch covers the
+ * guest surface only, so the back office follows the instance default instead.
+ *
  * @see [admin-layout.test.tsx](../../tests/app/admin-layout.test.tsx) — pins the redirect on
- * native and that web still mounts the admin.
+ * native, that web still mounts the admin, and that only web asks for the opt-out.
  */
 export default function AdminLayout() {
   if (Platform.OS !== "web") return <Redirect href="/" />;
@@ -42,8 +45,10 @@ export default function AdminLayout() {
 }
 
 function AdminLayoutWeb() {
+  useBrowserLocaleOptOut();
   const { width } = useWindowDimensions();
-  const showWall = width < MIN_WIDTH;
+  const pathname = usePathname();
+  const showWall = showsDesktopWall(pathname, width);
 
   // AdminLayoutInner stays mounted even when the wall is shown so that auth
   // state is preserved — unmounting it would reset the status to "loading" and
@@ -63,6 +68,7 @@ function AdminLayoutWeb() {
 function AdminLayoutInner() {
   const router = useRouter();
   const pathname = usePathname();
+  const { width } = useWindowDimensions();
   const segments = useSegments();
   // useSegments() reflects the true current URL (a plain state read, no focus-
   // event lifecycle), unlike useIsFocused() which never fires on a cold web
@@ -91,9 +97,15 @@ function AdminLayoutInner() {
       "/admin/bookings": "Bookings",
       "/admin/bookings/new": "New Walk-in",
       "/admin/locations": "Locations",
+      "/admin/menus": "Menus",
+      "/admin/menus/service": "Service mode",
+      "/admin/qr-codes": "QR codes",
+      "/admin/qr-codes/print": "QR sheet",
+      "/admin/site": "My website",
       "/admin/waitlist": "Waitlist",
       "/admin/notifications": "Notifications",
       "/admin/activity": "Activity",
+      "/admin/platform": "Platform",
       "/admin/login": "Admin Login",
     };
     /* istanbul ignore next */
@@ -172,6 +184,16 @@ function AdminLayoutInner() {
 
   if (authState === "loading") return <PageLoader />;
   if (authState !== "authenticated") return null;
+
+  // The print sheet, and the service screen on a phone, run without the sidebar: the first
+  // because it is printed from the browser, the second because there is no width to spare.
+  if (isChromeless(pathname, width)) {
+    return (
+      <ThemedView style={{ flex: 1 }}>
+        <Slot />
+      </ThemedView>
+    );
+  }
 
   /* istanbul ignore next */
   if (Platform.OS === "web") {

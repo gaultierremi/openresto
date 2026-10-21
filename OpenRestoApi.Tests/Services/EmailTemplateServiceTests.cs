@@ -268,6 +268,82 @@ public class EmailTemplateServiceTests
         Assert.Contains($"{seats} {expectedWord}", html);
     }
 
+    // ── Languages ───────────────────────────────────────────────────────────────
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("en")]
+    [InlineData("es")]
+    public void BuildConfirmationEmail_IsEnglishWithoutALanguage(string? language)
+    {
+        var booking = MakeBooking(customerName: "Alice", sectionName: "Patio", tableName: "T1", specialRequests: "None");
+        Restaurant restaurant = MakeRestaurant(address: "1 Main St");
+
+        string expected = _svc.BuildConfirmationEmail(booking, restaurant, _defaultBrand, DefaultWebsiteUrl);
+        string actual = _svc.BuildConfirmationEmail(booking, restaurant, _defaultBrand, DefaultWebsiteUrl, language);
+
+        Assert.Equal(expected, actual);
+        Assert.Equal(_svc.BuildConfirmationSubject(restaurant), _svc.BuildConfirmationSubject(restaurant, language));
+        Assert.Equal("Booking confirmed – Testaurant", _svc.BuildConfirmationSubject(restaurant, language));
+    }
+
+    [Theory]
+    [InlineData("fr", "Réservation confirmée – Testaurant")]
+    [InlineData("nl", "Reservatie bevestigd – Testaurant")]
+    public void BuildConfirmationSubject_IsWrittenInTheLanguage(string language, string expected)
+    {
+        Assert.Equal(expected, _svc.BuildConfirmationSubject(MakeRestaurant(), language));
+    }
+
+    [Theory]
+    [InlineData("fr", new[] { "Réservation confirmée", "C'est confirmé, Alice&nbsp;!" , "Référence", "samedi 1 août 2026", "19:00 – 21:00", "2 convives", ">Zone<", ">Table<", "Demandes particulières", "Itinéraire &rarr;", "Gérer votre réservation" })]
+    [InlineData("nl", new[] { "Reservatie bevestigd", "Alles is in orde, Alice!", "Referentie", "zaterdag 1 augustus 2026", "19:00 – 21:00", "2 gasten", ">Zone<", ">Tafel<", "Bijzondere wensen", "Routebeschrijving &rarr;", "Uw reservatie beheren" })]
+    public void BuildConfirmationEmail_WritesEachLanguageItsOwnWords(string language, string[] expected)
+    {
+        var booking = MakeBooking(customerName: "Alice", sectionName: "Patio", tableName: "T1", specialRequests: "Window");
+
+        string html = _svc.BuildConfirmationEmail(
+            booking, MakeRestaurant(address: "1 Main St"), _defaultBrand, DefaultWebsiteUrl, language)
+            .Replace(" ", "&nbsp;");
+
+        foreach (string fragment in expected)
+        {
+            Assert.Contains(fragment, html);
+        }
+
+        Assert.DoesNotContain("Booking Confirmed", html);
+        Assert.DoesNotContain("Manage your booking", html);
+        Assert.DoesNotContain("PM", html);
+    }
+
+    [Theory]
+    [InlineData("fr", "Table n&#176; 7", "convive")]
+    [InlineData("nl", "Tafel nr. 7", "gast")]
+    public void BuildConfirmationEmail_LocalisesTheTableByIdLabelAndTheSingularGuest(string language, string tableLabel, string guest)
+    {
+        var booking = MakeBooking(tableName: null, tableId: 7);
+        booking.Seats = 1;
+
+        string html = _svc.BuildConfirmationEmail(booking, MakeRestaurant(), _defaultBrand, DefaultWebsiteUrl, language);
+
+        Assert.Contains(tableLabel, html);
+        Assert.Contains($"1 {guest}<", html);
+    }
+
+    [Theory]
+    [InlineData("fr")]
+    [InlineData("nl")]
+    public void BuildConfirmationEmail_StillEncodesGuestTextInEveryLanguage(string language)
+    {
+        var booking = MakeBooking(customerName: "<b>Eve</b>", specialRequests: "<script>x</script>");
+
+        string html = _svc.BuildConfirmationEmail(booking, MakeRestaurant(), _defaultBrand, DefaultWebsiteUrl, language);
+
+        Assert.DoesNotContain("<b>Eve</b>", html);
+        Assert.DoesNotContain("<script>x</script>", html);
+        Assert.Contains("&lt;b&gt;Eve&lt;/b&gt;", html);
+    }
+
     // ── Brand fallbacks ─────────────────────────────────────────────────────────
 
     [Fact]

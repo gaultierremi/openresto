@@ -5,6 +5,8 @@ using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Services;
 using OpenRestoApi.Core.Application.Utilities;
 using OpenRestoApi.Extensions;
+using OpenRestoApi.Extensions;
+using OpenRestoApi.Infrastructure.Auditing;
 using OpenRestoApi.Infrastructure.Auth;
 using OpenRestoApi.Infrastructure.Cookies;
 
@@ -29,6 +31,7 @@ namespace OpenRestoApi.Controllers
         [HttpGet("/api/restaurants/{restaurantId}/bookings")]
         [Authorize(Policy = AuthPolicies.RequireAdmin)]
         [RequiresScope(ApiKeyScopes.Bookings, ApiKeyScopes.Read)]
+        [ReadsGuestData("Bookings")]
         public async Task<IActionResult> GetBookings(int restaurantId)
         {
             IEnumerable<BookingDto> bookings = await _bookingService.GetBookingsByRestaurantAsync(restaurantId);
@@ -38,6 +41,7 @@ namespace OpenRestoApi.Controllers
         [HttpGet("{id}")]
         [Authorize(Policy = AuthPolicies.RequireAdmin)]
         [RequiresScope(ApiKeyScopes.Bookings, ApiKeyScopes.Read)]
+        [ReadsGuestData("Booking")]
         public async Task<IActionResult> GetBooking(int id)
         {
             BookingDto? booking = await _bookingService.GetBookingByIdAsync(id);
@@ -45,6 +49,7 @@ namespace OpenRestoApi.Controllers
             {
                 return NotFound();
             }
+            this.NoteGuestDataLocation(booking.RestaurantId);
             return Ok(booking);
         }
 

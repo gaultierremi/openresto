@@ -18,9 +18,13 @@ jest.mock("@/hooks/use-app-theme", () => ({
 
 import { useAppTheme } from "@/hooks/use-app-theme";
 
-jest.mock("expo-router", () => ({
-  Link: ({ children }: any) => children,
-}));
+jest.mock("expo-router", () => {
+  const { View } = require("react-native");
+  return {
+    // Names the destination in the tree, so a test can say where a link goes.
+    Link: ({ href, children }: any) => <View testID={`link:${href}`}>{children}</View>,
+  };
+});
 
 jest.mock("@expo/vector-icons", () => ({
   Ionicons: () => null,
@@ -80,9 +84,53 @@ describe("Footer", () => {
     expect(screen.getByText("Admin")).toBeTruthy();
   });
 
-  it("renders no privacy policy link when the brand configures none", () => {
+  it("renders no external privacy policy link when the brand configures none", () => {
     render(<Footer />);
     expect(screen.queryByLabelText("Privacy policy")).toBeNull();
+  });
+
+  it("links the platform's privacy page when the brand configures no policy of its own", () => {
+    render(<Footer />);
+    expect(screen.getByTestId("link:/legal/privacy")).toBeTruthy();
+    expect(screen.getByLabelText("Privacy")).toBeTruthy();
+    expect(openExternal).not.toHaveBeenCalled();
+  });
+
+  it("keeps the configured privacy policy and does not also link the platform's", () => {
+    (useAppTheme as jest.Mock).mockReturnValue({
+      brand: {
+        appName: "Test App",
+        primaryColor: "#0a7ea4",
+        privacyPolicyUrl: "https://example.com/privacy",
+      },
+      colors: { border: "#ccc", muted: "#666" },
+    });
+    render(<Footer />);
+
+    expect(screen.queryByTestId("link:/legal/privacy")).toBeNull();
+    expect(screen.queryByLabelText("Privacy")).toBeNull();
+    expect(screen.getByLabelText("Privacy policy")).toBeTruthy();
+  });
+
+  it("always links the platform's terms and legal notice, whatever the brand configures", () => {
+    const { unmount } = render(<Footer />);
+    expect(screen.getByTestId("link:/legal/terms")).toBeTruthy();
+    expect(screen.getByLabelText("Terms")).toBeTruthy();
+    expect(screen.getByTestId("link:/legal/legal-notice")).toBeTruthy();
+    expect(screen.getByLabelText("Legal notice")).toBeTruthy();
+    unmount();
+
+    (useAppTheme as jest.Mock).mockReturnValue({
+      brand: {
+        appName: "Test App",
+        primaryColor: "#0a7ea4",
+        privacyPolicyUrl: "https://example.com/privacy",
+      },
+      colors: { border: "#ccc", muted: "#666" },
+    });
+    render(<Footer />);
+    expect(screen.getByTestId("link:/legal/terms")).toBeTruthy();
+    expect(screen.getByTestId("link:/legal/legal-notice")).toBeTruthy();
   });
 
   it("renders a privacy policy link when the brand configures one, and opens it externally", () => {
