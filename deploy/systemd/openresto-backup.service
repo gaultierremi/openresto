@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenResto backup (database, keys, media)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/openresto/deploy
+ExecStart=/opt/openresto/deploy/backup/backup.sh
+Nice=10
+IOSchedulingClass=idle
+# Exit code 3 = the local backup is fine but the off-site copy failed; systemd still marks the
+# unit failed, which is what `systemctl --failed` and any monitoring should surface.

@@ -1,0 +1,19 @@
+{
+	email {$ACME_EMAIL}
+	acme_ca {$ACME_CA}
+}
+
+{$DOMAIN} {
+	# Menu PDFs go up to 10 MB; nginx behind this allows 12 MB.
+	request_body {
+		max_size 12MB
+	}
+
+	# nginx (routes, security headers, media, gzip) is the single source of routing.
+	# Caddy sets X-Forwarded-For/-Proto itself; nginx-realip.conf makes nginx trust it.
+	reverse_proxy reverse-proxy:80
+
+	log {
+		output stdout
+	}
+}

@@ -1,9 +1,45 @@
 {
-  "chantier": "Sprint 2 — écrans de la carte QR (éditeur admin, mode service, page publique, QR codes)",
-  "branche": "feat/menu-screens",
-  "base": "feat/menu-api",
-  "pr": "https://github.com/gaultierremi/openresto/pull/5",
-  "pr_empilee_sur": "https://github.com/gaultierremi/openresto/pull/2",
-  "etat": "corrections de relecture appliquées, en attente de contre-relecture",
-  "mis_a_jour": "2026-10-20"
+  "etat": "Kit d'hébergement corrigé après relecture ; CI du kit verte sur GitHub, démo Codespaces lancée par Gaultier.",
+  "sante": "actif",
+  "prochaine_etape": "Relecture de la PR 4, puis choix du modèle d'hébergement (une instance par client) et des images du fork.",
+  "chantiers": [
+    {
+      "id": "deploy-kit",
+      "titre": "Mise en production : kit d'hébergement, sauvegardes, CI",
+      "agent": "Claude",
+      "branche": "chore/deploy-kit",
+      "statut": "Prête à merger",
+      "pr": 4,
+      "etape": "Corrections P2 et P3 de la relecture poussées ; en attente d'un nouveau verdict.",
+      "maj": "2026-10-20T20:38:22+00:00"
+    },
+    {
+      "id": "menu-api",
+      "titre": "Module carte natif — API (#2, avec les écrans #5)",
+      "agent": "Claude",
+      "branche": "feat/menu-api",
+      "statut": "Prête à merger",
+      "pr": 2,
+      "etape": "Relue MERGE (0282e76 pour #2, 15b7ef1 pour #5) ; main fusionné pour lever le conflit de status.json.",
+      "maj": "2026-10-21T15:24:40+00:00"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "modele-hebergement",
+      "titre": "Une instance par restaurant client, ou une seule instance multi-lieux ?",
+      "pourquoi": "Les comptes admin, la marque et l'expéditeur de mails sont communs à toute une instance : des restaurateurs indépendants ne sont pas isolés (docs/HEBERGEMENT.md, §3).",
+      "urgence": "Cette semaine"
+    },
+    {
+      "id": "images-fork",
+      "titre": "Publier les images Docker du fork sur GHCR, ou tirer les images amont ?",
+      "pourquoi": "Les images amont 2.4.1 ne lisent pas SMTP_* ; il faut les images du fork pour cette fonction et pour tout ce qui diverge.",
+      "urgence": "Cette semaine"
+    }
+  ],
+  "maj": {
+    "at": "2026-10-21T15:24:40+00:00",
+    "by": "Claude"
+  }
 }

@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily OpenResto backup
+
+[Timer]
+OnCalendar=*-*-* 03:15:00
+RandomizedDelaySec=10min
+# A VM that was off at 03:15 runs the backup as soon as it is back.
+Persistent=true
+
+[Install]
+WantedBy=timers.target
