@@ -141,6 +141,7 @@
       "shareLabel": "Share booking details",
       "shareMessage_one": "Booking {{ref}} at {{name}} · {{when}} · {{count}} guest",
       "shareMessage_other": "Booking {{ref}} at {{name}} · {{when}} · {{count}} guests",
+      "showMapButton": "Show map",
       "statusCancelled": "Booking Cancelled",
       "statusConfirmed": "Booking Confirmed",
       "statusFound": "Booking Found",

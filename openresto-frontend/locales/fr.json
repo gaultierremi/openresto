@@ -141,6 +141,7 @@
       "shareLabel": "Partager les détails de la réservation",
       "shareMessage_one": "Réservation {{ref}} chez {{name}} · {{when}} · {{count}} personne",
       "shareMessage_other": "Réservation {{ref}} chez {{name}} · {{when}} · {{count}} personnes",
+      "showMapButton": "Afficher la carte",
       "statusCancelled": "Réservation annulée",
       "statusConfirmed": "Réservation confirmée",
       "statusFound": "Réservation trouvée",
