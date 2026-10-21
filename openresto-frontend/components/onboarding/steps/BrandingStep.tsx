@@ -176,7 +176,11 @@ export function BrandingStep({
         error={colorError}
         testID="branding-color"
       >
-        <View style={styles.swatches} accessibilityRole="radiogroup">
+        <View
+          style={styles.swatches}
+          accessibilityRole="radiogroup"
+          accessibilityLabel={t("admin.onboarding.branding.colorLabel")}
+        >
           {COLOR_PRESETS.map((preset) => {
             const selected = color.toLowerCase() === preset;
             return (
@@ -189,6 +193,9 @@ export function BrandingStep({
                 accessibilityRole="radio"
                 accessibilityLabel={preset}
                 accessibilityState={{ checked: selected }}
+                // react-native-web reads the `aria-*` prop, not `accessibilityState`, so without
+                // this the rendered radio never says which swatch is chosen.
+                aria-checked={selected}
                 style={[
                   styles.swatch,
                   { backgroundColor: preset, borderColor: selected ? colors.text : "transparent" },

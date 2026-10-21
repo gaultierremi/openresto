@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { BrandingStep } from "@/components/onboarding/steps/BrandingStep";
 import { deleteLogo, saveBranding, skipStep, uploadLogo } from "@/api/onboarding";
 import { pickSiteImage } from "@/utils/siteImage";
+import { COLOR_PRESETS } from "@/constants/onboarding";
 import { ok, readyState, refused, state } from "@/tests/helpers/onboardingFixtures";
 import { stepProps } from "./stepHarness";
 
@@ -70,6 +71,64 @@ describe("BrandingStep", () => {
     expect(screen.getByTestId("branding-swatch-#166534").props.accessibilityState.checked).toBe(
       true
     );
+  });
+
+  describe("colour swatches as a radio group", () => {
+    // The `aria-*` prop is only visible on the component element, not on the host node that
+    // `getByTestId` returns, and it is the prop react-native-web turns into the DOM attribute.
+    const ariaChecked = () =>
+      COLOR_PRESETS.map((hex) =>
+        screen
+          .UNSAFE_getAllByProps({ testID: `branding-swatch-${hex}` })
+          .map((node) => node.props["aria-checked"])
+          .find((value) => value !== undefined)
+      );
+    const only = (hex: string) => COLOR_PRESETS.map((preset) => preset === hex);
+
+    const renderWith = (primaryColor: string) =>
+      render(
+        <BrandingStep
+          {...stepProps({
+            state: state({
+              branding: { theme: "Cafe", primaryColor, tagline: null, logoUrl: null },
+            }),
+          })}
+        />
+      );
+
+    it("is a labelled radiogroup", () => {
+      renderWith("#166534");
+      // A bare grouping `View` is not "accessible", which `getByRole` insists on, so find it by prop.
+      const group = screen
+        .UNSAFE_getAllByProps({ accessibilityRole: "radiogroup" })
+        .find((node) => node.props.accessibilityLabel === "Main colour");
+      expect(group).toBeDefined();
+      expect(group!.findAllByProps({ accessibilityRole: "radio" }).length).toBeGreaterThanOrEqual(
+        COLOR_PRESETS.length
+      );
+    });
+
+    it("announces the saved colour as the one checked radio and every other as unchecked", () => {
+      renderWith("#9f1239");
+      expect(ariaChecked()).toEqual(only("#9f1239"));
+      expect(
+        COLOR_PRESETS.map(
+          (hex) => screen.getByTestId(`branding-swatch-${hex}`).props.accessibilityState.checked
+        )
+      ).toEqual(only("#9f1239"));
+    });
+
+    it("announces no swatch as checked when the colour is not a preset", () => {
+      renderWith("#123456");
+      expect(ariaChecked()).toEqual(only("none"));
+    });
+
+    it("moves the checked state to the swatch that is picked", () => {
+      renderWith("#166534");
+      expect(ariaChecked()).toEqual(only("#166534"));
+      fireEvent.press(screen.getByTestId("branding-swatch-#1d4ed8"));
+      expect(ariaChecked()).toEqual(only("#1d4ed8"));
+    });
   });
 
   it("says in one sentence that the colour paints the website", () => {
