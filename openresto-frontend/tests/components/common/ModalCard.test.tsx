@@ -43,3 +43,17 @@ describe("ModalCard height", () => {
     expect(screen.getByText("row")).toBeTruthy();
   });
 });
+
+describe("ModalCard width", () => {
+  it("keeps the dialog column by default and widens it only when asked", () => {
+    const { rerender } = card();
+    expect(StyleSheet.flatten(screen.getByLabelText("Settings").props.style).maxWidth).toBe(400);
+
+    rerender(
+      <ModalCard visible title="Settings" onDismiss={jest.fn()} testID="modal" wide>
+        <Text>row</Text>
+      </ModalCard>
+    );
+    expect(StyleSheet.flatten(screen.getByLabelText("Settings").props.style).maxWidth).toBe(960);
+  });
+});

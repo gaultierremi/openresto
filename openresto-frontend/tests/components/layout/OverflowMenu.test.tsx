@@ -126,6 +126,7 @@ describe("OverflowMenu", () => {
       expect(screen.getByText("Français")).toBeTruthy();
       expect(screen.getByText("Español")).toBeTruthy();
       expect(screen.getByText("Deutsch")).toBeTruthy();
+      expect(screen.getByText("Nederlands")).toBeTruthy();
     });
 
     it("marks the active locale checked via radio semantics", () => {

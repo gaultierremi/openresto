@@ -28,6 +28,9 @@ public class AdminCredential
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    /// <summary>When the account last signed in; null until it does.</summary>
+    public DateTime? LastLoginAt { get; set; }
+
     /// <summary>
     /// Stamped into every token minted for this account. A token carrying an older value is
     /// refused, so raising it signs the account out everywhere.

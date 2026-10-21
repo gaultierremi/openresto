@@ -101,6 +101,7 @@ public class BookingService(
         booking.Date = bookingDate;
         booking.BookingRef = BookingRefFactory.GenerateFor(restaurant);
         booking.EndTime = bookingDate.AddMinutes(durationMinutes);
+        booking.Locale = SupportedLocales.Normalise(bookingDto.Locale);
         booking.Table = table;
         booking.Section = table.Section;
         booking.Restaurant = restaurant;
@@ -363,6 +364,7 @@ public class BookingService(
         booking.Date = bookingDate;
         booking.BookingRef = BookingRefFactory.GenerateFor(restaurant);
         booking.EndTime = bookingDate.AddMinutes(durationMinutes);
+        booking.Locale = SupportedLocales.Normalise(bookingDto.Locale);
         booking.TableId = null;
         booking.TableGroupId = group.Id;
         booking.TableGroup = group;
@@ -433,6 +435,7 @@ public class BookingService(
     {
         _ = id; // Required by REST convention (PUT /bookings/{id}) but entity ID comes from DTO
         Booking booking = _mapper.ToEntity(bookingDto);
+        booking.Locale = SupportedLocales.Normalise(bookingDto.Locale);
         Restaurant? restaurant = await _restaurantRepository.GetByIdAsync(booking.RestaurantId);
 
         if (bookingDto.Seats > 0 && booking.TableId.HasValue)

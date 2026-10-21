@@ -2,3 +2,6 @@ services:
   backend:
     environment:
       - ASPNETCORE_ENVIRONMENT=Testing
+      # A website cannot be published without a public address that is not the dev server's
+      # fallback; the specs that publish one need it named rather than inferred from CORS.
+      - WEBSITE_URL=http://localhost:5062

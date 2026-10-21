@@ -5,6 +5,8 @@ namespace OpenRestoApi.Core.Application.Interfaces;
 /// <summary>
 /// Renders the HTML body of booking-related transactional emails. Pure function —
 /// no I/O, no side effects. Output is wrapped via <c>EmailTemplateBuilder.Wrap</c>.
+/// <c>language</c> is a code already resolved by <c>GuestLanguage.ForEmail</c>; null or an unknown
+/// code is English.
 /// </summary>
 public interface IEmailTemplateService
 {
@@ -13,11 +15,12 @@ public interface IEmailTemplateService
     /// conversions use the restaurant's IANA timezone; date/time formatting via
     /// <c>DateFormatter</c>; URLs are RFC-3986 escaped.
     /// </summary>
-    string BuildConfirmationEmail(Booking booking, Restaurant restaurant, BrandSettings brand, string websiteUrl);
+    string BuildConfirmationEmail(
+        Booking booking, Restaurant restaurant, BrandSettings brand, string websiteUrl, string? language = null);
 
     /// <summary>
     /// Subject line of the confirmation email. Lives beside the body so the send path and the
     /// admin's preview render the same header, rather than each spelling the wording out.
     /// </summary>
-    string BuildConfirmationSubject(Restaurant restaurant);
+    string BuildConfirmationSubject(Restaurant restaurant, string? language = null);
 }

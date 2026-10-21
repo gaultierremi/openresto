@@ -11,8 +11,13 @@ public static class SupportedLocales
     public const string Default = "en";
 
     public static readonly IReadOnlySet<string> All =
-        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "en", "fr", "es", "de" };
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "en", "fr", "es", "de", "nl" };
 
     public static bool IsSupported(string? locale) =>
         !string.IsNullOrWhiteSpace(locale) && All.Contains(locale.Trim());
+
+    /// <summary>The locale as it is stored (trimmed, lower case), or null when it is not a supported one.</summary>
+    /// <seealso>SupportedLocalesTests.Normalise_KeepsASupportedLocaleTrimmedAndLowerCase</seealso>
+    /// <seealso>SupportedLocalesTests.Normalise_DropsAnythingElse</seealso>
+    public static string? Normalise(string? locale) => IsSupported(locale) ? locale!.Trim().ToLowerInvariant() : null;
 }

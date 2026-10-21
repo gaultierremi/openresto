@@ -4,6 +4,7 @@ using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.Services;
 using OpenRestoApi.Core.Application.Utilities;
 using OpenRestoApi.Core.Domain;
+using OpenRestoApi.Infrastructure.Auditing;
 using OpenRestoApi.Infrastructure.Auth;
 
 namespace OpenRestoApi.Controllers;
@@ -62,6 +63,7 @@ public class EmailStatusController(
     /// <seealso>EmailStatusControllerTests.Failures_WithoutGuestScope_RedactsTheRecipient</seealso>
     /// <seealso>EmailStatusControllerTests.Failures_WithGuestScope_KeepsTheRecipient</seealso>
     [HttpGet("failures")]
+    [ReadsGuestData("Email failures")]
     public async Task<IActionResult> GetFailures()
     {
         IReadOnlyList<EmailFailure> failures = await _emailSettings.GetFailuresAsync();

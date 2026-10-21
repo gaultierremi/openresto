@@ -242,6 +242,7 @@
       "cancel": "Cancel",
       "close": "Close",
       "confirm": "Confirm",
+      "delete": "Delete",
       "goHome": "Go to home",
       "scrollToTop": "Scroll to top",
       "tryAgain": "Try again"
@@ -293,6 +294,60 @@
     },
     "language": {
       "switcherLabel": "Language"
+    },
+    "legal": {
+      "reviewBanner": "Template to be validated by a lawyer — do not use as is",
+      "indexTitle": "Legal documents",
+      "indexIntro": "The documents that frame how restaurants and their guests use the platform.",
+      "versionLine": "Version {{version}} · updated {{date}}",
+      "languageNote": "These documents are written in French.",
+      "otherDocuments": "Other documents",
+      "openDocument": "Read",
+      "back": "Back to the legal documents",
+      "notFoundTitle": "Document not found",
+      "notFoundBody": "This legal document does not exist. Pick one from the list.",
+      "loadFailed": "The document could not be loaded.",
+      "documents": {
+        "terms": "Terms of use",
+        "privacy": "Privacy policy",
+        "dpa": "Data processing agreement",
+        "legalNotice": "Legal notice"
+      },
+      "footer": {
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "legalNotice": "Legal notice"
+      }
+    },
+    "menu": {
+      "allergens": {
+        "Celery": "Celery",
+        "Crustaceans": "Crustaceans",
+        "Eggs": "Eggs",
+        "Fish": "Fish",
+        "Gluten": "Gluten",
+        "Lupin": "Lupin",
+        "Milk": "Milk",
+        "Molluscs": "Molluscs",
+        "Mustard": "Mustard",
+        "Nuts": "Tree nuts",
+        "Peanuts": "Peanuts",
+        "Sesame": "Sesame",
+        "Soybeans": "Soy",
+        "Sulphites": "Sulphites"
+      },
+      "availability": {
+        "Available": "Available",
+        "Hidden": "Hidden",
+        "SoldOut": "Sold out"
+      },
+      "dietary": {
+        "GlutenFree": "Gluten-free",
+        "Vegan": "Vegan",
+        "Vegetarian": "Vegetarian"
+      },
+      "free": "Free",
+      "priceOnRequest": "Price on request"
     },
     "modalCard": {
       "defaultDismissLabel": "Dismiss"
@@ -425,12 +480,65 @@
     "icon": {
       "invalid": "Icon key must be one of the supported icons."
     },
+    "legal": {
+      "document_not_found": "Document not found."
+    },
     "media": {
       "hero_too_large": "Hero image must be under 5 MB.",
       "location_image_too_large": "Location image must be under 2 MB.",
       "menu_too_large": "Menu file must be under 10 MB.",
       "unsupported_image_type": "Only JPEG, PNG, and WebP images are accepted.",
       "unsupported_menu_type": "Only PDF menu files are accepted."
+    },
+    "onboarding": {
+      "address_required": "The address is required.",
+      "company_number_invalid": "This enterprise number is not valid. Check it (format 0123.456.749).",
+      "company_number_required": "The enterprise number is required.",
+      "consent_outdated": "The documents have been updated since they were shown. Read them again, then tick the boxes again.",
+      "consent_required": "You must accept every document to create your account.",
+      "email_required": "The contact e-mail address is required.",
+      "hours_no_open_day": "Open at least one day of the week.",
+      "layout_empty": "Add at least one table.",
+      "layout_in_use": "A room or table with upcoming bookings ({{bookings}}) cannot be removed. Nothing was changed.",
+      "layout_invalid": "Every room needs a name, and every table between 1 and 50 seats.",
+      "legal_name_required": "The legal name is required.",
+      "menu_invalid": "Every category and every dish needs a name, and a price cannot be negative.",
+      "name_required": "The restaurant name is required.",
+      "not_publishable": "Finish the required steps before publishing.",
+      "phone_required": "The phone number is required.",
+      "retention_invalid": "The retention period must be between {{min}} and {{max}} months.",
+      "step_required": "This step is required: it cannot be skipped.",
+      "step_unknown": "That step does not exist.",
+      "suspended": "This restaurant is suspended by the platform: no change is possible.",
+      "vat_invalid": "This VAT number is not valid. Check it (for example BE0123.456.749) or leave the field empty."
+    },
+    "menu": {
+      "allergen_invalid": "Allergens must be names from the 14 EU allergens, e.g. \"Gluten\".",
+      "availability_invalid": "Availability must be one of: Available, SoldOut, Hidden.",
+      "category_name_required": "Category name cannot be empty.",
+      "category_name_too_long": "Category name cannot exceed {{max}} characters.",
+      "currency_invalid": "Currency must be a three-letter ISO 4217 code, e.g. EUR.",
+      "description_too_long": "Description cannot exceed {{max}} characters.",
+      "dietary_tag_invalid": "Dietary tags must be one of: Vegetarian, Vegan, GlutenFree.",
+      "item_image_too_large": "Dish photo must be under 2 MB.",
+      "item_name_required": "Item name cannot be empty.",
+      "item_name_too_long": "Item name cannot exceed {{max}} characters.",
+      "name_required": "Menu name cannot be empty.",
+      "name_too_long": "Menu name cannot exceed {{max}} characters.",
+      "not_found": "Menu not found.",
+      "price_invalid": "Price must be zero or more (at most {{max}} in the currency's smallest unit), or left empty for \"price on request\".",
+      "reorder_ids_mismatch": "The new order must list every entry exactly once, with no additions."
+    },
+    "platform": {
+      "not_found": "Restaurant not found.",
+      "invitation_invalid": "This invitation link is invalid or has expired. Ask the platform for a new one.",
+      "invitation_email_invalid": "Enter a valid e-mail address for the invitation.",
+      "invitation_already_accepted": "This invitation has already been accepted.",
+      "restaurant_name_required": "A restaurant name is required.",
+      "access_reason_required": "State why the guests’ data is needed, in {{min}} to {{max}} characters.",
+      "suspend_reason_too_long": "The reason cannot exceed {{max}} characters.",
+      "already_suspended": "This restaurant is already suspended.",
+      "not_suspended": "This restaurant is not suspended."
     },
     "restaurant": {
       "archive_before_delete": "Archive this location before deleting it. Archiving takes it off the public site and can be undone; deleting cannot.",
@@ -452,6 +560,27 @@
       "turn_time_seats_out_of_range": "Turn time party sizes must be between {{min}} and {{max}}.",
       "walk_in_days_invalid": "WalkInDays must be a comma-separated list of ISO day numbers 1 (Monday) through 7 (Sunday).",
       "max_covers_invalid": "Max guests per slot must be 1 or more, or blank for no limit."
+    },
+    "site": {
+      "not_found": "Website not found.",
+      "slug_invalid": "The website address must be 3 to 60 characters: lower-case letters, digits and single hyphens.",
+      "slug_taken": "Another website already uses this address.",
+      "theme_invalid": "That theme doesn’t exist.",
+      "tagline_too_long": "The tagline cannot exceed {{max}} characters.",
+      "social_invalid": "A social link needs a known network, an https:// address, and can appear only once.",
+      "social_too_many": "There are too many social links.",
+      "legal_too_long": "This legal notice field cannot exceed {{max}} characters.",
+      "legal_invalid": "This legal notice field only accepts letters, digits, spaces, dots, hyphens and slashes.",
+      "photo_alt_required": "Every photo needs a description.",
+      "photo_alt_too_long": "The photo description cannot exceed {{max}} characters.",
+      "photos_full": "A gallery holds at most {{max}} photos.",
+      "reorder_ids_mismatch": "The list must name every photo exactly once, with no additions.",
+      "image_too_large": "The picture must be under 6 MB.",
+      "image_dimensions_too_large": "The picture is too large in pixels (at most {{maxSide}} pixels on a side).",
+      "image_unreadable": "That file is not a readable picture.",
+      "not_publishable": "The website cannot go live until its legal notice and contact e-mail address are filled in.",
+      "location_archived": "An archived location cannot have a live website.",
+      "color_invalid": "The colour must be written as #rrggbb, for example #b45309."
     },
     "social_link": {
       "label_required": "Social link label cannot be empty.",
@@ -640,6 +769,31 @@
       "tuesday": "Tuesday",
       "walkIn": "Walk-in",
       "wednesday": "Wednesday"
+    },
+    "publicMenu": {
+      "bookCta": "Book a table",
+      "contains": "Contains: {{list}}",
+      "documentTitle": "{{name}} — Menu",
+      "emptyMenu": "Nothing on this menu yet.",
+      "error": {
+        "body": "Check your connection and try again.",
+        "title": "Couldn’t load the menu"
+      },
+      "filters": {
+        "avoid": "Avoid allergens",
+        "avoidWithCount_one": "Avoiding {{count}} allergen",
+        "avoidWithCount_other": "Avoiding {{count}} allergens",
+        "clear": "Clear filters",
+        "diets": "Diet",
+        "disclaimer": "Filters rely on the restaurant’s own information. If you have an allergy, tell the staff before you order."
+      },
+      "loading": "Loading the menu…",
+      "noMatch": "No dish matches your filters.",
+      "notFound": {
+        "body": "This menu isn’t available right now. Please ask a member of staff.",
+        "title": "Menu unavailable"
+      },
+      "tableLabel": "Table {{name}}"
     },
     "seatingMap": {
       "combinableHeading": "Tables we can combine",
@@ -1244,6 +1398,343 @@
       },
       "backLabel": "Back"
     },
+    "menus": {
+      "actions": {
+        "qrCodes": "QR codes",
+        "service": "Service mode",
+        "viewPublic": "View public page"
+      },
+      "addCategory": "Add a category",
+      "addCategoryPlaceholder": "Category name, e.g. Starters",
+      "addItem": "Add a dish",
+      "addItemPlaceholder": "Dish name",
+      "addItemPrice": "Price",
+      "addMenu": "Add a menu",
+      "addMenuPlaceholder": "Menu name, e.g. Lunch",
+      "category": {
+        "deleteMessage_one": "“{{name}}” and its {{count}} dish will be deleted. This can’t be undone.",
+        "deleteMessage_other": "“{{name}}” and its {{count}} dishes will be deleted. This can’t be undone.",
+        "deleteNamed": "Delete {{name}}",
+        "deleteTitle": "Delete this category?",
+        "descriptionLabel": "Category description",
+        "descriptionPlaceholder": "Description (optional)",
+        "hidden": "Hidden",
+        "hideNamed": "Hide {{name}} from guests",
+        "nameLabel": "Category name",
+        "nameRequired": "Give the category a name to save your changes.",
+        "noItems": "No dishes in this category yet.",
+        "showNamed": "Show {{name}} to guests",
+        "visible": "Visible"
+      },
+      "couldntLoad": "Couldn’t load the menus. Check your connection and try again.",
+      "empty": "No menu yet. Add your first one: guests see it as soon as you publish it.",
+      "item": {
+        "addPriceInvalid": "Enter a price such as 12.50, or leave it empty for “Price on request”.",
+        "allergensHint": "Tick every allergen the dish contains. Guests rely on this: leave all unticked only if the dish contains none of the 14 EU allergens.",
+        "allergensLabel": "Allergens",
+        "availabilityLabel": "Availability",
+        "close": "Close",
+        "closeNamed": "Close {{name}}",
+        "delete": "Delete dish",
+        "deleteMessage": "“{{name}}” and its photo will be deleted. This can’t be undone.",
+        "deleteTitle": "Delete this dish?",
+        "descriptionLabel": "Description (optional)",
+        "dietaryLabel": "Dietary",
+        "edit": "Edit",
+        "editNamed": "Edit {{name}}",
+        "markAvailable": "Mark {{name}} as available again",
+        "markSoldOut": "Mark {{name}} as sold out",
+        "nameLabel": "Dish name",
+        "nameRequired": "Give the dish a name to save your changes.",
+        "photoAdd": "Add a photo",
+        "photoHint": "JPEG, PNG or WebP, 2 MB at most.",
+        "photoLabel": "Photo",
+        "photoRemove": "Remove photo",
+        "photoReplace": "Replace photo",
+        "priceInvalid": "Enter a valid price, or tick “Price on request”, to save your changes.",
+        "priceLabel": "Price ({{currency}})"
+      },
+      "menu": {
+        "categoryCount_one": "{{count}} category",
+        "categoryCount_other": "{{count}} categories",
+        "close": "Close",
+        "closeNamed": "Close {{name}}",
+        "currencyHint": "Prices are stored in the currency’s smallest unit. Check them after changing the currency.",
+        "currencyLabel": "Currency",
+        "delete": "Delete menu",
+        "deleteMessage": "“{{name}}” and all its categories and dishes will be deleted, photos included. This can’t be undone.",
+        "deleteTitle": "Delete this menu?",
+        "descriptionLabel": "Description (optional)",
+        "draft": "Draft",
+        "itemCount_one": "{{count}} dish",
+        "itemCount_other": "{{count}} dishes",
+        "nameLabel": "Menu name",
+        "nameRequired": "Give the menu a name to save your changes.",
+        "open": "Edit",
+        "openNamed": "Edit {{name}}",
+        "publish": "Publish",
+        "published": "Published",
+        "unpublish": "Unpublish"
+      },
+      "moveDown": "Move {{name}} down",
+      "moveUp": "Move {{name}} up",
+      "noLocations": "Add a location to start building a menu.",
+      "service": {
+        "editMenus": "Edit menus",
+        "filterAll": "All dishes",
+        "filterSoldOut": "Sold out ({{count}})",
+        "noMatch": "No dish matches.",
+        "nothingPublished": "No menu is published for this location. Publish one to manage it here.",
+        "search": "Search a dish",
+        "subtitle": "Tap a dish to mark it sold out, tap again to put it back. Guests see the change at once.",
+        "title": "Service mode",
+        "updateFailed": "Couldn’t update “{{name}}”. It was left as it was."
+      },
+      "subtitle": "Build the menu your guests open from your QR codes.",
+      "title": "Menus"
+    },
+    "onboarding": {
+      "badge": "Restaurateur space",
+      "branding": {
+        "colorClear": "Platform colour",
+        "colorHint": "Pick a colour or type one as #rrggbb. Leave it empty to use the platform's colour.",
+        "colorLabel": "Main colour",
+        "colorPlaceholder": "#b45309",
+        "description": "A logo, a look and a colour for your website. This step is optional: you can change everything later.",
+        "logoAdd": "Add a logo",
+        "logoHint": "JPEG, PNG or WebP, 6 MB at most.",
+        "logoLabel": "Logo",
+        "logoRemove": "Remove the logo",
+        "logoReplace": "Replace the logo",
+        "note": "The colour you choose paints your restaurant's website: buttons, links and accents.",
+        "taglineHint": "One catchy sentence, 140 characters at most.",
+        "taglineLabel": "Tagline",
+        "themeLabel": "Website look",
+        "title": "Your visual identity"
+      },
+      "common": {
+        "back": "Back",
+        "continue": "Continue",
+        "next": "Next",
+        "signOut": "Sign out",
+        "skip": "Skip this step"
+      },
+      "documentTitle": "Set up your restaurant",
+      "errors": {
+        "network": "The server could not be reached. Check your connection and try again.",
+        "requestFailed": "The request failed. Try again in a moment."
+      },
+      "home": {
+        "chooseBody": "Your account runs several restaurants. Which one do you want to set up?",
+        "chooseTitle": "Choose a restaurant",
+        "emptyBody": "Your account is not linked to any restaurant. A restaurant appears here once the platform invites you to it.",
+        "emptyTitle": "No restaurant yet",
+        "loading": "Loading…"
+      },
+      "hours": {
+        "closed": "Closed",
+        "copyHint": "Copies the first open day's hours onto every day; closed days stay closed.",
+        "copyToAll": "Copy to all days",
+        "description": "Say which days you open and your service hours. A closed day takes no bookings.",
+        "durationHint": "How long a table is kept for a party.",
+        "durationHours": "{{hours}} h",
+        "durationHoursMinutes": "{{hours}} h {{minutes}}",
+        "durationLabel": "Table duration",
+        "durationMinutes": "{{minutes}} min",
+        "openSwitch": "{{day}}: open",
+        "title": "Your opening hours"
+      },
+      "info": {
+        "addressHint": "Street and number, postcode, town",
+        "addressLabel": "Address",
+        "companyNumberHint": "Format 0123.456.749",
+        "companyNumberLabel": "Enterprise number (BCE/KBO)",
+        "companyTitle": "Your company",
+        "description": "Who you are and where to find you. This appears on your website, your booking page and your legal notice.",
+        "emailHint": "The address your guests see and can write to.",
+        "emailLabel": "Contact e-mail",
+        "legalNameHint": "The company's name as registered with the BCE/KBO.",
+        "legalNameLabel": "Legal name",
+        "nameLabel": "Restaurant name",
+        "phoneLabel": "Phone",
+        "retentionHint": "After this period, your guests' name, e-mail and notes are erased automatically; the booking stays in your statistics.",
+        "retentionLabel": "Booking data retention (in months)",
+        "title": "Your restaurant",
+        "vatHint": "Optional",
+        "vatLabel": "VAT number"
+      },
+      "invitation": {
+        "confirmLabel": "Confirm the password",
+        "consent": "I have read and accept {{document}}",
+        "consentsTitle": "Documents to accept",
+        "displayNameLabel": "Your name (optional)",
+        "displayNamePlaceholder": "First and last name",
+        "documents": {
+          "dpa": {
+            "name": "the data processing agreement (DPA)"
+          },
+          "privacy": {
+            "name": "the privacy policy"
+          },
+          "terms": {
+            "name": "the terms of use"
+          }
+        },
+        "emailHint": "This address will be your sign-in.",
+        "emailLabel": "Account e-mail",
+        "errorTitle": "Invitation temporarily unavailable",
+        "hide": "Hide",
+        "hidePassword": "Hide the password",
+        "invalidAction": "Go to sign-in",
+        "invalidBody": "This invitation link is no longer valid: it may have expired, been used already or been withdrawn. Ask the platform for a new invitation.",
+        "invalidTitle": "Invalid or expired invitation",
+        "loading": "Loading your invitation…",
+        "mismatch": "The two passwords do not match.",
+        "passwordLabel": "Password",
+        "passwordRule": "At least {{min}} characters.",
+        "readDocument": "Read {{document}}",
+        "restaurantLabel": "Restaurant",
+        "show": "Show",
+        "showPassword": "Show the password",
+        "submit": "Create my account",
+        "subtitle": "Create your account to set up your restaurant.",
+        "title": "Welcome"
+      },
+      "layout": {
+        "addRoom": "Add a room",
+        "addTable": "Add a table",
+        "defaultRoomName": "Dining room",
+        "description": "Describe where your guests sit: a dining room, a terrace… and the tables in them. You need at least one table to take bookings.",
+        "fewerSeats": "One seat fewer",
+        "moreSeats": "One seat more",
+        "note": "A table with an upcoming booking cannot be removed.",
+        "removeRoom": "Remove the room",
+        "removeTable": "Remove the table",
+        "roomNameLabel": "Room name",
+        "seatsLabel": "Number of seats",
+        "tableNameLabel": "Table name",
+        "tableNamePlaceholder": "Name (optional)",
+        "title": "Rooms and tables"
+      },
+      "login": {
+        "emailLabel": "E-mail address",
+        "forgotHint": "Forgot your password? Ask the platform for a new invitation.",
+        "invalidCredentials": "Wrong e-mail address or password.",
+        "notRestaurateur": "This is not a restaurateur account. Use the e-mail address your invitation was sent to.",
+        "passwordLabel": "Password",
+        "sessionFailed": "You are signed in, but your session could not be opened. Try again.",
+        "submit": "Sign in",
+        "subtitle": "Open the setup of your restaurant.",
+        "title": "Sign in"
+      },
+      "menu": {
+        "addCategory": "Add a category",
+        "addDish": "Add a dish",
+        "categoryNameLabel": "Category",
+        "categoryNamePlaceholder": "Starters, Mains, Desserts…",
+        "description": "Build your first menu: categories and their dishes. It appears on your website and behind your QR code. This step is optional.",
+        "descriptionLabel": "Dish description",
+        "descriptionPlaceholder": "Description (optional)",
+        "dishNameLabel": "Dish",
+        "importHint": "Send your existing menu and we read it for you.",
+        "importSoon": "Soon",
+        "importTitle": "Import from a photo or a PDF",
+        "moveCategoryDown": "Move the category down",
+        "moveCategoryUp": "Move the category up",
+        "moveDishDown": "Move the dish down",
+        "moveDishUp": "Move the dish up",
+        "nameLabel": "Menu name",
+        "note": "The order you enter things in is the order they appear in. A price left empty shows as \"price on request\".",
+        "priceInvalid": "Type a price in euros, for example 12.50, or leave it empty for \"price on request\".",
+        "priceLabel": "Price (€)",
+        "pricePlaceholder": "12.50",
+        "removeCategory": "Remove the category",
+        "removeDish": "Remove the dish",
+        "title": "Your menu"
+      },
+      "preview": {
+        "booking": {
+          "facts": "Tables: {{tables}} · Table duration: {{minutes}} min · A slot every {{interval}} min",
+          "hours": "Opening hours",
+          "label": "Preview — the real page will be available once published",
+          "noSlots": "No slot to show: check your opening hours.",
+          "party": "Party size",
+          "slots": "Time slots",
+          "text": "The page where your guests choose their table.",
+          "title": "Your booking page"
+        },
+        "description": "This is what your guests will see. Read it through, then publish when you are ready: you can unpublish at any time.",
+        "loading": "Loading the preview…",
+        "qr": {
+          "codeLabel": "QR code of your menu",
+          "empty": "Your menu is empty. Go back to the \"Menu\" step to add dishes.",
+          "noteDraft": "This code will only work once your restaurant is published.",
+          "noteLive": "This code is live: your guests can scan it right now.",
+          "priceOnRequest": "Price on request",
+          "text": "The code to print so your guests open your menu from their phone.",
+          "title": "Your QR menu"
+        },
+        "site": {
+          "desktop": "Computer",
+          "failed": "The website preview could not be loaded.",
+          "frameTitle": "Website preview",
+          "loading": "Loading the website preview…",
+          "phone": "Phone",
+          "text": "Your website as your guests will see it.",
+          "title": "Your website"
+        },
+        "title": "Preview and publish"
+      },
+      "publish": {
+        "blockedBody": "Some required steps are still to do before you can publish.",
+        "blocker": "Step to finish: {{step}}",
+        "bookingLink": "Your booking page",
+        "liveBody": "Here are your restaurant's public addresses.",
+        "liveTitle": "Your restaurant is live",
+        "menuLink": "Your QR menu",
+        "open": "Open",
+        "publish": "Publish",
+        "publishConfirm": "Yes, publish",
+        "publishMessage": "Your website, your booking page and your QR menu will be open to everyone.",
+        "publishTitle": "Publish your restaurant?",
+        "readyBody": "Everything is ready. Publishing puts your website, your booking page and your QR menu online.",
+        "siteLink": "Your website",
+        "suspended": "Your restaurant is suspended: it can be neither published nor unpublished until the platform reopens it.",
+        "title": "Publication",
+        "unpublish": "Unpublish",
+        "unpublishConfirm": "Yes, unpublish",
+        "unpublishMessage": "Your website, your booking page and your QR menu will no longer be open to guests. You can publish them again at any time.",
+        "unpublishTitle": "Unpublish your restaurant?"
+      },
+      "status": {
+        "Draft": "Draft",
+        "Published": "Published",
+        "Suspended": "Suspended"
+      },
+      "stepper": {
+        "done": "Done",
+        "label": "Setup steps",
+        "skipped": "Skipped",
+        "todo": "To do"
+      },
+      "steps": {
+        "branding": "Visual identity",
+        "hours": "Hours",
+        "info": "Details",
+        "layout": "Rooms and tables",
+        "menu": "Menu",
+        "preview": "Preview and publish"
+      },
+      "wizard": {
+        "errorTitle": "Could not load",
+        "loading": "Loading your restaurant…",
+        "notFoundAction": "Back to my restaurants",
+        "notFoundBody": "This restaurant does not exist, or it is not linked to your account.",
+        "notFoundTitle": "Restaurant not found",
+        "suspended": "Your restaurant has been suspended by the platform. Reason: {{reason}}. The forms are read-only.",
+        "suspendedNoReason": "Your restaurant has been suspended by the platform. The forms are read-only; contact the platform to have it reopened."
+      }
+    },
     "notifications": {
       "pageTitle": "Notifications",
       "totalCount_one": "{{count}} total notification",
@@ -1326,6 +1817,194 @@
         "enable": "Enable",
         "enableLabel": "Enable push notifications"
       }
+    },
+    "platform": {
+      "title": "Platform",
+      "subtitle": "Every restaurant on this instance, where it stands, and the platform’s own actions.",
+      "addButton": "Add a restaurant",
+      "loadFailed": "The restaurants could not be loaded.",
+      "empty": "No restaurant yet. Add the first one and invite its owner.",
+      "status": {
+        "draft": "Draft",
+        "published": "Published",
+        "suspended": "Suspended"
+      },
+      "invitationState": {
+        "pending": "Pending",
+        "expired": "Expired",
+        "revoked": "Revoked",
+        "accepted": "Accepted"
+      },
+      "steps": {
+        "info": "Information",
+        "hours": "Opening hours",
+        "layout": "Rooms and tables",
+        "menu": "Menu",
+        "branding": "Branding"
+      },
+      "row": {
+        "account": "Account: {{email}}",
+        "invitation": "Invitation: {{state}} · {{email}}",
+        "invitationExpiry": "Expires {{date}}",
+        "noInvitation": "No invitation sent yet",
+        "lastLogin": "Last sign-in: {{when}}",
+        "never": "never",
+        "bookings": "Bookings: {{total}} in total, {{upcoming}} upcoming",
+        "progress": "Setup: {{done}}/{{total}} steps",
+        "nextStep": "Next step: {{step}}",
+        "setupComplete": "Setup complete",
+        "suspendedSince": "Suspended since {{date}}",
+        "suspensionReason": "Reason shown to the restaurateur: {{reason}}",
+        "retention_one": "Retention: {{count}} month",
+        "retention_other": "Retention: {{count}} months",
+        "retentionNone": "Retention: no automatic erasure"
+      },
+      "actions": {
+        "invite": "Invite",
+        "resend": "Resend the invitation",
+        "suspend": "Suspend",
+        "reactivate": "Reactivate",
+        "consents": "Consents",
+        "guestData": "Guest data…",
+        "retention": "Retention…"
+      },
+      "locales": {
+        "fr": "Français",
+        "nl": "Nederlands",
+        "en": "English"
+      },
+      "form": {
+        "nameLabel": "Restaurant name",
+        "emailLabel": "Owner’s e-mail address",
+        "localeLabel": "Language of the invitation",
+        "invalidEmail": "Enter a valid e-mail address.",
+        "nameRequired": "Enter the restaurant’s name."
+      },
+      "add": {
+        "title": "Add a restaurant",
+        "intro": "Creates the restaurant as a draft and invites its owner by e-mail. The owner finishes the setup.",
+        "submit": "Create and invite"
+      },
+      "invite": {
+        "titleFirst": "Invite the owner of {{name}}",
+        "titleResend": "Resend the invitation for {{name}}",
+        "intro": "A new link replaces any link still open. It is also the way back in for an owner who lost their password.",
+        "submit": "Send the invitation"
+      },
+      "link": {
+        "title": "Invitation link",
+        "label": "Invitation link",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "The link could not be copied automatically. Select it and copy it by hand.",
+        "emailSent": "The invitation e-mail was sent to {{email}}.",
+        "emailNotSent": "No e-mail went out: no mail server is configured, or it refused the message.",
+        "onceNotice": "This link is shown only once and is not stored. Close this window and it is gone.",
+        "mustCopy": "Since no e-mail went out, copy the link now and pass it on yourself. If you lose it, send a new invitation."
+      },
+      "suspend": {
+        "title": "Suspend {{name}}",
+        "intro": "The restaurateur sees the reason you give below, and the restaurant disappears from guests at once: it can no longer be found or booked online.",
+        "reasonLabel": "Reason (optional)",
+        "reasonHint": "Shown to the restaurateur: state a fact, nothing internal.",
+        "counter": "{{count}} / {{max}}",
+        "next": "Continue",
+        "confirmTitle": "Suspend {{name}}?",
+        "confirmBody": "The restaurant disappears from guests immediately. You can reactivate it at any time.",
+        "confirm": "Yes, suspend",
+        "back": "Back"
+      },
+      "retention": {
+        "title": "Retention of {{name}}",
+        "intro": "How long this restaurant’s guests stay identifiable. Once a sitting is older than the period, its booking keeps the date, party size and table, and loses the guest’s name, e-mail address and notes.",
+        "optionsLabel": "Retention period",
+        "periodOption": "Erase after a set period",
+        "noneOption": "No automatic erasure",
+        "noneHint": "Nothing is erased automatically until a period is fixed. This is where every restaurant that existed before the setting stands.",
+        "monthsLabel": "Months after the sitting ({{min}} to {{max}})",
+        "warning": "Bookings older than the period are anonymised at the next daily pass. This cannot be undone.",
+        "save": "Save"
+      },
+      "reactivate": {
+        "title": "Reactivate {{name}}?",
+        "body": "A restaurant that had been published comes back published; one still being set up comes back as a draft.",
+        "confirm": "Reactivate"
+      },
+      "consents": {
+        "title": "Consents of {{name}}",
+        "intro": "The documents accepted at sign-up, with the version and the fingerprint of the text that was shown.",
+        "empty": "No consent recorded yet.",
+        "loadFailed": "The consents could not be loaded.",
+        "versionLine": "Version {{version}}",
+        "emailLine": "E-mail: {{email}}",
+        "dateLine": "Date: {{date}}",
+        "fingerprintLine": "Fingerprint: {{hash}}"
+      },
+      "guestData": {
+        "title": "Guest data of {{name}}",
+        "warningTitle": "Read this first",
+        "warningDefault": "The platform does not read a restaurant’s guests by default.",
+        "warningAudit": "This access is recorded in the audit trail, with your reason and your name.",
+        "warningReason": "The reason must describe the ticket or the request it answers. Never name a guest in it.",
+        "reasonLabel": "Reason for the access",
+        "counter": "{{count}} / {{max}} characters (at least {{min}})",
+        "submit": "Open the guest data",
+        "banner": "Access logged",
+        "bannerDetail": "Opened {{date}}. Your reason and your name are in the audit trail. Closing this window discards the data.",
+        "empty": "No booking for this restaurant.",
+        "truncated": "Showing the {{shown}} most recent bookings of {{total}}.",
+        "columns": {
+          "ref": "Reference",
+          "date": "Date",
+          "seats": "Party",
+          "name": "Name",
+          "email": "E-mail",
+          "requests": "Requests",
+          "status": "Status"
+        },
+        "anonymised": "Anonymised",
+        "cancelled": "Cancelled",
+        "close": "Close and discard"
+      }
+    },
+    "qrCodes": {
+      "codeLabel": "QR code for {{name}}",
+      "couldntLoad": "Couldn’t load the QR codes. Check your connection and try again.",
+      "downloadFailed": "Couldn’t create the image. Try the SVG instead.",
+      "downloadPng": "PNG",
+      "downloadSvg": "SVG",
+      "noLocations": "Add a location to create QR codes.",
+      "printA4": "Print A4 sheet",
+      "printA6": "Print A6 easel cards",
+      "printRestaurant": "Print A6 card",
+      "regenerate": "Regenerate",
+      "regenerateConfirm": "Regenerate and stop the old code",
+      "regenerateMessage": "The current code for “{{name}}” stops working immediately: anyone who scans a printed copy will see “Menu unavailable”. Print the new code and replace every copy.",
+      "regenerateTitle": "Regenerate this QR code?",
+      "regenerated": "New code ready. The old one no longer works: print the new one.",
+      "restaurant": {
+        "description": "One code for the whole restaurant: the entrance, flyers, your window.",
+        "title": "Restaurant code"
+      },
+      "sheet": {
+        "back": "Back",
+        "hintA4": "Set the paper size to A4, margins to “None”, and turn off headers and footers.",
+        "hintA6": "Set the paper size to A6, margins to “None”, and turn off headers and footers.",
+        "noApp": "No app needed: your phone’s camera is enough.",
+        "print": "Print",
+        "restaurantLabel": "Our menu",
+        "scan": "Scan to see our menu",
+        "unavailable": "This sheet can’t be shown: the location was not found or has nothing to print."
+      },
+      "subtitle": "Print a code for each table: guests scan it to open your menu.",
+      "tableFallback": "Table {{id}}",
+      "tableNamed": "Table {{name}}",
+      "tables": {
+        "description": "One code per table. Scanning it opens the menu with the table’s name on it.",
+        "empty": "This location has no tables yet. Add some under Locations.",
+        "title": "Table codes"
+      },
+      "title": "QR codes"
     },
     "settings": {
       "weekdays": {
@@ -1815,7 +2494,9 @@
           "users": "Users",
           "audit": "Activity log",
           "guests": "Guests",
-          "email": "Email status"
+          "email": "Email status",
+          "menus": "Menus",
+          "sites": "Showcase website"
         },
         "scopeLevel": {
           "none": "None"
@@ -1828,7 +2509,9 @@
           "users": "List admin accounts; Write activates and deactivates them. Creating accounts, changing roles and resetting passwords are never reachable with a key.",
           "audit": "The admin activity trail",
           "guests": "Customer names and emails on bookings. Without this they come back blank.",
-          "email": "Whether outgoing email is set up and what has failed to send. Never the SMTP credentials."
+          "email": "Whether outgoing email is set up and what has failed to send. Never the SMTP credentials.",
+          "menus": "Menus, their categories, dishes and photos, and the links behind the QR codes. Regenerating a link also needs an Owner's key.",
+          "sites": "A location's website: theme, tagline, photos, legal notice, publishing and preview."
         },
         "expiryLabel": "Expiry",
         "expiryHint": "Defaults to 1 year. Choose \"No expiry\" for a key that never expires.",
@@ -2074,6 +2757,135 @@
         "serverUnreachable": "Couldn't reach the server."
       }
     },
+    "site": {
+      "title": "My website",
+      "subtitle": "A small website for each location, built from your opening hours, your menu and your contact details.",
+      "noLocations": "Add a location to create its website.",
+      "couldntLoad": "Couldn’t load the website. Check your connection and try again.",
+      "themes": {
+        "label": "Website theme",
+        "brasserie": {
+          "name": "Brasserie",
+          "description": "Warm and welcoming: cream paper, serif headings."
+        },
+        "gastronomique": {
+          "name": "Fine dining",
+          "description": "Understated and elegant: dark background, spaced lettering."
+        },
+        "cafe": {
+          "name": "Café",
+          "description": "Light and rounded: touches of your colour, very readable."
+        }
+      },
+      "social": {
+        "kindLabel": "Network",
+        "urlPlaceholder": "https://…",
+        "urlLabel": "Address of the {{network}} page",
+        "remove": "Remove",
+        "removeNamed": "Remove {{network}}",
+        "add": "Add a network"
+      },
+      "settings": {
+        "problem": {
+          "slug": "The website address must be 3 to 60 characters: lower-case letters, digits and single hyphens. Nothing is saved until it is valid.",
+          "socialUrl": "Every network link must be an https:// address. Nothing is saved until it is valid.",
+          "socialDuplicate": "A network can only appear once. Change or remove the duplicate to save.",
+          "identifier": "Company and VAT numbers only accept letters, digits, spaces, dots, hyphens and slashes.",
+          "legalRequired": "The website is live: the legal name and company number must stay filled in. Unpublish the website to clear them."
+        },
+        "appearance": {
+          "title": "Appearance",
+          "description": "Three understated themes. Your choice shows in the preview straight away, and you can undo it right after."
+        },
+        "brandColor": "Main colour: {{color}}, taken from the brand. The website makes it readable on every theme.",
+        "changeBrandColor": "Change in Brand",
+        "content": {
+          "title": "Tagline and address",
+          "description": "The tagline appears under the location’s name and in search results."
+        },
+        "taglineLabel": "Tagline",
+        "taglinePlaceholder": "e.g. Seasonal Belgian cooking and abbey beers",
+        "taglineCount": "{{count}} / {{max}} characters",
+        "addressLabel": "Website address",
+        "addressHint": "Changing this address breaks links that were already shared or printed.",
+        "social": {
+          "title": "Social networks",
+          "description": "The links appear in the “Find us” section."
+        },
+        "legal": {
+          "title": "Legal notice",
+          "description": "Required to publish: it appears at the bottom of the website.",
+          "nameLabel": "Legal name",
+          "companyNumberLabel": "Company number",
+          "vatNumberLabel": "VAT number (optional)",
+          "addressLabel": "Registered office (optional)",
+          "addressHint": "If left empty, the location’s address is used."
+        }
+      },
+      "images": {
+        "title": "Logo and cover photo",
+        "description": "Pictures are shrunk and compressed automatically: a phone photo is enough.",
+        "logo": {
+          "title": "Logo",
+          "hint": "JPEG, PNG or WebP, 6 MB at most. A transparent background is kept.",
+          "add": "Add a logo",
+          "replace": "Replace the logo",
+          "remove": "Remove the logo"
+        },
+        "cover": {
+          "title": "Cover photo",
+          "hint": "JPEG, PNG or WebP, 6 MB at most. A wide, landscape photo works best.",
+          "add": "Add a cover photo",
+          "replace": "Replace the photo",
+          "remove": "Remove the photo"
+        }
+      },
+      "gallery": {
+        "title": "Gallery",
+        "description": "A few photos of the dining room, the terrace or the dishes.",
+        "count_one": "{{count}} photo out of {{max}} ({{min}} to {{max}} recommended)",
+        "count_other": "{{count}} photos out of {{max}} ({{min}} to {{max}} recommended)",
+        "altLabel": "Photo description",
+        "altRequired": "Describe the photo to save it: a screen reader reads this in its place.",
+        "remove": "Delete",
+        "removeNamed": "Delete the photo “{{name}}”",
+        "removeTitle": "Delete this photo?",
+        "removeMessage": "The photo “{{name}}” will disappear from the gallery. This can’t be undone.",
+        "full": "The gallery is full ({{max}} photos). Delete a photo to add another.",
+        "newAltLabel": "Description of the new photo",
+        "newAltPlaceholder": "e.g. The dining room with leather banquettes",
+        "newAltHint": "Required: describe what the photo shows for people who cannot see it.",
+        "choose": "Choose the photo",
+        "add": "Add a photo"
+      },
+      "publish": {
+        "title": "Publishing",
+        "description": "Until the website is published, nobody but you can see it.",
+        "live": "Live",
+        "draft": "Draft",
+        "checklistTitle": "To complete before publishing",
+        "todo": {
+          "legalName": "Enter the legal name (legal notice)",
+          "companyNumber": "Enter the company number (legal notice)",
+          "contactEmail": "Set a contact e-mail address, on the location or in the brand",
+          "publicUrl": "Set the website address of this instance in Brand settings (the site's links and search listing need it)"
+        },
+        "blockedHint": "The button unlocks as soon as the list above is empty.",
+        "publish": "Publish the website",
+        "unpublish": "Unpublish",
+        "view": "View the website",
+        "copy": "Copy the link",
+        "copied": "Link copied"
+      },
+      "preview": {
+        "title": "Preview",
+        "phone": "Phone",
+        "desktop": "Computer",
+        "loading": "Loading the preview…",
+        "failed": "Couldn’t load the preview.",
+        "frameTitle": "Website preview"
+      }
+    },
     "sidebar": {
       "nav": {
         "sections": {
@@ -2084,6 +2896,9 @@
           "overview": "Overview",
           "bookings": "Bookings",
           "locations": "Locations",
+          "menus": "Menus",
+          "qrCodes": "QR codes",
+          "site": "My website",
           "notifications": "Notifications",
           "activity": "Activity",
           "brand": "Brand",
@@ -2092,7 +2907,8 @@
           "apiKeys": "API Keys",
           "nativeApp": "Native app",
           "account": "Account",
-          "waitlist": "Waitlist"
+          "waitlist": "Waitlist",
+          "platform": "Platform"
         },
         "unreadLabel_one": "{{label}}, {{count}} unread",
         "unreadLabel_other": "{{label}}, {{count}} unread"
