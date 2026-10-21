@@ -242,6 +242,7 @@
       "cancel": "Cancel",
       "close": "Close",
       "confirm": "Confirm",
+      "delete": "Delete",
       "goHome": "Go to home",
       "scrollToTop": "Scroll to top",
       "tryAgain": "Try again"
@@ -293,6 +294,36 @@
     },
     "language": {
       "switcherLabel": "Language"
+    },
+    "menu": {
+      "allergens": {
+        "Celery": "Celery",
+        "Crustaceans": "Crustaceans",
+        "Eggs": "Eggs",
+        "Fish": "Fish",
+        "Gluten": "Gluten",
+        "Lupin": "Lupin",
+        "Milk": "Milk",
+        "Molluscs": "Molluscs",
+        "Mustard": "Mustard",
+        "Nuts": "Tree nuts",
+        "Peanuts": "Peanuts",
+        "Sesame": "Sesame",
+        "Soybeans": "Soy",
+        "Sulphites": "Sulphites"
+      },
+      "availability": {
+        "Available": "Available",
+        "Hidden": "Hidden",
+        "SoldOut": "Sold out"
+      },
+      "dietary": {
+        "GlutenFree": "Gluten-free",
+        "Vegan": "Vegan",
+        "Vegetarian": "Vegetarian"
+      },
+      "free": "Free",
+      "priceOnRequest": "Price on request"
     },
     "modalCard": {
       "defaultDismissLabel": "Dismiss"
@@ -431,6 +462,23 @@
       "menu_too_large": "Menu file must be under 10 MB.",
       "unsupported_image_type": "Only JPEG, PNG, and WebP images are accepted.",
       "unsupported_menu_type": "Only PDF menu files are accepted."
+    },
+    "menu": {
+      "allergen_invalid": "Allergens must be names from the 14 EU allergens, e.g. \"Gluten\".",
+      "availability_invalid": "Availability must be one of: Available, SoldOut, Hidden.",
+      "category_name_required": "Category name cannot be empty.",
+      "category_name_too_long": "Category name cannot exceed {{max}} characters.",
+      "currency_invalid": "Currency must be a three-letter ISO 4217 code, e.g. EUR.",
+      "description_too_long": "Description cannot exceed {{max}} characters.",
+      "dietary_tag_invalid": "Dietary tags must be one of: Vegetarian, Vegan, GlutenFree.",
+      "item_image_too_large": "Dish photo must be under 2 MB.",
+      "item_name_required": "Item name cannot be empty.",
+      "item_name_too_long": "Item name cannot exceed {{max}} characters.",
+      "name_required": "Menu name cannot be empty.",
+      "name_too_long": "Menu name cannot exceed {{max}} characters.",
+      "not_found": "Menu not found.",
+      "price_invalid": "Price must be zero or more (at most {{max}} in the currency's smallest unit), or left empty for \"price on request\".",
+      "reorder_ids_mismatch": "The new order must list every entry exactly once, with no additions."
     },
     "restaurant": {
       "archive_before_delete": "Archive this location before deleting it. Archiving takes it off the public site and can be undone; deleting cannot.",
@@ -640,6 +688,31 @@
       "tuesday": "Tuesday",
       "walkIn": "Walk-in",
       "wednesday": "Wednesday"
+    },
+    "publicMenu": {
+      "bookCta": "Book a table",
+      "contains": "Contains: {{list}}",
+      "documentTitle": "{{name}} — Menu",
+      "emptyMenu": "Nothing on this menu yet.",
+      "error": {
+        "body": "Check your connection and try again.",
+        "title": "Couldn’t load the menu"
+      },
+      "filters": {
+        "avoid": "Avoid allergens",
+        "avoidWithCount_one": "Avoiding {{count}} allergen",
+        "avoidWithCount_other": "Avoiding {{count}} allergens",
+        "clear": "Clear filters",
+        "diets": "Diet",
+        "disclaimer": "Filters rely on the restaurant’s own information. If you have an allergy, tell the staff before you order."
+      },
+      "loading": "Loading the menu…",
+      "noMatch": "No dish matches your filters.",
+      "notFound": {
+        "body": "This menu isn’t available right now. Please ask a member of staff.",
+        "title": "Menu unavailable"
+      },
+      "tableLabel": "Table {{name}}"
     },
     "seatingMap": {
       "combinableHeading": "Tables we can combine",
@@ -1244,6 +1317,101 @@
       },
       "backLabel": "Back"
     },
+    "menus": {
+      "actions": {
+        "qrCodes": "QR codes",
+        "service": "Service mode",
+        "viewPublic": "View public page"
+      },
+      "addCategory": "Add a category",
+      "addCategoryPlaceholder": "Category name, e.g. Starters",
+      "addItem": "Add a dish",
+      "addItemPlaceholder": "Dish name",
+      "addItemPrice": "Price",
+      "addMenu": "Add a menu",
+      "addMenuPlaceholder": "Menu name, e.g. Lunch",
+      "category": {
+        "deleteMessage_one": "“{{name}}” and its {{count}} dish will be deleted. This can’t be undone.",
+        "deleteMessage_other": "“{{name}}” and its {{count}} dishes will be deleted. This can’t be undone.",
+        "deleteNamed": "Delete {{name}}",
+        "deleteTitle": "Delete this category?",
+        "descriptionLabel": "Category description",
+        "descriptionPlaceholder": "Description (optional)",
+        "hidden": "Hidden",
+        "hideNamed": "Hide {{name}} from guests",
+        "nameLabel": "Category name",
+        "nameRequired": "Give the category a name to save your changes.",
+        "noItems": "No dishes in this category yet.",
+        "showNamed": "Show {{name}} to guests",
+        "visible": "Visible"
+      },
+      "couldntLoad": "Couldn’t load the menus. Check your connection and try again.",
+      "empty": "No menu yet. Add your first one: guests see it as soon as you publish it.",
+      "item": {
+        "addPriceInvalid": "Enter a price such as 12.50, or leave it empty for “Price on request”.",
+        "allergensHint": "Tick every allergen the dish contains. Guests rely on this: leave all unticked only if the dish contains none of the 14 EU allergens.",
+        "allergensLabel": "Allergens",
+        "availabilityLabel": "Availability",
+        "close": "Close",
+        "closeNamed": "Close {{name}}",
+        "delete": "Delete dish",
+        "deleteMessage": "“{{name}}” and its photo will be deleted. This can’t be undone.",
+        "deleteTitle": "Delete this dish?",
+        "descriptionLabel": "Description (optional)",
+        "dietaryLabel": "Dietary",
+        "edit": "Edit",
+        "editNamed": "Edit {{name}}",
+        "markAvailable": "Mark {{name}} as available again",
+        "markSoldOut": "Mark {{name}} as sold out",
+        "nameLabel": "Dish name",
+        "nameRequired": "Give the dish a name to save your changes.",
+        "photoAdd": "Add a photo",
+        "photoHint": "JPEG, PNG or WebP, 2 MB at most.",
+        "photoLabel": "Photo",
+        "photoRemove": "Remove photo",
+        "photoReplace": "Replace photo",
+        "priceInvalid": "Enter a valid price, or tick “Price on request”, to save your changes.",
+        "priceLabel": "Price ({{currency}})"
+      },
+      "menu": {
+        "categoryCount_one": "{{count}} category",
+        "categoryCount_other": "{{count}} categories",
+        "close": "Close",
+        "closeNamed": "Close {{name}}",
+        "currencyHint": "Prices are stored in the currency’s smallest unit. Check them after changing the currency.",
+        "currencyLabel": "Currency",
+        "delete": "Delete menu",
+        "deleteMessage": "“{{name}}” and all its categories and dishes will be deleted, photos included. This can’t be undone.",
+        "deleteTitle": "Delete this menu?",
+        "descriptionLabel": "Description (optional)",
+        "draft": "Draft",
+        "itemCount_one": "{{count}} dish",
+        "itemCount_other": "{{count}} dishes",
+        "nameLabel": "Menu name",
+        "nameRequired": "Give the menu a name to save your changes.",
+        "open": "Edit",
+        "openNamed": "Edit {{name}}",
+        "publish": "Publish",
+        "published": "Published",
+        "unpublish": "Unpublish"
+      },
+      "moveDown": "Move {{name}} down",
+      "moveUp": "Move {{name}} up",
+      "noLocations": "Add a location to start building a menu.",
+      "service": {
+        "editMenus": "Edit menus",
+        "filterAll": "All dishes",
+        "filterSoldOut": "Sold out ({{count}})",
+        "noMatch": "No dish matches.",
+        "nothingPublished": "No menu is published for this location. Publish one to manage it here.",
+        "search": "Search a dish",
+        "subtitle": "Tap a dish to mark it sold out, tap again to put it back. Guests see the change at once.",
+        "title": "Service mode",
+        "updateFailed": "Couldn’t update “{{name}}”. It was left as it was."
+      },
+      "subtitle": "Build the menu your guests open from your QR codes.",
+      "title": "Menus"
+    },
     "notifications": {
       "pageTitle": "Notifications",
       "totalCount_one": "{{count}} total notification",
@@ -1326,6 +1494,45 @@
         "enable": "Enable",
         "enableLabel": "Enable push notifications"
       }
+    },
+    "qrCodes": {
+      "codeLabel": "QR code for {{name}}",
+      "couldntLoad": "Couldn’t load the QR codes. Check your connection and try again.",
+      "downloadFailed": "Couldn’t create the image. Try the SVG instead.",
+      "downloadPng": "PNG",
+      "downloadSvg": "SVG",
+      "noLocations": "Add a location to create QR codes.",
+      "printA4": "Print A4 sheet",
+      "printA6": "Print A6 easel cards",
+      "printRestaurant": "Print A6 card",
+      "regenerate": "Regenerate",
+      "regenerateConfirm": "Regenerate and stop the old code",
+      "regenerateMessage": "The current code for “{{name}}” stops working immediately: anyone who scans a printed copy will see “Menu unavailable”. Print the new code and replace every copy.",
+      "regenerateTitle": "Regenerate this QR code?",
+      "regenerated": "New code ready. The old one no longer works: print the new one.",
+      "restaurant": {
+        "description": "One code for the whole restaurant: the entrance, flyers, your window.",
+        "title": "Restaurant code"
+      },
+      "sheet": {
+        "back": "Back",
+        "hintA4": "Set the paper size to A4, margins to “None”, and turn off headers and footers.",
+        "hintA6": "Set the paper size to A6, margins to “None”, and turn off headers and footers.",
+        "noApp": "No app needed: your phone’s camera is enough.",
+        "print": "Print",
+        "restaurantLabel": "Our menu",
+        "scan": "Scan to see our menu",
+        "unavailable": "This sheet can’t be shown: the location was not found or has nothing to print."
+      },
+      "subtitle": "Print a code for each table: guests scan it to open your menu.",
+      "tableFallback": "Table {{id}}",
+      "tableNamed": "Table {{name}}",
+      "tables": {
+        "description": "One code per table. Scanning it opens the menu with the table’s name on it.",
+        "empty": "This location has no tables yet. Add some under Locations.",
+        "title": "Table codes"
+      },
+      "title": "QR codes"
     },
     "settings": {
       "weekdays": {
@@ -1815,7 +2022,8 @@
           "users": "Users",
           "audit": "Activity log",
           "guests": "Guests",
-          "email": "Email status"
+          "email": "Email status",
+          "menus": "Menus"
         },
         "scopeLevel": {
           "none": "None"
@@ -1828,7 +2036,8 @@
           "users": "List admin accounts; Write activates and deactivates them. Creating accounts, changing roles and resetting passwords are never reachable with a key.",
           "audit": "The admin activity trail",
           "guests": "Customer names and emails on bookings. Without this they come back blank.",
-          "email": "Whether outgoing email is set up and what has failed to send. Never the SMTP credentials."
+          "email": "Whether outgoing email is set up and what has failed to send. Never the SMTP credentials.",
+          "menus": "Menus, their categories, dishes and photos, and the links behind the QR codes. Regenerating a link also needs an Owner's key."
         },
         "expiryLabel": "Expiry",
         "expiryHint": "Defaults to 1 year. Choose \"No expiry\" for a key that never expires.",
@@ -2084,6 +2293,8 @@
           "overview": "Overview",
           "bookings": "Bookings",
           "locations": "Locations",
+          "menus": "Menus",
+          "qrCodes": "QR codes",
           "notifications": "Notifications",
           "activity": "Activity",
           "brand": "Brand",

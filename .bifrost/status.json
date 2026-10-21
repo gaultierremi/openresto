@@ -12,6 +12,16 @@
       "pr": 4,
       "etape": "Corrections P2 et P3 de la relecture poussées ; en attente d'un nouveau verdict.",
       "maj": "2026-10-20T20:38:22+00:00"
+    },
+    {
+      "id": "menu-api",
+      "titre": "Module carte natif — API (#2, avec les écrans #5)",
+      "agent": "Claude",
+      "branche": "feat/menu-api",
+      "statut": "Prête à merger",
+      "pr": 2,
+      "etape": "Relue MERGE (0282e76 pour #2, 15b7ef1 pour #5) ; main fusionné pour lever le conflit de status.json.",
+      "maj": "2026-10-21T15:24:40+00:00"
     }
   ],
   "decisions": [
@@ -29,7 +39,7 @@
     }
   ],
   "maj": {
-    "at": "2026-10-20T20:38:22+00:00",
+    "at": "2026-10-21T15:24:40+00:00",
     "by": "Claude"
   }
 }

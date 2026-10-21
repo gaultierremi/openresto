@@ -242,6 +242,7 @@
       "cancel": "Annuler",
       "close": "Fermer",
       "confirm": "Confirmer",
+      "delete": "Supprimer",
       "goHome": "Retour à l'accueil",
       "scrollToTop": "Remonter en haut",
       "tryAgain": "Réessayer"
@@ -293,6 +294,36 @@
     },
     "language": {
       "switcherLabel": "Langue"
+    },
+    "menu": {
+      "allergens": {
+        "Celery": "Céleri",
+        "Crustaceans": "Crustacés",
+        "Eggs": "Œufs",
+        "Fish": "Poissons",
+        "Gluten": "Gluten",
+        "Lupin": "Lupin",
+        "Milk": "Lait",
+        "Molluscs": "Mollusques",
+        "Mustard": "Moutarde",
+        "Nuts": "Fruits à coque",
+        "Peanuts": "Arachides",
+        "Sesame": "Sésame",
+        "Soybeans": "Soja",
+        "Sulphites": "Sulfites"
+      },
+      "availability": {
+        "Available": "Disponible",
+        "Hidden": "Masqué",
+        "SoldOut": "Épuisé"
+      },
+      "dietary": {
+        "GlutenFree": "Sans gluten",
+        "Vegan": "Végan",
+        "Vegetarian": "Végétarien"
+      },
+      "free": "Offert",
+      "priceOnRequest": "Prix sur demande"
     },
     "modalCard": {
       "defaultDismissLabel": "Fermer"
@@ -431,6 +462,23 @@
       "menu_too_large": "Le fichier du menu doit faire moins de 10 Mo.",
       "unsupported_image_type": "Seules les images JPEG, PNG et WebP sont acceptées.",
       "unsupported_menu_type": "Seuls les menus au format PDF sont acceptés."
+    },
+    "menu": {
+      "allergen_invalid": "Les allergènes doivent faire partie des 14 allergènes réglementaires de l'UE, par ex. « Gluten ».",
+      "availability_invalid": "La disponibilité doit être Available, SoldOut ou Hidden.",
+      "category_name_required": "Le nom de la catégorie est obligatoire.",
+      "category_name_too_long": "Le nom de la catégorie ne peut pas dépasser {{max}} caractères.",
+      "currency_invalid": "La devise doit être un code ISO 4217 de trois lettres, par ex. EUR.",
+      "description_too_long": "La description ne peut pas dépasser {{max}} caractères.",
+      "dietary_tag_invalid": "Les régimes alimentaires doivent être Vegetarian, Vegan ou GlutenFree.",
+      "item_image_too_large": "La photo du plat doit faire moins de 2 Mo.",
+      "item_name_required": "Le nom du plat est obligatoire.",
+      "item_name_too_long": "Le nom du plat ne peut pas dépasser {{max}} caractères.",
+      "name_required": "Le nom de la carte est obligatoire.",
+      "name_too_long": "Le nom de la carte ne peut pas dépasser {{max}} caractères.",
+      "not_found": "Carte introuvable.",
+      "price_invalid": "Le prix doit être positif ou nul (au plus {{max}} dans la plus petite unité de la devise), ou laissé vide pour « prix sur demande ».",
+      "reorder_ids_mismatch": "Le nouvel ordre doit reprendre chaque élément une seule fois, sans ajout."
     },
     "restaurant": {
       "archive_before_delete": "Archivez cet établissement avant de le supprimer. L'archivage le retire du site public et peut être annulé ; la suppression non.",
@@ -640,6 +688,31 @@
       "tuesday": "Mardi",
       "walkIn": "Sans réservation",
       "wednesday": "Mercredi"
+    },
+    "publicMenu": {
+      "bookCta": "Réserver une table",
+      "contains": "Contient : {{list}}",
+      "documentTitle": "{{name}} — Carte",
+      "emptyMenu": "Rien à afficher sur cette carte pour l'instant.",
+      "error": {
+        "body": "Vérifiez votre connexion et réessayez.",
+        "title": "Impossible de charger la carte"
+      },
+      "filters": {
+        "avoid": "Éviter des allergènes",
+        "avoidWithCount_one": "{{count}} allergène évité",
+        "avoidWithCount_other": "{{count}} allergènes évités",
+        "clear": "Effacer les filtres",
+        "diets": "Régime",
+        "disclaimer": "Les filtres s'appuient sur les informations du restaurant. En cas d'allergie, signalez-la au personnel avant de commander."
+      },
+      "loading": "Chargement de la carte…",
+      "noMatch": "Aucun plat ne correspond à vos filtres.",
+      "notFound": {
+        "body": "Cette carte n'est pas disponible pour le moment. Demandez-la au personnel.",
+        "title": "Carte indisponible"
+      },
+      "tableLabel": "Table {{name}}"
     },
     "seatingMap": {
       "combinableHeading": "Tables que nous pouvons combiner",
@@ -1244,6 +1317,101 @@
       },
       "backLabel": "Retour"
     },
+    "menus": {
+      "actions": {
+        "qrCodes": "QR codes",
+        "service": "Mode service",
+        "viewPublic": "Voir la page publique"
+      },
+      "addCategory": "Ajouter une catégorie",
+      "addCategoryPlaceholder": "Nom de la catégorie, p. ex. Entrées",
+      "addItem": "Ajouter un plat",
+      "addItemPlaceholder": "Nom du plat",
+      "addItemPrice": "Prix",
+      "addMenu": "Ajouter une carte",
+      "addMenuPlaceholder": "Nom de la carte, p. ex. Déjeuner",
+      "category": {
+        "deleteMessage_one": "« {{name}} » et ses {{count}} plat seront supprimés. Cette action est irréversible.",
+        "deleteMessage_other": "« {{name}} » et ses {{count}} plats seront supprimés. Cette action est irréversible.",
+        "deleteNamed": "Supprimer {{name}}",
+        "deleteTitle": "Supprimer cette catégorie ?",
+        "descriptionLabel": "Description de la catégorie",
+        "descriptionPlaceholder": "Description (facultative)",
+        "hidden": "Masquée",
+        "hideNamed": "Masquer {{name}} aux clients",
+        "nameLabel": "Nom de la catégorie",
+        "nameRequired": "Donnez un nom à la catégorie pour enregistrer vos modifications.",
+        "noItems": "Aucun plat dans cette catégorie pour l'instant.",
+        "showNamed": "Afficher {{name}} aux clients",
+        "visible": "Visible"
+      },
+      "couldntLoad": "Impossible de charger les cartes. Vérifiez votre connexion et réessayez.",
+      "empty": "Aucune carte pour l'instant. Ajoutez la première : vos clients la voient dès que vous la publiez.",
+      "item": {
+        "addPriceInvalid": "Saisissez un prix comme 12,50, ou laissez vide pour « Prix sur demande ».",
+        "allergensHint": "Cochez chaque allergène que contient le plat. Vos clients s'y fient : ne laissez rien de coché que si le plat ne contient aucun des 14 allergènes réglementaires.",
+        "allergensLabel": "Allergènes",
+        "availabilityLabel": "Disponibilité",
+        "close": "Fermer",
+        "closeNamed": "Fermer {{name}}",
+        "delete": "Supprimer le plat",
+        "deleteMessage": "« {{name}} » et sa photo seront supprimés. Cette action est irréversible.",
+        "deleteTitle": "Supprimer ce plat ?",
+        "descriptionLabel": "Description (facultative)",
+        "dietaryLabel": "Régime",
+        "edit": "Modifier",
+        "editNamed": "Modifier {{name}}",
+        "markAvailable": "Remettre {{name}} à la carte",
+        "markSoldOut": "Marquer {{name}} comme épuisé",
+        "nameLabel": "Nom du plat",
+        "nameRequired": "Donnez un nom au plat pour enregistrer vos modifications.",
+        "photoAdd": "Ajouter une photo",
+        "photoHint": "JPEG, PNG ou WebP, 2 Mo maximum.",
+        "photoLabel": "Photo",
+        "photoRemove": "Retirer la photo",
+        "photoReplace": "Remplacer la photo",
+        "priceInvalid": "Saisissez un prix valide, ou cochez « Prix sur demande », pour enregistrer vos modifications.",
+        "priceLabel": "Prix ({{currency}})"
+      },
+      "menu": {
+        "categoryCount_one": "{{count}} catégorie",
+        "categoryCount_other": "{{count}} catégories",
+        "close": "Fermer",
+        "closeNamed": "Fermer {{name}}",
+        "currencyHint": "Les prix sont enregistrés dans la plus petite unité de la devise. Vérifiez-les après un changement de devise.",
+        "currencyLabel": "Devise",
+        "delete": "Supprimer la carte",
+        "deleteMessage": "« {{name}} », avec toutes ses catégories et tous ses plats, sera supprimée, photos comprises. Cette action est irréversible.",
+        "deleteTitle": "Supprimer cette carte ?",
+        "descriptionLabel": "Description (facultative)",
+        "draft": "Brouillon",
+        "itemCount_one": "{{count}} plat",
+        "itemCount_other": "{{count}} plats",
+        "nameLabel": "Nom de la carte",
+        "nameRequired": "Donnez un nom à la carte pour enregistrer vos modifications.",
+        "open": "Modifier",
+        "openNamed": "Modifier {{name}}",
+        "publish": "Publier",
+        "published": "Publiée",
+        "unpublish": "Dépublier"
+      },
+      "moveDown": "Descendre {{name}}",
+      "moveUp": "Monter {{name}}",
+      "noLocations": "Ajoutez un établissement pour commencer à composer une carte.",
+      "service": {
+        "editMenus": "Modifier les cartes",
+        "filterAll": "Tous les plats",
+        "filterSoldOut": "Épuisés ({{count}})",
+        "noMatch": "Aucun plat ne correspond.",
+        "nothingPublished": "Aucune carte n'est publiée pour cet établissement. Publiez-en une pour la gérer ici.",
+        "search": "Rechercher un plat",
+        "subtitle": "Touchez un plat pour le marquer épuisé, touchez-le à nouveau pour le remettre. Vos clients voient le changement tout de suite.",
+        "title": "Mode service",
+        "updateFailed": "Impossible de mettre à jour « {{name}} ». Il est resté tel quel."
+      },
+      "subtitle": "Composez la carte que vos clients ouvrent depuis vos QR codes.",
+      "title": "Cartes"
+    },
     "notifications": {
       "pageTitle": "Notifications",
       "totalCount_one": "{{count}} notification au total",
@@ -1326,6 +1494,45 @@
         "enable": "Activer",
         "enableLabel": "Activer les notifications push"
       }
+    },
+    "qrCodes": {
+      "codeLabel": "QR code de {{name}}",
+      "couldntLoad": "Impossible de charger les QR codes. Vérifiez votre connexion et réessayez.",
+      "downloadFailed": "Impossible de créer l'image. Essayez plutôt le SVG.",
+      "downloadPng": "PNG",
+      "downloadSvg": "SVG",
+      "noLocations": "Ajoutez un établissement pour créer des QR codes.",
+      "printA4": "Imprimer la fiche A4",
+      "printA6": "Imprimer les chevalets A6",
+      "printRestaurant": "Imprimer le chevalet A6",
+      "regenerate": "Régénérer",
+      "regenerateConfirm": "Régénérer et désactiver l'ancien code",
+      "regenerateMessage": "L'ancien QR code de « {{name}} » cesse de fonctionner immédiatement : quiconque scanne un exemplaire imprimé verra « Carte indisponible ». Imprimez le nouveau code et remplacez tous les exemplaires.",
+      "regenerateTitle": "Régénérer ce QR code ?",
+      "regenerated": "Nouveau code prêt. L'ancien ne fonctionne plus : imprimez le nouveau.",
+      "restaurant": {
+        "description": "Un code pour tout le restaurant : l'entrée, les flyers, la vitrine.",
+        "title": "Code du restaurant"
+      },
+      "sheet": {
+        "back": "Retour",
+        "hintA4": "Choisissez le format A4, des marges « Aucune », et désactivez les en-têtes et pieds de page.",
+        "hintA6": "Choisissez le format A6, des marges « Aucune », et désactivez les en-têtes et pieds de page.",
+        "noApp": "Aucune application requise : l'appareil photo du téléphone suffit.",
+        "print": "Imprimer",
+        "restaurantLabel": "Notre carte",
+        "scan": "Scannez pour voir notre carte",
+        "unavailable": "Cette fiche ne peut pas être affichée : l'établissement est introuvable ou n'a rien à imprimer."
+      },
+      "subtitle": "Imprimez un code par table : vos clients le scannent pour ouvrir votre carte.",
+      "tableFallback": "Table {{id}}",
+      "tableNamed": "Table {{name}}",
+      "tables": {
+        "description": "Un code par table. Le scanner ouvre la carte avec le nom de la table.",
+        "empty": "Cet établissement n'a pas encore de tables. Ajoutez-en dans Établissements.",
+        "title": "Codes des tables"
+      },
+      "title": "QR codes"
     },
     "settings": {
       "weekdays": {
@@ -1815,7 +2022,8 @@
           "users": "Utilisateurs",
           "audit": "Journal d'activité",
           "guests": "Clients",
-          "email": "État des e-mails"
+          "email": "État des e-mails",
+          "menus": "Cartes"
         },
         "scopeLevel": {
           "none": "Aucun"
@@ -1828,7 +2036,8 @@
           "users": "Lister les comptes d'administration ; Écriture les active et les désactive. La création de comptes, le changement de rôle et la réinitialisation des mots de passe ne sont jamais accessibles avec une clé.",
           "audit": "Le journal d'activité de l'administration",
           "guests": "Les noms et e-mails des clients sur les réservations. Sans ceci, ils reviennent vides.",
-          "email": "Si l'envoi d'e-mails est configuré et ce qui n'a pas pu partir. Jamais les identifiants SMTP."
+          "email": "Si l'envoi d'e-mails est configuré et ce qui n'a pas pu partir. Jamais les identifiants SMTP.",
+          "menus": "Les cartes, leurs catégories, plats et photos, et les liens derrière les QR codes. Régénérer un lien demande en plus la clé d'un propriétaire."
         },
         "expiryLabel": "Expiration",
         "expiryHint": "Par défaut, 1 an. Choisissez « Sans expiration » pour une clé qui n'expire jamais.",
@@ -2084,6 +2293,8 @@
           "overview": "Aperçu",
           "bookings": "Réservations",
           "locations": "Établissements",
+          "menus": "Cartes",
+          "qrCodes": "QR codes",
           "notifications": "Notifications",
           "activity": "Activité",
           "brand": "Marque",
