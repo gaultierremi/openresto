@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react-native";
+import { render, screen, fireEvent, waitFor, act, within } from "@testing-library/react-native";
 import { StyleSheet, Text } from "react-native";
 import BookingForm from "@/components/booking/BookingForm";
 import { BookingDockProvider, useBookingDock } from "@/components/booking/BookingDockContext";
@@ -1132,6 +1132,59 @@ describe("BookingForm drawer layout", () => {
     expect(screen.getAllByTestId("hold-banner")).toHaveLength(1);
     expect(screen.getAllByTestId("submit-btn")).toHaveLength(1);
     expect(screen.getByText("Confirm Booking")).toBeTruthy();
+  });
+
+  /**
+   * The confirm rides at the bottom of the sheet's scroll on the web, so a guest who has filled
+   * in the two fields does not have to hunt for it. The pair: stuck on the web, left in the flow
+   * anywhere else; and it carries the sheet's own fill, or the form would show through it.
+   */
+  describe("the confirm bar", () => {
+    const bar = () => StyleSheet.flatten(screen.getByTestId("booking-confirm-bar").props.style);
+
+    it("sticks to the bottom of the sheet's scroll on the web, over the sheet's own fill", async () => {
+      renderDrawer();
+      await waitFor(() => expect(mockFetchAvailability).toHaveBeenCalled());
+
+      expect(bar()).toMatchObject({ position: "sticky", bottom: 0 });
+      expect(bar().backgroundColor).toBeTruthy();
+      expect(bar().backgroundColor).not.toBe("transparent");
+    });
+
+    it("stays in the flow off the web, where the sheet docks the confirm itself", async () => {
+      const rn = require("react-native");
+      rn.Platform.OS = "ios";
+      try {
+        renderDrawer();
+        await waitFor(() => expect(mockFetchAvailability).toHaveBeenCalled());
+        expect(bar().position).toBeUndefined();
+      } finally {
+        rn.Platform.OS = "web";
+      }
+    });
+
+    it("comes after the data notice, which stays in the scroll above it", async () => {
+      renderDrawer();
+      await waitFor(() => expect(mockFetchAvailability).toHaveBeenCalled());
+
+      const tree = JSON.stringify(screen.toJSON());
+      const notice = tree.indexOf("By confirming, you agree");
+      const confirmBar = tree.indexOf('"testID":"booking-confirm-bar"');
+      expect(notice).toBeGreaterThan(-1);
+      expect(confirmBar).toBeGreaterThan(notice);
+    });
+
+    it("holds the confirm and what it waits on, and nothing else", async () => {
+      renderDrawer();
+      await waitFor(() => expect(mockFetchAvailability).toHaveBeenCalled());
+
+      expect(
+        within(screen.getByTestId("booking-confirm-bar")).getByText("Confirm Booking")
+      ).toBeTruthy();
+      expect(
+        within(screen.getByTestId("booking-confirm-bar")).queryByText(/By confirming/)
+      ).toBeNull();
+    });
   });
 
   /**
