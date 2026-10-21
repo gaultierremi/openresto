@@ -57,7 +57,15 @@ test.describe.serial("Onboarding a restaurant", () => {
     restaurateur = await browser.newContext({ baseURL: BASE_URL });
   });
 
+  // The restaurant is archived, then deleted (the Owner's two-step), so the shared instance goes
+  // back to the locations the other specs expect to find first.
   test.afterAll(async () => {
+    if (restaurantId) {
+      await platform.request.patch(`/api/admin/restaurants/${restaurantId}`, {
+        data: { isArchived: true },
+      });
+      await platform.request.delete(`/api/admin/restaurants/${restaurantId}`);
+    }
     await platform.close();
     await restaurateur.close();
   });

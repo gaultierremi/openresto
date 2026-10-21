@@ -19,6 +19,19 @@ async function openPlatform(page: Page) {
 }
 
 test.describe.serial("Platform space", () => {
+  // The restaurant the first test adds is archived, then deleted (the Owner's two-step), so the
+  // shared instance goes back to the locations the other specs expect to find first.
+  test.afterAll(async ({ request }) => {
+    const list = await request.get("/api/platform/restaurants");
+    const created = ((await list.json()) as { id: number; name: string }[]).find(
+      (r) => r.name === NAME
+    );
+    if (created) {
+      await request.patch(`/api/admin/restaurants/${created.id}`, { data: { isArchived: true } });
+      await request.delete(`/api/admin/restaurants/${created.id}`);
+    }
+  });
+
   test("adds a restaurant as a draft and shows the invitation link once", async ({ page }) => {
     await openPlatform(page);
     await page.getByRole("button", { name: "Add a restaurant" }).click();

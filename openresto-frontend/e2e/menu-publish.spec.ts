@@ -69,12 +69,14 @@ async function restaurantToken(request: APIRequestContext): Promise<string> {
  * The menu module end to end, through the real admin UI and the real public page: create a dish,
  * publish its menu, and read it on the page a QR code opens, by its public token.
  *
- * The public page opens in French for a guest who has chosen no language, so its assertions are
- * French while the admin (no saved language, instance default) is English. Setup that is not the
- * point of a test goes through the API, and every menu the spec makes is deleted afterwards.
+ * The public page follows the guest's browser language, so the browser is set to French Belgian
+ * and its assertions are French while the admin (which ignores the browser, instance default) is
+ * English. Setup that is not the point of a test goes through the API, and every menu the spec
+ * makes is deleted afterwards.
  */
 test.describe("Menu: create, publish, read by token", () => {
   test.describe.configure({ mode: "serial" });
+  test.use({ locale: "fr-BE" });
 
   let menuId = 0;
   let itemId = 0;
