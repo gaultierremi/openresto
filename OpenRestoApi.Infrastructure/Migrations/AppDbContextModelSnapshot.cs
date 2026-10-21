@@ -845,6 +845,77 @@ namespace OpenRestoApi.Migrations
                     b.ToTable("Highlights");
                 });
 
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.RestaurantSite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CompanyNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CoverUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LegalAddress")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LegalName")
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LogoUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhotosJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SocialLinksJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tagline")
+                        .HasMaxLength(160)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VatNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId")
+                        .IsUnique();
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("RestaurantSites");
+                });
+
             modelBuilder.Entity("OpenRestoApi.Core.Domain.Section", b =>
                 {
                     b.Property<int>("Id")
@@ -1157,6 +1228,17 @@ namespace OpenRestoApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("OpenRestoApi.Core.Domain.RestaurantSite", b =>
+                {
+                    b.HasOne("OpenRestoApi.Core.Domain.Restaurant", "Restaurant")
+                        .WithOne()
+                        .HasForeignKey("OpenRestoApi.Core.Domain.RestaurantSite", "RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("OpenRestoApi.Core.Domain.Section", b =>

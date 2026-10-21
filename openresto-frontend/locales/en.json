@@ -501,6 +501,26 @@
       "walk_in_days_invalid": "WalkInDays must be a comma-separated list of ISO day numbers 1 (Monday) through 7 (Sunday).",
       "max_covers_invalid": "Max guests per slot must be 1 or more, or blank for no limit."
     },
+    "site": {
+      "not_found": "Website not found.",
+      "slug_invalid": "The website address must be 3 to 60 characters: lower-case letters, digits and single hyphens.",
+      "slug_taken": "Another website already uses this address.",
+      "theme_invalid": "That theme doesn’t exist.",
+      "tagline_too_long": "The tagline cannot exceed {{max}} characters.",
+      "social_invalid": "A social link needs a known network, an https:// address, and can appear only once.",
+      "social_too_many": "There are too many social links.",
+      "legal_too_long": "This legal notice field cannot exceed {{max}} characters.",
+      "legal_invalid": "This legal notice field only accepts letters, digits, spaces, dots, hyphens and slashes.",
+      "photo_alt_required": "Every photo needs a description.",
+      "photo_alt_too_long": "The photo description cannot exceed {{max}} characters.",
+      "photos_full": "A gallery holds at most {{max}} photos.",
+      "reorder_ids_mismatch": "The list must name every photo exactly once, with no additions.",
+      "image_too_large": "The picture must be under 6 MB.",
+      "image_dimensions_too_large": "The picture is too large in pixels (at most {{maxSide}} pixels on a side).",
+      "image_unreadable": "That file is not a readable picture.",
+      "not_publishable": "The website cannot go live until its legal notice and contact e-mail address are filled in.",
+      "location_archived": "An archived location cannot have a live website."
+    },
     "social_link": {
       "label_required": "Social link label cannot be empty.",
       "label_too_long": "Social link label cannot exceed {{max}} characters.",
@@ -2023,7 +2043,8 @@
           "audit": "Activity log",
           "guests": "Guests",
           "email": "Email status",
-          "menus": "Menus"
+          "menus": "Menus",
+          "sites": "Showcase website"
         },
         "scopeLevel": {
           "none": "None"
@@ -2037,7 +2058,8 @@
           "audit": "The admin activity trail",
           "guests": "Customer names and emails on bookings. Without this they come back blank.",
           "email": "Whether outgoing email is set up and what has failed to send. Never the SMTP credentials.",
-          "menus": "Menus, their categories, dishes and photos, and the links behind the QR codes. Regenerating a link also needs an Owner's key."
+          "menus": "Menus, their categories, dishes and photos, and the links behind the QR codes. Regenerating a link also needs an Owner's key.",
+          "sites": "A location's website: theme, tagline, photos, legal notice, publishing and preview."
         },
         "expiryLabel": "Expiry",
         "expiryHint": "Defaults to 1 year. Choose \"No expiry\" for a key that never expires.",
@@ -2283,6 +2305,135 @@
         "serverUnreachable": "Couldn't reach the server."
       }
     },
+    "site": {
+      "title": "My website",
+      "subtitle": "A small website for each location, built from your opening hours, your menu and your contact details.",
+      "noLocations": "Add a location to create its website.",
+      "couldntLoad": "Couldn’t load the website. Check your connection and try again.",
+      "themes": {
+        "label": "Website theme",
+        "brasserie": {
+          "name": "Brasserie",
+          "description": "Warm and welcoming: cream paper, serif headings."
+        },
+        "gastronomique": {
+          "name": "Fine dining",
+          "description": "Understated and elegant: dark background, spaced lettering."
+        },
+        "cafe": {
+          "name": "Café",
+          "description": "Light and rounded: touches of your colour, very readable."
+        }
+      },
+      "social": {
+        "kindLabel": "Network",
+        "urlPlaceholder": "https://…",
+        "urlLabel": "Address of the {{network}} page",
+        "remove": "Remove",
+        "removeNamed": "Remove {{network}}",
+        "add": "Add a network"
+      },
+      "settings": {
+        "problem": {
+          "slug": "The website address must be 3 to 60 characters: lower-case letters, digits and single hyphens. Nothing is saved until it is valid.",
+          "socialUrl": "Every network link must be an https:// address. Nothing is saved until it is valid.",
+          "socialDuplicate": "A network can only appear once. Change or remove the duplicate to save.",
+          "identifier": "Company and VAT numbers only accept letters, digits, spaces, dots, hyphens and slashes.",
+          "legalRequired": "The website is live: the legal name and company number must stay filled in. Unpublish the website to clear them."
+        },
+        "appearance": {
+          "title": "Appearance",
+          "description": "Three understated themes. Your choice shows in the preview straight away, and you can undo it right after."
+        },
+        "brandColor": "Main colour: {{color}}, taken from the brand. The website makes it readable on every theme.",
+        "changeBrandColor": "Change in Brand",
+        "content": {
+          "title": "Tagline and address",
+          "description": "The tagline appears under the location’s name and in search results."
+        },
+        "taglineLabel": "Tagline",
+        "taglinePlaceholder": "e.g. Seasonal Belgian cooking and abbey beers",
+        "taglineCount": "{{count}} / {{max}} characters",
+        "addressLabel": "Website address",
+        "addressHint": "Changing this address breaks links that were already shared or printed.",
+        "social": {
+          "title": "Social networks",
+          "description": "The links appear in the “Find us” section."
+        },
+        "legal": {
+          "title": "Legal notice",
+          "description": "Required to publish: it appears at the bottom of the website.",
+          "nameLabel": "Legal name",
+          "companyNumberLabel": "Company number",
+          "vatNumberLabel": "VAT number (optional)",
+          "addressLabel": "Registered office (optional)",
+          "addressHint": "If left empty, the location’s address is used."
+        }
+      },
+      "images": {
+        "title": "Logo and cover photo",
+        "description": "Pictures are shrunk and compressed automatically: a phone photo is enough.",
+        "logo": {
+          "title": "Logo",
+          "hint": "JPEG, PNG or WebP, 6 MB at most. A transparent background is kept.",
+          "add": "Add a logo",
+          "replace": "Replace the logo",
+          "remove": "Remove the logo"
+        },
+        "cover": {
+          "title": "Cover photo",
+          "hint": "JPEG, PNG or WebP, 6 MB at most. A wide, landscape photo works best.",
+          "add": "Add a cover photo",
+          "replace": "Replace the photo",
+          "remove": "Remove the photo"
+        }
+      },
+      "gallery": {
+        "title": "Gallery",
+        "description": "A few photos of the dining room, the terrace or the dishes.",
+        "count_one": "{{count}} photo out of {{max}} ({{min}} to {{max}} recommended)",
+        "count_other": "{{count}} photos out of {{max}} ({{min}} to {{max}} recommended)",
+        "altLabel": "Photo description",
+        "altRequired": "Describe the photo to save it: a screen reader reads this in its place.",
+        "remove": "Delete",
+        "removeNamed": "Delete the photo “{{name}}”",
+        "removeTitle": "Delete this photo?",
+        "removeMessage": "The photo “{{name}}” will disappear from the gallery. This can’t be undone.",
+        "full": "The gallery is full ({{max}} photos). Delete a photo to add another.",
+        "newAltLabel": "Description of the new photo",
+        "newAltPlaceholder": "e.g. The dining room with leather banquettes",
+        "newAltHint": "Required: describe what the photo shows for people who cannot see it.",
+        "choose": "Choose the photo",
+        "add": "Add a photo"
+      },
+      "publish": {
+        "title": "Publishing",
+        "description": "Until the website is published, nobody but you can see it.",
+        "live": "Live",
+        "draft": "Draft",
+        "checklistTitle": "To complete before publishing",
+        "todo": {
+          "legalName": "Enter the legal name (legal notice)",
+          "companyNumber": "Enter the company number (legal notice)",
+          "contactEmail": "Set a contact e-mail address, on the location or in the brand",
+          "publicUrl": "Set the website address of this instance in Brand settings (the site's links and search listing need it)"
+        },
+        "blockedHint": "The button unlocks as soon as the list above is empty.",
+        "publish": "Publish the website",
+        "unpublish": "Unpublish",
+        "view": "View the website",
+        "copy": "Copy the link",
+        "copied": "Link copied"
+      },
+      "preview": {
+        "title": "Preview",
+        "phone": "Phone",
+        "desktop": "Computer",
+        "loading": "Loading the preview…",
+        "failed": "Couldn’t load the preview.",
+        "frameTitle": "Website preview"
+      }
+    },
     "sidebar": {
       "nav": {
         "sections": {
@@ -2295,6 +2446,7 @@
           "locations": "Locations",
           "menus": "Menus",
           "qrCodes": "QR codes",
+          "site": "My website",
           "notifications": "Notifications",
           "activity": "Activity",
           "brand": "Brand",

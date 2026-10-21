@@ -197,6 +197,30 @@ public static class ErrorCodes
     public const string MenuReorderIdsMismatch = "menu.reorder_ids_mismatch";
     public const string MenuItemImageTooLarge = "menu.item_image_too_large";
 
+    // ── Sites ────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Shared by the admin lookup of a photo and the whole public side: an unknown or foreign photo,
+    /// an unknown slug, an unpublished site and an archived location all answer with this.
+    /// </summary>
+    public const string SiteNotFound = "site.not_found";
+    public const string SiteSlugInvalid = "site.slug_invalid";
+    public const string SiteSlugTaken = "site.slug_taken";
+    public const string SiteThemeInvalid = "site.theme_invalid";
+    public const string SiteTaglineTooLong = "site.tagline_too_long";
+    public const string SiteSocialInvalid = "site.social_invalid";
+    public const string SiteSocialTooMany = "site.social_too_many";
+    public const string SiteLegalTooLong = "site.legal_too_long";
+    public const string SiteLegalInvalid = "site.legal_invalid";
+    public const string SitePhotoAltRequired = "site.photo_alt_required";
+    public const string SitePhotoAltTooLong = "site.photo_alt_too_long";
+    public const string SitePhotosFull = "site.photos_full";
+    public const string SiteReorderIdsMismatch = "site.reorder_ids_mismatch";
+    public const string SiteImageTooLarge = "site.image_too_large";
+    public const string SiteImageDimensionsTooLarge = "site.image_dimensions_too_large";
+    public const string SiteImageUnreadable = "site.image_unreadable";
+    public const string SiteNotPublishable = "site.not_publishable";
+    public const string SiteLocationArchived = "site.location_archived";
+
     // ── Media ────────────────────────────────────────────────────────────────
     public const string MediaUnsupportedImageType = "media.unsupported_image_type";
     public const string MediaHeroTooLarge = "media.hero_too_large";

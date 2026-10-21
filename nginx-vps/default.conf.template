@@ -80,6 +80,13 @@ server {
         proxy_pass http://frontend:8081;
     }
 
+    # Restaurant websites — server-rendered HTML from the backend; its own one-minute Cache-Control is kept.
+    location ~ ^/(?:r/[a-z0-9-]+(?:/reserver)?|sitemap\.xml|robots\.txt)$ {
+        limit_req zone=general burst=50 nodelay;
+        include /etc/nginx/conf.d/security-headers.conf;
+        proxy_pass http://backend:8080;
+    }
+
     location / {
         limit_req zone=general burst=50 nodelay;
         include /etc/nginx/conf.d/security-headers.conf;

@@ -1,9 +1,9 @@
 {
-  "chantier": "Sprint 2 — écrans de la carte QR (éditeur admin, mode service, page publique, QR codes)",
-  "branche": "feat/menu-screens",
-  "base": "feat/menu-api",
-  "pr": "https://github.com/gaultierremi/openresto/pull/5",
-  "pr_empilee_sur": "https://github.com/gaultierremi/openresto/pull/2",
+  "chantier": "Sprint 3 — mini-site vitrine généré pour chaque restaurant (page publique /r/{slug}, écran admin « Mon site »)",
+  "branche": "feat/site-vitrine",
+  "base": "feat/menu-screens",
+  "pr": "https://github.com/gaultierremi/openresto/pull/7",
+  "pr_empilee_sur": "https://github.com/gaultierremi/openresto/pull/5",
   "etat": "corrections de relecture appliquées, en attente de contre-relecture",
   "mis_a_jour": "2026-10-20"
 }

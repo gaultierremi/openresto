@@ -47,6 +47,7 @@
 /admin/settings/index
 /admin/settings/native-app
 /admin/settings/users
+/admin/site/index
 /admin/waitlist
 /book
 /book/[restaurantId]
