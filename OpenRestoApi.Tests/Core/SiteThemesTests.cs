@@ -73,6 +73,35 @@ public class SiteThemesTests
         Assert.DoesNotContain("@font-face", css, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Theory]
+    [InlineData(SiteTheme.Brasserie)]
+    [InlineData(SiteTheme.Gastronomique)]
+    [InlineData(SiteTheme.Cafe)]
+    public void Css_GreysASoldOutDishWithTheMutedColour_NeverWithOpacity(SiteTheme theme)
+    {
+        string css = SiteThemes.Css(theme, "#0a7ea4");
+
+        // Opacity would halve the contrast of every text colour on the row, the allergen line
+        // included, below what the palette test pins for the muted colour itself.
+        Assert.DoesNotContain("opacity", css, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(".dish.off .nm,.dish.off .pr{color:var(--muted)}", css, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [MemberData(nameof(EveryThemeAndBrandColour))]
+    public void SoldOutDish_EveryTextOnItsRowKeepsTheContrastFloor_ForEveryThemeAndBrandColour(SiteTheme theme, string brand)
+    {
+        SiteThemes.Palette p = SiteThemes.PaletteFor(theme, brand);
+
+        // On a sold-out row the name and price take --muted, the description and the allergen
+        // line already are --muted, and the badge is --text on --surface.
+        foreach (Rgb background in new[] { p.Background, p.Surface })
+        {
+            Assert.True(Contrast(p.Muted, background) >= MinimumContrast, $"{theme} {brand}: {Contrast(p.Muted, background):F2}");
+        }
+        Assert.True(Contrast(p.Text, p.Surface) >= MinimumContrast);
+    }
+
     [Fact]
     public void Css_IsIdenticalForTheSameInputs_SoItsHashIsStable()
         => Assert.Equal(SiteThemes.Css(SiteTheme.Brasserie, "#0a7ea4"), SiteThemes.Css(SiteTheme.Brasserie, "#0a7ea4"));

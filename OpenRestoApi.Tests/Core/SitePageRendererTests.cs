@@ -257,6 +257,25 @@ public partial class SitePageRendererTests
     }
 
     [Fact]
+    public void ContentSecurityPolicy_KeepsFrameAncestorsInTheHeaderOnly()
+    {
+        RenderedSitePage page = SitePageRenderer.Render(SiteSamples.Full());
+
+        Assert.EndsWith("; frame-ancestors 'none'", page.ContentSecurityPolicy, StringComparison.Ordinal);
+        Assert.DoesNotContain("frame-ancestors", page.Html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Render_AdmitsTheTechnicalLogsAServerKeeps_InsteadOfPromisingToCollectNothing()
+    {
+        string html = Html();
+
+        Assert.Contains("n’utilise aucun cookie", html, StringComparison.Ordinal);
+        Assert.Contains("journaux techniques", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("ne collecte aucune donnée", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ContentSecurityPolicy_ChangesWithTheTheme_BecauseTheStylesheetDoes()
         => Assert.NotEqual(
             SitePageRenderer.Render(SiteSamples.Full()).ContentSecurityPolicy,

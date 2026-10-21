@@ -2852,7 +2852,8 @@
         "todo": {
           "legalName": "Indicar la razón social (aviso legal)",
           "companyNumber": "Indicar el número de empresa (aviso legal)",
-          "contactEmail": "Indicar un correo electrónico de contacto, en el local o en la marca"
+          "contactEmail": "Indicar un correo electrónico de contacto, en el local o en la marca",
+          "publicUrl": "Indicar la dirección web de la instancia en los ajustes de la marca (los enlaces del sitio y su ficha en los buscadores la necesitan)"
         },
         "blockedHint": "El botón se desbloquea en cuanto la lista de arriba esté vacía.",
         "publish": "Publicar el sitio",

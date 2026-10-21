@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using OpenRestoApi.Core.Domain;
 
 namespace OpenRestoApi.Core.Application.Site;
@@ -17,7 +18,7 @@ namespace OpenRestoApi.Core.Application.Site;
 /// </summary>
 /// <seealso>SiteStructuredDataTests.Build_NamesTheRestaurantItsHoursAndItsPublishedMenuOnly</seealso>
 /// <seealso>SiteStructuredDataTests.Build_CannotBeClosedEarlyByAScriptTagInAField</seealso>
-public static class SiteStructuredData
+public static partial class SiteStructuredData
 {
     private static readonly JsonSerializerOptions _options = new();
 
@@ -34,9 +35,7 @@ public static class SiteStructuredData
             ["logo"] = Absolute(m, m.LogoUrl),
             ["telephone"] = string.IsNullOrWhiteSpace(m.Phone) ? null : m.Phone,
             ["email"] = string.IsNullOrWhiteSpace(m.Email) ? null : m.Email,
-            ["address"] = string.IsNullOrWhiteSpace(m.Address)
-                ? null
-                : new Dictionary<string, object?> { ["@type"] = "PostalAddress", ["streetAddress"] = m.Address },
+            ["address"] = PostalAddress(m.Address),
             ["servesCuisine"] = m.Cuisines.Count == 0 ? null : m.Cuisines,
             ["openingHoursSpecification"] = OpeningHours(m),
             ["acceptsReservations"] = !m.WalkInOnly,
@@ -73,6 +72,37 @@ public static class SiteStructuredData
                 break;
         }
     }
+
+    /// <summary>
+    /// The location keeps its address as one line, so this reads the common "street, 1000 City"
+    /// shape back into <c>postalCode</c> and <c>addressLocality</c>, and leaves the whole line as
+    /// the street when it does not fit. A country is never guessed: the line does not carry one.
+    /// </summary>
+    /// <seealso>SiteStructuredDataTests.Build_SplitsAStreetAndAPostalCodeAndCityWhenTheAddressHasThem</seealso>
+    /// <seealso>SiteStructuredDataTests.Build_KeepsAnAddressItCannotSplitAsOneStreetLine</seealso>
+    private static Dictionary<string, object?>? PostalAddress(string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return null;
+        }
+
+        string line = address.Trim();
+        int comma = line.LastIndexOf(',');
+        Match tail = comma > 0 ? PostalTail().Match(line[(comma + 1)..].Trim()) : Match.Empty;
+        return tail.Success
+            ? new Dictionary<string, object?>
+            {
+                ["@type"] = "PostalAddress",
+                ["streetAddress"] = line[..comma].Trim(),
+                ["postalCode"] = tail.Groups[1].Value,
+                ["addressLocality"] = tail.Groups[2].Value,
+            }
+            : new Dictionary<string, object?> { ["@type"] = "PostalAddress", ["streetAddress"] = line };
+    }
+
+    [GeneratedRegex(@"^(\d{4,5})\s+(\p{L}[\p{L}\s'’.-]*)$")]
+    private static partial Regex PostalTail();
 
     private static List<string>? Images(SitePageModel m)
     {

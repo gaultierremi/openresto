@@ -48,6 +48,7 @@ export function SitePublishCard({
     "legal.name": t("admin.site.publish.todo.legalName"),
     "legal.companyNumber": t("admin.site.publish.todo.companyNumber"),
     "contact.email": t("admin.site.publish.todo.contactEmail"),
+    "instance.publicUrl": t("admin.site.publish.todo.publicUrl"),
   };
 
   const publicUrl = `${window.location.origin}${site.publicPath}`;

@@ -54,7 +54,7 @@ public static class SitePageRenderer
         var sb = new StringBuilder(16 * 1024);
         sb.Append("<!doctype html>\n<html lang=\"").Append(c.Language).Append("\">\n<head>\n<meta charset=\"utf-8\">\n");
         sb.Append("<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n");
-        sb.Append("<meta http-equiv=\"Content-Security-Policy\" content=\"").Append(E(policy)).Append("\">\n");
+        sb.Append("<meta http-equiv=\"Content-Security-Policy\" content=\"").Append(E(MetaContentSecurityPolicyFor(css))).Append("\">\n");
         sb.Append("<meta name=\"referrer\" content=\"strict-origin-when-cross-origin\">\n");
         sb.Append("<title>").Append(E(title)).Append("</title>\n");
         sb.Append("<meta name=\"description\" content=\"").Append(E(description)).Append("\">\n");
@@ -124,10 +124,20 @@ public static class SitePageRenderer
     /// needs no per-request nonce and stays identical (and cacheable) for every visitor.
     /// </summary>
     public static string ContentSecurityPolicyFor(string css)
+        => $"{MetaContentSecurityPolicyFor(css)}; {FrameAncestors}";
+
+    /// <summary>
+    /// The same policy without <c>frame-ancestors</c>, which a browser ignores in a <c>meta</c>
+    /// element and reports in the console on every visit; the header carries it.
+    /// </summary>
+    /// <seealso>SitePageRendererTests.ContentSecurityPolicy_KeepsFrameAncestorsInTheHeaderOnly</seealso>
+    public static string MetaContentSecurityPolicyFor(string css)
     {
         string hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(css)));
-        return $"default-src 'none'; img-src 'self'; style-src 'sha256-{hash}'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+        return $"default-src 'none'; img-src 'self'; style-src 'sha256-{hash}'; base-uri 'none'; form-action 'none'";
     }
+
+    private const string FrameAncestors = "frame-ancestors 'none'";
 
     /// <summary>Plain links rather than a control: the page runs no script, and a link to the same page with the other language is what a crawler follows too.</summary>
     private static void AppendLanguageSwitch(StringBuilder sb, SiteCopy current, string pagePath)

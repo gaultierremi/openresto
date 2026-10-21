@@ -18,6 +18,16 @@ const renderPicker = (value: "Brasserie" | "Gastronomique" | "Cafe" = "Brasserie
   return onChange;
 };
 
+/**
+ * The `aria-*` prop is only visible on the component element, not on the node `getByTestId`
+ * returns.
+ */
+const ariaProp = (testID: string, name: string) =>
+  screen
+    .UNSAFE_getAllByProps({ testID })
+    .map((node) => node.props[name])
+    .find((value) => value !== undefined);
+
 describe("SiteThemePicker", () => {
   it("offers the three themes as radios in a labelled group", () => {
     renderPicker();
@@ -47,6 +57,16 @@ describe("SiteThemePicker", () => {
       );
     });
   });
+
+  it.each(SITE_THEMES)(
+    "announces %s as the chosen theme through aria-checked, which is what the web reads",
+    (theme) => {
+      renderPicker(theme);
+      SITE_THEMES.forEach((other) => {
+        expect(ariaProp(`site-theme-${other}`, "aria-checked")).toBe(other === theme);
+      });
+    }
+  );
 
   it.each(SITE_THEMES)("selects %s when its card is pressed", (theme) => {
     const onChange = renderPicker(theme === "Cafe" ? "Brasserie" : "Cafe");

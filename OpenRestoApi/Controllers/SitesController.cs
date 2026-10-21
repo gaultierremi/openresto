@@ -50,6 +50,8 @@ public class SitesController(SiteService siteService) : ControllerBase
     {
         RenderedSitePage page = await _sites.PreviewAsync(restaurantId, theme);
         Response.Headers.CacheControl = "no-store";
+        Response.Headers.ContentSecurityPolicy = page.ContentSecurityPolicy;
+        Response.Headers.XContentTypeOptions = "nosniff";
         return Content(page.Html, "text/html; charset=utf-8");
     }
 

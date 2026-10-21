@@ -108,7 +108,7 @@ public static class SiteThemes
         .lede{margin:0 0 1rem;color:var(--muted)}
         ul.dishes{list-style:none;margin:0;padding:0}
         .dish{display:grid;grid-template-columns:1fr auto;gap:.1rem 1rem;padding:.8rem 0;border-bottom:1px dotted var(--line)}
-        .dish.off{opacity:.7}
+        .dish.off .nm,.dish.off .pr{color:var(--muted)}
         .dish .nm{font-weight:700}
         .dish .pr{font-weight:700;white-space:nowrap}
         .dish .ds,.dish .meta{grid-column:1;margin:0;color:var(--muted);font-size:.95rem}

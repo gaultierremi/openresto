@@ -65,16 +65,9 @@ async function shot(page, name, options = {}) {
 
 await mkdir(OUT_DIR, { recursive: true });
 
-/** The page lazy-loads what is below the fold, so a full-page capture has to scroll it into view first. */
+/** The page lazy-loads what is below the fold, so a full-page capture asks for every image up front. */
 async function loadLazyImages(page) {
-  await page.evaluate(async () => {
-    for (let y = 0; y < document.body.scrollHeight; y += 500) {
-      window.scrollTo(0, y);
-      await new Promise((resolve) => setTimeout(resolve, 150));
-    }
-    window.scrollTo(0, 0);
-  });
-  await page.waitForTimeout(1200);
+  await page.evaluate(() => [...document.images].forEach((img) => (img.loading = "eager")));
   await page
     .waitForFunction(() => [...document.images].every((img) => img.complete), null, {
       timeout: 8000,
@@ -120,6 +113,9 @@ try {
       await page.goto(original.publicPath);
       await page.getByRole("heading", { level: 1 }).waitFor();
       await loadLazyImages(page);
+      // The booking bar is pinned to the bottom of the viewport, so a full-page capture would
+      // print it over the middle of the page.
+      await page.evaluate(() => document.querySelector(".book-bar")?.remove());
       await shot(page, `site-${file}-${suffix}.png`, { fullPage: true });
       await context.close();
     }

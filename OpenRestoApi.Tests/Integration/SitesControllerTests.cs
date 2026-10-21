@@ -22,7 +22,9 @@ namespace OpenRestoApi.Tests.Integration;
 public sealed partial class SitesControllerTests(TestWebAppFactory factory) : IClassFixture<TestWebAppFactory>, IDisposable
 {
     private readonly WebApplicationFactory<Program> _app = factory.WithWebHostBuilder(builder =>
-        builder.ConfigureServices(services => services.AddSingleton<IMediaStore, InMemoryMediaStore>()));
+        builder
+            .UseSetting("Website:Url", "https://resto.example.be")
+            .ConfigureServices(services => services.AddSingleton<IMediaStore, InMemoryMediaStore>()));
 
     private readonly TestWebAppFactory _factory = factory;
 
@@ -273,7 +275,10 @@ public sealed partial class SitesControllerTests(TestWebAppFactory factory) : IC
 
         string policy = response.Headers.GetValues("Content-Security-Policy").Single();
         Assert.StartsWith("default-src 'none'; img-src 'self'; style-src 'sha256-", policy, StringComparison.Ordinal);
-        Assert.Contains($"content=\"{policy.Replace("'", "&#39;", StringComparison.Ordinal)}\"", html, StringComparison.Ordinal);
+        Assert.EndsWith("; frame-ancestors 'none'", policy, StringComparison.Ordinal);
+        string inMeta = policy.Replace("; frame-ancestors 'none'", "", StringComparison.Ordinal).Replace("'", "&#39;", StringComparison.Ordinal);
+        Assert.Contains($"content=\"{inMeta}\"", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("frame-ancestors", html, StringComparison.Ordinal);
         Assert.Equal("nosniff", response.Headers.GetValues("X-Content-Type-Options").Single());
     }
 
@@ -492,6 +497,8 @@ public sealed partial class SitesControllerTests(TestWebAppFactory factory) : IC
         Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
         Assert.Contains("class=\"draft\"", html, StringComparison.Ordinal);
         Assert.Contains("noindex", html, StringComparison.Ordinal);
+        Assert.StartsWith("default-src 'none'", response.Headers.GetValues("Content-Security-Policy").Single(), StringComparison.Ordinal);
+        Assert.Equal("nosniff", response.Headers.GetValues("X-Content-Type-Options").Single());
     }
 
     [Fact]

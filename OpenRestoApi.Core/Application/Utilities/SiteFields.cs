@@ -146,18 +146,22 @@ public static class SiteFields
 
     /// <summary>
     /// What a site still lacks before it may go live: a legal identity (the notice a Belgian
-    /// business website must carry) and an e-mail address to reach the business at. Names are the
-    /// field paths the screen highlights.
+    /// business website must carry), an e-mail address to reach the business at, and a public
+    /// address for the instance. Names are the field paths the screen highlights.
     /// </summary>
     /// <seealso>SiteServiceTests.Publish_RefusesASiteWithoutItsLegalIdentity_AndNothingGoesLive</seealso>
-    public static List<string> MissingForPublication(RestaurantSite site, string? contactEmail)
+    public static List<string> MissingForPublication(RestaurantSite site, string? contactEmail, bool publicUrlConfigured = true)
     {
         List<string> missing = [];
         if (string.IsNullOrWhiteSpace(site.LegalName)) missing.Add(MissingLegalName);
         if (string.IsNullOrWhiteSpace(site.CompanyNumber)) missing.Add(MissingCompanyNumber);
         if (string.IsNullOrWhiteSpace(contactEmail)) missing.Add(MissingContactEmail);
+        if (!publicUrlConfigured) missing.Add(MissingPublicUrl);
         return missing;
     }
+
+    /// <summary>The instance has no public address: canonical, Open Graph and sitemap would all name localhost.</summary>
+    public const string MissingPublicUrl = "instance.publicUrl";
 
     public const string MissingLegalName = "legal.name";
     public const string MissingCompanyNumber = "legal.companyNumber";
