@@ -13,6 +13,8 @@ import {
   type PublicMenuResponse,
 } from "@/api/menus";
 import { useRouteDefaultLocale } from "@/context/LocaleContext";
+import { MENU_FILTER_STORAGE_KEY } from "@/hooks/use-menu-filter";
+import { StorageService } from "@/services/storage";
 import i18n from "@/i18n";
 
 jest.mock("@/api/menus", () => ({ fetchPublicMenu: jest.fn() }));
@@ -449,6 +451,64 @@ describe("PublicMenuScreen", () => {
       expect(dishNames()).toEqual(
         expect.arrayContaining(["Vegan bowl", "Pâté", "Steak", "Fish of the day", "Crème brûlée"])
       );
+    });
+
+    describe("remembered between scans", () => {
+      let getItem: jest.SpyInstance;
+      let setItem: jest.SpyInstance;
+      let removeItem: jest.SpyInstance;
+      const remember = (value: unknown) =>
+        getItem.mockImplementation((key: string) =>
+          key === MENU_FILTER_STORAGE_KEY ? JSON.stringify(value) : null
+        );
+
+      beforeEach(() => {
+        getItem = jest.spyOn(StorageService, "getItem").mockReturnValue(null);
+        setItem = jest.spyOn(StorageService, "setItem").mockImplementation(() => {});
+        removeItem = jest.spyOn(StorageService, "removeItem").mockImplementation(() => {});
+      });
+
+      afterEach(() => {
+        getItem.mockRestore();
+        setItem.mockRestore();
+        removeItem.mockRestore();
+      });
+
+      it("opens already filtered, allergen panel showing the choice, for a guest who left one on", async () => {
+        remember({ avoid: ["Eggs", "Milk"], diets: [] });
+        await showMenu();
+
+        expect(dishNames()).toEqual(["Leek tart", "Vegan bowl", "Fish of the day"]);
+        expect(screen.getByTestId("menu-allergen-Eggs")).toBeTruthy();
+        expect(screen.getByTestId("menu-filters-clear")).toBeTruthy();
+      });
+
+      it("opens unfiltered, panel folded, for a guest with nothing remembered", async () => {
+        await showMenu();
+
+        expect(dishNames()).toHaveLength(6);
+        expect(screen.queryByTestId("menu-allergen-Eggs")).toBeNull();
+      });
+
+      it("remembers the allergen a guest ticks, for the next table", async () => {
+        await showMenu();
+        fireEvent.press(screen.getByTestId("menu-allergens-toggle"));
+        fireEvent.press(screen.getByTestId("menu-allergen-Gluten"));
+
+        expect(setItem).toHaveBeenLastCalledWith(
+          MENU_FILTER_STORAGE_KEY,
+          JSON.stringify({ avoid: ["Gluten"], diets: [] })
+        );
+      });
+
+      it("forgets it once the guest clears the filter", async () => {
+        remember({ avoid: ["Gluten"], diets: [] });
+        await showMenu();
+        fireEvent.press(screen.getByTestId("menu-filters-clear"));
+
+        expect(removeItem).toHaveBeenCalledWith(MENU_FILTER_STORAGE_KEY);
+        expect(dishNames()).toHaveLength(6);
+      });
     });
 
     it("hides a dish declaring any one of several avoided allergens", async () => {

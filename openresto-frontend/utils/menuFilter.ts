@@ -1,4 +1,4 @@
-import type { Allergen, DietaryTag } from "@/constants/menu";
+import { ALLERGENS, DIETARY_TAGS, type Allergen, type DietaryTag } from "@/constants/menu";
 
 export interface MenuFilter {
   /** Allergens the guest wants to avoid: an item declaring any of them is left out. */
@@ -8,6 +8,24 @@ export interface MenuFilter {
 }
 
 export const NO_FILTER: MenuFilter = { avoid: [], diets: [] };
+
+/**
+ * A filter read back from the device's storage, which anything may have written to or an older
+ * build may have left behind: keeps the allergens and diets this build knows and drops the rest,
+ * and anything that is not a filter at all is no filter. Never throws, since it runs while the
+ * screen first renders.
+ *
+ * @see [menuFilter.test.ts](../tests/utils/menuFilter.test.ts) — pins that known names
+ * survive, unknown ones and malformed values do not, and the result is in the constants' order.
+ */
+export function sanitizeFilter(raw: unknown): MenuFilter {
+  if (typeof raw !== "object" || raw === null) return NO_FILTER;
+  const { avoid, diets } = raw as { avoid?: unknown; diets?: unknown };
+  return {
+    avoid: ALLERGENS.filter((a) => Array.isArray(avoid) && avoid.includes(a)),
+    diets: DIETARY_TAGS.filter((d) => Array.isArray(diets) && diets.includes(d)),
+  };
+}
 
 interface Filterable {
   allergens: readonly Allergen[];

@@ -3,10 +3,44 @@ import {
   isFilterActive,
   itemMatches,
   NO_FILTER,
+  sanitizeFilter,
   toggleIn,
   type MenuFilter,
 } from "@/utils/menuFilter";
 import type { Allergen, DietaryTag } from "@/constants/menu";
+
+describe("sanitizeFilter", () => {
+  it("keeps the allergens and diets this build knows", () => {
+    expect(sanitizeFilter({ avoid: ["Gluten", "Milk"], diets: ["Vegan"] })).toEqual({
+      avoid: ["Gluten", "Milk"],
+      diets: ["Vegan"],
+    });
+  });
+
+  it("drops a name this build does not know, keeping the ones it does", () => {
+    expect(
+      sanitizeFilter({ avoid: ["Gluten", "Kryptonite"], diets: ["Carnivore", "Vegan"] })
+    ).toEqual({
+      avoid: ["Gluten"],
+      diets: ["Vegan"],
+    });
+  });
+
+  it("returns them in the order of the allergen list, whatever order was stored", () => {
+    expect(sanitizeFilter({ avoid: ["Milk", "Gluten"], diets: [] }).avoid).toEqual([
+      "Gluten",
+      "Milk",
+    ]);
+  });
+
+  it.each([null, undefined, 42, "Gluten", true, []])("reads %p as no filter", (raw) => {
+    expect(sanitizeFilter(raw)).toEqual(NO_FILTER);
+  });
+
+  it("reads a filter whose lists are not lists as empty rather than throwing", () => {
+    expect(sanitizeFilter({ avoid: "Gluten", diets: { 0: "Vegan" } })).toEqual(NO_FILTER);
+  });
+});
 
 const item = (name: string, allergens: Allergen[] = [], dietaryTags: DietaryTag[] = []) => ({
   name,
