@@ -14,7 +14,8 @@ import { fetchPublicMenu, type PublicMenuKind, type PublicMenuOutcome } from "@/
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { MENU_DEFAULT_LOCALE } from "@/constants/locales";
 import { useRouteDefaultLocale } from "@/context/LocaleContext";
-import { filterCategories, isFilterActive, NO_FILTER, type MenuFilter } from "@/utils/menuFilter";
+import { useMenuFilter } from "@/hooks/use-menu-filter";
+import { filterCategories, isFilterActive } from "@/utils/menuFilter";
 import { hexToRgba } from "@/utils/colors";
 import { styles } from "./PublicMenuScreen.styles";
 
@@ -47,7 +48,7 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
 
   const [load, setLoad] = useState<Load>({ status: "loading" });
   const [menuIndex, setMenuIndex] = useState(0);
-  const [filter, setFilter] = useState<MenuFilter>(NO_FILTER);
+  const [filter, setFilter] = useMenuFilter();
 
   const fetchMenu = useCallback(() => {
     setLoad({ status: "loading" });
