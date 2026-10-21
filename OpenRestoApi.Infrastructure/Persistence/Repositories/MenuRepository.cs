@@ -7,6 +7,7 @@ namespace OpenRestoApi.Infrastructure.Persistence.Repositories;
 
 [OnlyAccessibleBy("OpenRestoApi.Extensions.ServiceCollectionExtensions")]
 [OnlyAccessibleBy("OpenRestoApi.Tests.Services.MenuServiceTests")]
+[OnlyAccessibleBy("OpenRestoApi.Tests.Services.SiteServiceTests")]
 [ExternalAccessAllowed]
 internal class MenuRepository(AppDbContext db) : IMenuRepository
 {
