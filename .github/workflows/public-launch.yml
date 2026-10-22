@@ -56,8 +56,9 @@ jobs:
         run: |
           curl -sS -o /dev/null http://localhost:5062/onboarding/invitation/privacy-probe-token
           curl -sS -o /dev/null 'http://localhost:5062/api/bookings/ref/privacy-probe-reference?email=privacy-probe%40example.test'
+          curl -sS -o /dev/null -X DELETE http://localhost:5062/api/holds/privacy-probe-hold
           docker compose logs --no-color reverse-proxy > /tmp/openresto-privacy.log
-          if grep -Eq 'privacy-probe-token|privacy-probe-reference|privacy-probe%40example.test|privacy-probe@example.test' /tmp/openresto-privacy.log; then
+          if grep -Eq 'privacy-probe-token|privacy-probe-reference|privacy-probe-hold|privacy-probe%40example.test|privacy-probe@example.test' /tmp/openresto-privacy.log; then
             echo 'Le journal du proxy contient une adresse ou un lien personnel.'
             exit 1
           fi
