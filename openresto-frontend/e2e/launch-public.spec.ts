@@ -60,6 +60,16 @@ test("les pages publiques fonctionnent sans JavaScript, au clavier et sur mobile
     await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /.+/);
   }
   expect((await request.get("/legal/inconnu")).status()).toBe(404);
+  await page.goto(`/locations/1?date=${futureDateStr(14)}`);
+  await expect(page.locator("#guest-booking")).toHaveAttribute("method", "post");
+  await expect(
+    page.getByRole("button", { name: "Confirmer la réservation", exact: true })
+  ).toBeDisabled();
+  await page.goto("/lookup");
+  await expect(page.locator("#guest-lookup")).toHaveAttribute("method", "post");
+  await expect(
+    page.getByRole("button", { name: "Rechercher ma réservation", exact: true })
+  ).toBeDisabled();
   await context.close();
 });
 

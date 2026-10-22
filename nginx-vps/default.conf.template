@@ -1,4 +1,12 @@
 # Rate limiting zones
+map $uri $openresto_log_path {
+    ~*^/(?:api/)?onboarding/invitations?/ /onboarding/invitation/[masque];
+    ~*^/(?:api/bookings/ref|booking-confirmation)/ /bookings/[masque];
+    ~*^/(?:api/)?menus?/[rt]/ /menu/[masque];
+    default $uri;
+}
+log_format openresto_privacy '$remote_addr [$time_local] "$request_method $openresto_log_path $server_protocol" $status $body_bytes_sent';
+
 limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
 limit_req_zone $binary_remote_addr zone=general:10m rate=30r/s;
 
@@ -24,8 +32,8 @@ server {
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
 
-    access_log /dev/stdout;
-    error_log /dev/stderr warn;
+    access_log /dev/stdout openresto_privacy;
+    error_log /dev/stderr crit;
 
     gzip on;
     gzip_vary on;

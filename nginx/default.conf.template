@@ -1,3 +1,11 @@
+map $uri $openresto_log_path {
+    ~*^/(?:api/)?onboarding/invitations?/ /onboarding/invitation/[masque];
+    ~*^/(?:api/bookings/ref|booking-confirmation)/ /bookings/[masque];
+    ~*^/(?:api/)?menus?/[rt]/ /menu/[masque];
+    default $uri;
+}
+log_format openresto_privacy '$remote_addr [$time_local] "$request_method $openresto_log_path $server_protocol" $status $body_bytes_sent';
+
 server {
     listen ${PORT};
     server_tokens off;
@@ -5,8 +13,8 @@ server {
     resolver ${RESOLVER} valid=10s ipv6=off;
     resolver_timeout 5s;
 
-    access_log /dev/stdout;
-    error_log /dev/stderr warn;
+    access_log /dev/stdout openresto_privacy;
+    error_log /dev/stderr crit;
 
     gzip on;
     gzip_vary on;

@@ -41,6 +41,7 @@ public static class GuestInteraction
             title.focus();
           };
           const bookingForm = document.getElementById('guest-booking');
+          if (bookingForm) bookingForm.querySelector('button[type="submit"]').disabled = false;
           if (bookingForm) bookingForm.addEventListener('submit', async event => {
             event.preventDefault();
             const button = bookingForm.querySelector('button[type="submit"]');
@@ -73,6 +74,7 @@ public static class GuestInteraction
             } finally { button.disabled = false; }
           });
           const lookup = document.getElementById('guest-lookup');
+          if (lookup) lookup.querySelector('button[type="submit"]').disabled = false;
           if (lookup) lookup.addEventListener('submit', async event => {
             event.preventDefault();
             const button = lookup.querySelector('button');

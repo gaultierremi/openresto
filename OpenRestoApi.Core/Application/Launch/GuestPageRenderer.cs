@@ -46,7 +46,7 @@ public static class GuestPageRenderer
         }
         else
         {
-            body.Append("<section aria-labelledby=\"book-title\"><h2 id=\"book-title\">Réserver une table</h2><form id=\"guest-booking\" data-restaurant-id=\"")
+            body.Append("<section aria-labelledby=\"book-title\"><h2 id=\"book-title\">Réserver une table</h2><form id=\"guest-booking\" method=\"post\" data-restaurant-id=\"")
                 .Append(restaurant.Id).Append("\" data-seats=\"").Append(seats).Append("\" data-timezone=\"").Append(E(restaurant.Timezone))
                 .Append("\" data-name=\"").Append(E(restaurant.Name)).Append("\"><label for=\"slot\">Heure</label><select id=\"slot\" name=\"slot\" required>");
             foreach (GuestSlot slot in slots)
@@ -54,7 +54,7 @@ public static class GuestPageRenderer
             body.Append("</select><label for=\"customerName\">Nom complet</label><input id=\"customerName\" name=\"customerName\" autocomplete=\"name\" maxlength=\"")
                 .Append(BookingLimits.MaxCustomerNameLength).Append("\" required><label for=\"customerEmail\">Adresse e-mail</label><input id=\"customerEmail\" name=\"customerEmail\" type=\"email\" autocomplete=\"email\" maxlength=\"")
                 .Append(ContactLimits.MaxEmailLength).Append("\" required><label for=\"specialRequests\">Demandes particulières (facultatif)</label><textarea id=\"specialRequests\" name=\"specialRequests\" rows=\"3\" maxlength=\"")
-                .Append(BookingLimits.MaxSpecialRequestsLength).Append("\"></textarea><p class=\"small\">Votre nom et votre e-mail servent à gérer cette réservation. Évitez les informations sensibles dans les demandes particulières. <a href=\"/legal/privacy\">Confidentialité</a>.</p><div class=\"actions\"><button type=\"submit\">Confirmer la réservation</button></div></form><noscript><p class=\"notice\">Activez JavaScript pour confirmer votre réservation en ligne, ou contactez directement le restaurant.</p></noscript></section>");
+                .Append(BookingLimits.MaxSpecialRequestsLength).Append("\"></textarea><p class=\"small\">Votre nom et votre e-mail servent à gérer cette réservation. Évitez les informations sensibles dans les demandes particulières. <a href=\"/legal/privacy\">Confidentialité</a>.</p><div class=\"actions\"><button type=\"submit\" disabled>Confirmer la réservation</button></div></form><noscript><p class=\"notice\">Activez JavaScript pour confirmer votre réservation en ligne, ou contactez directement le restaurant.</p></noscript></section>");
         }
         body.Append(Result()).Append("</div>");
         return Page($"Réserver chez {restaurant.Name} | OpenResto", $"Consultez les disponibilités de {restaurant.Name} et réservez votre table en ligne.", baseUrl, $"/locations/{restaurant.Id}", body.ToString(), "/", script: GuestInteraction.Script);
@@ -63,7 +63,7 @@ public static class GuestPageRenderer
     public static LaunchPage Lookup(string baseUrl, string? reference = null)
     {
         string body = $$"""
-            <div class="form-card"><h1>Retrouver ma réservation</h1><p>Utilisez la référence de votre confirmation et l’adresse e-mail utilisée pour réserver.</p><form id="guest-lookup"><label for="reference">Référence de réservation</label><input id="reference" name="reference" value="{{E(reference ?? "")}}" required maxlength="100" autocomplete="off"><label for="email">Adresse e-mail</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="{{ContactLimits.MaxEmailLength}}"><div class="actions"><button type="submit">Rechercher ma réservation</button></div></form><noscript><p class="notice">Activez JavaScript pour retrouver votre réservation en ligne, ou contactez le restaurant.</p></noscript>{{Result()}}</div>
+            <div class="form-card"><h1>Retrouver ma réservation</h1><p>Utilisez la référence de votre confirmation et l’adresse e-mail utilisée pour réserver.</p><form id="guest-lookup" method="post"><label for="reference">Référence de réservation</label><input id="reference" name="reference" value="{{E(reference ?? "")}}" required maxlength="100" autocomplete="off"><label for="email">Adresse e-mail</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="{{ContactLimits.MaxEmailLength}}"><div class="actions"><button type="submit" disabled>Rechercher ma réservation</button></div></form><noscript><p class="notice">Activez JavaScript pour retrouver votre réservation en ligne, ou contactez le restaurant.</p></noscript>{{Result()}}</div>
             """;
         return Page("Retrouver ma réservation | OpenResto", "Retrouvez votre réservation avec sa référence et votre adresse e-mail.", baseUrl, "/lookup", body, "/", noIndex: true, script: GuestInteraction.Script);
     }

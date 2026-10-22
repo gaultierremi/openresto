@@ -26,6 +26,8 @@ Un brouillon n’est jamais visible aux clients. Le compte créé reste un compt
 
 Les pages d’inscription et les liens personnels ont des en-têtes interdisant leur mise en cache et leur indexation. Le service worker ne conserve ni les formulaires ni les pages d’administration ou d’inscription. Les documents juridiques restent en `noindex` pendant leur statut de modèle.
 
+Les journaux d’accès nginx omettent les paramètres de requête, les référents et les agents utilisateurs ; les liens personnels et les références sont masqués dans le chemin. Les erreurs détaillées du proxy sont limitées au niveau critique pour éviter d’y recopier ces liens lors d’une panne. Les codes HTTP restent visibles dans le journal d’accès. Sans JavaScript, les confirmations et recherches restent désactivées et leurs formulaires n’envoient jamais de données personnelles en GET.
+
 ## Textes à compléter avant une ouverture réelle
 
 Les quatre documents proviennent du même `LegalCatalog` pour l’API, les pages publiques et les consentements. Ils portent la version `2026-10-22` et affichent leur statut de modèle. L’exploitant doit compléter ses coordonnées, son identité légale, l’hébergeur, la messagerie, les pays de traitement, les durées des journaux et les informations entre crochets, puis faire valider les textes et les pratiques par un juriste. Une modification des textes impose une nouvelle version du catalogue.
