@@ -19,10 +19,15 @@ instance, many restaurants »).
    acceptation est journalisée avec la version du document et l'empreinte du texte montré.
 4. **L'assistant en 5 étapes** : informations et identité légale (raison sociale, numéro
    d'entreprise vérifié, TVA facultative, durée de conservation des réservations) · horaires · salles
-   et tables · première carte (import photo/PDF : l'emplacement est réservé, désactivé) · logo et
-   couleurs. Il peut être quitté et repris à tout moment ; la carte et le logo peuvent être passés.
+   et tables · première carte (plats, prix, **allergènes et régimes de chaque plat** ; import
+   photo/PDF : l'emplacement est réservé, désactivé) · logo et couleurs. Il peut être quitté et
+   repris à tout moment ; la carte et le logo peuvent être passés.
 5. **Aperçu** du site, de la carte QR et de la page de réservation, puis **Publier** : le site, la
-   carte et la réservation en ligne s'ouvrent ensemble. « Dépublier » remet en brouillon.
+   carte et la réservation en ligne s'ouvrent ensemble. « Dépublier » remet en brouillon. Le code
+   QR de la carte se télécharge depuis l'aperçu (image à imprimer et fichier pour l'imprimeur) ;
+   le client qui le scanne arrive sur la carte, et son bouton « Réserver » ouvre la page de
+   réservation **de ce restaurant**. Une carte où aucun plat ne déclare d'allergène n'affiche pas
+   de filtre : elle dit au client que l'information manque.
 
 ## L'espace Plateforme (Owners seulement)
 
@@ -59,7 +64,9 @@ instance, many restaurants »).
 - **Le restaurateur ne gère pas encore ses réservations lui-même.** Après publication, il n'a que
   l'assistant (modifiable à tout moment). Voir ses réservations, les annuler, tenir la salle exige
   de cloisonner l'espace d'administration par restaurant : c'est le prochain chantier. D'ici là,
-  c'est vous (Owner/Manager) qui avez accès aux réservations de tous.
+  c'est vous (Owner/Manager) qui avez accès aux réservations de tous. Même limite pour les codes
+  QR **par table** et les planches à imprimer (A4 et A6) : le restaurateur n'a que le code de sa
+  carte, téléchargeable depuis l'aperçu ; le reste est dans l'administration.
 - **Les écrans d'administration montrent encore les clients à tout Owner/Manager**, sans motif
   demandé et sans limite à un établissement. Seul l'espace Plateforme exige un motif. Ce que les
   autres écrans (Réservations, Tableau de bord, Liste d'attente, Notifications, conflits d'horaires,
