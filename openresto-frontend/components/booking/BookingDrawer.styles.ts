@@ -1,5 +1,6 @@
 import { Platform, StyleSheet } from "react-native";
 import { theme } from "@/theme/theme";
+import { CONFIRM_BAR_CLEARANCE } from "./BookingForm.styles";
 
 /**
  * Claims a touch outright instead of letting the browser read it as a scroll first. The
@@ -94,7 +95,14 @@ export const styles = StyleSheet.create({
     flexShrink: 1,
     // Scrolling the form to its top and carrying on downwards must stop there rather than
     // chaining out to the page and pulling it into a reload.
-    ...(Platform.OS === "web" ? ({ overscrollBehavior: "contain" } as object) : null),
+    // And the confirm bar rides over the foot of this scroller on the web: without the padding the
+    // browser takes a field focused behind it for visible and does not scroll to it.
+    ...(Platform.OS === "web"
+      ? ({
+          overscrollBehavior: "contain",
+          scrollPaddingBottom: CONFIRM_BAR_CLEARANCE,
+        } as object)
+      : null),
   },
   scrollContent: {
     padding: theme.spacing.xl,

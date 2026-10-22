@@ -83,7 +83,7 @@ export default function Button({
   accessibilityState,
   ...props
 }: ButtonProps) {
-  const { colors, isDark, primaryColor } = useAppTheme();
+  const { colors, isDark, primaryColor, onPrimary } = useAppTheme();
   const sizeStyles = theme.buttonSizes[size];
   const isInert = Boolean(disabled) || loading;
 
@@ -103,7 +103,8 @@ export default function Button({
   const toneColor = toneColors[resolvedTone];
   const accent = isInert ? null : accentColor;
 
-  const contentColor = isInert ? colors.muted : filled ? theme.colors.white : toneColor;
+  const onFill = resolvedTone === "brand" ? onPrimary : theme.colors.white;
+  const contentColor = isInert ? colors.muted : filled ? onFill : toneColor;
   const glyphColor = accent ?? contentColor;
   const labelColor = accent ? colors.text : contentColor;
 

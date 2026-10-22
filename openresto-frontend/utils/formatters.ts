@@ -1,8 +1,23 @@
 import { getActiveLocale } from "@/utils/locale";
 
-/** Formats a Date as a short label, e.g. "Sat, Apr 18". */
-export function fmtDate(d: Date): string {
+/**
+ * The zone to format in: the one given, or `undefined` to follow the device. A name the platform
+ * does not know is dropped, because `Intl` throws on one and a render must not.
+ */
+function zoneOf(timeZone?: string): string | undefined {
+  if (!timeZone) return undefined;
+  try {
+    new Intl.DateTimeFormat(undefined, { timeZone });
+    return timeZone;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Formats a Date as a short label, e.g. "Sat, Apr 18", on the device's clock unless `timeZone` is given. */
+export function fmtDate(d: Date, timeZone?: string): string {
   return d.toLocaleDateString(getActiveLocale(), {
+    timeZone: zoneOf(timeZone),
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -23,14 +38,19 @@ export function isoDate(d: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-/** Formats a Date as a time, e.g. "19:30" or "7:30 PM" depending on locale. */
-export function fmtTime(d: Date): string {
-  return d.toLocaleTimeString(getActiveLocale(), { hour: "2-digit", minute: "2-digit" });
+/** Formats a Date as a time, e.g. "19:30" or "7:30 PM" depending on locale, on the device's clock unless `timeZone` is given. */
+export function fmtTime(d: Date, timeZone?: string): string {
+  return d.toLocaleTimeString(getActiveLocale(), {
+    timeZone: zoneOf(timeZone),
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-/** Compact date + time, e.g. "Sat, Apr 18, 7:30 PM". */
-export function fmtDateTime(d: Date): string {
+/** Compact date + time, e.g. "Sat, Apr 18, 7:30 PM", on the device's clock unless `timeZone` is given. */
+export function fmtDateTime(d: Date, timeZone?: string): string {
   return d.toLocaleString(getActiveLocale(), {
+    timeZone: zoneOf(timeZone),
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -72,9 +92,9 @@ export function fmtLongDate(d: Date): string {
   });
 }
 
-/** Formats a Date as a bare year, e.g. "2025". */
-export function fmtYear(d: Date): string {
-  return d.toLocaleDateString(getActiveLocale(), { year: "numeric" });
+/** Formats a Date as a bare year, e.g. "2025", on the device's clock unless `timeZone` is given. */
+export function fmtYear(d: Date, timeZone?: string): string {
+  return d.toLocaleDateString(getActiveLocale(), { timeZone: zoneOf(timeZone), year: "numeric" });
 }
 
 /** Full local timestamp for an ISO instant, e.g. "Apr 18, 2025, 7:30:00 PM". */

@@ -14,7 +14,7 @@ import { fetchAvailability } from "@/api/availability";
 import { renderWithProviders } from "@/tests/helpers/renderWithProviders";
 import { getRestaurantNow } from "@/utils/restaurantTime";
 import * as useAppThemeModule from "@/hooks/use-app-theme";
-import { getThemeColors } from "@/theme/theme";
+import { getThemeColors, theme } from "@/theme/theme";
 
 // WalkInNotice links to the waitlist; the real router can't load under Jest.
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
@@ -236,6 +236,26 @@ describe("LocationListItem", () => {
 
       fireEvent.press(screen.getByTestId("location-book-now-1"));
       expect(onBook).toHaveBeenCalledWith(utcRestaurant, "09:00");
+    });
+
+    it("draws Book now at the 44px touch target, the row's one filled call to action", async () => {
+      renderWithProviders(<LocationListItem {...baseProps} restaurant={utcRestaurant as any} />);
+      await waitFor(() => expect(screen.getByTestId("location-book-now-1")).toBeTruthy());
+
+      const style = StyleSheet.flatten(screen.getByTestId("location-book-now-1").props.style);
+      expect(style.minHeight).toBeGreaterThanOrEqual(theme.a11y.minTouchTarget);
+    });
+
+    // A real height: react-native-web does not turn a `hitSlop` into a contact area, so on the web
+    // a toggle drawn at 36px is a 36px target however much slop it asks for.
+    it("draws Details at the 44px touch target itself, not through a hit area", async () => {
+      renderWithProviders(<LocationListItem {...baseProps} restaurant={utcRestaurant as any} />);
+      await waitFor(() => expect(screen.getByTestId("location-details-toggle-1")).toBeTruthy());
+
+      const toggle = screen.getByTestId("location-details-toggle-1");
+      const style = StyleSheet.flatten(toggle.props.style);
+      expect(style.minHeight).toBeGreaterThanOrEqual(theme.a11y.minTouchTarget);
+      expect(toggle.props.hitSlop).toBeUndefined();
     });
 
     it("seeds Book now with the earliest slot on offer", async () => {

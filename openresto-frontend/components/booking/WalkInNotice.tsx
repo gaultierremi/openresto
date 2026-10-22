@@ -24,7 +24,7 @@ export default function WalkInNotice({
   /** Offers the walk-in waitlist for this location. Omit for a day other than today. */
   onJoinWaitlist?: () => void;
 }) {
-  const { colors, primaryColor } = useAppTheme();
+  const { colors, primaryColor, onPrimary } = useAppTheme();
   const { t } = useTranslation();
 
   const { r, g, b } = hexToRgb(primaryColor);
@@ -46,7 +46,7 @@ export default function WalkInNotice({
       style={[styles.card, { backgroundColor: accentSoft, borderColor: accentBorder }]}
     >
       <View style={[styles.iconWrap, { backgroundColor: primaryColor }]}>
-        <Icon name="walk-outline" size="xl" color="#fff" />
+        <Icon name="walk-outline" size="xl" color={onPrimary} />
       </View>
       <View style={styles.textWrap}>
         <ThemedText style={[styles.title, { color: colors.text }]}>{title}</ThemedText>

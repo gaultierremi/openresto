@@ -9,6 +9,7 @@ import {
   useOnboardingSession,
 } from "@/context/OnboardingSessionContext";
 import { useBrand } from "@/context/BrandContext";
+import { BrandPaletteScope } from "@/context/BrandPaletteContext";
 import { useBrowserLocaleOptOut } from "@/context/LocaleContext";
 import { useNoIndex } from "@/hooks/use-noindex";
 import { styles } from "@/styles/onboarding/layout.styles";
@@ -40,10 +41,13 @@ export default function OnboardingLayout() {
 function OnboardingLayoutWeb() {
   useBrowserLocaleOptOut();
   useNoIndex();
+  // Like the admin, the restaurateur's space keeps the colour as chosen (BrandPaletteContext).
   return (
-    <OnboardingSessionProvider>
-      <OnboardingGate />
-    </OnboardingSessionProvider>
+    <BrandPaletteScope mode="chosen">
+      <OnboardingSessionProvider>
+        <OnboardingGate />
+      </OnboardingSessionProvider>
+    </BrandPaletteScope>
   );
 }
 

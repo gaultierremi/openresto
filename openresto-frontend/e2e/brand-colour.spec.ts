@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { gotoAdminDashboard, delay } from "./helpers";
+import { gotoAdminDashboard, delay, expectBrandColourApplied } from "./helpers";
 import { ADMIN_STATE_FILE } from "./global-setup";
 
 const TEST_COLOR = "#dc2626"; // Tailwind red-600 — distinct enough to detect reliably
@@ -84,14 +84,8 @@ test.describe("Brand colour", () => {
     const brandTextEl = page.getByText(appName, { exact: true }).first();
     await expect(brandTextEl).toBeVisible();
 
-    const appliedColor = await brandTextEl.evaluate(
-      (el: Element) => window.getComputedStyle(el).color
-    );
-
-    const [r, g, b] = [TEST_COLOR.slice(1, 3), TEST_COLOR.slice(3, 5), TEST_COLOR.slice(5, 7)].map(
-      (h) => parseInt(h, 16)
-    );
-    expect(appliedColor).toBe(`rgb(${r}, ${g}, ${b})`);
+    // The guest sees the picked colour made readable, not the raw hex (see the helper).
+    await expectBrandColourApplied(brandTextEl, TEST_COLOR, originalBrand.primaryColor);
   });
 
   test("admin settings page has a working Brand Identity section", async ({ page }) => {

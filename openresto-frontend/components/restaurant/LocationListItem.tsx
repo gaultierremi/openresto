@@ -177,7 +177,7 @@ export default function LocationListItem({
   const bookNowButton = takesOnlineBookings ? (
     <Button
       testID={`location-book-now-${restaurant.id}`}
-      size="sm"
+      size="md"
       accessibilityLabel={t("restaurant.locationListItem.bookTableAt", { name: restaurant.name })}
       onPress={(event) => {
         // Button fires its own haptic; this only has to keep the press off the card body.
@@ -196,7 +196,7 @@ export default function LocationListItem({
     takesWaitlist && !bookNowButton ? (
       <Button
         testID={`location-join-waitlist-${restaurant.id}`}
-        size="sm"
+        size="md"
         accessibilityLabel={t("restaurant.locationListItem.joinWaitlistAt", {
           name: restaurant.name,
         })}

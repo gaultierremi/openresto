@@ -117,9 +117,12 @@ export const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
+  // A real height, not a `hitSlop`: react-native-web does not make that a contact area, so on the
+  // web the toggle would stay as short as it is drawn.
   detailsBtn: {
     flexShrink: 0,
-    minHeight: 36,
+    minHeight: theme.a11y.minTouchTarget,
+    justifyContent: "center",
   },
   /** Details beside Book now: source order is reading order, so the filled CTA lands last. */
   headerActions: {

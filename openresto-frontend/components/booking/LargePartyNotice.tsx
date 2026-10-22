@@ -18,7 +18,7 @@ export default function LargePartyNotice({
   onContact: () => void;
 }) {
   const { t } = useTranslation();
-  const { colors, primaryColor } = useAppTheme();
+  const { colors, primaryColor, onPrimary } = useAppTheme();
 
   const { r, g, b } = hexToRgb(primaryColor);
   const accentSoft = `rgba(${r},${g},${b},0.10)`;
@@ -36,7 +36,7 @@ export default function LargePartyNotice({
       accessibilityLabel={t("booking.largeParty.contactAccessibilityLabel")}
     >
       <View style={[styles.iconWrap, { backgroundColor: primaryColor }]}>
-        <Icon name="people-outline" size="xl" color="#fff" />
+        <Icon name="people-outline" size="xl" color={onPrimary} />
       </View>
       <View style={styles.textWrap}>
         <ThemedText style={[styles.title, { color: colors.text }]}>

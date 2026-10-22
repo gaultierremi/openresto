@@ -57,6 +57,11 @@ export default function BookingResultPanel({
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
+  // The map is two third-party services (a geocoder, then OpenStreetMap's embed) that would learn
+  // the guest's address and the restaurant's the moment the page opened, and weigh on a weak
+  // connection. It is fetched only when the guest asks for it; the directions links below it are
+  // the way on without it.
+  const [mapRequested, setMapRequested] = useState(false);
 
   const ref = booking.bookingRef ?? "";
   const bookingIsPast = isPast(booking.date);
@@ -91,7 +96,7 @@ export default function BookingResultPanel({
       : null;
 
   useEffect(() => {
-    if (!restaurant?.address) {
+    if (!mapRequested || !restaurant?.address) {
       setMapCoords(null);
       return;
     }
@@ -110,7 +115,7 @@ export default function BookingResultPanel({
     return () => {
       cancelled = true;
     };
-  }, [restaurant?.address]);
+  }, [mapRequested, restaurant?.address]);
 
   /**
    * The share sheet is where a phone puts "send this to someone", and it covers the clipboard
@@ -132,7 +137,7 @@ export default function BookingResultPanel({
     const message = t("booking.result.shareMessage", {
       ref,
       name: restaurant?.name ?? t("booking.result.unnamedRestaurant"),
-      when: fmtDateTime(new Date(booking.date)),
+      when: fmtDateTime(new Date(booking.date), restaurant?.timezone),
       count: booking.seats,
     });
     const url = bookingConfirmationLink(ref, booking.customerEmail, brand.websiteUrl);
@@ -183,6 +188,7 @@ export default function BookingResultPanel({
         mutedColor={colors.muted}
         borderColor={colors.border}
         negated={booking.isCancelled}
+        timezone={restaurant?.timezone}
       />
 
       {/* Stated once. The reference used to appear as a badge in the header and again as a
@@ -270,6 +276,21 @@ export default function BookingResultPanel({
           {divider}
           {/* The address is already the header's subline, so the map carries only the
               marker — no caption repeating what's at the top of the card. */}
+          {Platform.OS === "web" && !mapRequested && (
+            <View style={styles.mapSection}>
+              <Button
+                testID="show-map-btn"
+                variant="secondary"
+                tone="neutral"
+                size="md"
+                icon="map-outline"
+                fullWidth
+                onPress={() => setMapRequested(true)}
+              >
+                {t("booking.result.showMapButton")}
+              </Button>
+            </View>
+          )}
           {Platform.OS === "web" && mapCoords && (
             <View style={styles.mapSection}>
               {React.createElement("iframe", {

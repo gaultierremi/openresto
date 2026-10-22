@@ -8,6 +8,7 @@ import BookingResultPanel from "@/components/booking/BookingResultPanel";
 import { renderWithProviders } from "@/tests/helpers/renderWithProviders";
 import { BookingDto } from "@/api/bookings";
 import { RestaurantDto } from "@/api/restaurants";
+import { setActiveLocale } from "@/utils/locale";
 
 jest.mock("@expo/vector-icons", () => ({ Ionicons: () => null }));
 
@@ -46,6 +47,46 @@ describe("BookingResultPanel", () => {
     expect(screen.getByText("Booking Found")).toBeTruthy();
     expect(screen.getByText("REF123")).toBeTruthy();
     expect(screen.getByText("Cancel This Booking")).toBeTruthy();
+  });
+
+  describe("the hour it shows", () => {
+    // 19:00 UTC: 15:00 in New York, 21:00 in Brussels. Pinned far ahead so the booking is
+    // upcoming for as long as the suite is run.
+    const sitting = "2099-10-10T19:00:00Z";
+    const render = (restaurant: RestaurantDto | null) =>
+      renderWithProviders(
+        <BookingResultPanel
+          booking={{ ...mockBooking, date: sitting, endTime: "2099-10-10T21:00:00Z" }}
+          restaurant={restaurant}
+          compact={false}
+          cancelling={false}
+          onCancelPress={jest.fn()}
+        />
+      );
+
+    afterEach(() => setActiveLocale(undefined));
+
+    it("is the hour on the restaurant's clock, whatever zone the guest's phone is set to", () => {
+      setActiveLocale("en-GB");
+      render({ ...mockRestaurant, timezone: "America/New_York" });
+      expect(screen.getByText("15:00")).toBeTruthy();
+    });
+
+    it("is the hour on the clock of whichever zone the restaurant keeps", () => {
+      setActiveLocale("en-GB");
+      render({ ...mockRestaurant, timezone: "Europe/Brussels" });
+      expect(screen.getByText("21:00")).toBeTruthy();
+    });
+
+    it("is the device's hour while the restaurant has not loaded", () => {
+      setActiveLocale("en-GB");
+      render(null);
+      const deviceClock = new Date(sitting).toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      expect(screen.getByText(deviceClock)).toBeTruthy();
+    });
   });
 
   it("shows 'Booking Confirmed' instead when justBooked", () => {
@@ -397,22 +438,81 @@ describe("BookingResultPanel", () => {
     });
   });
 
-  it("geocodes the restaurant address and embeds a map when nominatim returns coordinates", async () => {
-    (global.fetch as jest.Mock) = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => [{ lat: "43.6532", lon: "-79.3832" }],
+  /**
+   * The map is two third-party services, a geocoder and OpenStreetMap's embed. Neither is
+   * contacted until the guest asks for the map, so opening the page tells them nothing and
+   * costs a weak connection nothing; the directions links are there either way.
+   */
+  describe("the map", () => {
+    const geocoderCalls = () =>
+      (global.fetch as jest.Mock).mock.calls.filter(([url]) => String(url).includes("nominatim"));
+    const iframes = () => screen.UNSAFE_root.findAll((node) => node.type === "iframe");
+    const renderPanel = (restaurant: RestaurantDto | null = mockRestaurant) =>
+      renderWithProviders(
+        <BookingResultPanel
+          booking={mockBooking}
+          restaurant={restaurant}
+          compact={false}
+          cancelling={false}
+          onCancelPress={jest.fn()}
+        />
+      );
+
+    beforeEach(() => {
+      (global.fetch as jest.Mock) = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [{ lat: "43.6532", lon: "-79.3832" }],
+      });
     });
-    renderWithProviders(
-      <BookingResultPanel
-        booking={mockBooking}
-        restaurant={mockRestaurant}
-        compact={false}
-        cancelling={false}
-        onCancelPress={jest.fn()}
-      />
-    );
-    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
-    await waitFor(() => expect(screen.getByText("GET DIRECTIONS")).toBeTruthy());
+
+    it("contacts no third-party service until the guest asks for it", async () => {
+      renderPanel();
+      await act(() => new Promise<void>((r) => setTimeout(r, 0)));
+
+      expect(geocoderCalls()).toHaveLength(0);
+      expect(iframes()).toHaveLength(0);
+      expect(screen.getByTestId("show-map-btn")).toBeTruthy();
+      expect(screen.getByText("GET DIRECTIONS")).toBeTruthy();
+    });
+
+    it("geocodes the address and embeds the map once asked, then offers the button no more", async () => {
+      renderPanel();
+      fireEvent.press(screen.getByTestId("show-map-btn"));
+
+      await waitFor(() => expect(geocoderCalls()).toHaveLength(1));
+      expect(String(geocoderCalls()[0][0])).toContain(encodeURIComponent("123 Main St"));
+      await waitFor(() => expect(iframes()).toHaveLength(1));
+      expect(iframes()[0].props.src).toContain("marker=43.6532,-79.3832");
+      expect(iframes()[0].props.title).toBe("Map of Test Resto");
+      expect(screen.queryByTestId("show-map-btn")).toBeNull();
+    });
+
+    it("shows no map when the geocoder knows no such address", async () => {
+      (global.fetch as jest.Mock) = jest.fn().mockResolvedValue({ ok: true, json: async () => [] });
+      renderPanel();
+      fireEvent.press(screen.getByTestId("show-map-btn"));
+
+      await waitFor(() => expect(geocoderCalls()).toHaveLength(1));
+      expect(iframes()).toHaveLength(0);
+      expect(screen.getByText("GET DIRECTIONS")).toBeTruthy();
+    });
+
+    it("offers no map for a restaurant without an address", () => {
+      renderPanel({ ...mockRestaurant, address: "" });
+      expect(screen.queryByTestId("show-map-btn")).toBeNull();
+    });
+
+    it("offers none off the web, where the guest app has the platform's maps through Directions", async () => {
+      Object.defineProperty(Platform, "OS", { get: () => "ios", configurable: true });
+      try {
+        renderPanel();
+        await act(() => new Promise<void>((r) => setTimeout(r, 0)));
+        expect(screen.queryByTestId("show-map-btn")).toBeNull();
+        expect(geocoderCalls()).toHaveLength(0);
+      } finally {
+        Object.defineProperty(Platform, "OS", { get: () => "web", configurable: true });
+      }
+    });
   });
 
   it("omits the directions/map card when the restaurant has no address", () => {
