@@ -103,6 +103,17 @@ jobs:
             -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
             caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile
 
+      - name: Shared-server entry Caddyfile is valid, protected and open
+        run: |
+          for mode in "1 127.0.0.1/32" "0 private_ranges"; do
+            set -- $mode
+            docker run --rm \
+              -e OPENRESTO_ACCES_PROTEGE="$1" -e OPENRESTO_RELAIS_CONFIANCE="$2" \
+              -e OPENRESTO_UTILISATEUR=essai -e OPENRESTO_MOT_DE_PASSE_HASH='$2a$14$abcdefghijklmnopqrstuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu' \
+              -v "$PWD/deploy/serveur-partage:/etc/caddy:ro" \
+              caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+          done
+
   stack:
     name: Stack boots, backup restores
     runs-on: ubuntu-latest

@@ -165,18 +165,17 @@ expect "la connexion a bien eu lieu avant ce contrôle" 1 "$(grep -c . <<<"$cont
 expect "l'e-mail de l'administrateur n'est pas dans le journal du backend" 0 "$(docker logs "$conteneur_backend" 2>&1 | grep -cF -- "$admin_email" || true)"
 expect "aucune commande SQL avec ses paramètres dans le journal du backend" 0 "$(docker logs "$conteneur_backend" 2>&1 | grep -c "Executed DbCommand" || true)"
 
-echo "== l'adresse du visiteur traverse les relais jusqu'à nginx"
-# Avec un domaine, le Caddy du serveur annonce le visiteur puis notre Caddy ajoute l'adresse du
-# précédent relais : sans « trusted_proxies » puis « real_ip_recursive on », tous les visiteurs
-# deviendraient la même adresse, donc le même quota de requêtes.
+echo "== sans domaine, un visiteur ne peut pas choisir son adresse"
+# Le port est publié à tous et personne ne se place devant : un X-Forwarded-For fourni par le client
+# n'est cru de personne (le Caddy d'entrée le remplace par l'adresse qu'il voit réellement).
 conteneur_nginx="$(docker ps --filter label=com.docker.compose.project=openresto-serveur --filter label=com.docker.compose.service=reverse-proxy --format '{{.Names}}')"
 adresse_vue() { docker logs "$conteneur_nginx" 2>&1 | grep -F -- "$1" | tail -n 1 | awk '{print $1}'; }
-curl -s -o /dev/null -u "essai:$mdp_site" -H 'X-Forwarded-For: 203.0.113.11' "$base/api/brand?v=un-relais"
-curl -s -o /dev/null -u "essai:$mdp_site" -H 'X-Forwarded-For: 203.0.113.12, 10.9.8.7' "$base/api/brand?v=deux-relais"
+est_privee() { grep -Ecx '(127\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.).*' <<<"$1" || true; }
+curl -s -o /dev/null -u "essai:$mdp_site" -H 'X-Forwarded-For: 203.0.113.66' "$base/api/brand?v=usurpation"
 curl -s -o /dev/null -u "essai:$mdp_site" "$base/api/brand?v=sans-relais"
-expect "un visiteur annoncé par un relais garde son adresse" 203.0.113.11 "$(adresse_vue 'v=un-relais')"
-expect "un visiteur annoncé derrière deux relais garde son adresse" 203.0.113.12 "$(adresse_vue 'v=deux-relais')"
-expect "sans relais, l'adresse vue est celle de la connexion (privée ici)" 1 "$(adresse_vue 'v=sans-relais' | grep -Ecx '(127\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.).*')"
+vue_usurpation="$(adresse_vue 'v=usurpation')"
+expect "une adresse imposée par le visiteur est ignorée" 1 "$(est_privee "$vue_usurpation")"
+expect "sans relais, l'adresse vue est celle de la connexion (privée ici)" 1 "$(est_privee "$(adresse_vue 'v=sans-relais')")"
 
 echo "== le contrôle de santé"
 set +e; sortie="$("$depot/deploy/verifier.sh" 2>&1)"; code=$?; set -e
@@ -209,6 +208,22 @@ contient "construction cassée : dit que rien n'a changé" "RIEN N'A CHANGÉ" "$
 expect "construction cassée : OpenResto répond toujours" 200 "$(curl -s -o /dev/null -w '%{http_code}' -u "essai:$mdp_site" "$base/api/health")"
 expect "construction cassée : Apprenti répond toujours" 200 "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$port_apprenti/")"
 expect "construction cassée : une sauvegarde a été faite avant" 2 "$(find "$depot/deploy/sauvegardes/daily" -name 'openresto-*.tar.gz' | grep -c .)"
+
+echo "== avec un domaine, l'adresse du visiteur traverse les relais jusqu'à nginx"
+# Le Caddy du serveur annonce le visiteur, puis notre Caddy ajoute l'adresse du relais précédent :
+# sans « trusted_proxies » ni « real_ip_recursive on », tous les visiteurs deviendraient la même adresse
+# (même quota de requêtes, même adresse d'audit).
+set +e; sortie="$("$depot/deploy/installer.sh" --passer-au-domaine essai.exemple.test --oui 2>&1 </dev/null)"; code=$?; set -e
+expect "passage au domaine : code 0" 0 "$code"
+base_domaine="http://127.0.0.1:$port_openresto"
+expect "domaine : plus de mot de passe d'entrée" 200 "$(curl -s -o /dev/null -w '%{http_code}' "$base_domaine/api/health")"
+expect "domaine : le port n'écoute plus que sur la machine" 1 "$(docker ps --filter label=com.docker.compose.project=openresto-serveur --format '{{.Ports}}' | grep -c "127.0.0.1:$port_openresto->")"
+conteneur_nginx="$(docker ps --filter label=com.docker.compose.project=openresto-serveur --filter label=com.docker.compose.service=reverse-proxy --format '{{.Names}}')"
+curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.11' "$base_domaine/api/brand?v=un-relais"
+curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.12, 10.9.8.7' "$base_domaine/api/brand?v=deux-relais"
+expect "un visiteur annoncé par un relais garde son adresse" 203.0.113.11 "$(adresse_vue 'v=un-relais')"
+expect "un visiteur annoncé derrière deux relais garde son adresse" 203.0.113.12 "$(adresse_vue 'v=deux-relais')"
+expect "domaine : Apprenti répond toujours" 200 "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$port_apprenti/")"
 
 echo "== tout supprimer chez nous ne touche pas Apprenti"
 docker compose -p openresto-serveur -f "$depot/deploy/docker-compose.serveur-partage.yml" --env-file "$fichier_env" \

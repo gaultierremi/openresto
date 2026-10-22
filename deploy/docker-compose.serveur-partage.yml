@@ -48,7 +48,7 @@ services:
     command:
       - sh
       - -c
-      - 'if [ "$$OPENRESTO_ACCES_PROTEGE" = 1 ] && [ -z "$$OPENRESTO_MOT_DE_PASSE" ]; then echo "OPENRESTO_MOT_DE_PASSE est vide alors que l acces est protege" >&2; exit 1; fi; export OPENRESTO_MOT_DE_PASSE_HASH="$$(caddy hash-password --plaintext "$${OPENRESTO_MOT_DE_PASSE:-inutilise}")" && exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile'
+      - 'if [ "$$OPENRESTO_ACCES_PROTEGE" = 1 ]; then export OPENRESTO_RELAIS_CONFIANCE=127.0.0.1/32; else export OPENRESTO_RELAIS_CONFIANCE=private_ranges; fi; if [ "$$OPENRESTO_ACCES_PROTEGE" = 1 ] && [ -z "$$OPENRESTO_MOT_DE_PASSE" ]; then echo "OPENRESTO_MOT_DE_PASSE est vide alors que l acces est protege" >&2; exit 1; fi; export OPENRESTO_MOT_DE_PASSE_HASH="$$(caddy hash-password --plaintext "$${OPENRESTO_MOT_DE_PASSE:-inutilise}")" && exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile'
     volumes:
       - ./serveur-partage/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./serveur-partage/acces-1.caddy:/etc/caddy/acces-1.caddy:ro

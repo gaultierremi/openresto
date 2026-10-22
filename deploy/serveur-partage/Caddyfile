@@ -4,11 +4,12 @@
 	# Pas de HTTPS ici : le serveur a déjà son propre Caddy pour cela.
 	auto_https off
 
-	# Le Caddy du serveur (domaine) arrive par une adresse privée : on croit alors son
-	# X-Forwarded-For. Un visiteur qui se présente directement (adresse publique) ne peut pas
-	# imposer le sien : Caddy le remplace par l'adresse réellement vue.
+	# Avec un domaine, le Caddy du serveur arrive par une adresse privée (le port n'écoute alors que
+	# sur la machine) : on croit son X-Forwarded-For (« private_ranges »). Sans domaine, personne
+	# ne se place devant le port, publié à tous : on ne croit personne (le compose pose une plage
+	# que nul ne peut avoir, 127.0.0.1/32), et le visiteur ne peut pas imposer son adresse.
 	servers {
-		trusted_proxies static private_ranges
+		trusted_proxies static {$OPENRESTO_RELAIS_CONFIANCE}
 	}
 }
 
