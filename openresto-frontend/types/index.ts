@@ -64,4 +64,5 @@ export interface Brand {
    * `Brand` fixture that predates this field) still needs to type-check without it.
    */
   defaultLocale?: string;
+  publicLaunchEnabled?: boolean;
 }

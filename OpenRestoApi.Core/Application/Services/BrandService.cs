@@ -16,6 +16,8 @@ public class BrandService(
     private readonly IConfiguration _configuration = configuration;
     private readonly IAuditScope _audit = audit ?? NullAuditScope.Instance;
 
+    public bool PublicLaunchEnabled => string.Equals(_configuration["PublicLaunch:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
+
     private const string DefaultCliPackageUrl = "https://www.npmjs.com/package/openresto-cli";
     private const string DefaultApiDocsUrl =
         "https://docs.openres.to/api/authentication/";

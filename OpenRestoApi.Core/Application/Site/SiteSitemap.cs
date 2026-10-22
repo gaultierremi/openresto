@@ -9,10 +9,14 @@ public static class SiteSitemap
 {
     /// <summary>One <c>url</c> per published site, with the date its content last changed.</summary>
     /// <seealso>SiteSitemapTests.Build_ListsEachPublishedSiteWithItsLastChange</seealso>
-    public static string Build(string baseUrl, IEnumerable<(string Slug, DateTime UpdatedAtUtc)> sites)
+    public static string Build(string baseUrl, IEnumerable<(string Slug, DateTime UpdatedAtUtc)> sites, string? homePath = null)
     {
         var sb = new StringBuilder();
         sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
+        if (homePath is not null)
+            sb.Append("<url><loc>").Append(SecurityElement.Escape(SiteFormat.AbsoluteUrl(baseUrl, homePath))).Append("</loc></url>\n");
+        if (homePath == "/")
+            sb.Append("<url><loc>").Append(SecurityElement.Escape(SiteFormat.AbsoluteUrl(baseUrl, "/locations"))).Append("</loc></url>\n");
         foreach ((string slug, DateTime updated) in sites.OrderBy(s => s.Slug, StringComparer.Ordinal))
         {
             sb.Append("<url><loc>").Append(SecurityElement.Escape(SiteFormat.AbsoluteUrl(baseUrl, $"/r/{slug}")))

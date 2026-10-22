@@ -34,7 +34,7 @@ server {
     gzip_proxied any;
     gzip_types text/plain text/css application/json application/javascript text/xml
                application/xml image/svg+xml font/woff font/woff2
-               application/font-woff application/font-woff2;
+               application/font-woff application/font-woff2 font/ttf application/x-font-ttf;
 
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
@@ -81,10 +81,50 @@ server {
     }
 
     # Restaurant websites — server-rendered HTML from the backend; its own one-minute Cache-Control is kept.
-    location ~ ^/(?:r/[a-z0-9-]+(?:/reserver)?|sitemap\.xml|robots\.txt)$ {
+    location ~ ^/(?:r/[a-z0-9-]+(?:/reserver)?|sitemap\.xml|robots\.txt|decouvrir|inscription(?:/envoyee)?|legal(?:/[a-z-]+)?)$ {
         limit_req zone=general burst=50 nodelay;
         include /etc/nginx/conf.d/security-headers.conf;
         proxy_pass http://backend:8080;
+    }
+
+    location = / {
+        include /etc/nginx/conf.d/security-headers.conf;
+        proxy_pass http://backend:8080;
+        proxy_intercept_errors on;
+        error_page 404 = @legacy_home;
+    }
+
+    location ~ ^/(?:locations(?:/[0-9]+)?|lookup|booking-confirmation/[^/]+|menu/[rt]/[^/]+)$ {
+        include /etc/nginx/conf.d/security-headers.conf;
+        proxy_pass http://backend:8080;
+        proxy_intercept_errors on;
+        error_page 404 = @public_guest_fallback;
+    }
+
+    location @public_guest_fallback {
+        include /etc/nginx/conf.d/security-headers.conf;
+        resolver 127.0.0.11 valid=10s ipv6=off;
+        set $guest_host backend;
+        set $guest_port 8080;
+        if ($upstream_http_x_openresto_legacy = "true") {
+            set $guest_host frontend;
+            set $guest_port 8081;
+        }
+        proxy_pass http://$guest_host:$guest_port;
+    }
+
+    location @legacy_home {
+        include /etc/nginx/conf.d/security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+        proxy_pass http://frontend:8081;
+    }
+
+    location /onboarding {
+        include /etc/nginx/conf.d/security-headers.conf;
+        add_header Cache-Control "no-store" always;
+        add_header X-Robots-Tag "noindex, nofollow" always;
+        add_header Referrer-Policy "no-referrer" always;
+        proxy_pass http://frontend:8081;
     }
 
     location / {

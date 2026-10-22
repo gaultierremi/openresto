@@ -44,6 +44,7 @@ public class BookingRetentionService(IPlatformRepository repository, ISystemCloc
             notifications += outcome.Notifications;
         }
 
+        await _repo.DeleteExpiredRegistrationsAsync(now.AddDays(-30));
         return new RetentionOutcome(bookings, tickets, devices, failures, notifications);
     }
 }

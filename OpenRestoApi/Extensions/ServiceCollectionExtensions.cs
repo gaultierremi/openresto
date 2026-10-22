@@ -416,6 +416,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<MenuService>();
         services.AddScoped<SiteService>();
         services.AddScoped<PlatformService>();
+        services.AddScoped<OpenRestoApi.Core.Application.Launch.PublicRegistrationService>();
+        services.AddAntiforgery(options =>
+        {
+            options.Cookie.Name = "openresto_registration";
+            options.Cookie.SameSite = SameSiteMode.Strict;
+            options.Cookie.HttpOnly = true;
+        });
         services.AddScoped<OnboardingService>();
         services.AddScoped<BookingRetentionService>();
         services.AddHostedService<OpenRestoApi.Infrastructure.Retention.BookingRetentionWorker>();

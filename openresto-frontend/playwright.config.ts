@@ -43,6 +43,7 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
       testIgnore: [
+        "**/launch-public.spec.ts",
         "**/admin-activity.spec.ts",
         "**/admin-pause.spec.ts",
         "**/admin-extend.spec.ts",
