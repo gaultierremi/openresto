@@ -7304,6 +7304,10 @@ export interface components {
              * @description Cents. Null means "price on request".
              */
             priceMinor?: null | number | string;
+            /** @description EU allergen names, e.g. `["Gluten","Milk"]`. On a save, null leaves a stored dish as it is and an empty list clears it. */
+            allergens?: null | string[];
+            /** @description `Vegetarian`, `Vegan`, `GlutenFree`. Null on a save leaves a stored dish as it is. */
+            dietaryTags?: null | string[];
         };
         /** @description What step 5 shows: the menu page and the booking page as a guest will meet them. */
         OnboardingPreviewDto: {
@@ -7517,6 +7521,8 @@ export interface components {
             menus?: components["schemas"]["PublicMenuDto"][];
         };
         PublicMenuRestaurantDto: {
+            /** Format: int32 */
+            id?: number | string;
             name?: string;
             timezone?: string;
         };

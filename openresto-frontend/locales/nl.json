@@ -789,6 +789,7 @@
         "disclaimer": "De filters steunen op de informatie van het restaurant zelf. Hebt u een allergie, zeg het dan aan het personeel voordat u bestelt."
       },
       "loading": "Menukaart laden…",
+      "noDeclarations": "Dit restaurant heeft de allergenen of diëten van zijn gerechten niet vermeld. Heeft u een allergie, vraag het dan aan het personeel voordat u bestelt.",
       "noMatch": "Geen enkel gerecht komt overeen met uw filters.",
       "notFound": {
         "body": "Deze menukaart is momenteel niet beschikbaar. Vraag het aan een medewerker.",

@@ -58,7 +58,7 @@ export function UsersCard({
   cardBg: string;
 }) {
   const { t } = useTranslation();
-  const { isDark, primaryColor } = useAppTheme();
+  const { isDark, primaryColor, colors } = useAppTheme();
   const { user: currentUser } = useAuth();
   const surface2 = isDark ? "#252729" : "#f9fafb";
 
@@ -244,7 +244,7 @@ export function UsersCard({
                             <View
                               style={[styles.badge, { backgroundColor: `${theme.colors.error}22` }]}
                             >
-                              <ThemedText style={[styles.badgeText, { color: theme.colors.error }]}>
+                              <ThemedText style={[styles.badgeText, { color: colors.error }]}>
                                 {t("admin.settings.users.deactivatedBadge")}
                               </ThemedText>
                             </View>
@@ -320,7 +320,7 @@ export function UsersCard({
                               : t("admin.settings.users.reactivate")
                           }
                           icon={u.isActive ? "ban-outline" : "checkmark-circle-outline"}
-                          color={u.isActive ? theme.colors.error : primaryColor}
+                          color={u.isActive ? colors.error : primaryColor}
                           disabled={busy}
                           accessibilityLabel={
                             u.isActive

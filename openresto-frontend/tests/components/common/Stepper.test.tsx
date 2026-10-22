@@ -3,6 +3,7 @@
  */
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react-native";
+import { Platform } from "react-native";
 import { haptics } from "@/utils/haptics";
 import Stepper from "@/components/common/Stepper";
 
@@ -104,6 +105,33 @@ describe("Stepper", () => {
       { name: "increment" },
       { name: "decrement" },
     ]);
+  });
+
+  describe("on the web", () => {
+    const original = Platform.OS;
+    beforeEach(() => {
+      Platform.OS = "web";
+    });
+    afterEach(() => {
+      Platform.OS = original;
+    });
+
+    // An ARIA slider must carry aria-valuenow and cannot hold buttons; this holds two.
+    it("is a labelled group around its two buttons, not a slider", () => {
+      renderStepper(2);
+      const control = screen.getByLabelText("Number of guests");
+
+      expect(control.props.role).toBe("group");
+      expect(control.props.accessibilityRole).toBeUndefined();
+      expect(control.props.accessibilityActions).toBeUndefined();
+    });
+
+    it("still steps with its two buttons", () => {
+      const onChange = renderStepper(2);
+      fireEvent.press(screen.getByLabelText("One more guest"));
+      fireEvent.press(screen.getByLabelText("One fewer guest"));
+      expect(onChange.mock.calls).toEqual([[3], [1]]);
+    });
   });
 
   it("responds to the increment and decrement accessibility actions", () => {

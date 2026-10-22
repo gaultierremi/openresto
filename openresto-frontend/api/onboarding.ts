@@ -3,6 +3,7 @@ import { apiErrorMessage } from "@/api/errors";
 import { buildUrl, del, get, post, put } from "./client";
 import type { RestaurantStatus, StepKey, StepState } from "@/constants/onboarding";
 import type { SiteTheme } from "@/constants/site";
+import type { Allergen, DietaryTag } from "@/constants/menu";
 
 // ── Shapes (mirror OnboardingDto.cs) ─────────────────────────────────────────
 
@@ -105,6 +106,9 @@ export interface OnboardingMenuItem {
   description: string | null;
   /** Cents; null means "price on request". */
   priceMinor: number | null;
+  /** What the dish declares. The server always sends both; a save that omits one leaves it as stored. */
+  allergens?: Allergen[];
+  dietaryTags?: DietaryTag[];
 }
 
 export interface OnboardingMenuCategory {

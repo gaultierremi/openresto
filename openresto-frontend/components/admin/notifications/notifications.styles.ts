@@ -38,7 +38,6 @@ export const styles = StyleSheet.create({
   unreadBadgeText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#fff",
     lineHeight: 14,
   },
   headerActions: { gap: theme.spacing.md },

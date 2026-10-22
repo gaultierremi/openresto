@@ -5,6 +5,7 @@ import { ThemedText } from "@/components/themed-text";
 import { styles } from "@/components/admin/bookings/bookings.styles";
 import type { SortKey, SortState } from "@/components/admin/bookings/sorting";
 import { Icon } from "@/components/common/Icon";
+import { useAppTheme } from "@/hooks/use-app-theme";
 
 export interface BookingsSortControlProps {
   sort: SortState;
@@ -41,6 +42,7 @@ export function BookingsSortControl({
   primaryColor,
 }: BookingsSortControlProps) {
   const { t } = useTranslation();
+  const { onPrimary } = useAppTheme();
   const columns = columnsFor(t);
   return (
     <View style={[styles.sortControl, { borderColor, backgroundColor: cardBg }]}>
@@ -72,11 +74,7 @@ export function BookingsSortControl({
               onPress={() => onSortChange(key)}
             >
               <ThemedText
-                style={[
-                  styles.sortChipText,
-                  { color: isActive ? "#fff" : mutedColor },
-                  isActive && styles.sortChipTextActive,
-                ]}
+                style={[styles.sortChipText, { color: isActive ? onPrimary : mutedColor }]}
               >
                 {label}
               </ThemedText>
@@ -89,7 +87,7 @@ export function BookingsSortControl({
                       : "chevron-down-outline"
                 }
                 size={11}
-                color={isActive ? "#fff" : mutedColor}
+                color={isActive ? onPrimary : mutedColor}
               />
             </Pressable>
           );

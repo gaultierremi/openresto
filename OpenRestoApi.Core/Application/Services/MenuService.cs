@@ -399,7 +399,7 @@ public class MenuService(
 
         return new PublicMenuResponse
         {
-            Restaurant = new PublicMenuRestaurantDto { Name = restaurant.Name, Timezone = restaurant.Timezone },
+            Restaurant = new PublicMenuRestaurantDto { Id = restaurant.Id, Name = restaurant.Name, Timezone = restaurant.Timezone },
             Table = table == null ? null : new PublicMenuTableDto { Name = table.Name },
             Menus = published.Select(m => new PublicMenuDto
             {

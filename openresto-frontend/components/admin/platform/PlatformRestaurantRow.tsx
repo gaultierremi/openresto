@@ -148,7 +148,7 @@ export function PlatformRestaurantRow({
         ) : (
           <RowTextButton
             label={t("admin.platform.actions.suspend")}
-            color={theme.colors.error}
+            color={colors.error}
             onPress={() => onAction("suspend", restaurant)}
           />
         )}

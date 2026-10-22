@@ -8,7 +8,6 @@ import AdminSidebar from "@/components/layout/AdminSidebar";
 import { theme } from "@/theme/theme";
 import { useBrand } from "@/context/BrandContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
-import { BrandPaletteScope } from "@/context/BrandPaletteContext";
 import { useBrowserLocaleOptOut } from "@/context/LocaleContext";
 import PageLoader from "@/components/common/PageLoader";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -54,19 +53,15 @@ function AdminLayoutWeb() {
   // AdminLayoutInner stays mounted even when the wall is shown so that auth
   // state is preserved — unmounting it would reset the status to "loading" and
   // trigger an unnecessary session re-check (which can bounce the user to login).
-  // The back office keeps the colour as the restaurateur chose it: its white labels on a brand
-  // fill are not yet moved to `onPrimary`, which the readable palette needs (BrandPaletteContext).
   return (
-    <BrandPaletteScope mode="chosen">
-      <AuthProvider>
-        <View style={{ flex: 1 }}>
-          {showWall && <DesktopOnlyWall />}
-          <View style={[{ flex: 1 }, showWall && { display: "none" as const }]}>
-            <AdminLayoutInner />
-          </View>
+    <AuthProvider>
+      <View style={{ flex: 1 }}>
+        {showWall && <DesktopOnlyWall />}
+        <View style={[{ flex: 1 }, showWall && { display: "none" as const }]}>
+          <AdminLayoutInner />
         </View>
-      </AuthProvider>
-    </BrandPaletteScope>
+      </View>
+    </AuthProvider>
   );
 }
 

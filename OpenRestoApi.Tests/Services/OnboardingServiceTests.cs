@@ -771,6 +771,87 @@ public sealed class OnboardingServiceTests(TestWebAppFactory factory) : IClassFi
         Assert.Equal(MenuItemAvailability.SoldOut, stored.Availability);
     }
 
+    [Fact]
+    public async Task SaveMenu_StoresADishsAllergensAndDiets_AndReadsThemBack()
+    {
+        Caller c = await RunningAsync();
+
+        OnboardingStateDto state = await AsAsync(c.User, s => s.SaveMenuAsync(c.RestaurantId, new SaveOnboardingMenuRequest
+        {
+            Categories = [new OnboardingMenuCategoryDto
+            {
+                Name = "Plats",
+                Items = [new OnboardingMenuItemDto { Name = "Croquettes", PriceMinor = 1450, Allergens = ["Crustaceans", "Gluten"], DietaryTags = [] }],
+            }],
+        }));
+
+        OnboardingMenuItemDto read = state.Menu.Categories[0].Items[0];
+        Assert.Equal(["Gluten", "Crustaceans"], read.Allergens);
+        Assert.Empty(read.DietaryTags!);
+        MenuItem stored = await _h.InDbAsync(db => db.MenuItems.AsNoTracking().FirstAsync(i => i.Id == read.Id));
+        Assert.Equal(Allergens.Gluten | Allergens.Crustaceans, stored.Allergens);
+    }
+
+    [Fact]
+    public async Task SaveMenu_ADishSavedWithAnEmptyListLosesItsAllergens_AndOneSavedWithNullKeepsThem()
+    {
+        Caller c = await RunningAsync();
+        OnboardingStateDto state = await AsAsync(c.User, s => s.SaveMenuAsync(c.RestaurantId, new SaveOnboardingMenuRequest
+        {
+            Categories = [new OnboardingMenuCategoryDto
+            {
+                Name = "Plats",
+                Items =
+                [
+                    new OnboardingMenuItemDto { Name = "Carbonade", Allergens = ["Celery"], DietaryTags = ["GlutenFree"] },
+                    new OnboardingMenuItemDto { Name = "Waterzooi", Allergens = ["Fish"] },
+                ],
+            }],
+        }));
+        OnboardingMenuCategoryDto category = state.Menu.Categories[0];
+
+        await AsAsync(c.User, s => s.SaveMenuAsync(c.RestaurantId, new SaveOnboardingMenuRequest
+        {
+            Categories = [new OnboardingMenuCategoryDto
+            {
+                Id = category.Id,
+                Name = "Plats",
+                Items =
+                [
+                    new OnboardingMenuItemDto { Id = category.Items[0].Id, Name = "Carbonade", Allergens = [], DietaryTags = null },
+                    new OnboardingMenuItemDto { Id = category.Items[1].Id, Name = "Waterzooi" },
+                ],
+            }],
+        }));
+
+        MenuItem cleared = await _h.InDbAsync(db => db.MenuItems.AsNoTracking().FirstAsync(i => i.Id == category.Items[0].Id));
+        MenuItem kept = await _h.InDbAsync(db => db.MenuItems.AsNoTracking().FirstAsync(i => i.Id == category.Items[1].Id));
+        Assert.Equal(Allergens.None, cleared.Allergens);
+        Assert.Equal(DietaryTags.GlutenFree, cleared.DietaryTags);
+        Assert.Equal(Allergens.Fish, kept.Allergens);
+    }
+
+    [Theory]
+    [InlineData("Peanut", null)]
+    [InlineData("1", null)]
+    [InlineData(null, "Pescatarian")]
+    public async Task SaveMenu_RefusesAnUnknownAllergenOrDiet_AndStoresNothing(string? allergen, string? diet)
+    {
+        Caller c = await RunningAsync();
+
+        OpenRestoException refused = await Refused<ValidationException>(AsAsync(c.User, s => s.SaveMenuAsync(c.RestaurantId, new SaveOnboardingMenuRequest
+        {
+            Categories = [new OnboardingMenuCategoryDto
+            {
+                Name = "Plats",
+                Items = [new OnboardingMenuItemDto { Name = "Croquettes", Allergens = allergen is null ? null : [allergen], DietaryTags = diet is null ? null : [diet] }],
+            }],
+        })));
+
+        Assert.Equal(ErrorCodes.OnboardingMenuInvalid, refused.Code);
+        Assert.Equal(0, await _h.InDbAsync(db => db.Menus.CountAsync(m => m.RestaurantId == c.RestaurantId)));
+    }
+
     [Theory]
     [InlineData("", "Croquettes", 100L)]
     [InlineData("Entrées", "  ", 100L)]

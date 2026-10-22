@@ -21,7 +21,7 @@ export interface LocationPillsProps {
  */
 export function LocationPills({ restaurants, selectedId, onSelect }: LocationPillsProps) {
   const { t } = useTranslation();
-  const { colors, primaryColor } = useAppTheme();
+  const { colors, primaryColor, onPrimary } = useAppTheme();
 
   return (
     <HorizontalScroller
@@ -50,13 +50,13 @@ export function LocationPills({ restaurants, selectedId, onSelect }: LocationPil
             ]}
           >
             {archived && (
-              <Icon name="archive-outline" size="xs" color={selected ? "#fff" : colors.muted} />
+              <Icon name="archive-outline" size="xs" color={selected ? onPrimary : colors.muted} />
             )}
             <ThemedText
               style={[
                 styles.label,
                 archived && styles.archivedLabel,
-                { color: selected ? "#fff" : colors.muted },
+                { color: selected ? onPrimary : colors.muted },
               ]}
             >
               {r.name}

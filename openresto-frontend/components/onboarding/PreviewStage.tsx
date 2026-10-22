@@ -115,6 +115,7 @@ export function PreviewStage({
             testID="preview-panel-qr"
           >
             <QrMenuPanel
+              name={state.name}
               menu={load.preview.menu}
               menuToken={state.links.menuToken}
               published={state.status === "Published"}

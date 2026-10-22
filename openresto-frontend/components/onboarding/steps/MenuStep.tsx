@@ -30,12 +30,22 @@ import {
   removeCategory,
   removeDish,
   renameCategory,
+  toggleDishAllergen,
+  toggleDishDiet,
   type DraftMenu,
   type MenuProblem,
 } from "@/utils/onboardingMenu";
 import { stepOf } from "@/utils/onboardingStages";
+import { ALLERGENS, DIETARY_TAGS } from "@/constants/menu";
+import { FilterChip } from "@/components/menu/MenuFilters";
 import type { StepProps } from "@/types/onboarding";
 import { styles } from "./MenuStep.styles";
+
+const toggled = (keys: ReadonlySet<string>, key: string): ReadonlySet<string> => {
+  const next = new Set(keys);
+  if (!next.delete(key)) next.add(key);
+  return next;
+};
 
 /**
  * Step 4: the first menu, as categories of dishes in the order they are entered. A price is
@@ -61,6 +71,7 @@ export function MenuStep({
   const { colors, primaryColor } = useAppTheme();
   const [draft, setDraft] = useState<DraftMenu>(() => draftFromMenu(state.menu));
   const [problem, setProblem] = useState<MenuProblem | null>(null);
+  const [openDeclarations, setOpenDeclarations] = useState<ReadonlySet<string>>(new Set());
   const { busy, error, run, clear } = useOnboardingCall(onExpired);
 
   const importAvailable = state.capabilities.menuImport;
@@ -210,6 +221,8 @@ export function MenuStep({
               {category.dishes.map((dish, dishIndex) => {
                 const at = `category-${categoryIndex}-dish-${dishIndex}`;
                 const dishProblem = problem?.key === dish.key ? problem.kind : null;
+                const declared = dish.allergens.length + dish.dietaryTags.length;
+                const declarationsOpen = openDeclarations.has(dish.key);
                 return (
                   <View
                     key={dish.key}
@@ -270,6 +283,61 @@ export function MenuStep({
                       accessibilityLabel={t("admin.onboarding.menu.descriptionLabel")}
                       testID={`${at}-description`}
                     />
+                    <View style={styles.declarations}>
+                      <RowTextButton
+                        label={
+                          declared > 0
+                            ? t("admin.onboarding.menu.declarationsCount", { count: declared })
+                            : t("admin.onboarding.menu.declarations")
+                        }
+                        color={primaryColor}
+                        icon={declarationsOpen ? "chevron-up" : "chevron-down"}
+                        selected={declarationsOpen}
+                        onPress={() => setOpenDeclarations((open) => toggled(open, dish.key))}
+                        testID={`${at}-declarations`}
+                      />
+                      {declarationsOpen ? (
+                        <View style={styles.declarationsBody}>
+                          <ThemedText style={[styles.hint, { color: colors.muted }]}>
+                            {t("admin.menus.item.allergensHint")}
+                          </ThemedText>
+                          <ThemedText style={styles.label}>
+                            {t("admin.menus.item.allergensLabel")}
+                          </ThemedText>
+                          <View style={styles.chips}>
+                            {ALLERGENS.map((allergen) => (
+                              <FilterChip
+                                key={allergen}
+                                testID={`${at}-allergen-${allergen}`}
+                                label={t(`common.menu.allergens.${allergen}`)}
+                                selected={dish.allergens.includes(allergen)}
+                                onPress={() =>
+                                  change(
+                                    toggleDishAllergen(draft, category.key, dish.key, allergen)
+                                  )
+                                }
+                              />
+                            ))}
+                          </View>
+                          <ThemedText style={styles.label}>
+                            {t("admin.menus.item.dietaryLabel")}
+                          </ThemedText>
+                          <View style={styles.chips}>
+                            {DIETARY_TAGS.map((tag) => (
+                              <FilterChip
+                                key={tag}
+                                testID={`${at}-diet-${tag}`}
+                                label={t(`common.menu.dietary.${tag}`)}
+                                selected={dish.dietaryTags.includes(tag)}
+                                onPress={() =>
+                                  change(toggleDishDiet(draft, category.key, dish.key, tag))
+                                }
+                              />
+                            ))}
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
                     <View style={styles.controls}>
                       <IconButton
                         name="arrow-up"

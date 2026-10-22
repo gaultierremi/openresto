@@ -2,6 +2,7 @@ import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/themed-text";
 import { theme } from "@/theme/theme";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import type { BookingStatusFilter } from "@/api/admin";
 import { styles } from "./bookings.styles";
 
@@ -27,6 +28,7 @@ export function BookingStatusTabs({
   primaryColor: string;
 }) {
   const { t } = useTranslation();
+  const { onPrimary } = useAppTheme();
 
   return (
     <View style={[styles.modeToggle, styles.statusTabs, { borderColor, backgroundColor: cardBg }]}>
@@ -55,7 +57,12 @@ export function BookingStatusTabs({
           accessibilityLabel={t("admin.bookings.tabs.showLabel", { tab: label.toLowerCase() })}
           accessibilityState={{ checked: value === key }}
         >
-          <ThemedText style={[styles.modeBtnText, { color: value === key ? "#fff" : mutedColor }]}>
+          <ThemedText
+            style={[
+              styles.modeBtnText,
+              { color: value === key ? (key === "active" ? onPrimary : "#fff") : mutedColor },
+            ]}
+          >
             {label}
           </ThemedText>
         </Pressable>

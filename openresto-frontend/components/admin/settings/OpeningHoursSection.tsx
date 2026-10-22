@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/themed-text";
 import TimePicker from "@/components/common/TimePicker";
 import { usePersistedState } from "@/hooks/use-persisted-state";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { AnimatedAccordion } from "@/components/common/AnimatedAccordion";
 import { getDayLabels, getDayShort, modeButton } from "./sectionHelpers";
 import { styles as settingsStyles } from "./settings.styles";
@@ -62,6 +63,7 @@ export function OpeningHoursSection({
   isDark,
 }: OpeningHoursSectionProps) {
   const { t } = useTranslation();
+  const { onPrimary } = useAppTheme();
   const modeTheme = { borderColor, mutedColor, textColor, isDark };
   const [expanded, setExpanded] = usePersistedState("locations:hours:expanded", true);
   const dayLabels = getDayLabels(t);
@@ -161,7 +163,7 @@ export function OpeningHoursSection({
                         <ThemedText
                           style={[
                             settingsStyles.dayBtnLabel,
-                            { color: active ? "#fff" : textColor },
+                            { color: active ? onPrimary : textColor },
                           ]}
                         >
                           {label}
@@ -204,7 +206,7 @@ export function OpeningHoursSection({
                       ]}
                     >
                       <ThemedText
-                        style={[styles.dayChipLabel, { color: active ? "#fff" : mutedColor }]}
+                        style={[styles.dayChipLabel, { color: active ? onPrimary : mutedColor }]}
                       >
                         {label}
                       </ThemedText>

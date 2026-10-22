@@ -2,7 +2,10 @@
  * @jest-environment jsdom
  */
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, StyleSheet } from "react-native";
+import { blend, contrastRatio } from "@/utils/contrast";
+import { getThemeColors } from "@/theme/theme";
+import { brandPalette } from "@/theme/brandColors";
 import { render, screen, fireEvent, act } from "@testing-library/react-native";
 import { BrandPreview } from "@/components/admin/settings/BrandPreview";
 import {
@@ -89,6 +92,35 @@ describe("BrandPreview", () => {
   it("shows an unsaved app name in both the tab and the hero", () => {
     renderWithDraft({ appName: "Trattoria" });
     expect(screen.getAllByText("Trattoria").length).toBe(2);
+  });
+
+  describe("the colour it paints, as a guest's page paints it", () => {
+    const flat = (element: ReturnType<typeof screen.getByText>) =>
+      StyleSheet.flatten(element.props.style) as { color?: string };
+
+    it("writes the book button's label as the palette says it reads on a pale brand colour", () => {
+      renderWithDraft({ primaryColor: "#facc15" });
+      const labels = screen.getAllByText("Book").map((label) => flat(label).color);
+      expect(labels.length).toBeGreaterThan(0);
+      expect(new Set(labels)).toEqual(new Set([brandPalette("#facc15", false).onPrimary]));
+    });
+
+    it("turns that label dark when the preview is switched to the dark page, where the fill lifts", () => {
+      renderWithDraft({ primaryColor: "#facc15" });
+      fireEvent.press(screen.getByLabelText("Preview in dark mode"));
+
+      const labels = new Set(screen.getAllByText("Book").map((label) => flat(label).color));
+      expect(labels).toEqual(new Set([brandPalette("#facc15", true).onPrimary]));
+      expect(labels).not.toContain(brandPalette("#facc15", false).onPrimary);
+    });
+
+    it("reads the pressed scheme button in the text colour, which holds on its tint of any brand colour", () => {
+      renderWithDraft({ primaryColor: "#facc15" });
+      const label = flat(screen.getByText("Light")).color!;
+      expect(label).toBe(getThemeColors(false).text);
+      // The tint is 15% of the colour over the page: a worst case for text in the colour itself.
+      expect(contrastRatio(label, blend("#facc15", "#f2f3f5", 0.15))).toBeGreaterThanOrEqual(4.5);
+    });
   });
 
   it("shows the website URL in the address bar without its scheme", () => {

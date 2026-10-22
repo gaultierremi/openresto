@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/themed-text";
 import { MenuPhoto } from "@/components/menu/MenuPhoto";
 import { useAppTheme } from "@/hooks/use-app-theme";
+import { labelOn } from "@/utils/contrast";
 import type { OnboardingPreview } from "@/api/onboarding";
 import { styles } from "./BookingPageMock.styles";
 
@@ -97,7 +98,7 @@ export function BookingPageMock({ preview }: { preview: OnboardingPreview }) {
                 },
               ]}
             >
-              <ThemedText style={[styles.chipText, size === 2 && { color: "#fff" }]}>
+              <ThemedText style={[styles.chipText, size === 2 && { color: labelOn(accent) }]}>
                 {size}
               </ThemedText>
             </View>

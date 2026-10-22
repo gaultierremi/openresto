@@ -789,6 +789,7 @@
         "disclaimer": "Les filtres s'appuient sur les informations du restaurant. En cas d'allergie, signalez-la au personnel avant de commander."
       },
       "loading": "Chargement de la carte…",
+      "noDeclarations": "Ce restaurant n'a pas indiqué les allergènes ni les régimes de ses plats. Si vous avez une allergie, demandez au personnel avant de commander.",
       "noMatch": "Aucun plat ne correspond à vos filtres.",
       "notFound": {
         "body": "Cette carte n'est pas disponible pour le moment. Demandez-la au personnel.",
@@ -976,6 +977,12 @@
         "unassignedUnit": "Sans table",
         "guestFallback": "Client",
         "peopleAbbrev": "{{count}}p",
+        "remaining": {
+          "ending": "bientôt terminé",
+          "hours": "encore {{hours}} h",
+          "hoursMinutes": "encore {{hours}} h {{minutes}} min",
+          "minutes": "encore {{minutes}} min"
+        },
         "sittingLabel": "{{guest}}, {{seats}} couverts à {{unit}}, de {{start}} à {{end}}",
         "sittingLabelWithRemaining": "{{guest}}, {{seats}} couverts à {{unit}}, de {{start}} à {{end}}, {{remaining}}"
       },
@@ -1049,7 +1056,7 @@
       "restoreBooking": "Restaurer la réservation",
       "restoreBookingLabel": "Restaurer la réservation",
       "cancelling": "Annulation…",
-      "permanentlyDeleteGdpr": "Supprimer définitivement (RGPD)",
+      "permanentlyDeleteGdpr": "Supprimer définitivement (efface les données du client)",
       "permanentlyDeleteLabel": "Supprimer définitivement la réservation pour le RGPD",
       "permanentlyDeleteHint": "Cette action est irréversible",
       "form": {
@@ -1097,7 +1104,7 @@
         "emailTo": "À : {{email}}",
         "moveNotice": "Le créneau a changé. Un message a été préparé ci-dessous et n'a pas été envoyé : modifiez-le ou envoyez-le tel quel.",
         "subjectPlaceholder": "Objet",
-        "bodyPlaceholder": "Corps du message (HTML pris en charge)",
+        "bodyPlaceholder": "Écrivez votre message au client",
         "sendEmail": "Envoyer l'e-mail",
         "sending": "Envoi…",
         "sendEmailLabel": "Envoyer un e-mail au client",
@@ -1431,7 +1438,7 @@
       "empty": "Aucune carte pour l'instant. Ajoutez la première : vos clients la voient dès que vous la publiez.",
       "item": {
         "addPriceInvalid": "Saisissez un prix comme 12,50, ou laissez vide pour « Prix sur demande ».",
-        "allergensHint": "Cochez chaque allergène que contient le plat. Vos clients s'y fient : ne laissez rien de coché que si le plat ne contient aucun des 14 allergènes réglementaires.",
+        "allergensHint": "Cochez chaque allergène que contient le plat. Vos clients s'y fient : si le plat ne contient aucun des 14 allergènes réglementaires, ne cochez rien.",
         "allergensLabel": "Allergènes",
         "availabilityLabel": "Disponibilité",
         "close": "Fermer",
@@ -1572,7 +1579,7 @@
         "displayNamePlaceholder": "Prénom et nom",
         "documents": {
           "dpa": {
-            "name": "l'accord de traitement des données (DPA)"
+            "name": "l'accord de sous-traitance des données"
           },
           "privacy": {
             "name": "la politique de confidentialité"
@@ -1633,11 +1640,13 @@
         "addDish": "Ajouter un plat",
         "categoryNameLabel": "Catégorie",
         "categoryNamePlaceholder": "Entrées, Plats, Desserts…",
+        "declarations": "Allergènes et régimes",
+        "declarationsCount": "Allergènes et régimes ({{count}})",
         "description": "Composez votre première carte : des catégories et leurs plats. Elle s'affiche sur votre site et derrière votre QR code. Cette étape est facultative.",
         "descriptionLabel": "Description du plat",
         "descriptionPlaceholder": "Description (facultatif)",
         "dishNameLabel": "Plat",
-        "importHint": "Envoyez votre carte existante et nous la lisons pour vous.",
+        "importHint": "Pas encore disponible. En attendant, saisissez vos plats ci-dessous.",
         "importSoon": "Bientôt",
         "importTitle": "Importer depuis une photo ou un PDF",
         "moveCategoryDown": "Descendre la catégorie",
@@ -1668,6 +1677,9 @@
         "loading": "Chargement de l'aperçu…",
         "qr": {
           "codeLabel": "QR code de votre carte",
+          "downloadFailed": "Impossible de créer l'image. Essayez plutôt le fichier pour l'imprimeur.",
+          "downloadPng": "Télécharger l'image à imprimer (PNG)",
+          "downloadSvg": "Fichier pour l'imprimeur (SVG)",
           "empty": "Votre carte est vide. Retournez à l'étape « Carte » pour y ajouter des plats.",
           "noteDraft": "Ce code ne fonctionnera qu'une fois votre établissement publié.",
           "noteLive": "Ce code est actif : vos clients peuvent le scanner dès maintenant.",

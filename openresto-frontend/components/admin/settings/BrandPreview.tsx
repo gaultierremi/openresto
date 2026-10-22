@@ -8,6 +8,7 @@ import { getThemeColors, theme } from "@/theme/theme";
 import { buildFaviconDataUri } from "@/constants/faviconIcons";
 import { useTranslation } from "react-i18next";
 import { hexToRgb } from "@/utils/colors";
+import { brandPalette } from "@/theme/brandColors";
 import { useBrandDraft } from "./BrandDraftContext";
 import { styles, domStyles } from "./BrandPreview.styles";
 
@@ -29,7 +30,7 @@ export function BrandPreview({
   cardBg: string;
 }) {
   const draft = useBrandDraft();
-  const { isDark: adminIsDark } = useAppTheme();
+  const { isDark: adminIsDark, colors: adminColors } = useAppTheme();
   const { t } = useTranslation();
   const [expanded, setExpanded] = usePersistedState("settings:brand:preview:expanded", true);
   const [previewDark, setPreviewDark] = usePersistedState(
@@ -38,7 +39,12 @@ export function BrandPreview({
   );
 
   const site = getThemeColors(previewDark);
-  const accent = draft.primaryColor || theme.colors.primary;
+  const chosen = draft.primaryColor || theme.colors.primary;
+  // The page a guest sees draws the colour as `brandPalette` makes it readable on its theme; the
+  // two scheme buttons are the admin's own chrome: a tint of the colour behind plain text, since
+  // text in the colour itself would have to read on its own tint as well as on the page.
+  const { primary: accent, onPrimary } = brandPalette(chosen, previewDark);
+  const { primary: chromeAccent } = brandPalette(chosen, adminIsDark);
   const { r, g, b } = hexToRgb(accent);
   const accentSoft = `rgba(${r},${g},${b},0.18)`;
 
@@ -94,9 +100,11 @@ export function BrandPreview({
                 accessibilityLabel={t("admin.settings.brandPreview.previewInModeLabel", {
                   mode: mode.label.toLowerCase(),
                 })}
-                style={[styles.schemeBtn, active && { backgroundColor: `${accent}26` }]}
+                style={[styles.schemeBtn, active && { backgroundColor: `${chromeAccent}26` }]}
               >
-                <ThemedText style={[styles.schemeLabel, { color: active ? accent : mutedColor }]}>
+                <ThemedText
+                  style={[styles.schemeLabel, { color: active ? adminColors.text : mutedColor }]}
+                >
                   {mode.label}
                 </ThemedText>
               </Pressable>
@@ -137,7 +145,7 @@ export function BrandPreview({
                 {draft.faviconIcon ? (
                   <img
                     data-testid="brand-preview-favicon"
-                    src={buildFaviconDataUri(draft.faviconIcon, accent)}
+                    src={buildFaviconDataUri(draft.faviconIcon, chosen)}
                     alt=""
                     style={domStyles.tabFavicon}
                   />
@@ -292,7 +300,7 @@ export function BrandPreview({
                         style={[styles.skeletonBar, { backgroundColor: site.border, width: "70%" }]}
                       />
                       <View style={[styles.locationCta, { backgroundColor: accent }]}>
-                        <ThemedText style={styles.locationCtaText}>
+                        <ThemedText style={[styles.locationCtaText, { color: onPrimary }]}>
                           {t("admin.settings.brandPreview.bookCta")}
                         </ThemedText>
                       </View>

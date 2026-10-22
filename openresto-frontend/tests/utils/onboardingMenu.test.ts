@@ -9,7 +9,10 @@ import {
   removeCategory,
   removeDish,
   renameCategory,
+  toggleDishAllergen,
+  toggleDishDiet,
 } from "@/utils/onboardingMenu";
+import type { Allergen, DietaryTag } from "@/constants/menu";
 import { setActiveLocale } from "@/utils/locale";
 
 afterEach(() => setActiveLocale(undefined));
@@ -22,8 +25,22 @@ const SAVED = {
       id: 1,
       name: "Entrées",
       items: [
-        { id: 11, name: "Croquettes", description: "aux crevettes", priceMinor: 1450 },
-        { id: 12, name: "Soupe", description: null, priceMinor: null },
+        {
+          id: 11,
+          name: "Croquettes",
+          description: "aux crevettes",
+          priceMinor: 1450,
+          allergens: ["Gluten", "Crustaceans"] as Allergen[],
+          dietaryTags: [] as DietaryTag[],
+        },
+        {
+          id: 12,
+          name: "Soupe",
+          description: null,
+          priceMinor: null,
+          allergens: [] as Allergen[],
+          dietaryTags: ["Vegetarian"] as DietaryTag[],
+        },
       ],
     },
     { id: 2, name: "Desserts", items: [] },
@@ -73,8 +90,22 @@ describe("menuFromDraft", () => {
             id: 1,
             name: "Entrées",
             items: [
-              { id: 11, name: "Croquettes", description: "aux crevettes", priceMinor: 1450 },
-              { id: 12, name: "Soupe", description: null, priceMinor: null },
+              {
+                id: 11,
+                name: "Croquettes",
+                description: "aux crevettes",
+                priceMinor: 1450,
+                allergens: ["Gluten", "Crustaceans"],
+                dietaryTags: [],
+              },
+              {
+                id: 12,
+                name: "Soupe",
+                description: null,
+                priceMinor: null,
+                allergens: [],
+                dietaryTags: ["Vegetarian"],
+              },
             ],
           },
           { id: 2, name: "Desserts", items: [] },
@@ -155,10 +186,90 @@ describe("menuFromDraft", () => {
       menu: {
         name: "Carte",
         categories: [
-          { name: "Plats", items: [{ name: "Stoemp", description: null, priceMinor: 1700 }] },
+          {
+            name: "Plats",
+            items: [
+              {
+                name: "Stoemp",
+                description: null,
+                priceMinor: 1700,
+                allergens: [],
+                dietaryTags: [],
+              },
+            ],
+          },
         ],
       },
     });
+  });
+});
+
+describe("a dish's allergens and diets", () => {
+  const firstDish = (draft: ReturnType<typeof draftFromMenu>) => ({
+    category: draft.categories[0],
+    dish: draft.categories[0].dishes[0],
+  });
+
+  it("ticks an allergen and unticks it again", () => {
+    let draft = draftFromMenu(SAVED);
+    const { category, dish } = firstDish(draft);
+    draft = toggleDishAllergen(draft, category.key, dish.key, "Milk");
+    expect(draft.categories[0].dishes[0].allergens).toEqual(["Gluten", "Crustaceans", "Milk"]);
+
+    draft = toggleDishAllergen(draft, category.key, dish.key, "Milk");
+    expect(draft.categories[0].dishes[0].allergens).toEqual(["Gluten", "Crustaceans"]);
+  });
+
+  it("keeps the allergens in the regulation's order, whatever order they were ticked in", () => {
+    let draft = draftFromMenu({ menuId: null, name: "Carte", categories: [] });
+    draft = addCategory(draft);
+    const category = draft.categories[0];
+    const dish = category.dishes[0];
+    draft = toggleDishAllergen(draft, category.key, dish.key, "Sesame");
+    draft = toggleDishAllergen(draft, category.key, dish.key, "Gluten");
+    expect(draft.categories[0].dishes[0].allergens).toEqual(["Gluten", "Sesame"]);
+  });
+
+  it("ticks and unticks a diet without touching the allergens", () => {
+    let draft = draftFromMenu(SAVED);
+    const { category, dish } = firstDish(draft);
+    draft = toggleDishDiet(draft, category.key, dish.key, "GlutenFree");
+    expect(draft.categories[0].dishes[0].dietaryTags).toEqual(["GlutenFree"]);
+    expect(draft.categories[0].dishes[0].allergens).toEqual(["Gluten", "Crustaceans"]);
+
+    draft = toggleDishDiet(draft, category.key, dish.key, "GlutenFree");
+    expect(draft.categories[0].dishes[0].dietaryTags).toEqual([]);
+  });
+
+  it("changes only the dish it was asked to change", () => {
+    let draft = draftFromMenu(SAVED);
+    const category = draft.categories[0];
+    draft = toggleDishAllergen(draft, category.key, category.dishes[1].key, "Eggs");
+    expect(draft.categories[0].dishes.map((d) => d.allergens)).toEqual([
+      ["Gluten", "Crustaceans"],
+      ["Eggs"],
+    ]);
+  });
+
+  it("sends what is ticked, and an empty list once it is all unticked, so the server clears it", () => {
+    let draft = draftFromMenu(SAVED);
+    const { category, dish } = firstDish(draft);
+    draft = toggleDishAllergen(draft, category.key, dish.key, "Gluten");
+    draft = toggleDishAllergen(draft, category.key, dish.key, "Crustaceans");
+
+    const result = menuFromDraft(draft);
+
+    expect(result.ok && result.menu.categories[0].items[0].allergens).toEqual([]);
+  });
+
+  it("does not leave out a new dish row that has only an allergen ticked", () => {
+    let draft = draftFromMenu(SAVED);
+    draft = addDish(draft, draft.categories[1].key);
+    const desserts = draft.categories[1];
+    draft = toggleDishAllergen(draft, desserts.key, desserts.dishes[0].key, "Eggs");
+
+    // Declaring something on a nameless row is a mistake to point out, not a row to drop silently.
+    expect(menuFromDraft(draft).ok).toBe(false);
   });
 });
 

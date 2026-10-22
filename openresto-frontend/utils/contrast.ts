@@ -22,6 +22,18 @@ export function contrastRatio(a: string, b: string): number {
   return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
+/**
+ * The colour of a label drawn on a fill of `fill`: white while white reaches `min` against it,
+ * otherwise black, which then reads better. A pale fill (a yellow brand) takes black; a mid or
+ * dark one keeps white.
+ *
+ * @see [contrast.test.ts](../tests/utils/contrast.test.ts) — pins white on a dark fill, black on
+ * a pale one, and the boundary at AA.
+ */
+export function labelOn(fill: string, min = 4.5): string {
+  return contrastRatio("#ffffff", fill) >= min ? "#ffffff" : "#000000";
+}
+
 /** `over` blended onto `base` at `alpha` (0 is all `base`), as an opaque hex. */
 export function blend(over: string, base: string, alpha: number): string {
   const [o, b] = [hexToRgb(over), hexToRgb(base)];

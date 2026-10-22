@@ -8,6 +8,7 @@ import {
   parseOpenDays,
   summarizeHours,
 } from "@/utils/openingHours";
+import { setActiveLocale } from "@/utils/locale";
 
 const uniformRestaurant = {
   openTime: "09:00",
@@ -124,14 +125,31 @@ describe("summarizeHours", () => {
 });
 
 describe("isoDayShortName", () => {
-  it("names each ISO day", () => {
-    expect(isoDayShortName(1)).toBe("Mon");
-    expect(isoDayShortName(7)).toBe("Sun");
+  afterEach(() => setActiveLocale(undefined));
+
+  it("names each ISO day, Monday first and Sunday last", () => {
+    setActiveLocale("en");
+    expect([1, 2, 3, 4, 5, 6, 7].map(isoDayShortName)).toEqual([
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun",
+    ]);
   });
 
-  it("returns an empty string for a day outside 1-7", () => {
-    expect(isoDayShortName(0)).toBe("");
-    expect(isoDayShortName(8)).toBe("");
+  it("names them in the language in use, not in English", () => {
+    setActiveLocale("fr");
+    expect([1, 5, 7].map(isoDayShortName)).toEqual(["lun.", "ven.", "dim."]);
+
+    setActiveLocale("nl");
+    expect(isoDayShortName(1)).toBe("ma");
+  });
+
+  it.each([0, 8, -1, 1.5, Number.NaN])("returns an empty string for %p, outside 1-7", (day) => {
+    expect(isoDayShortName(day)).toBe("");
   });
 });
 

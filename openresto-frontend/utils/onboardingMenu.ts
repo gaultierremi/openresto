@@ -2,6 +2,7 @@ import type { OnboardingMenu, SaveMenuInput } from "@/api/onboarding";
 import { moveId } from "@/utils/reorder";
 import { newKey } from "@/utils/onboardingLayout";
 import { dishPriceText, parseDishPrice } from "@/utils/onboardingPrice";
+import { ALLERGENS, DIETARY_TAGS, type Allergen, type DietaryTag } from "@/constants/menu";
 
 export interface DraftDish {
   key: string;
@@ -9,6 +10,8 @@ export interface DraftDish {
   name: string;
   description: string;
   priceText: string;
+  allergens: Allergen[];
+  dietaryTags: DietaryTag[];
 }
 
 export interface DraftCategory {
@@ -36,6 +39,8 @@ export function draftFromMenu(menu: OnboardingMenu): DraftMenu {
         name: item.name,
         description: item.description ?? "",
         priceText: dishPriceText(item.priceMinor),
+        allergens: item.allergens ?? [],
+        dietaryTags: item.dietaryTags ?? [],
       })),
     })),
   };
@@ -54,7 +59,9 @@ const isUntouchedNewDish = (dish: DraftDish): boolean =>
   dish.id === null &&
   dish.name.trim() === "" &&
   dish.description.trim() === "" &&
-  dish.priceText.trim() === "";
+  dish.priceText.trim() === "" &&
+  dish.allergens.length === 0 &&
+  dish.dietaryTags.length === 0;
 
 /**
  * The draft as the request, or what stops it. Order of entry is the order of the menu: the
@@ -79,6 +86,8 @@ export function menuFromDraft(draft: DraftMenu): MenuRequest {
         name: dish.name.trim(),
         description: dish.description.trim() === "" ? null : dish.description.trim(),
         priceMinor: price.priceMinor,
+        allergens: dish.allergens,
+        dietaryTags: dish.dietaryTags,
       });
     }
     categories.push({
@@ -105,6 +114,8 @@ const blankDish = (): DraftDish => ({
   name: "",
   description: "",
   priceText: "",
+  allergens: [],
+  dietaryTags: [],
 });
 
 export const addCategory = (draft: DraftMenu): DraftMenu => ({
@@ -157,6 +168,43 @@ export const moveDish = (
   mapCategory(draft, categoryKey, (category) => ({
     ...category,
     dishes: moved(category.dishes, dishKey, direction),
+  }));
+
+/** The list with `value` flipped, kept in the order of `all` so a dish's declarations never reorder. */
+const flipped = <T extends string>(all: readonly T[], current: T[], value: T): T[] =>
+  all.filter((entry) => (entry === value ? !current.includes(entry) : current.includes(entry)));
+
+const mapDish = (
+  draft: DraftMenu,
+  categoryKey: string,
+  dishKey: string,
+  change: (dish: DraftDish) => DraftDish
+): DraftMenu =>
+  mapCategory(draft, categoryKey, (category) => ({
+    ...category,
+    dishes: category.dishes.map((dish) => (dish.key === dishKey ? change(dish) : dish)),
+  }));
+
+export const toggleDishAllergen = (
+  draft: DraftMenu,
+  categoryKey: string,
+  dishKey: string,
+  allergen: Allergen
+): DraftMenu =>
+  mapDish(draft, categoryKey, dishKey, (dish) => ({
+    ...dish,
+    allergens: flipped(ALLERGENS, dish.allergens, allergen),
+  }));
+
+export const toggleDishDiet = (
+  draft: DraftMenu,
+  categoryKey: string,
+  dishKey: string,
+  tag: DietaryTag
+): DraftMenu =>
+  mapDish(draft, categoryKey, dishKey, (dish) => ({
+    ...dish,
+    dietaryTags: flipped(DIETARY_TAGS, dish.dietaryTags, tag),
   }));
 
 export const patchDish = (

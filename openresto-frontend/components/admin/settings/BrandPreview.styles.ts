@@ -138,7 +138,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 4,
     alignItems: "center",
   },
-  locationCtaText: { fontSize: 8, fontWeight: "700", color: "#fff" },
+  locationCtaText: { fontSize: 8, fontWeight: "700" },
 
   footer: {
     borderTopWidth: 1,

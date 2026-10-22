@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
   },
   chipText: { ...theme.typography.label },
-  chipTextActive: { color: "#fff", fontWeight: "600", fontSize: 13 },
+  chipTextActive: { fontWeight: "600", fontSize: 13 },
   /**
    * The screen's filter chrome, stacked rather than one wrapping row. A single row put the
    * location chips, a flexible spacer and the toggles together, so where the toggles landed
@@ -161,7 +161,6 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
   },
   sortChipText: { ...theme.typography.caption, fontWeight: "600" as const },
-  sortChipTextActive: { color: "#fff" },
   tableRow: {
     flexDirection: "row",
     alignItems: "center",

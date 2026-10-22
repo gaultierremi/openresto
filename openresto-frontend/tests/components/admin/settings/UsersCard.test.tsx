@@ -1,5 +1,7 @@
 import React from "react";
+import { StyleSheet } from "react-native";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react-native";
+import { getThemeColors, theme } from "@/theme/theme";
 import { UsersCard } from "@/components/admin/settings/UsersCard";
 import { AuthProvider } from "@/context/AuthContext";
 import * as usersApi from "@/api/users";
@@ -106,6 +108,16 @@ describe("UsersCard", () => {
     await renderLoaded();
 
     expect(screen.getByText("Deactivated")).toBeTruthy();
+  });
+
+  it("writes a deactivated account's mark and the Deactivate button in the red that reads on the page", async () => {
+    (usersApi.adminListUsers as jest.Mock).mockResolvedValue([OWNER, MANAGER]);
+    await renderLoaded();
+
+    // Plain red is 4.3:1 on the light page; the text shade is darker.
+    const label = StyleSheet.flatten(screen.getAllByText("Deactivate")[0].props.style);
+    expect(label.color).toBe(getThemeColors(false).error);
+    expect(label.color).not.toBe(theme.colors.error);
   });
 
   it("says a refused list failed rather than showing zero accounts", async () => {

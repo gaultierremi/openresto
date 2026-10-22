@@ -28,7 +28,7 @@ import { Icon } from "@/components/common/Icon";
 
 export default function NotificationsScreen() {
   const { t } = useTranslation();
-  const { colors, primaryColor, isDark } = useAppTheme();
+  const { colors, primaryColor, onPrimary, isDark } = useAppTheme();
   const router = useRouter();
   const typeFilters = getTypeFilters(t);
 
@@ -349,7 +349,7 @@ export default function NotificationsScreen() {
               <ThemedText type="h1">{t("admin.notifications.pageTitle")}</ThemedText>
               {unreadCount > 0 && (
                 <View style={[styles.unreadBadge, { backgroundColor: primaryColor }]}>
-                  <ThemedText style={styles.unreadBadgeText}>
+                  <ThemedText style={[styles.unreadBadgeText, { color: onPrimary }]}>
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </ThemedText>
                 </View>
@@ -442,7 +442,9 @@ export default function NotificationsScreen() {
                         : { backgroundColor: "transparent", borderColor },
                     ]}
                   >
-                    <ThemedText style={[styles.pillText, { color: active ? "#fff" : mutedColor }]}>
+                    <ThemedText
+                      style={[styles.pillText, { color: active ? onPrimary : mutedColor }]}
+                    >
                       {r.name}
                     </ThemedText>
                   </Pressable>

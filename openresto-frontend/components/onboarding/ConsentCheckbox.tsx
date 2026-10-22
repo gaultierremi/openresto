@@ -24,7 +24,7 @@ export function ConsentCheckbox({
   onOpen: () => void;
   testID: string;
 }) {
-  const { colors, primaryColor } = useAppTheme();
+  const { colors, primaryColor, onPrimary } = useAppTheme();
   return (
     <View style={styles.row}>
       <Pressable
@@ -42,7 +42,7 @@ export function ConsentCheckbox({
         ]}
         testID={testID}
       >
-        {checked ? <Icon name="checkmark" size={BOX_SIZE - 8} color="#fff" /> : null}
+        {checked ? <Icon name="checkmark" size={BOX_SIZE - 8} color={onPrimary} /> : null}
       </Pressable>
       <View style={styles.text}>
         <Pressable onPress={() => onChange(!checked)} accessible={false}>

@@ -222,6 +222,12 @@ public class OnboardingMenuItemDto
 
     /// <summary>Cents. Null means "price on request".</summary>
     public long? PriceMinor { get; set; }
+
+    /// <summary>EU allergen names, e.g. <c>["Gluten","Milk"]</c>. On a save, null leaves a stored dish as it is and an empty list clears it.</summary>
+    public List<string>? Allergens { get; set; }
+
+    /// <summary><c>Vegetarian</c>, <c>Vegan</c>, <c>GlutenFree</c>. Null on a save leaves a stored dish as it is.</summary>
+    public List<string>? DietaryTags { get; set; }
 }
 
 public class SaveOnboardingMenuRequest

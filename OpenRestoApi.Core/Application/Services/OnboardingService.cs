@@ -588,6 +588,8 @@ public class OnboardingService(
                 Name = i.Name,
                 Description = i.Description,
                 PriceMinor = i.PriceMinor,
+                Allergens = i.Allergens,
+                DietaryTags = i.DietaryTags,
             })],
         })],
     };
@@ -705,6 +707,11 @@ public class OnboardingService(
         {
             throw new ValidationException("Every category and dish needs a name, and a price cannot be negative.") { Code = ErrorCodes.OnboardingMenuInvalid };
         }
+
+        if (categories.SelectMany(c => c.Items).Any(i => !MenuFields.TryParseFlags(i.Allergens, out Allergens _) || !MenuFields.TryParseFlags(i.DietaryTags, out DietaryTags _)))
+        {
+            throw new ValidationException("A dish's allergens must be names from the 14 EU allergens and its diets Vegetarian, Vegan or GlutenFree.") { Code = ErrorCodes.OnboardingMenuInvalid };
+        }
     }
 
     private async Task<MenuCategoryDto> UpsertCategoryAsync(int restaurantId, int menuId, List<MenuCategoryDto> existing, OnboardingMenuCategoryDto wanted)
@@ -740,14 +747,16 @@ public class OnboardingService(
                 Name = item.Name.Trim(),
                 Description = string.IsNullOrWhiteSpace(item.Description) ? null : item.Description.Trim(),
                 PriceMinor = item.PriceMinor,
+                Allergens = item.Allergens,
+                DietaryTags = item.DietaryTags,
             };
             if (item.Id is { } id)
             {
                 MenuItemDto known = existing.FirstOrDefault(i => i.Id == id)
                     ?? throw new ValidationException("The menu refers to a dish that does not exist.") { Code = ErrorCodes.OnboardingMenuInvalid };
                 request.Availability = known.Availability;
-                request.Allergens = known.Allergens;
-                request.DietaryTags = known.DietaryTags;
+                request.Allergens ??= known.Allergens;
+                request.DietaryTags ??= known.DietaryTags;
                 order.Add((await _menus.UpdateItemAsync(restaurantId, id, request)).Id);
             }
             else

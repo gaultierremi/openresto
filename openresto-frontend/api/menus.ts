@@ -71,7 +71,7 @@ export interface PublicTokens {
   tables: TablePublicToken[];
 }
 
-// ── Public shapes (PublicMenuResponse): no internal id anywhere ──────────────
+// ── Public shapes (PublicMenuResponse): the restaurant's id is the only id ───
 
 export interface PublicMenuItem {
   name: string;
@@ -98,7 +98,8 @@ export interface PublicMenu {
 }
 
 export interface PublicMenuResponse {
-  restaurant: { name: string; timezone: string };
+  /** The id is already public on the listing; it names the booking page the menu's button opens. */
+  restaurant: { id: number; name: string; timezone: string };
   /** Set only when the menu was reached through a table's QR code. */
   table: { name: string | null } | null;
   menus: PublicMenu[];

@@ -8,6 +8,14 @@ import {
   UNASSIGNED_KEY,
 } from "@/utils/bookingTimeline";
 import type { BookingDetailDto, SectionWithTables } from "@/api/admin";
+import i18n from "@/i18n";
+import { setActiveLocale } from "@/utils/locale";
+
+beforeEach(() => setActiveLocale("en"));
+afterEach(() => {
+  setActiveLocale(undefined);
+  return i18n.changeLanguage("en");
+});
 
 const DAY = "2026-08-23";
 
@@ -387,5 +395,48 @@ describe("formatClockMinutes", () => {
 
   it("wraps a past-midnight offset back onto the clock", () => {
     expect(formatClockMinutes(25 * 60)).toBe("1:00a");
+  });
+});
+
+describe("the timetable in a language that writes a 24-hour clock", () => {
+  it.each(["fr", "nl", "de", "es"])("reads a sitting as 18:30, not 6:30p, in %s", (locale) => {
+    setActiveLocale(locale);
+
+    expect(formatClockMinutes(18 * 60 + 30)).toBe("18:30");
+    expect(formatClockMinutes(0)).toBe("00:00");
+    expect(formatClockMinutes(25 * 60 + 5)).toBe("01:05");
+  });
+
+  it("labels the header hours 17:00, 18:00 and 19:00, where English says 5p, 6p and 7p", () => {
+    const bookings = [booking(1, "18:00", 60)];
+
+    setActiveLocale("fr");
+    expect(buildTimeline({ ...base, bookings }).ticks.map((t) => t.label)).toEqual([
+      "17:00",
+      "18:00",
+      "19:00",
+    ]);
+
+    setActiveLocale("en");
+    expect(buildTimeline({ ...base, bookings }).ticks.map((t) => t.label)).toEqual([
+      "5p",
+      "6p",
+      "7p",
+    ]);
+  });
+
+  it("still reads the compact 12-hour clock in English", () => {
+    setActiveLocale("en");
+
+    expect(formatClockMinutes(18 * 60 + 30)).toBe("6:30p");
+  });
+
+  it("says what is left of a sitting in French", async () => {
+    await i18n.changeLanguage("fr");
+
+    expect(formatRemaining(45)).toBe("encore 45 min");
+    expect(formatRemaining(120)).toBe("encore 2 h");
+    expect(formatRemaining(90)).toBe("encore 1 h 30 min");
+    expect(formatRemaining(0)).toBe("bientôt terminé");
   });
 });

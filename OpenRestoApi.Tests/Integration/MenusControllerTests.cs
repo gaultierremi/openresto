@@ -459,7 +459,9 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
             Assert.DoesNotContain("Secret dish", json, StringComparison.Ordinal);
             Assert.DoesNotContain("Staff", json, StringComparison.Ordinal);
             Assert.DoesNotContain("Draft", json, StringComparison.Ordinal);
-            Assert.Empty(IdLikeProperties(JsonDocument.Parse(json).RootElement));
+            // The restaurant's own id is the only one a guest is given: it names the booking page.
+            Assert.Equal(["id"], IdLikeProperties(JsonDocument.Parse(json).RootElement));
+            Assert.Equal(r.RestaurantId, JsonDocument.Parse(json).RootElement.GetProperty("restaurant").GetProperty("id").GetInt32());
         }
 
         JsonElement byTable = await _app.CreateClient().GetFromJsonAsync<JsonElement>($"/api/menus/t/{r.TableToken}");
