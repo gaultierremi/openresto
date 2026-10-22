@@ -86,3 +86,8 @@ page-*.png
 __pycache__/
 *.pyc
 .claude/worktrees/
+
+# Serveur partagé (deploy/installer.sh) : sauvegardes, verrou de mise à jour et copie de la configuration avant un nom de domaine
+deploy/sauvegardes/
+deploy/.mise-a-jour.verrou
+deploy/serveur-partage.env.avant-domaine

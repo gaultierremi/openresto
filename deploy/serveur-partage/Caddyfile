@@ -1,0 +1,23 @@
+# Point d'entrée d'OpenResto sur un serveur partagé : HTTP seulement, le port est choisi côté Docker.
+# HTTPS viendra du Caddy du serveur quand il y aura un nom de domaine (docs/SERVEUR-PARTAGE.md).
+{
+	# Pas de HTTPS ici : le serveur a déjà son propre Caddy pour cela.
+	auto_https off
+}
+
+:80 {
+	# Mot de passe du site tant qu'il n'y a pas de domaine (acces-1), aucun ensuite (acces-0).
+	import /etc/caddy/acces-{$OPENRESTO_ACCES_PROTEGE}.caddy
+
+	# Les menus PDF vont jusqu'à 10 Mo ; nginx derrière en accepte 12.
+	request_body {
+		max_size 12MB
+	}
+
+	# nginx décide des routes, des en-têtes de sécurité et des médias.
+	reverse_proxy reverse-proxy:80
+
+	log {
+		output stdout
+	}
+}

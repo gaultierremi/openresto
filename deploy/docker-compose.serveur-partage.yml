@@ -1,0 +1,170 @@
+# OpenResto sur un serveur qui héberge déjà d'autres applications (par exemple Apprenti).
+#
+#   Internet ──► acces (Caddy, mot de passe) ──► reverse-proxy (nginx) ──► backend  (ASP.NET + SQLite)
+#   un seul port publié                                              └──► frontend (site web)
+#
+# Cohabitation : tout vit dans le projet Docker « openresto-serveur ». Réseaux, volumes et
+# conteneurs portent ce préfixe (openresto-serveur_interne, openresto-serveur_donnees, ...) et
+# aucun nom de service n'est celui d'Apprenti (app, db, caddy) : rien n'est partagé, rien ne peut
+# entrer en collision, et un « docker compose down -v » ici ne touche qu'ici.
+# Seul le service « acces » publie un port, par défaut 8081 (Apprenti garde le 8080).
+#
+# Mode d'emploi pas à pas : docs/SERVEUR-PARTAGE.md. On installe avec ./deploy/installer.sh.
+
+name: openresto-serveur
+
+x-journaux: &journaux
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-etiquette:
+  &etiquette # Sert à nettoyer SEULEMENT nos images après une mise à jour (jamais celles des autres applications).
+  com.openresto.serveur: "1"
+
+networks:
+  acces:
+  interne:
+
+volumes:
+  donnees:
+  medias:
+  acces-donnees:
+  acces-config:
+
+services:
+  acces:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "${OPENRESTO_ECOUTE:-0.0.0.0}:${OPENRESTO_PORT:-8081}:80"
+    environment:
+      OPENRESTO_ACCES_PROTEGE: ${OPENRESTO_ACCES_PROTEGE:-1}
+      OPENRESTO_UTILISATEUR: ${OPENRESTO_UTILISATEUR:-}
+      OPENRESTO_MOT_DE_PASSE: ${OPENRESTO_MOT_DE_PASSE:-}
+    # Caddy veut un mot de passe haché : il est calculé au démarrage à partir de celui du fichier
+    # de configuration, qui reste le seul endroit où il est écrit.
+    command:
+      - sh
+      - -c
+      - 'if [ "$$OPENRESTO_ACCES_PROTEGE" = 1 ] && [ -z "$$OPENRESTO_MOT_DE_PASSE" ]; then echo "OPENRESTO_MOT_DE_PASSE est vide alors que l acces est protege" >&2; exit 1; fi; export OPENRESTO_MOT_DE_PASSE_HASH="$$(caddy hash-password --plaintext "$${OPENRESTO_MOT_DE_PASSE:-inutilise}")" && exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile'
+    volumes:
+      - ./serveur-partage/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./serveur-partage/acces-1.caddy:/etc/caddy/acces-1.caddy:ro
+      - ./serveur-partage/acces-0.caddy:/etc/caddy/acces-0.caddy:ro
+      - acces-donnees:/data
+      - acces-config:/config
+    networks: [acces]
+    depends_on:
+      reverse-proxy:
+        condition: service_healthy
+    healthcheck:
+      # L'interface d'administration de Caddy n'écoute qu'à l'intérieur du conteneur.
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:2019/config/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    mem_limit: 256m
+    logging: *journaux
+
+  reverse-proxy:
+    image: ${OPENRESTO_IMAGE_NGINX:-localhost/openresto-serveur-nginx:local}
+    build:
+      context: ../nginx
+      dockerfile: Dockerfile
+      labels: *etiquette
+    restart: unless-stopped
+    expose: ["80"]
+    environment:
+      PORT: "80"
+      BACKEND_HOST: backend
+      BACKEND_PORT: "8080"
+      FRONTEND_HOST: frontend
+      FRONTEND_PORT: "8081"
+    volumes:
+      - medias:/usr/share/nginx/html/media:ro
+      - ./nginx-realip.conf:/etc/nginx/conf.d/00-realip.conf:ro
+    networks: [acces, interne]
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    logging: *journaux
+
+  backend:
+    image: ${OPENRESTO_IMAGE_BACKEND:-localhost/openresto-serveur-backend:local}
+    build:
+      context: ..
+      dockerfile: OpenRestoApi/Dockerfile
+      labels: *etiquette
+    restart: unless-stopped
+    expose: ["8080"]
+    environment:
+      # Development tant que le site n'est qu'en HTTP : en Production le cookie de connexion est
+      # « Secure » et un navigateur ne le garde pas sur une adresse http://. Voir docs/SERVEUR-PARTAGE.md.
+      ASPNETCORE_ENVIRONMENT: ${OPENRESTO_ENVIRONNEMENT:?Remplissez OPENRESTO_ENVIRONNEMENT dans deploy/serveur-partage.env}
+      PORT: "8080"
+      WEBSITE_URL: ${OPENRESTO_URL_PUBLIQUE:?Remplissez OPENRESTO_URL_PUBLIQUE dans deploy/serveur-partage.env}
+      # Les clés de configuration (Jwt__Key, ...) et non les variables JWT_KEY / ADMIN_* : en mode Development
+      # l'application charge appsettings.Development.json, qui contient une clé de signature et un mot de passe
+      # administrateur PUBLICS (dans le dépôt) et les lit AVANT ces variables. Seule une clé de configuration les écrase.
+      # Sans cela, n'importe qui pourrait fabriquer un jeton d'administrateur valide.
+      Jwt__Key: ${JWT_KEY:?Remplissez JWT_KEY dans deploy/serveur-partage.env}
+      Admin__Email: ${ADMIN_EMAIL:?Remplissez ADMIN_EMAIL dans deploy/serveur-partage.env}
+      Admin__Password: ${ADMIN_PASSWORD:?Remplissez ADMIN_PASSWORD dans deploy/serveur-partage.env}
+      Cors__Origins: ${OPENRESTO_URL_PUBLIQUE}
+      CONNECTION_STRING: Data Source=/data/openresto.db
+      DATA_PROTECTION_KEYS_PATH: /data/dp-keys
+      OPENRESTO_DEFAULT_LOCALE: ${OPENRESTO_LANGUE:-fr}
+      EmailSettings__Host: ${SMTP_HOST:-}
+      EmailSettings__Port: ${SMTP_PORT:-587}
+      EmailSettings__Username: ${SMTP_USERNAME:-}
+      EmailSettings__Password: ${SMTP_PASSWORD:-}
+      EmailSettings__FromEmail: ${SMTP_FROM_EMAIL:-}
+      EmailSettings__FromName: ${SMTP_FROM_NAME:-OpenResto}
+      EmailSettings__EnableSsl: ${SMTP_ENABLE_SSL:-true}
+      EmailSettings__SendBookingConfirmations: ${SMTP_SEND_CONFIRMATIONS:-true}
+    volumes:
+      - donnees:/data
+      - medias:/app/wwwroot/media
+    networks: [interne]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 1g
+    logging: *journaux
+
+  frontend:
+    image: ${OPENRESTO_IMAGE_FRONTEND:-localhost/openresto-serveur-frontend:local}
+    build:
+      context: ../openresto-frontend
+      dockerfile: Dockerfile
+      args:
+        EXPO_PUBLIC_API_URL: /api
+      labels: *etiquette
+    restart: unless-stopped
+    expose: ["8081"]
+    environment:
+      EXPO_PUBLIC_API_URL: /api
+    networks: [interne]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8081/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    logging: *journaux

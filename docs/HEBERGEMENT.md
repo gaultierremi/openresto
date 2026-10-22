@@ -14,6 +14,10 @@ local ; ce qui ne l'a pas été est listé au [§12](#12-ce-qui-a-été-testé-e
 - **Sauvegarde quotidienne cohérente** (7 jours + 4 semaines), copie hors VM possible, restauration
   testée.
 - **Voir l'appli avant d'avoir le serveur** : un Codespace GitHub la démarre en un clic avec des données de démo ([§13](#13-voir-lappli-avant-davoir-le-serveur-github-codespaces)).
+- **Un serveur qui héberge déjà une autre application (Apprenti)** : un kit à part, sans collision
+  de port, de réseau ni de volume, avec mot de passe d'entrée tant qu'il n'y a pas de domaine. Voir
+  [SERVEUR-PARTAGE.md](SERVEUR-PARTAGE.md) : tout ce qui suit (§5 en particulier) concerne une VM
+  dédiée à OpenResto.
 - **Un restaurant indépendant = une instance** (voir [§3](#3-plusieurs-restaurants--une-instance-ou-une-par-client)).
   Une instance sait gérer plusieurs _lieux_, mais pas isoler des clients différents.
 
