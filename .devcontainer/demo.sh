@@ -81,6 +81,36 @@ point_site_at_origin() {
   compose exec -T backend sqlite3 /data/openresto.db "UPDATE BrandSettings SET WebsiteUrl='${ORIGIN}';" >/dev/null
 }
 
+# Refuses to call the stack ready if an admin token signed with the repository's public key (the one in
+# appsettings.Development.json) is accepted: that would mean the generated key is not the one in use.
+controle_cle_jwt() {
+  local code
+  code="$(python3 - "$ORIGIN" <<'PY'
+import base64, hashlib, hmac, json, sys, time, urllib.request, urllib.error
+b64 = lambda b: base64.urlsafe_b64encode(b).rstrip(b"=").decode()
+key = "openresto-dev-only-jwt-key-do-not-use-in-production-abc123!!"
+h = b64(json.dumps({"alg": "HS256", "typ": "JWT"}).encode())
+p = b64(json.dumps({"sub": "1", "email": "x@x", "role": "Owner", "session_version": 0, "exp": int(time.time()) + 3600,
+                    "iss": "openresto-api", "aud": "openresto-admin"}).encode())
+token = f"{h}.{p}." + b64(hmac.new(key.encode(), f"{h}.{p}".encode(), hashlib.sha256).digest())
+# Through the published port on this machine, whatever address the outside world uses.
+url = "http://127.0.0.1:5062/api/admin/auth/me"
+req = urllib.request.Request(url, headers={"Cookie": "openresto_auth=" + token})
+try:
+    print(urllib.request.urlopen(req, timeout=15).status)
+except urllib.error.HTTPError as e:
+    print(e.code)
+except Exception:
+    print(0)
+PY
+)"
+  if [ "$code" = 401 ]; then
+    log "contrôle : un jeton d'administrateur signé avec la clé publique du dépôt est refusé"
+  else
+    die "un jeton d'administrateur signé avec la clé publique du dépôt a été accepté (code $code) : la démo n'est PAS sûre. Arrêtez-la : bash .devcontainer/demo.sh stop"
+  fi
+}
+
 hook_banner() {
   local line="[ -f \"$PWD/.devcontainer/demo.sh\" ] && bash \"$PWD/.devcontainer/demo.sh\" banner # openresto-demo"
   # Cosmetic: a home directory we cannot write to must not fail the setup.
@@ -119,6 +149,7 @@ case "${1:-}" in
     up
     seed
     point_site_at_origin
+    controle_cle_jwt
     hook_banner
     banner
     ;;
@@ -128,6 +159,7 @@ case "${1:-}" in
     ensure_secrets
     up
     point_site_at_origin
+    controle_cle_jwt
     hook_banner
     ;;
   banner) banner ;;

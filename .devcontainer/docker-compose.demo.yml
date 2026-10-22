@@ -1,14 +1,18 @@
 # Layered over the repository's docker-compose.yml by demo.sh. It swaps the committed development
 # credentials for the generated ones in demo.env and keeps the database in a named volume.
 #
-# The base file's JWT key and admin password are committed, so anyone could forge an admin
-# session on a stack that made its port public. Nothing below is a committed secret.
+# The base file runs the backend in Development, which loads appsettings.Development.json: a JWT
+# signing key and an admin password that are committed, so public. The application reads
+# Jwt:Key, Admin:Email, Admin:Password and Cors:Origins from configuration BEFORE the JWT_KEY,
+# ADMIN_EMAIL and CORS_ORIGINS environment variables, so only a configuration key (Jwt__Key, ...)
+# overrides them. Without it anyone could sign an admin token with the repository's key and
+# walk into the admin of a stack whose port was made public. Nothing below is a committed secret.
 
 services:
   backend:
     environment:
-      CORS_ORIGINS: ${DEMO_ORIGIN:?run .devcontainer/demo.sh setup}
-      JWT_KEY: ${DEMO_JWT_KEY:?run .devcontainer/demo.sh setup}
+      Cors__Origins: ${DEMO_ORIGIN:?run .devcontainer/demo.sh setup}
+      Jwt__Key: ${DEMO_JWT_KEY:?run .devcontainer/demo.sh setup}
       Admin__Email: ${DEMO_ADMIN_EMAIL:?run .devcontainer/demo.sh setup}
       Admin__Password: ${DEMO_ADMIN_PASSWORD:?run .devcontainer/demo.sh setup}
     volumes:
