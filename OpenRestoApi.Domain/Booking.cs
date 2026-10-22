@@ -3,6 +3,8 @@ namespace OpenRestoApi.Core.Domain;
 
 public class Booking
 {
+    public DateTime? EmailReminderProcessedAt { get; set; }
+    public string? EmailReminderOutcome { get; set; }
     /// <summary>
     /// Clock-skew tolerance (minutes) applied to the past-date guard shared by booking
     /// creation, cancellation, and table holds. A booking whose start is within this

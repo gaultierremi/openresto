@@ -303,7 +303,7 @@ test.describe.serial("Onboarding a restaurant", () => {
 
     const page = await restaurateur.newPage();
     await page.goto("/onboarding");
-    await expect(page.getByTestId("stage-preview").or(page.getByTestId("step-info"))).toBeVisible();
+    await expect(page.getByTestId("operations-dashboard")).toBeVisible();
     await page.close();
 
     const reopened = await platform.request.post(

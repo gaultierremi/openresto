@@ -25,6 +25,10 @@ public static class ServiceWindowHelper
         return openDays.Count == 0 || openDays.Contains(isoDay);
     }
 
+    public static bool IsOpenOn(Restaurant restaurant, DateTime localDate)
+        => ServiceException.On(restaurant, localDate) is { } special
+            ? !special.Closed : IsOpenOn(restaurant, IsoDay.Of(localDate));
+
     /// <summary>
     /// Whether any service the location currently runs covers <paramref name="utc"/>. Two
     /// services can reach it: the one opening on its own local day, and the previous day's,
@@ -33,6 +37,11 @@ public static class ServiceWindowHelper
     public static bool IsServingAt(Restaurant restaurant, DateTime utc)
     {
         DateTime local = TimeZoneHelper.ConvertUtcToLocal(utc, restaurant.Timezone);
+        if (!string.IsNullOrEmpty(restaurant.ServiceExceptionsJson))
+        {
+            return ServesOnDate(restaurant, local.Date, local)
+                || ServesOnDate(restaurant, local.Date.AddDays(-1), local);
+        }
         int isoDay = IsoDay.Of(local);
 
         return OpensOntoTimeOfDay(restaurant, isoDay, local.TimeOfDay)
@@ -47,10 +56,22 @@ public static class ServiceWindowHelper
     public static (DateTime Start, DateTime End) LocalWindowFor(Restaurant restaurant, DateTime localDate, int isoDay)
     {
         (TimeSpan open, TimeSpan close) = TimesOn(restaurant, isoDay);
+        if (ServiceException.On(restaurant, localDate) is { Closed: false } special)
+        {
+            open = TimeSpan.ParseExact(special.Open, "hh\\:mm", System.Globalization.CultureInfo.InvariantCulture);
+            close = TimeSpan.ParseExact(special.Close, "hh\\:mm", System.Globalization.CultureInfo.InvariantCulture);
+        }
 
         DateTime start = localDate.Date + open;
         DateTime end = localDate.Date + close;
         return (start, end <= start ? end.AddDays(1) : end);
+    }
+
+    private static bool ServesOnDate(Restaurant restaurant, DateTime date, DateTime local)
+    {
+        if (!IsOpenOn(restaurant, date)) return false;
+        (DateTime start, DateTime end) = LocalWindowFor(restaurant, date, IsoDay.Of(date));
+        return local >= start && local < end;
     }
 
     private static int DayBefore(int isoDay) => isoDay == IsoDay.Monday ? IsoDay.Sunday : isoDay - 1;

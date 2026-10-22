@@ -15,7 +15,8 @@ public class MenuService(
     IMenuRepository menuRepository,
     MediaService media,
     ISystemClock clock,
-    IAuditScope? audit = null)
+    IAuditScope? audit = null,
+    IRestaurantOperationsRepository? operations = null)
 {
     private readonly IMenuRepository _repo = menuRepository;
     private readonly MediaService _media = media;
@@ -365,6 +366,22 @@ public class MenuService(
 
     // ── Public view ──────────────────────────────────────────────────────────
 
+    public async Task RecordDishViewAsync(string kind, string token, string viewToken)
+    {
+        Restaurant? restaurant = kind switch
+        {
+            "r" => await _repo.FindRestaurantByTokenAsync(token),
+            "t" => (await _repo.FindTableByTokenAsync(token))?.Section?.Restaurant,
+            _ => null,
+        };
+        if (restaurant is null || !restaurant.IsListedPublicly) throw NotFound();
+        List<Menu> menus = await _repo.GetMenusWithContentAsync(restaurant.Id);
+        MenuItem? item = menus.Where(m => m.IsPublished).SelectMany(VisibleCategories).SelectMany(VisibleItems)
+            .FirstOrDefault(i => DishViewToken.For(restaurant.PublicToken, i.Id) == viewToken);
+        if (item is null) throw NotFound();
+        if (operations is not null) await operations.IncrementDishViewsAsync(item.Id);
+    }
+
     public async Task<PublicMenuResponse> GetPublicMenuByRestaurantTokenAsync(string token)
     {
         Restaurant restaurant = (IsPlausibleToken(token) ? await _repo.FindRestaurantByTokenAsync(token) : null)
@@ -414,6 +431,7 @@ public class MenuService(
                     Description = c.Description,
                     Items = VisibleItems(c).Select(i => new PublicMenuItemDto
                     {
+                        ViewToken = DishViewToken.For(restaurant.PublicToken, i.Id),
                         Name = i.Name,
                         Description = i.Description,
                         PrimaryLanguage = i.PrimaryLanguage,

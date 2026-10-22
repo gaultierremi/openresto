@@ -145,6 +145,13 @@ export function OnboardingWizard({ restaurantId }: { restaurantId: number }) {
     <OnboardingPage width="wide">
       <View style={styles.wizard}>
         <WizardHeader name={state.name} status={state.status} onSignOut={signOut} />
+        <Button
+          size="md"
+          variant="secondary"
+          onPress={() => router.push(`/onboarding/dashboard/${restaurantId}`)}
+        >
+          {t("admin.operations.title")}
+        </Button>
         {state.status === "Suspended" ? (
           <Banner tone="warning" testID="wizard-suspended">
             {state.suspensionReason

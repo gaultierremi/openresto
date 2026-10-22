@@ -64,7 +64,7 @@ describe("OnboardingHome", () => {
     expect(mockReplace).not.toHaveBeenCalled();
 
     fireEvent.press(screen.getByTestId("onboarding-home-restaurant-9"));
-    expect(mockPush).toHaveBeenCalledWith("/onboarding/restaurant/9");
+    expect(mockPush).toHaveBeenCalledWith("/onboarding/dashboard/9");
   });
 
   it("signs out from the empty state", () => {

@@ -424,6 +424,10 @@ public static class ServiceCollectionExtensions
             options.Cookie.HttpOnly = true;
         });
         services.AddScoped<OnboardingService>();
+        services.AddScoped<RestaurantOperationsService>();
+        services.AddScoped<IRestaurantOperationsRepository, RestaurantOperationsRepository>();
+        services.AddScoped<EmailReminderService>();
+        services.AddHostedService<OpenRestoApi.Infrastructure.Notifications.EmailReminderWorker>();
         services.AddScoped<BookingRetentionService>();
         services.AddHostedService<OpenRestoApi.Infrastructure.Retention.BookingRetentionWorker>();
         services.AddScoped<NativeAppStatusService>();

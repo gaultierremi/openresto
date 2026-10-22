@@ -42,6 +42,7 @@ public class MenuCategory
 
 public class MenuItem
 {
+    public long QrViews { get; set; }
     public int Id { get; set; }
 
     public int CategoryId { get; set; }

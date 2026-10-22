@@ -56,7 +56,7 @@ public class WaitlistService(
         Restaurant restaurant = await LoadRestaurantAsync(restaurantId);
         DateTime now = _clock.UtcNow;
 
-        if (!restaurant.IsWalkInOnlyAt(now))
+        if (!restaurant.IsWalkInOnlyAt(now) && !await IsFullForAsync(restaurant, req.Seats, now))
         {
             throw new ConflictException("This location isn't running a walk-in waitlist today.") { Code = ErrorCodes.WaitlistNotWalkInNow };
         }
@@ -93,7 +93,7 @@ public class WaitlistService(
         return new WaitlistQuoteDto
         {
             RestaurantId = restaurantId,
-            AcceptingGuests = AcceptsGuestsAt(restaurant, now),
+            AcceptingGuests = restaurant.IsOpenAt(now) && (restaurant.IsWalkInOnlyAt(now) || await IsFullForAsync(restaurant, seats, now)),
             PartiesWaiting = queue.Count,
             EstimatedWaitMinutes = WaitEstimator.MinutesUntil(estimates[^1]?.SeatAt, now),
         };
@@ -403,6 +403,13 @@ public class WaitlistService(
     private async Task<Restaurant> LoadRestaurantAsync(int restaurantId)
         => await _restaurants.GetByIdAsync(restaurantId)
             ?? throw new NotFoundException("Restaurant not found.") { Code = ErrorCodes.RestaurantNotFound };
+
+    private async Task<bool> IsFullForAsync(Restaurant restaurant, int seats, DateTime now)
+    {
+        bool canFit = restaurant.Sections.SelectMany(s => s.Tables).Any(t => restaurant.CanSeat(t.Seats, seats))
+            || restaurant.Groups.Any(g => restaurant.CanSeat(g.CombinedSeats, seats));
+        return canFit && (await _autoAssigner.BuildCandidatesAsync(restaurant, seats, now, includeWalkInOnly: true)).Count == 0;
+    }
 
     private async Task<WaitlistEntry> LoadActiveEntryAsync(int entryId)
     {

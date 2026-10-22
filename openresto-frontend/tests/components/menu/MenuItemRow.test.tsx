@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, type StyleProp, type ViewStyle } from "react-native";
+import { Platform, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 import { act, render, renderHook, screen } from "@testing-library/react-native";
 import { MenuItemRow, usePriceLabel } from "@/components/menu/MenuItemRow";
 import type { PublicMenuItem } from "@/api/menus";
@@ -55,6 +55,44 @@ it("changes the dish text live with the UI language and keeps the original descr
   });
   expect(screen.getByText("Soup")).toBeTruthy();
   expect(screen.getByText("Vegetables")).toBeTruthy();
+});
+
+it("counts a browser view once, only when half the dish is visible", () => {
+  const previousPlatform = Platform.OS;
+  const previousObserver = global.IntersectionObserver;
+  const viewed = jest.fn(),
+    disconnect = jest.fn();
+  let notify: IntersectionObserverCallback = () => {};
+  Platform.OS = "web";
+  global.IntersectionObserver = jest
+    .fn()
+    .mockImplementation((callback: IntersectionObserverCallback) => {
+      notify = callback;
+      return { observe: jest.fn(), disconnect };
+    }) as unknown as typeof IntersectionObserver;
+  try {
+    const view = render(<MenuItemRow item={dish()} currency="EUR" onViewed={viewed} />);
+    const visible = (intersectionRatio: number) =>
+      act(() =>
+        notify(
+          [
+            { isIntersecting: intersectionRatio > 0, intersectionRatio },
+          ] as IntersectionObserverEntry[],
+          {} as IntersectionObserver
+        )
+      );
+    visible(0);
+    visible(0.49);
+    expect(viewed).not.toHaveBeenCalled();
+    visible(0.5);
+    visible(1);
+    expect(viewed).toHaveBeenCalledTimes(1);
+    view.unmount();
+    expect(disconnect).toHaveBeenCalled();
+  } finally {
+    Platform.OS = previousPlatform;
+    global.IntersectionObserver = previousObserver;
+  }
 });
 
 describe("usePriceLabel", () => {

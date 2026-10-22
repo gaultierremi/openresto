@@ -22,6 +22,9 @@ public class Restaurant
     /// </summary>
     public string? OpenHoursJson { get; set; }
 
+    public string? ServiceExceptionsJson { get; set; }
+    public bool SimulateEmailReminders { get; set; } = true;
+
     /// <summary>
     /// IANA timezone identifier (e.g. "Europe/London", "America/New_York").
     /// All booking times are interpreted in this timezone.

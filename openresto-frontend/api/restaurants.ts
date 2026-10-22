@@ -87,6 +87,7 @@ export interface RestaurantDto {
   closeTime: string;
   /** Resolved hours for every day of the week (7 entries) when provided by the API. */
   openHours?: DayHoursDto[];
+  serviceExceptions?: { date: string; closed: boolean; open: string; close: string }[];
   openDays: string;
   timezone: string;
   tags?: string[];

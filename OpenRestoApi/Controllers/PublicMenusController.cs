@@ -19,6 +19,13 @@ public class PublicMenusController(MenuService menuService) : ControllerBase
 {
     private readonly MenuService _menus = menuService;
 
+    [HttpPost("{kind}/{token}/views/{viewToken}")]
+    public async Task<IActionResult> RecordView(string kind, string token, string viewToken)
+    {
+        await _menus.RecordDishViewAsync(kind, token, viewToken);
+        return NoContent();
+    }
+
     [HttpGet("r/{restaurantToken}")]
     public async Task<ActionResult<PublicMenuResponse>> GetByRestaurant(string restaurantToken)
         => Ok(await _menus.GetPublicMenuByRestaurantTokenAsync(restaurantToken));

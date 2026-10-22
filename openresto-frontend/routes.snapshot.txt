@@ -61,6 +61,7 @@
 /lookup
 /menu/r/[token]
 /menu/t/[token]
+/onboarding/dashboard/[id]
 /onboarding/index
 /onboarding/invitation/[token]
 /onboarding/login

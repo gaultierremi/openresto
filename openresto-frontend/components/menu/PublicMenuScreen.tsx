@@ -10,7 +10,12 @@ import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import { Icon } from "@/components/common/Icon";
 import { MenuFilters } from "@/components/menu/MenuFilters";
 import { MenuItemRow } from "@/components/menu/MenuItemRow";
-import { fetchPublicMenu, type PublicMenuKind, type PublicMenuOutcome } from "@/api/menus";
+import {
+  fetchPublicMenu,
+  recordDishView,
+  type PublicMenuKind,
+  type PublicMenuOutcome,
+} from "@/api/menus";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { MENU_DEFAULT_LOCALE } from "@/constants/locales";
 import { useRouteDefaultLocale } from "@/context/LocaleContext";
@@ -213,7 +218,18 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
                   </ThemedText>
                 ) : null}
                 {category.items.map((item, index) => (
-                  <MenuItemRow key={`${index}-${item.name}`} item={item} currency={menu.currency} />
+                  <MenuItemRow
+                    key={item.viewToken ?? `${index}-${item.name}`}
+                    item={item}
+                    currency={menu.currency}
+                    onViewed={
+                      item.viewToken
+                        ? () => {
+                            void recordDishView(kind, token, item.viewToken!);
+                          }
+                        : undefined
+                    }
+                  />
                 ))}
               </View>
             ))

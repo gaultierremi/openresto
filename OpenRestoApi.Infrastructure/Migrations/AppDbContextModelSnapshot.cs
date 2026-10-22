@@ -344,6 +344,12 @@ namespace OpenRestoApi.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("EmailReminderOutcome")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("EmailReminderProcessedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("TEXT");
 
@@ -738,6 +744,9 @@ namespace OpenRestoApi.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValue("fr");
 
+                    b.Property<long>("QrViews")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("INTEGER");
 
@@ -862,6 +871,14 @@ namespace OpenRestoApi.Migrations
 
                     b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("ServiceExceptionsJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("SimulateEmailReminders")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Status")
                         .IsRequired()
