@@ -165,7 +165,7 @@ Prérequis : un nom (par exemple `reservations.exemple.fr`) dont l'enregistremen
 
 ## Pourquoi « mode essai » tant qu'il n'y a pas de nom de domaine ?
 
-Pour des raisons de sécurité, la connexion à l'administration utilise un « cookie sécurisé » que le navigateur **refuse de conserver sur une adresse en `http://`**. L'installateur règle donc OpenResto en **mode essai** (`Development`) tant que le site n'a pas de cadenas. Ce mode affiche des messages d'erreur plus détaillés et laisse voir la page `/openapi` (toujours derrière le mot de passe de la porte d'entrée). C'est pourquoi on n'y met **que des données fictives**, et pourquoi `./deploy/verifier.sh` le rappelle. Dès le nom de domaine, on passe en **Production**.
+Pour des raisons de sécurité, la connexion à l'administration utilise un « cookie sécurisé » que le navigateur **refuse de conserver sur une adresse en `http://`**. L'installateur règle donc OpenResto en **mode essai** (`Development`) tant que le site n'a pas de cadenas. Ce mode laisse voir la page `/openapi` (toujours derrière le mot de passe de la porte d'entrée) et rend la base de données plus bavarde dans ses messages d'erreur ; le kit coupe la partie des journaux qui recopierait des e-mails de clients. C'est pourquoi on n'y met **que des données fictives**, et pourquoi `./deploy/verifier.sh` le rappelle. Dès le nom de domaine, on passe en **Production**.
 
 Dans les deux modes, la clé qui signe les connexions et le mot de passe de l'administration sont **fabriqués au hasard** pour ce serveur : ceux qui figurent dans le code public d'OpenResto sont refusés (`verifier.sh` le contrôle en tentant une connexion avec la clé publique du dépôt).
 

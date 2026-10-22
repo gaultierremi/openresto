@@ -157,6 +157,27 @@ expect "témoin : jeton signé avec la vraie clé du serveur : accepté" 200 "$(
 expect "le mot de passe administrateur public du dépôt est refusé" 401 "$(curl -s -o /dev/null -w '%{http_code}' -u "essai:$mdp_site" -H 'Content-Type: application/json' -X POST "$base/api/admin/auth/login" -d '{"email":"admin@openresto.com","password":"dev-password-change-before-production"}')"
 expect "la page d'API ouverte (openapi) est derrière le mot de passe" 401 "$(curl -s -o /dev/null -w '%{http_code}' "$base/openapi/v1.json")"
 
+echo "== le journal n'écrit pas les valeurs des requêtes (mode Development)"
+# EnableSensitiveDataLogging est actif en Development : sans le niveau Warning posé par le compose,
+# la connexion d'administrateur ci-dessus aurait laissé son e-mail dans le journal du backend.
+conteneur_backend="$(docker ps --filter label=com.docker.compose.project=openresto-serveur --filter label=com.docker.compose.service=backend --format '{{.Names}}')"
+expect "la connexion a bien eu lieu avant ce contrôle" 1 "$(grep -c . <<<"$conteneur_backend")"
+expect "l'e-mail de l'administrateur n'est pas dans le journal du backend" 0 "$(docker logs "$conteneur_backend" 2>&1 | grep -cF -- "$admin_email" || true)"
+expect "aucune commande SQL avec ses paramètres dans le journal du backend" 0 "$(docker logs "$conteneur_backend" 2>&1 | grep -c "Executed DbCommand" || true)"
+
+echo "== l'adresse du visiteur traverse les relais jusqu'à nginx"
+# Avec un domaine, le Caddy du serveur annonce le visiteur puis notre Caddy ajoute l'adresse du
+# précédent relais : sans « trusted_proxies » puis « real_ip_recursive on », tous les visiteurs
+# deviendraient la même adresse, donc le même quota de requêtes.
+conteneur_nginx="$(docker ps --filter label=com.docker.compose.project=openresto-serveur --filter label=com.docker.compose.service=reverse-proxy --format '{{.Names}}')"
+adresse_vue() { docker logs "$conteneur_nginx" 2>&1 | grep -F -- "$1" | tail -n 1 | awk '{print $1}'; }
+curl -s -o /dev/null -u "essai:$mdp_site" -H 'X-Forwarded-For: 203.0.113.11' "$base/api/brand?v=un-relais"
+curl -s -o /dev/null -u "essai:$mdp_site" -H 'X-Forwarded-For: 203.0.113.12, 10.9.8.7' "$base/api/brand?v=deux-relais"
+curl -s -o /dev/null -u "essai:$mdp_site" "$base/api/brand?v=sans-relais"
+expect "un visiteur annoncé par un relais garde son adresse" 203.0.113.11 "$(adresse_vue 'v=un-relais')"
+expect "un visiteur annoncé derrière deux relais garde son adresse" 203.0.113.12 "$(adresse_vue 'v=deux-relais')"
+expect "sans relais, l'adresse vue est celle de la connexion (privée ici)" 1 "$(adresse_vue 'v=sans-relais' | grep -Ecx '(127\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.).*')"
+
 echo "== le contrôle de santé"
 set +e; sortie="$("$depot/deploy/verifier.sh" 2>&1)"; code=$?; set -e
 expect "verifier.sh : code 0" 0 "$code"

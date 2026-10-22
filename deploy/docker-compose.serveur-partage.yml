@@ -88,7 +88,7 @@ services:
       FRONTEND_PORT: "8081"
     volumes:
       - medias:/usr/share/nginx/html/media:ro
-      - ./nginx-realip.conf:/etc/nginx/conf.d/00-realip.conf:ro
+      - ./serveur-partage/nginx-realip.conf:/etc/nginx/conf.d/00-realip.conf:ro
     networks: [acces, interne]
     depends_on:
       backend:
@@ -121,6 +121,11 @@ services:
       Admin__Email: ${ADMIN_EMAIL:?Remplissez ADMIN_EMAIL dans deploy/serveur-partage.env}
       Admin__Password: ${ADMIN_PASSWORD:?Remplissez ADMIN_PASSWORD dans deploy/serveur-partage.env}
       Cors__Origins: ${OPENRESTO_URL_PUBLIQUE}
+      # Development active EnableSensitiveDataLogging : au niveau Information, Entity Framework écrirait dans le journal
+      # les valeurs de chaque requête SQL (e-mails et noms des clients, empreintes de mots de passe). Le préfixe
+      # « Microsoft » et non « Microsoft.EntityFrameworkCore » : le script d'entrée du conteneur est un shell, qui
+      # supprime toute variable dont le nom contient un point.
+      Logging__LogLevel__Microsoft: Warning
       CONNECTION_STRING: Data Source=/data/openresto.db
       DATA_PROTECTION_KEYS_PATH: /data/dp-keys
       OPENRESTO_DEFAULT_LOCALE: ${OPENRESTO_LANGUE:-fr}

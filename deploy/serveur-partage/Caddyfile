@@ -3,6 +3,13 @@
 {
 	# Pas de HTTPS ici : le serveur a déjà son propre Caddy pour cela.
 	auto_https off
+
+	# Le Caddy du serveur (domaine) arrive par une adresse privée : on croit alors son
+	# X-Forwarded-For. Un visiteur qui se présente directement (adresse publique) ne peut pas
+	# imposer le sien : Caddy le remplace par l'adresse réellement vue.
+	servers {
+		trusted_proxies static private_ranges
+	}
 }
 
 :80 {
