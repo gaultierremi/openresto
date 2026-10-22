@@ -5,6 +5,8 @@ import type { Allergen, Availability, DietaryTag } from "@/constants/menu";
 // ── Admin shapes (mirror MenuDto.cs) ─────────────────────────────────────────
 
 export interface MenuItemDto {
+  primaryLanguage?: DishLanguage;
+  translations?: DishTranslations;
   id: number;
   name: string;
   description: string | null;
@@ -51,6 +53,8 @@ export interface SaveCategoryInput {
 }
 
 export interface SaveItemInput {
+  primaryLanguage?: DishLanguage;
+  translations?: DishTranslations;
   name: string;
   description: string | null;
   priceMinor: number | null;
@@ -74,6 +78,8 @@ export interface PublicTokens {
 // ── Public shapes (PublicMenuResponse): the restaurant's id is the only id ───
 
 export interface PublicMenuItem {
+  primaryLanguage?: DishLanguage;
+  translations?: DishTranslations;
   name: string;
   description: string | null;
   priceMinor: number | null;
@@ -83,6 +89,11 @@ export interface PublicMenuItem {
   allergens: Allergen[];
   dietaryTags: DietaryTag[];
 }
+
+export type DishLanguage = "fr" | "nl" | "en";
+export type DishTranslations = Partial<
+  Record<DishLanguage, { name: string | null; description: string | null }>
+>;
 
 export interface PublicMenuCategory {
   name: string;
@@ -199,6 +210,8 @@ export const adminUpdateItem = (restaurantId: number, itemId: number, input: Sav
 /** A dish as the update endpoint takes it: the endpoint replaces every field, so a partial
  * change (sold out, back on) has to resend the rest from what the dish already holds. */
 export const itemToInput = (item: MenuItemDto): SaveItemInput => ({
+  primaryLanguage: item.primaryLanguage,
+  translations: item.translations,
   name: item.name,
   description: item.description,
   priceMinor: item.priceMinor,

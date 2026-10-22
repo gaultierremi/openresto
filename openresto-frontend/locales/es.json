@@ -347,6 +347,10 @@
         "Vegan": "Vegano",
         "Vegetarian": "Vegetariano"
       },
+      "primaryLanguage": "Idioma original del plato",
+      "translationHint": "Introduzca sus traducciones. Los campos vacíos usan el texto original. Sin traducción automática.",
+      "translatedName": "Nombre del plato — {{language}}",
+      "translatedDescription": "Descripción — {{language}}",
       "free": "Gratis",
       "priceOnRequest": "Precio a consultar"
     },
@@ -528,6 +532,7 @@
       "name_too_long": "El nombre de la carta no puede superar los {{max}} caracteres.",
       "not_found": "Carta no encontrada.",
       "price_invalid": "El precio debe ser cero o más (como máximo {{max}} en la unidad mínima de la moneda), o quedar vacío para «precio a consultar».",
+      "language_invalid": "Los idiomas de los platos deben ser francés, neerlandés o inglés.",
       "reorder_ids_mismatch": "El nuevo orden debe incluir cada elemento una sola vez, sin añadidos."
     },
     "platform": {

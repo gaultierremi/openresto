@@ -347,6 +347,10 @@
         "Vegan": "Vegan",
         "Vegetarian": "Vegetarisch"
       },
+      "primaryLanguage": "Originalsprache des Gerichts",
+      "translationHint": "Geben Sie eigene Übersetzungen ein. Leere Felder verwenden den Originaltext. Keine automatische Übersetzung.",
+      "translatedName": "Name des Gerichts — {{language}}",
+      "translatedDescription": "Beschreibung — {{language}}",
       "free": "Kostenlos",
       "priceOnRequest": "Preis auf Anfrage"
     },
@@ -528,6 +532,7 @@
       "name_too_long": "Der Name der Speisekarte darf höchstens {{max}} Zeichen lang sein.",
       "not_found": "Speisekarte nicht gefunden.",
       "price_invalid": "Der Preis muss null oder höher sein (höchstens {{max}} in der kleinsten Währungseinheit) oder leer bleiben für „Preis auf Anfrage“.",
+      "language_invalid": "Gerichte müssen auf Französisch, Niederländisch oder Englisch eingegeben werden.",
       "reorder_ids_mismatch": "Die neue Reihenfolge muss jeden Eintrag genau einmal enthalten, ohne Ergänzungen."
     },
     "platform": {

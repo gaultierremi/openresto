@@ -48,10 +48,21 @@ const LOCALE_FILES: Record<string, Json> = { en, fr, es, de, nl };
  * sends a Dutch viewer who reaches an admin key to French. Every other locale keeps exact
  * parity with en.json, so a missing key anywhere else still fails.
  */
+const DUTCH_RESTAURATEUR_KEYS = [
+  "admin.onboarding.",
+  "admin.settings.weekdays.",
+  "admin.site.themes.",
+  "admin.menus.item.allergensHint",
+  "admin.menus.item.allergensLabel",
+  "admin.menus.item.dietaryLabel",
+];
 const GUEST_ONLY_LOCALES: Record<string, string[]> = { nl: ["admin"] };
 
 function isOmitted(locale: string, path: string): boolean {
-  return (GUEST_ONLY_LOCALES[locale] ?? []).includes(path.split(".")[0]);
+  return (
+    (GUEST_ONLY_LOCALES[locale] ?? []).includes(path.split(".")[0]) &&
+    !DUTCH_RESTAURATEUR_KEYS.some((prefix) => path.startsWith(prefix))
+  );
 }
 
 const NON_ENGLISH = SUPPORTED_LOCALES.filter((locale) => locale !== "en");
@@ -67,9 +78,9 @@ describe("i18n locale key parity", () => {
     expect(englishKeys.length).toBeGreaterThan(0);
   });
 
-  it("lets only Dutch omit the admin subtree", () => {
+  it("lets Dutch omit platform admin keys while covering the restaurateur space", () => {
     expect(GUEST_ONLY_LOCALES).toEqual({ nl: ["admin"] });
-    expect(Object.keys(nl)).not.toContain("admin");
+    expect(nl.admin.onboarding).toBeDefined();
     for (const locale of NON_ENGLISH.filter((l) => l !== "nl")) {
       expect(Object.keys(LOCALE_FILES[locale])).toContain("admin");
     }
@@ -85,7 +96,7 @@ describe("i18n locale key parity", () => {
 
   it("nl.json translates every guest key en.json has and adds none of its own", () => {
     const guestKeys = englishKeys.filter((path) => !path.startsWith("admin."));
-    expect(leafKeyPaths(nl)).toEqual(guestKeys);
+    expect(leafKeyPaths(nl).filter((path) => !path.startsWith("admin."))).toEqual(guestKeys);
   });
 
   /**

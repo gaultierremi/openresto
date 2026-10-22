@@ -63,7 +63,7 @@ public static class SitePageRenderer
             : "<meta name=\"robots\" content=\"index,follow,max-image-preview:large\">\n");
         sb.Append("<meta name=\"theme-color\" content=\"").Append(E(SiteThemes.PaletteFor(m.Theme, m.PrimaryColor).Background.Hex)).Append("\">\n");
         sb.Append("<link rel=\"canonical\" href=\"").Append(E(canonical)).Append("\">\n");
-        foreach (string language in new[] { SiteLanguage.French, SiteLanguage.Dutch })
+        foreach (string language in new[] { SiteLanguage.French, SiteLanguage.Dutch, SiteLanguage.English })
         {
             sb.Append("<link rel=\"alternate\" hreflang=\"").Append(language).Append("\" href=\"")
                 .Append(E(SiteLanguage.WithLanguage(canonical, language))).Append("\">\n");
@@ -143,7 +143,7 @@ public static class SitePageRenderer
     private static void AppendLanguageSwitch(StringBuilder sb, SiteCopy current, string pagePath)
     {
         sb.Append("<nav class=\"lang\" aria-label=\"").Append(E(current.SwitchLabel)).Append("\"><div class=\"wrap\">");
-        foreach (SiteCopy option in new[] { SiteCopy.French, SiteCopy.Dutch })
+        foreach (SiteCopy option in new[] { SiteCopy.French, SiteCopy.Dutch, SiteCopy.English })
         {
             if (option.Language != SiteCopy.French.Language)
             {
@@ -255,6 +255,7 @@ public static class SitePageRenderer
 
     private static void AppendDish(StringBuilder sb, PublicMenuItemView item, SiteCopy c, string currency)
     {
+        item = item.In(c.Language);
         sb.Append(item.SoldOut ? "<li class=\"dish off\">" : "<li class=\"dish\">");
         sb.Append("<span class=\"nm\">").Append(E(item.Name)).Append("</span>");
         sb.Append("<span class=\"pr\">")

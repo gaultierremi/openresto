@@ -91,7 +91,12 @@ public sealed class SiteCopy
     /// <summary>True when the currency is written before the amount (<c>€ 12,50</c>), false after (<c>12,50 €</c>).</summary>
     public required bool CurrencyFirst { get; init; }
 
-    public static SiteCopy For(string? language) => language == SiteLanguage.Dutch ? Dutch : French;
+    public static SiteCopy For(string? language) => language switch
+    {
+        SiteLanguage.Dutch => Dutch,
+        SiteLanguage.English => English,
+        _ => French,
+    };
 
     public IReadOnlyList<string> AllergenLabels(Allergens allergens)
         => AllergenTable.Where(a => allergens.HasFlag(a.Flag)).Select(a => a.Label).ToList();
@@ -182,6 +187,71 @@ public sealed class SiteCopy
         DecimalSeparator = ",",
         GroupSeparator = NarrowNoBreakSpace,
         CurrencyFirst = false,
+    };
+
+    public static readonly SiteCopy English = new()
+    {
+        Language = SiteLanguage.English,
+        OgLocale = "en_GB",
+        LanguageName = "English",
+        SwitchLabel = "Language",
+        SkipLink = "Skip to content",
+        DraftBanner = "Preview – this website is unpublished and only visible to you.",
+        BookTable = "Book a table",
+        SeeMenu = "View the menu",
+        Call = "Call us",
+        NoOnlineBooking = "No online booking: come in and we will seat you as soon as a table is free.",
+        NavLabel = "Page sections",
+        NavMenu = "Menu",
+        NavHours = "Opening hours",
+        NavGallery = "Gallery",
+        NavContact = "Contact",
+        MenuHeading = "The menu",
+        AllergenNote = "Allergens are listed under each dish; ask the team if you have any doubts.",
+        PriceOnRequest = "Price on request",
+        SoldOut = "Sold out",
+        AllergensPrefix = "Allergens: ",
+        HoursHeading = "Opening hours",
+        HoursCaption = "Opening hours, Monday to Sunday",
+        Closed = "Closed",
+        Days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        GalleryHeading = "Gallery",
+        FindUsHeading = "Find us",
+        ViewOnMap = "View on map",
+        OpensInNewTab = " (opens in a new tab)",
+        PhonePrefix = "Phone: ",
+        EmailPrefix = "Email: ",
+        SocialLabel = "Social media",
+        LegalHeading = "Legal notice",
+        LegalEstablishment = "Establishment",
+        LegalCompanyName = "Company name",
+        LegalCompanyNumber = "Company number",
+        LegalVatNumber = "VAT number",
+        LegalSeat = "Registered office",
+        LegalContact = "Contact",
+        NoCookies = "This website uses no cookies, trackers or third-party services. Like any web server, it records the IP address and time of each request in technical logs for security and operation.",
+        PrivacyPolicy = "Privacy policy",
+        NotFoundTitle = "Page not found",
+        NotFoundBody = "This address does not match any website.",
+        TitleWithBooking = "Menu, opening hours and booking",
+        TitleWithoutBooking = "Menu, opening hours and contact",
+        DescriptionWithBooking = "Menu, opening hours and online booking.",
+        DescriptionWithoutBooking = "Menu, opening hours and contact.",
+        LogoAlt = name => $"{name} logo",
+        DefaultLead = name => $"{name}, restaurant.",
+        MenuName = name => $"{name} menu",
+        AllergenTable =
+        [
+            (Allergens.Gluten, "gluten"), (Allergens.Crustaceans, "crustaceans"), (Allergens.Eggs, "eggs"),
+            (Allergens.Fish, "fish"), (Allergens.Peanuts, "peanuts"), (Allergens.Soybeans, "soybeans"),
+            (Allergens.Milk, "milk"), (Allergens.Nuts, "nuts"), (Allergens.Celery, "celery"),
+            (Allergens.Mustard, "mustard"), (Allergens.Sesame, "sesame"), (Allergens.Sulphites, "sulphites"),
+            (Allergens.Lupin, "lupin"), (Allergens.Molluscs, "molluscs"),
+        ],
+        DietTable = [(DietaryTags.Vegetarian, "Vegetarian"), (DietaryTags.Vegan, "Vegan"), (DietaryTags.GlutenFree, "Gluten-free")],
+        DecimalSeparator = ".",
+        GroupSeparator = ",",
+        CurrencyFirst = true,
     };
 
     public static readonly SiteCopy Dutch = new()

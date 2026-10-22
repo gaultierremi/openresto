@@ -194,6 +194,7 @@ public static class ErrorCodes
     public const string MenuAvailabilityInvalid = "menu.availability_invalid";
     public const string MenuAllergenInvalid = "menu.allergen_invalid";
     public const string MenuDietaryTagInvalid = "menu.dietary_tag_invalid";
+    public const string MenuLanguageInvalid = "menu.language_invalid";
     public const string MenuReorderIdsMismatch = "menu.reorder_ids_mismatch";
     public const string MenuItemImageTooLarge = "menu.item_image_too_large";
 

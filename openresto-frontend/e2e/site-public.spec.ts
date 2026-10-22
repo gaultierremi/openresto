@@ -40,6 +40,7 @@ async function setContactEmail(request: APIRequestContext, email: string) {
  * afterwards and the location's contact e-mail is put back.
  */
 test.describe("Website: publish, read as a guest, unpublish", () => {
+  test.use({ locale: "fr-BE" });
   test.describe.configure({ mode: "serial" });
 
   let previousEmail = "";

@@ -1,4 +1,6 @@
 using OpenRestoApi.Core.Domain;
+using OpenRestoApi.Core.Application.DTOs;
+using OpenRestoApi.Core.Application.Utilities;
 
 namespace OpenRestoApi.Core.Application.Site;
 
@@ -70,4 +72,13 @@ public sealed record PublicMenuItemView(
     string? ImageUrl,
     bool SoldOut,
     Allergens Allergens,
-    DietaryTags DietaryTags);
+    DietaryTags DietaryTags,
+    string PrimaryLanguage = "fr",
+    Dictionary<string, MenuItemTranslationDto>? Translations = null)
+{
+    public PublicMenuItemView In(string language)
+    {
+        var text = MenuTranslations.Resolve(Name, Description, PrimaryLanguage, Translations ?? [], language);
+        return this with { Name = text.Name!, Description = text.Description };
+    }
+}

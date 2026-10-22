@@ -171,6 +171,18 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   }, [brand.defaultLocale, routeDefault, browserAllowed]);
 
   const setLocale = (next: SupportedLocale) => {
+    if (
+      Platform.OS === "web" &&
+      typeof window !== "undefined" &&
+      /[?&]lang=/.test(window.location.search)
+    ) {
+      const search = window.location.search.replace(/([?&]lang=)[^&#]*/g, `$1${next}`);
+      window.history.replaceState(
+        window.history.state,
+        "",
+        window.location.pathname + search + window.location.hash
+      );
+    }
     StorageService.setItem(STORAGE_KEY, next);
     setLocaleState(next);
     applyLocale(next);

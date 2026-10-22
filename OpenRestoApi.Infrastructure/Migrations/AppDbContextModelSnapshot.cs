@@ -731,8 +731,18 @@ namespace OpenRestoApi.Migrations
                     b.Property<long?>("PriceMinor")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("PrimaryLanguage")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(2)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("fr");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("TranslationsJson")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

@@ -8354,6 +8354,15 @@
               "string"
             ]
           },
+          "primaryLanguage": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MenuItemTranslationDto"
+            }
+          },
           "priceMinor": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -8391,6 +8400,23 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "MenuItemTranslationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -8631,6 +8657,21 @@
       "OnboardingMenuItemDto": {
         "type": "object",
         "properties": {
+          "primaryLanguage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "translations": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MenuItemTranslationDto"
+            }
+          },
           "id": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -9299,6 +9340,15 @@
               "string"
             ]
           },
+          "primaryLanguage": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MenuItemTranslationDto"
+            }
+          },
           "priceMinor": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -9671,6 +9721,21 @@
               "null",
               "string"
             ]
+          },
+          "primaryLanguage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "translations": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MenuItemTranslationDto"
+            }
           },
           "priceMinor": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",

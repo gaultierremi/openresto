@@ -101,6 +101,8 @@ export interface OnboardingLayout {
 }
 
 export interface OnboardingMenuItem {
+  primaryLanguage?: import("./menus").DishLanguage;
+  translations?: import("./menus").DishTranslations;
   id?: number | null;
   name: string;
   description: string | null;

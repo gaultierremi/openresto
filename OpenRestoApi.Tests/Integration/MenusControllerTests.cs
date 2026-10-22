@@ -126,6 +126,60 @@ public sealed class MenusControllerTests(TestWebAppFactory factory) : IClassFixt
 
     private sealed record Tree(int MenuId, int CategoryId, int ItemId);
 
+    [Fact]
+    public async Task DishTranslations_RoundTripToGuests_PreserveLegacyEdits_AndCanBeCleared()
+    {
+        Seeded r = await SeedRestaurantAsync();
+        Tree tree = await CreateTreeAsync(r.RestaurantId, publish: true);
+        string path = $"{Base(r.RestaurantId)}/menu-items/{tree.ItemId}";
+        var translated = new
+        {
+            name = "Soupe",
+            description = "Légumes",
+            primaryLanguage = "fr",
+            translations = new { nl = new { name = " Soep ", description = " Groenten " }, en = new { name = "Soup", description = "Vegetables" } }
+        };
+        (await Owner().PutAsJsonAsync(path, translated)).EnsureSuccessStatusCode();
+        var menu = await _app.CreateClient().GetFromJsonAsync<JsonElement>($"/api/menus/r/{r.RestaurantToken}");
+        var dish = menu.GetProperty("menus")[0].GetProperty("categories")[0].GetProperty("items")[0];
+        Assert.Equal("Soep", dish.GetProperty("translations").GetProperty("nl").GetProperty("name").GetString());
+        Assert.Equal("fr", dish.GetProperty("primaryLanguage").GetString());
+
+        (await Owner().PutAsJsonAsync(path, new { name = "Soupe du jour" })).EnsureSuccessStatusCode();
+        Assert.Contains("Soep", (await InDbAsync(db => db.MenuItems.SingleAsync(i => i.Id == tree.ItemId))).TranslationsJson!, StringComparison.Ordinal);
+        (await Owner().PutAsJsonAsync(path, new { name = "Soupe", translations = new Dictionary<string, object>() })).EnsureSuccessStatusCode();
+        Assert.Equal("{}", (await InDbAsync(db => db.MenuItems.SingleAsync(i => i.Id == tree.ItemId))).TranslationsJson);
+    }
+
+    [Theory]
+    [InlineData("de", "Soup", "", ErrorCodes.MenuLanguageInvalid)]
+    [InlineData("nl", "", "", ErrorCodes.MenuLanguageInvalid)]
+    [InlineData("nl", "long", "", ErrorCodes.MenuItemNameTooLong)]
+    [InlineData("nl", "Soup", "long", ErrorCodes.MenuDescriptionTooLong)]
+    public async Task DishTranslations_RefuseInvalidValues_WithoutWriting(string language, string name, string description, string code)
+    {
+        Seeded r = await SeedRestaurantAsync();
+        Tree tree = await CreateTreeAsync(r.RestaurantId);
+        var response = await Owner().PutAsJsonAsync($"{Base(r.RestaurantId)}/menu-items/{tree.ItemId}", new
+        {
+            name = "Must not be saved",
+            primaryLanguage = name.Length == 0 ? "de" : "fr",
+            translations = new Dictionary<string, object>
+            {
+                [language] = new
+                {
+                    name = name == "long" ? new string('x', 101) : name,
+                    description = description == "long" ? new string('x', MenuFields.MaxDescriptionLength + 1) : description
+                }
+            },
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(code, (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString());
+        var saved = await InDbAsync(db => db.MenuItems.SingleAsync(i => i.Id == tree.ItemId));
+        Assert.Equal("Steak", saved.Name);
+        Assert.Null(saved.TranslationsJson);
+    }
+
     /// <summary>A menu with one category and one item, built through the API as an Owner.</summary>
     private async Task<Tree> CreateTreeAsync(int restaurantId, bool publish = false)
     {

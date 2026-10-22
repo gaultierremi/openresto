@@ -212,10 +212,12 @@ public class MenuService(
     public async Task<MenuItemDto> UpdateItemAsync(int restaurantId, int itemId, SaveMenuItemRequest req)
     {
         MenuItem item = await RequireItemAsync(restaurantId, itemId);
-        ItemFields fields = ValidateItem(req);
+        ItemFields fields = ValidateItem(req, item);
 
         _audit.RecordChange("name", item.Name, fields.Name);
         _audit.RecordChange("description", item.Description, fields.Description);
+        _audit.RecordChange("primaryLanguage", item.PrimaryLanguage, fields.PrimaryLanguage);
+        _audit.RecordChange("translations", item.TranslationsJson, fields.TranslationsJson);
         _audit.RecordChange("priceMinor", item.PriceMinor, fields.PriceMinor);
         _audit.RecordChange("availability", MenuFields.ToName(item.Availability), MenuFields.ToName(fields.Availability));
         _audit.RecordChange("allergens", string.Join(",", MenuFields.ToNames(item.Allergens)), string.Join(",", MenuFields.ToNames(fields.Allergens)));
@@ -414,6 +416,8 @@ public class MenuService(
                     {
                         Name = i.Name,
                         Description = i.Description,
+                        PrimaryLanguage = i.PrimaryLanguage,
+                        Translations = MenuTranslations.Read(i.TranslationsJson),
                         PriceMinor = i.PriceMinor,
                         ImageUrl = i.ImageUrl,
                         Availability = MenuFields.ToName(i.Availability),
@@ -449,7 +453,9 @@ public class MenuService(
                     i.ImageUrl,
                     i.Availability == MenuItemAvailability.SoldOut,
                     i.Allergens,
-                    i.DietaryTags)).ToList())).ToList())).ToList();
+                    i.DietaryTags,
+                    i.PrimaryLanguage,
+                    MenuTranslations.Read(i.TranslationsJson))).ToList())).ToList())).ToList();
     }
 
     private static IEnumerable<MenuCategory> VisibleCategories(Menu menu) => Ordered(menu.Categories.Where(c => c.IsVisible));
@@ -516,7 +522,9 @@ public class MenuService(
         long? PriceMinor,
         MenuItemAvailability Availability,
         Allergens Allergens,
-        DietaryTags DietaryTags)
+        DietaryTags DietaryTags,
+        string PrimaryLanguage,
+        string? TranslationsJson)
     {
         public void ApplyTo(MenuItem item)
         {
@@ -526,13 +534,19 @@ public class MenuService(
             item.Availability = Availability;
             item.Allergens = Allergens;
             item.DietaryTags = DietaryTags;
+            item.PrimaryLanguage = PrimaryLanguage;
+            item.TranslationsJson = TranslationsJson;
         }
     }
 
-    private static ItemFields ValidateItem(SaveMenuItemRequest req)
+    private static ItemFields ValidateItem(SaveMenuItemRequest req, MenuItem? existing = null)
     {
         string name = RequireName(req.Name, ErrorCodes.MenuItemNameRequired, ErrorCodes.MenuItemNameTooLong, "Item name");
         string? description = NormalizeDescription(req.Description);
+        string language = req.PrimaryLanguage ?? existing?.PrimaryLanguage ?? "fr";
+        MenuTranslations.RequireLanguage(language);
+        string? translations = req.Translations is null
+            ? existing?.TranslationsJson : MenuTranslations.Validate(req.Translations);
 
         if (req.PriceMinor is < 0 or > MenuFields.MaxPriceMinor)
         {
@@ -559,7 +573,7 @@ public class MenuService(
             { Code = ErrorCodes.MenuDietaryTagInvalid };
         }
 
-        return new ItemFields(name, description, req.PriceMinor, availability, allergens, dietaryTags);
+        return new ItemFields(name, description, req.PriceMinor, availability, allergens, dietaryTags, language, translations);
     }
 
     private static string RequireName(string? raw, string requiredCode, string tooLongCode, string label)
@@ -649,6 +663,8 @@ public class MenuService(
         Id = i.Id,
         Name = i.Name,
         Description = i.Description,
+        PrimaryLanguage = i.PrimaryLanguage,
+        Translations = MenuTranslations.Read(i.TranslationsJson),
         PriceMinor = i.PriceMinor,
         ImageUrl = i.ImageUrl,
         Availability = MenuFields.ToName(i.Availability),

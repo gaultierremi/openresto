@@ -347,6 +347,10 @@
         "Vegan": "Vegan",
         "Vegetarian": "Vegetarian"
       },
+      "primaryLanguage": "Language of the original dish",
+      "translationHint": "Enter your own translations. Empty fields use the original text. No automatic translation.",
+      "translatedName": "Dish name — {{language}}",
+      "translatedDescription": "Description — {{language}}",
       "free": "Free",
       "priceOnRequest": "Price on request"
     },
@@ -528,6 +532,7 @@
       "name_too_long": "Menu name cannot exceed {{max}} characters.",
       "not_found": "Menu not found.",
       "price_invalid": "Price must be zero or more (at most {{max}} in the currency's smallest unit), or left empty for \"price on request\".",
+      "language_invalid": "Dish languages must be French, Dutch or English.",
       "reorder_ids_mismatch": "The new order must list every entry exactly once, with no additions."
     },
     "platform": {

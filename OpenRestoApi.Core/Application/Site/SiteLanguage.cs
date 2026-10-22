@@ -3,7 +3,7 @@ using System.Globalization;
 namespace OpenRestoApi.Core.Application.Site;
 
 /// <summary>
-/// The two languages a public site is written in, and which one a visitor gets: the explicit
+/// The three languages a public site is written in, and which one a visitor gets: the explicit
 /// <c>?lang=</c> switch first, then the browser's <c>Accept-Language</c>, then French.
 /// </summary>
 /// <seealso>SiteLanguageTests.Negotiate_LetsTheExplicitSwitchWin</seealso>
@@ -14,6 +14,7 @@ public static class SiteLanguage
 {
     public const string French = "fr";
     public const string Dutch = "nl";
+    public const string English = "en";
 
     /// <summary>The language of a site nobody asked otherwise of.</summary>
     public const string Default = French;
@@ -23,8 +24,8 @@ public static class SiteLanguage
     private const int MaxHeaderLength = 512;
     private const int MaxHeaderEntries = 16;
 
-    /// <summary>True only for exactly <c>fr</c> or <c>nl</c>: the one test a value from the address bar passes before it is echoed anywhere.</summary>
-    public static bool IsSupported(string? language) => language is French or Dutch;
+    /// <summary>Exact allow-list before a value from the address bar is echoed anywhere.</summary>
+    public static bool IsSupported(string? language) => language is French or Dutch or English;
 
     public static string Negotiate(string? queryLanguage, string? acceptLanguage)
         => IsSupported(queryLanguage) ? queryLanguage! : FromAcceptLanguage(acceptLanguage) ?? Default;
@@ -78,6 +79,7 @@ public static class SiteLanguage
         string primary = tag.Split('-', 2)[0];
         return primary.Equals(French, StringComparison.OrdinalIgnoreCase) ? French
             : primary.Equals(Dutch, StringComparison.OrdinalIgnoreCase) ? Dutch
+            : primary.Equals(English, StringComparison.OrdinalIgnoreCase) ? English
             : null;
     }
 

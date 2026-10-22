@@ -7,6 +7,7 @@ import { hexToRgba } from "@/utils/colors";
 import { formatPrice } from "@/utils/menuPrice";
 import type { PublicMenuItem } from "@/api/menus";
 import { styles } from "./MenuItemRow.styles";
+import { menuTranslation } from "@/utils/menuTranslation";
 
 const PHOTO_SIZE = 76;
 
@@ -31,7 +32,8 @@ export function usePriceLabel() {
  * diets are listed.
  */
 export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const text = menuTranslation(item, i18n.language);
   const { colors, primaryColor } = useAppTheme();
   const priceLabel = usePriceLabel();
   const soldOut = item.availability === "SoldOut";
@@ -41,7 +43,7 @@ export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency
       <View style={styles.body}>
         <View style={styles.titleLine}>
           <ThemedText style={[styles.name, soldOut && { color: colors.muted }]}>
-            {item.name}
+            {text.name}
           </ThemedText>
           {soldOut && (
             <View style={[styles.badge, { backgroundColor: colors.surfaceAlt }]}>
@@ -51,9 +53,9 @@ export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency
             </View>
           )}
         </View>
-        {item.description ? (
+        {text.description ? (
           <ThemedText style={[styles.description, { color: colors.muted }]}>
-            {item.description}
+            {text.description}
           </ThemedText>
         ) : null}
         {item.dietaryTags.length > 0 && (

@@ -347,6 +347,10 @@
         "Vegan": "Végan",
         "Vegetarian": "Végétarien"
       },
+      "primaryLanguage": "Langue principale du plat",
+      "translationHint": "Saisissez vos traductions. Un champ vide reprend le texte principal. Aucune traduction automatique.",
+      "translatedName": "Nom du plat — {{language}}",
+      "translatedDescription": "Description — {{language}}",
       "free": "Offert",
       "priceOnRequest": "Prix sur demande"
     },
@@ -528,6 +532,7 @@
       "name_too_long": "Le nom de la carte ne peut pas dépasser {{max}} caractères.",
       "not_found": "Carte introuvable.",
       "price_invalid": "Le prix doit être positif ou nul (au plus {{max}} dans la plus petite unité de la devise), ou laissé vide pour « prix sur demande ».",
+      "language_invalid": "Les langues des plats doivent être le français, le néerlandais ou l’anglais.",
       "reorder_ids_mismatch": "Le nouvel ordre doit reprendre chaque élément une seule fois, sans ajout."
     },
     "platform": {
