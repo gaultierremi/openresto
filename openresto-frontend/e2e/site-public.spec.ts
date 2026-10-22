@@ -101,6 +101,7 @@ test.describe("Website: publish, read as a guest, unpublish", () => {
     // A fresh context: the admin project's session cookie must not be mistaken for the page's own.
     const context = await browser.newContext({
       baseURL: testInfo.project.use.baseURL,
+      locale: "fr-BE",
       storageState: { cookies: [], origins: [] },
     });
     const page = await context.newPage();
