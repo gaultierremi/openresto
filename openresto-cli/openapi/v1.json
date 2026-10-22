@@ -8662,6 +8662,26 @@
             ],
             "description": "Cents. Null means \u0022price on request\u0022.",
             "format": "int64"
+          },
+          "allergens": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "EU allergen names, e.g. \u0060[\u0022Gluten\u0022,\u0022Milk\u0022]\u0060. On a save, null leaves a stored dish as it is and an empty list clears it."
+          },
+          "dietaryTags": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "\u0060Vegetarian\u0060, \u0060Vegan\u0060, \u0060GlutenFree\u0060. Null on a save leaves a stored dish as it is."
           }
         }
       },
@@ -9340,6 +9360,14 @@
       "PublicMenuRestaurantDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
           "name": {
             "type": "string"
           },

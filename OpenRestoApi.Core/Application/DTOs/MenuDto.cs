@@ -97,8 +97,10 @@ public class RegeneratedTokenDto
 }
 
 // ── Public ───────────────────────────────────────────────────────────────────
-// No internal id (restaurant, table, menu, category, item) appears in these shapes: the token in
-// the URL is the only handle a guest is given.
+// No internal id (table, menu, category, item) appears in these shapes: the token in the URL is
+// the only handle a guest is given on them. The restaurant's id is the one exception, because it
+// is already public on the listing and is what the "Book a table" button needs to open that
+// restaurant's own booking page instead of the whole list.
 
 public class PublicMenuResponse
 {
@@ -112,6 +114,7 @@ public class PublicMenuResponse
 
 public class PublicMenuRestaurantDto
 {
+    public int Id { get; set; }
     public string Name { get; set; } = null!;
     public string Timezone { get; set; } = null!;
 }
