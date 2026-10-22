@@ -129,6 +129,10 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
             .ExecuteDeleteAsync();
     }
 
+    public Task<int> CountPublicRegistrationRequestsAsync(string email, DateTime sinceUtc)
+        => _db.RestaurantInvitations.CountAsync(i => i.Email == email
+            && i.CreatedByUserId == null && i.CreatedAt > sinceUtc);
+
     public void AddAcceptance(LegalAcceptance acceptance) => _db.LegalAcceptances.Add(acceptance);
 
     public async Task<List<LegalAcceptance>> GetAcceptancesAsync(int restaurantId)

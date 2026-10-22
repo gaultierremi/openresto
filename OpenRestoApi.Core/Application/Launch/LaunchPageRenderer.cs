@@ -16,7 +16,7 @@ public static class LaunchPageRenderer
         select,textarea{width:100%;min-height:48px;font:inherit;padding:10px 12px;border:1px solid #768b80;border-radius:7px;background:white;color:var(--ink)}select:focus-visible,textarea:focus-visible{outline:3px solid #a34219;outline-offset:5px}[hidden]{display:none!important}.dish-photo{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:8px}.soldout{color:var(--muted)}h4{font-size:1.1rem;margin:0 0 16px}h1,h2,h3,h4,p,a,strong{overflow-wrap:anywhere}
         """;
 
-    public static LaunchPage Home(string baseUrl, string homePath) => Page(HomeTitle, HomeDescription, baseUrl, homePath, """
+    public static LaunchPage Home(string baseUrl, string homePath, bool noIndex = false) => Page(HomeTitle, HomeDescription, baseUrl, homePath, """
         <section class="hero" aria-labelledby="intro">
           <p class="eyebrow">Le service commence avant l’arrivée</p>
           <h1 id="intro">Votre salle se remplit.<br>Votre journée s’allège.</h1>
@@ -40,7 +40,7 @@ public static class LaunchPageRenderer
           <details><summary>Que deviennent les données de mes clients ?</summary><p>Le restaurant est responsable des données de réservation. OpenResto les traite pour son compte. La durée de conservation est réglable ; les nouveaux établissements démarrent à douze mois. Consultez la politique de confidentialité et l’accord de sous-traitance.</p></details>
           <details><summary>J’ai déjà un compte. Où me connecter ?</summary><p><a href="/onboarding/login?lang=fr">Ouvrir mon espace restaurateur</a>.</p></details>
         </section>
-        """, homePath);
+        """, homePath, noIndex);
 
     public static LaunchPage Registration(string baseUrl, string homePath, string token, string? error = null, bool enabled = true)
     {
@@ -62,7 +62,7 @@ public static class LaunchPageRenderer
     }
 
     public static LaunchPage Sent(string baseUrl, string homePath) => Page("Vérifiez votre messagerie | OpenResto", "Retrouvez votre lien personnel d’inscription.", baseUrl, "/inscription/envoyee", """
-        <div class="form-card"><p class="eyebrow">Prochaine étape</p><h1>Vérifiez votre messagerie.</h1><p>Si votre adresse peut être inscrite, vous allez recevoir un lien personnel pour créer votre compte. Il est valable quatorze jours.</p><p>Consultez aussi vos courriers indésirables. Vous avez déjà un compte ? <a href="/onboarding/login?lang=fr">Connectez-vous à votre espace</a>.</p><p><a href="/inscription">Corriger mon adresse ou demander un nouveau lien</a></p></div>
+        <div class="form-card"><p class="eyebrow">Prochaine étape</p><h1>Vérifiez votre messagerie.</h1><p>Si votre adresse peut être inscrite, vous allez recevoir un lien personnel pour créer votre compte. Il est valable quatorze jours.</p><p>Consultez aussi vos courriers indésirables. Attendez au moins dix minutes avant de demander un nouveau lien. Les envois sont limités à cinq par adresse sur vingt-quatre heures.</p><p>Vous avez déjà un compte ? <a href="/onboarding/login?lang=fr">Connectez-vous à votre espace</a>.</p><p><a href="/inscription">Corriger mon adresse ou demander un nouveau lien</a></p></div>
         """, homePath, noIndex: true);
 
     public static LaunchPage Legal(string baseUrl, string homePath, LegalDocument? document)

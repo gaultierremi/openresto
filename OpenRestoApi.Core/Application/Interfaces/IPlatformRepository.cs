@@ -60,6 +60,8 @@ public interface IPlatformRepository
 
     Task<RestaurantInvitation?> FindPublicRegistrationAsync(string email);
 
+    Task<int> CountPublicRegistrationRequestsAsync(string email, DateTime sinceUtc);
+
     Task<int> DeleteExpiredRegistrationsAsync(DateTime cutoffUtc);
 
     void AddAcceptance(LegalAcceptance acceptance);

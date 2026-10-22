@@ -29,7 +29,11 @@ public class LaunchController(
     [HttpGet("/decouvrir")]
     [HttpHead("/decouvrir")]
     public async Task<IActionResult> Discover()
-        => Enabled ? Redirect("/") : Render(LaunchPageRenderer.Home(await BaseUrlAsync(), HomePath));
+    {
+        if (Enabled) return Redirect("/");
+        Response.Headers["X-Robots-Tag"] = "noindex, follow";
+        return Render(LaunchPageRenderer.Home(await BaseUrlAsync(), HomePath, noIndex: true));
+    }
 
     [HttpGet("/inscription")]
     public async Task<IActionResult> Register()

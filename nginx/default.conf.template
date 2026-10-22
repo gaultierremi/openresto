@@ -2,6 +2,7 @@ map $uri $openresto_log_path {
     ~*^/(?:api/)?onboarding/invitations?/ /onboarding/invitation/[masque];
     ~*^/(?:api/bookings/ref|booking-confirmation)/ /bookings/[masque];
     ~*^/api/holds/ /api/holds/[masque];
+    ~*^/(?:api/)?waitlist/ /waitlist/[masque];
     ~*^/(?:api/)?menus?/[rt]/ /menu/[masque];
     default $uri;
 }

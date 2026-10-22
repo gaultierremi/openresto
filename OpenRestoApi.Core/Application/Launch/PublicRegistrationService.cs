@@ -19,6 +19,8 @@ public class PublicRegistrationService(
     ILogger<PublicRegistrationService> logger)
 {
     private static readonly SemaphoreSlim _requests = new(1, 1);
+    public static readonly TimeSpan MinimumEmailInterval = TimeSpan.FromMinutes(10);
+    public const int DailyEmailLimit = 5;
 
     public async Task<RegistrationOutcome> RequestAsync(string? name, string? email, string? website)
     {
@@ -38,8 +40,14 @@ public class PublicRegistrationService(
         {
             if (await credentials.GetByEmailAsync(address) is not null) return RegistrationOutcome.Sent;
 
-            RestaurantInvitation? previous = await repository.FindPublicRegistrationAsync(address);
             DateTime now = clock.UtcNow;
+            // Count persisted attempts, including revoked links and SMTP failures: restarting
+            // the process or changing IP must not reset the recipient's protection.
+            if (await repository.CountPublicRegistrationRequestsAsync(address, now - MinimumEmailInterval) > 0
+                || await repository.CountPublicRegistrationRequestsAsync(address, now.AddDays(-1)) >= DailyEmailLimit)
+                return RegistrationOutcome.Sent;
+
+            RestaurantInvitation? previous = await repository.FindPublicRegistrationAsync(address);
             string token = InvitationToken.New();
             Restaurant restaurant = previous?.Restaurant ?? new Restaurant
             {

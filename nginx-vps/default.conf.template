@@ -3,6 +3,7 @@ map $uri $openresto_log_path {
     ~*^/(?:api/)?onboarding/invitations?/ /onboarding/invitation/[masque];
     ~*^/(?:api/bookings/ref|booking-confirmation)/ /bookings/[masque];
     ~*^/api/holds/ /api/holds/[masque];
+    ~*^/(?:api/)?waitlist/ /waitlist/[masque];
     ~*^/(?:api/)?menus?/[rt]/ /menu/[masque];
     default $uri;
 }
@@ -15,6 +16,8 @@ server {
     listen 80;
     server_name ${DOMAIN_NAME};
     server_tokens off;
+    access_log /dev/stdout openresto_privacy;
+    error_log /dev/stderr crit;
 
     return 301 https://$host$request_uri;
 }

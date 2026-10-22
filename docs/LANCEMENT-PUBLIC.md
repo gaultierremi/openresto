@@ -6,7 +6,7 @@ L’accueil présente les réservations, la carte QR et le site vitrine. Deux en
 
 Sur une version construite depuis cette branche, ajouter `OPENRESTO_PUBLIC_LAUNCH=true` dans le fichier de configuration du kit de production (`deploy/.env`) ou du kit pour serveur partagé (`deploy/serveur-partage.env`). Les deux recettes transmettent cette valeur à `PublicLaunch:Enabled` dans ASP.NET. Pour une autre installation, définir directement `PublicLaunch__Enabled=true` dans l’environnement du backend. Le propriétaire effectue lui-même le redémarrage de l’instance.
 
-Sans cette option, l’accueil existant est conservé et l’inscription publique est fermée. `/decouvrir` permet de relire la présentation. Avec l’option, `/` sert l’accueil public en français et `/decouvrir` y redirige. Les pages des restaurants, le parcours client et les liens déjà diffusés conservent leurs adresses.
+Sans cette option, l’accueil existant est conservé et l’inscription publique est fermée. `/decouvrir` permet de relire la présentation, avec une directive `noindex` et sans figurer dans le sitemap. Avec l’option, `/` sert l’accueil public en français et `/decouvrir` y redirige. Les pages des restaurants, le parcours client et les liens déjà diffusés conservent leurs adresses.
 
 Configurer l’adresse HTTPS publique dans les réglages de marque, puis tester la messagerie depuis l’administration. Sur une base existante, les variables SMTP ne remplacent pas les réglages déjà enregistrés : l’écran d’administration reste la référence. Une adresse publique HTTPS et une messagerie fonctionnelle sont nécessaires à l’envoi des liens d’inscription. Une indisponibilité affiche un message en français et permet de recommencer.
 
@@ -17,7 +17,7 @@ Le proxy doit utiliser la configuration nginx de cette version : elle route auss
 ## Parcours et données
 
 1. Le restaurateur indique le nom de son restaurant et son adresse e-mail. Le formulaire est protégé contre les requêtes frauduleuses et limité par adresse IP.
-2. Un e-mail contient un lien personnel valable quatorze jours. Le navigateur ne reçoit aucun jeton dans la réponse du formulaire. Un renvoi réutilise le même brouillon et remplace le lien précédent. Une adresse déjà inscrite obtient la même page de confirmation et peut utiliser la connexion existante.
+2. Un e-mail contient un lien personnel valable quatorze jours. Le navigateur ne reçoit aucun jeton dans la réponse du formulaire. Un renvoi réutilise le même brouillon et remplace le lien précédent. Pour une même adresse normalisée, deux tentatives d’envoi sont espacées d’au moins dix minutes, avec un plafond de cinq sur vingt-quatre heures glissantes. Les demandes bloquées renvoient la même confirmation, sans nouveau mail ni nouvelle ligne ; le lien déjà émis reste valide. Ces limites s’appuient sur les invitations en base, y compris révoquées et après une panne SMTP, et survivent au redémarrage. Après une panne, attendre dix minutes avant de demander un nouveau lien. Une adresse déjà inscrite obtient la même page de confirmation et peut utiliser la connexion existante.
 3. Depuis le lien, le restaurateur choisit un mot de passe et accepte les versions courantes des conditions, de la confidentialité et de l’accord de sous-traitance. Le journal conserve les versions, les empreintes des textes et la date d’acceptation.
 4. L’assistant existant enregistre les coordonnées légales, les horaires, les salles et les tables, puis propose la carte et l’identité visuelle. Le restaurateur prévisualise avant de publier. Les étapes obligatoires sont vérifiées côté serveur.
 5. La publication rend le restaurant visible, son site accessible et sa carte QR consultable. Un client peut rejoindre sa page de réservation depuis son site, choisir une date et un créneau, confirmer avec son nom et son e-mail, puis retrouver ou annuler sa réservation avec sa référence et son adresse e-mail. Aucune donnée personnelle n’est ajoutée à l’URL de la page ni au stockage local par ce parcours.
@@ -26,13 +26,19 @@ Un brouillon n’est jamais visible aux clients. Le compte créé reste un compt
 
 Les pages d’inscription et les liens personnels ont des en-têtes interdisant leur mise en cache et leur indexation. Le service worker ne conserve ni les formulaires ni les pages d’administration ou d’inscription. Les documents juridiques restent en `noindex` pendant leur statut de modèle.
 
-Les journaux d’accès nginx omettent les paramètres de requête, les référents et les agents utilisateurs ; les liens personnels et les références sont masqués dans le chemin. Les erreurs détaillées du proxy sont limitées au niveau critique pour éviter d’y recopier ces liens lors d’une panne. Les codes HTTP restent visibles dans le journal d’accès. Sans JavaScript, les confirmations et recherches restent désactivées et leurs formulaires n’envoient jamais de données personnelles en GET.
+Les journaux d’accès nginx omettent les paramètres de requête, les référents et les agents utilisateurs ; les liens personnels et les références, y compris ceux de liste d’attente (`/api/waitlist/{ref}` et `/waitlist/{ref}`), sont masqués dans le chemin. Les erreurs détaillées du proxy sont limitées au niveau critique pour éviter d’y recopier ces liens lors d’une panne. Les codes HTTP restent visibles dans le journal d’accès. Sans JavaScript, les confirmations et recherches restent désactivées et leurs formulaires n’envoient jamais de données personnelles en GET.
 
 ## Textes à compléter avant une ouverture réelle
 
 Les quatre documents proviennent du même `LegalCatalog` pour l’API, les pages publiques et les consentements. Ils portent la version `2026-10-22` et affichent leur statut de modèle. L’exploitant doit compléter ses coordonnées, son identité légale, l’hébergeur, la messagerie, les pays de traitement, les durées des journaux et les informations entre crochets, puis faire valider les textes et les pratiques par un juriste. Une modification des textes impose une nouvelle version du catalogue.
 
 La politique distingue les données des restaurateurs et celles de leurs clients. Elle décrit le formulaire d’inscription, les stockages nécessaires, les droits, les journaux techniques et les transferts à vérifier. Elle ne présente pas le modèle comme une validation juridique acquise.
+
+Si le lancement public est activé alors que `LegalCatalog.NeedsLegalReview` est encore vrai, un avertissement explicite est émis au démarrage. Cet avertissement ne vaut pas validation des textes et ne remplace pas leur examen juridique.
+
+## Contrôle des publications avant activation
+
+Décision retenue pour cette version : la publication reste autonome, avec contrôle a posteriori par l’exploitant et suspension depuis l’espace plateforme. Aucun contrôle d’identité ou de numéro BCE, aucune approbation préalable et aucune notification automatique de nouvelle publication ne sont annoncés. Avant toute ouverture, désigner un responsable, organiser une revue quotidienne de la liste des établissements dans l’espace plateforme, vérifier les coordonnées déclarées auprès de leur propriétaire et prévoir un canal de signalement. Si cette surveillance ne peut pas être assurée, conserver `OPENRESTO_PUBLIC_LAUNCH=false` ; une file d’approbation ou des alertes automatiques nécessitent un chantier produit distinct.
 
 ## Vérification reproductible
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.Legal;
 using OpenRestoApi.Core.Domain;
@@ -15,6 +16,8 @@ namespace OpenRestoApi.Tests.Integration;
 public sealed class LaunchControllerTests(TestWebAppFactory root) : IClassFixture<TestWebAppFactory>, IDisposable
 {
     private readonly PlatformHarness.CapturingEmail _mail = new();
+    private readonly MutableClock _clock = new();
+    private readonly StartupLogs _logs = new();
     private WebApplicationFactory<Program>? _app;
 
     private HttpClient Client(bool enabled = true)
@@ -23,11 +26,14 @@ public sealed class LaunchControllerTests(TestWebAppFactory root) : IClassFixtur
         {
             builder.UseSetting("PublicLaunch:Enabled", enabled.ToString());
             builder.UseSetting("Website:Url", "https://launch.example");
+            builder.ConfigureLogging(logging => logging.AddProvider(_logs));
             builder.ConfigureServices(services =>
             {
-                foreach (ServiceDescriptor descriptor in services.Where(d => d.ServiceType == typeof(IEmailService)).ToList())
+                foreach (ServiceDescriptor descriptor in services.Where(d => d.ServiceType == typeof(IEmailService)
+                    || d.ServiceType == typeof(ISystemClock)).ToList())
                     services.Remove(descriptor);
                 services.AddSingleton<IEmailService>(_mail);
+                services.AddSingleton<ISystemClock>(_clock);
             });
         });
         return _app.CreateClient(new WebApplicationFactoryClientOptions
@@ -71,6 +77,7 @@ public sealed class LaunchControllerTests(TestWebAppFactory root) : IClassFixtur
         Assert.Contains("premier établissement est gratuit", html);
         Assert.Contains("<link rel=\"canonical\" href=\"https://launch.example/\">", html);
         Assert.Contains("name=\"description\"", html);
+        Assert.Contains("content=\"index,follow\"", html);
         Assert.DoesNotContain("<script", html);
         Assert.DoesNotContain("<iframe", html);
         Assert.DoesNotContain("<link rel=\"stylesheet\"", html);
@@ -78,6 +85,8 @@ public sealed class LaunchControllerTests(TestWebAppFactory root) : IClassFixtur
         Assert.Equal("/", (await client.GetAsync("/decouvrir")).Headers.Location!.ToString());
         string sitemap = await client.GetStringAsync("/sitemap.xml");
         Assert.Contains("<loc>https://launch.example/</loc>", sitemap);
+        Assert.Contains("<loc>https://launch.example/locations</loc>", sitemap);
+        Assert.DoesNotContain("/decouvrir", sitemap);
         Assert.DoesNotContain("/inscription", sitemap);
     }
 
@@ -86,7 +95,14 @@ public sealed class LaunchControllerTests(TestWebAppFactory root) : IClassFixtur
     {
         using HttpClient client = Client(enabled: false);
         Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/")).StatusCode);
-        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/decouvrir")).StatusCode);
+        HttpResponseMessage preview = await client.GetAsync("/decouvrir");
+        Assert.Equal(HttpStatusCode.OK, preview.StatusCode);
+        Assert.Contains("content=\"noindex,follow\"", await preview.Content.ReadAsStringAsync());
+        Assert.Equal("noindex, follow", preview.Headers.GetValues("X-Robots-Tag").Single());
+        string sitemap = await client.GetStringAsync("/sitemap.xml");
+        Assert.DoesNotContain("/decouvrir", sitemap);
+        Assert.DoesNotContain("<loc>https://launch.example/</loc>", sitemap);
+        Assert.DoesNotContain("<loc>https://launch.example/locations</loc>", sitemap);
         Assert.Contains("pas encore ouvertes", await client.GetStringAsync("/inscription"));
         HttpResponseMessage refused = await Submit(client, "Closed", "closed@launch.example");
         Assert.Equal(HttpStatusCode.NotFound, refused.StatusCode);
@@ -116,6 +132,12 @@ public sealed class LaunchControllerTests(TestWebAppFactory root) : IClassFixtur
 
         HttpResponseMessage again = await Submit(client, "A different name", address);
         Assert.Equal(HttpStatusCode.SeeOther, again.StatusCode);
+        Assert.Single(_mail.Sent);
+        Assert.Equal(1, await InDb(db => db.RestaurantInvitations.CountAsync(i => i.Email == address)));
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync($"/api/onboarding/invitations/{token}")).StatusCode);
+        _clock.UtcNow += TimeSpan.FromMinutes(10);
+        Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "A different name", address)).StatusCode);
+        Assert.Equal(2, _mail.Sent.Count);
         Assert.Equal(1, await InDb(db => db.RestaurantInvitations.Where(i => i.Email == address).Select(i => i.RestaurantId).Distinct().CountAsync()));
         Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync($"/api/onboarding/invitations/{token}")).StatusCode);
     }
@@ -173,8 +195,62 @@ public sealed class LaunchControllerTests(TestWebAppFactory root) : IClassFixtur
         Assert.DoesNotContain(address, html);
         _mail.Fail = false;
         Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "Retry", address)).StatusCode);
+        Assert.Empty(_mail.Sent);
+        Assert.Equal(1, await InDb(db => db.RestaurantInvitations.CountAsync(i => i.Email == address)));
+        _clock.UtcNow += TimeSpan.FromMinutes(10);
+        Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "Retry", address)).StatusCode);
         Assert.Single(_mail.Sent);
         Assert.Equal(1, await InDb(db => db.RestaurantInvitations.Where(i => i.Email == address).Select(i => i.RestaurantId).Distinct().CountAsync()));
+    }
+
+    [Theory]
+    [InlineData(599, 1)]
+    [InlineData(600, 2)]
+    public async Task RecipientCooldown_UsesTheNormalizedAddress_AndAllowsExactlyTenMinutes(int seconds, int expected)
+    {
+        using HttpClient client = Client();
+        string address = $"cooldown-{Guid.NewGuid():N}@launch.example";
+        Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "Cooldown", address)).StatusCode);
+        _clock.UtcNow = _clock.UtcNow.AddSeconds(seconds);
+        Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "Another name", address.ToUpperInvariant())).StatusCode);
+        Assert.Equal(expected, _mail.Sent.Count);
+        Assert.Equal(expected, await InDb(db => db.RestaurantInvitations.CountAsync(i => i.Email == address)));
+        Assert.Equal(1, await InDb(db => db.RestaurantInvitations.Where(i => i.Email == address).Select(i => i.RestaurantId).Distinct().CountAsync()));
+    }
+
+    [Fact]
+    public async Task RecipientLimit_IsFiveAttemptsPerRollingDay_IncludingRevokedLinks_WithoutBlockingAnotherAddress()
+    {
+        using HttpClient client = Client();
+        string address = $"daily-{Guid.NewGuid():N}@launch.example";
+        DateTime start = _clock.UtcNow;
+        for (int i = 0; i < 5; i++)
+        {
+            _clock.UtcNow = start.AddMinutes(10 * i);
+            Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "Daily", address)).StatusCode);
+        }
+        Assert.Equal(5, _mail.Sent.Count);
+        _clock.UtcNow = start.AddDays(1).AddSeconds(-1);
+        Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "Blocked", address)).StatusCode);
+        Assert.Equal(5, _mail.Sent.Count);
+        Assert.Equal(5, await InDb(db => db.RestaurantInvitations.CountAsync(i => i.Email == address)));
+        Assert.Equal(1, await InDb(db => db.RestaurantInvitations.CountAsync(i => i.Email == address && i.RevokedAt == null)));
+        Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "Other", $"other-{address}")).StatusCode);
+        Assert.Equal(6, _mail.Sent.Count);
+        _clock.UtcNow = start.AddDays(1);
+        Assert.Equal(HttpStatusCode.SeeOther, (await Submit(client, "Allowed again", address)).StatusCode);
+        Assert.Equal(7, _mail.Sent.Count);
+        Assert.Equal(6, await InDb(db => db.RestaurantInvitations.CountAsync(i => i.Email == address)));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void LegalTemplates_ProduceAStartupWarning_OnlyWhenPublicLaunchIsEnabled(bool enabled)
+    {
+        using HttpClient client = Client(enabled);
+        Assert.Equal(enabled, _logs.Messages.Any(m => m.Level == LogLevel.Warning
+            && m.Text.Contains("modèles juridiques incomplets", StringComparison.Ordinal)));
     }
 
     [Fact]
@@ -297,6 +373,27 @@ public sealed class LaunchControllerTests(TestWebAppFactory root) : IClassFixtur
             HttpResponseMessage response = await client.GetAsync(path);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Equal("true", response.Headers.GetValues("X-OpenResto-Legacy").Single());
+        }
+    }
+
+    private sealed class MutableClock : ISystemClock
+    {
+        public DateTime UtcNow { get; set; } = DateTime.UtcNow;
+    }
+
+    private sealed class StartupLogs : ILoggerProvider
+    {
+        public System.Collections.Concurrent.ConcurrentQueue<(LogLevel Level, string Text)> Messages { get; } = new();
+        public ILogger CreateLogger(string categoryName) => new Capture(this);
+        public void Dispose() { }
+
+        private sealed class Capture(StartupLogs owner) : ILogger
+        {
+            public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Warning;
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+                Func<TState, Exception?, string> formatter)
+                => owner.Messages.Enqueue((logLevel, formatter(state, exception)));
         }
     }
 }
