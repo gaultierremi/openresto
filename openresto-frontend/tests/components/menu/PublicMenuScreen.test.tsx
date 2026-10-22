@@ -103,7 +103,7 @@ const response = (
   menus: PublicMenu[] = [lunch],
   over: Partial<PublicMenuResponse> = {}
 ): PublicMenuResponse => ({
-  restaurant: { name: "Chez Paul", timezone: "Europe/Paris" },
+  restaurant: { id: 7, name: "Chez Paul", timezone: "Europe/Paris" },
   table: null,
   menus,
   ...over,
@@ -221,7 +221,7 @@ describe("PublicMenuScreen", () => {
       mockFetch
         .mockReturnValueOnce(new Promise((r) => (resolveOld = r)))
         .mockResolvedValueOnce(
-          ok([dinner], { restaurant: { name: "New Place", timezone: "UTC" } })
+          ok([dinner], { restaurant: { id: 8, name: "New Place", timezone: "UTC" } })
         );
       const { rerender } = render(<PublicMenuScreen kind="r" token="old" />);
       rerender(<PublicMenuScreen kind="r" token="new" />);
@@ -562,16 +562,84 @@ describe("PublicMenuScreen", () => {
       expect(screen.queryByTestId("menu-empty")).toBeNull();
     });
 
-    it("keeps the filter when the guest moves to another menu", async () => {
-      await showMenu(ok([lunch, dinner]));
+    it("keeps the filter when the guest moves to another menu that declares something", async () => {
+      const vegan: PublicMenu = {
+        ...dinner,
+        categories: [
+          {
+            name: "Tasting",
+            description: null,
+            items: [dish("Seven courses", { allergens: ["Fish"] })],
+          },
+        ],
+      };
+      await showMenu(ok([lunch, vegan]));
       fireEvent.press(screen.getByTestId("menu-diet-Vegan"));
       fireEvent.press(screen.getAllByTestId("menu-tab")[1]);
       expect(screen.getByTestId("menu-empty").props.children).toBe("No dish matches your filters.");
     });
   });
 
+  describe("a menu that declares no allergen and no diet", () => {
+    it("offers no filter, lists every dish and tells the guest the information is missing", async () => {
+      await showMenu(ok([dinner]));
+
+      expect(screen.queryByTestId("menu-diet-Vegan")).toBeNull();
+      expect(screen.queryByTestId("menu-allergens-toggle")).toBeNull();
+      expect(dishNames()).toEqual(["Seven courses"]);
+      expect(screen.getByTestId("menu-no-declarations").props.children).toBe(
+        "This restaurant has not listed the allergens or diets of its dishes. If you have an allergy, ask the staff before ordering."
+      );
+    });
+
+    it("offers the filters, and no such notice, as soon as one dish declares an allergen or a diet", async () => {
+      const oneDeclared: PublicMenu = {
+        ...dinner,
+        categories: [
+          {
+            name: "Tasting",
+            description: null,
+            items: [dish("Seven courses"), dish("Green plate", { dietaryTags: ["Vegan"] })],
+          },
+        ],
+      };
+      await showMenu(ok([oneDeclared]));
+
+      expect(screen.getByTestId("menu-diet-Vegan")).toBeTruthy();
+      expect(screen.queryByTestId("menu-no-declarations")).toBeNull();
+    });
+
+    it("does not let a filter remembered from another menu hide its dishes", async () => {
+      const getItem = jest
+        .spyOn(StorageService, "getItem")
+        .mockImplementation((key: string) =>
+          key === MENU_FILTER_STORAGE_KEY ? JSON.stringify({ avoid: [], diets: ["Vegan"] }) : null
+        );
+      try {
+        await showMenu(ok([dinner]));
+
+        expect(dishNames()).toEqual(["Seven courses"]);
+        expect(screen.queryByTestId("menu-empty")).toBeNull();
+      } finally {
+        getItem.mockRestore();
+      }
+    });
+
+    it("shows the filters again, still set, when the guest returns to a menu that declares", async () => {
+      await showMenu(ok([lunch, dinner]));
+      fireEvent.press(screen.getByTestId("menu-diet-Vegan"));
+
+      fireEvent.press(screen.getAllByTestId("menu-tab")[1]);
+      expect(dishNames()).toEqual(["Seven courses"]);
+      expect(screen.getByTestId("menu-no-declarations")).toBeTruthy();
+
+      fireEvent.press(screen.getAllByTestId("menu-tab")[0]);
+      expect(dishNames()).toEqual(["Vegan bowl"]);
+    });
+  });
+
   describe("booking button", () => {
-    it("opens the booking flow on the locations page", async () => {
+    it("opens the booking page of this restaurant, not the list of every restaurant", async () => {
       await showMenu();
       expect(screen.getByText("Book a table")).toBeTruthy();
       expect(mockPush).not.toHaveBeenCalled();
@@ -579,7 +647,17 @@ describe("PublicMenuScreen", () => {
       fireEvent.press(screen.getByTestId("menu-book"));
 
       expect(mockPush).toHaveBeenCalledTimes(1);
-      expect(mockPush).toHaveBeenCalledWith("/locations");
+      expect(mockPush).toHaveBeenCalledWith("/locations/7");
+    });
+
+    it("follows the restaurant the menu belongs to", async () => {
+      await showMenu(
+        ok([lunch], { restaurant: { id: 42, name: "Chez Paul", timezone: "Europe/Paris" } })
+      );
+
+      fireEvent.press(screen.getByTestId("menu-book"));
+
+      expect(mockPush).toHaveBeenCalledWith("/locations/42");
     });
 
     it("words the button in the active language", async () => {

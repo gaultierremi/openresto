@@ -2,6 +2,7 @@ import { View, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/themed-text";
 import { usePersistedState } from "@/hooks/use-persisted-state";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { AnimatedAccordion } from "@/components/common/AnimatedAccordion";
 import { getDayLabels, getDayShort, modeButton } from "./sectionHelpers";
 import { styles as settingsStyles } from "./settings.styles";
@@ -44,6 +45,7 @@ export function WalkInPolicySection({
   isDark,
 }: WalkInPolicySectionProps) {
   const { t } = useTranslation();
+  const { onPrimary } = useAppTheme();
   const modeTheme = { borderColor, mutedColor, textColor, isDark };
   const [expanded, setExpanded] = usePersistedState("locations:walkIn:expanded", true);
   const dayLabels = getDayLabels(t);
@@ -132,7 +134,10 @@ export function WalkInPolicySection({
                       ]}
                     >
                       <ThemedText
-                        style={[settingsStyles.dayBtnLabel, { color: active ? "#fff" : textColor }]}
+                        style={[
+                          settingsStyles.dayBtnLabel,
+                          { color: active ? onPrimary : textColor },
+                        ]}
                       >
                         {label}
                       </ThemedText>

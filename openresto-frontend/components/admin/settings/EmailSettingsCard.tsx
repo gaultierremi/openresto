@@ -48,7 +48,7 @@ export function EmailSettingsCard({
   const [showPassword, setShowPassword] = useState(false);
   const [expanded, setExpanded] = usePersistedState("settings:email:expanded", true);
 
-  const { primaryColor } = useAppTheme();
+  const { primaryColor, onPrimary } = useAppTheme();
   const accentSoft = `${primaryColor}18`;
 
   const {
@@ -137,7 +137,7 @@ export function EmailSettingsCard({
                     </ThemedText>
                     {on && (
                       <View style={[styles.providerCheck, { backgroundColor: primaryColor }]}>
-                        <Icon name="checkmark" size={11} color="#fff" />
+                        <Icon name="checkmark" size={11} color={onPrimary} />
                       </View>
                     )}
                   </Pressable>

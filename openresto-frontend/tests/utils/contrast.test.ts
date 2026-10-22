@@ -1,4 +1,4 @@
-import { blend, contrastRatio, ensureContrast, relativeLuminance } from "@/utils/contrast";
+import { blend, contrastRatio, ensureContrast, labelOn, relativeLuminance } from "@/utils/contrast";
 import { hexToRgb } from "@/utils/hex";
 
 describe("contrast - ratios", () => {
@@ -15,6 +15,16 @@ describe("contrast - ratios", () => {
   it("puts white above black in luminance", () => {
     expect(relativeLuminance("#ffffff")).toBeCloseTo(1, 5);
     expect(relativeLuminance("#000000")).toBe(0);
+  });
+
+  it("puts a white label on a dark fill and a black one on a pale fill", () => {
+    expect(labelOn("#1f2937")).toBe("#ffffff");
+    expect(labelOn("#facc15")).toBe("#000000");
+  });
+
+  it("keeps white up to the greys that still read AA against it, and not past them", () => {
+    expect(labelOn("#767676")).toBe("#ffffff");
+    expect(labelOn("#777777")).toBe("#000000");
   });
 
   it("blends a colour onto a base at the given strength", () => {

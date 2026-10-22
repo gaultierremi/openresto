@@ -156,9 +156,40 @@ describe("Button", () => {
           Act
         </Button>
       );
-      expect(surface().borderColor).toBe(theme.colors.error);
+      expect(surface().borderColor).toBe("#b91c1c");
       expect(surface().backgroundColor).toBeUndefined();
-      expect(labelColor().color).toBe(theme.colors.error);
+      expect(labelColor().color).toBe("#b91c1c");
+    });
+
+    // The plain red is 4.3:1 on the light page and 3.4:1 on a dark card, the plain amber 1.9:1
+    // on the light page: as a label each steps to the shade that reads there, and as a fill each
+    // stays itself under its label.
+    it.each([
+      ["danger", "light", "#b91c1c"],
+      ["danger", "dark", "#f87171"],
+      ["warning", "light", "#b45309"],
+      ["warning", "dark", theme.colors.warning],
+    ] as const)(
+      "writes a %s label in the shade that reads on a %s theme",
+      (tone, scheme, color) => {
+        const { useColorScheme } = require("@/hooks/use-color-scheme");
+        (useColorScheme as jest.Mock).mockReturnValue(scheme);
+        render(
+          <Button variant="secondary" tone={tone}>
+            Act
+          </Button>
+        );
+        expect(labelColor().color).toBe(color);
+        expect(
+          contrastRatio(color, scheme === "dark" ? "#1e2022" : "#f2f3f5")
+        ).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST);
+        (useColorScheme as jest.Mock).mockReturnValue("light");
+      }
+    );
+
+    it.each(["danger", "warning"] as const)("keeps a filled %s button its plain colour", (tone) => {
+      render(<Button tone={tone}>Act</Button>);
+      expect(surface().backgroundColor).toBe(theme.colors[tone === "danger" ? "error" : "warning"]);
     });
 
     /**

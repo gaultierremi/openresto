@@ -315,7 +315,11 @@ export const getThemeColors = (isDark: boolean) => ({
   overlay: isDark ? theme.colors.overlay.dark : theme.colors.overlay.light,
   disabled: isDark ? theme.colors.disabled.dark : theme.colors.disabled.light,
   success: theme.colors.success,
-  error: theme.colors.error,
+  // Text, not fill: the plain red and amber are 4.3:1 and 1.9:1 on the light page and 3.4:1 on
+  // a dark card, so the label colours step darker on light and lighter on dark. A fill keeps
+  // `theme.colors.error`/`warning`.
+  error: isDark ? "#f87171" : "#b91c1c",
   warning: theme.colors.warning,
+  warningText: isDark ? theme.colors.warning : "#b45309",
   info: theme.colors.info,
 });

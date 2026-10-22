@@ -77,4 +77,25 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17,
   },
+  declarations: {
+    alignItems: "flex-start",
+    gap: theme.spacing.sm,
+  },
+  declarationsBody: {
+    gap: theme.spacing.sm,
+    alignSelf: "stretch",
+  },
+  label: {
+    ...theme.typography.bodyBold,
+    fontSize: 13,
+  },
+  hint: {
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  chips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing.sm,
+  },
 });

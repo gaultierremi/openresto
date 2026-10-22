@@ -93,8 +93,10 @@ export default function Button({
 
   const toneColors: Record<ButtonTone, string> = {
     brand: primaryColor,
-    danger: theme.colors.error,
-    warning: theme.colors.warning,
+    // A fill keeps the plain red and amber under its label; text on the page takes the shade
+    // that reads there (see `getThemeColors`).
+    danger: filled ? theme.colors.error : colors.error,
+    warning: filled ? theme.colors.warning : colors.warningText,
     // The success green is 3.3:1 against white either way round, so a filled pill and any
     // label on a light card take the arrived green; on a dark card the lighter one reads.
     success: filled || !isDark ? theme.status.arrived.text : theme.colors.success,

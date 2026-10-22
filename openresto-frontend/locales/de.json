@@ -789,6 +789,7 @@
         "disclaimer": "Die Filter beruhen auf den Angaben des Restaurants. Bei einer Allergie sagen Sie dem Personal vor der Bestellung Bescheid."
       },
       "loading": "Speisekarte wird geladen…",
+      "noDeclarations": "Dieses Restaurant hat die Allergene und Ernährungsformen seiner Gerichte nicht angegeben. Bei einer Allergie fragen Sie bitte das Personal, bevor Sie bestellen.",
       "noMatch": "Kein Gericht passt zu Ihren Filtern.",
       "notFound": {
         "body": "Diese Speisekarte ist im Moment nicht verfügbar. Bitte fragen Sie das Personal.",
@@ -976,6 +977,12 @@
         "unassignedUnit": "Kein Tisch",
         "guestFallback": "Gast",
         "peopleAbbrev": "{{count}}P",
+        "remaining": {
+          "ending": "gleich zu Ende",
+          "hours": "noch {{hours}} Std.",
+          "hoursMinutes": "noch {{hours}} Std. {{minutes}} Min.",
+          "minutes": "noch {{minutes}} Min."
+        },
         "sittingLabel": "{{guest}}, {{seats}} Gedecke an {{unit}}, {{start}} bis {{end}}",
         "sittingLabelWithRemaining": "{{guest}}, {{seats}} Gedecke an {{unit}}, {{start}} bis {{end}}, {{remaining}}"
       },
@@ -1633,6 +1640,8 @@
         "addDish": "Gericht hinzufügen",
         "categoryNameLabel": "Kategorie",
         "categoryNamePlaceholder": "Vorspeisen, Hauptgerichte, Desserts …",
+        "declarations": "Allergene und Ernährungsformen",
+        "declarationsCount": "Allergene und Ernährungsformen ({{count}})",
         "description": "Erstellen Sie Ihre erste Speisekarte: Kategorien und ihre Gerichte. Sie erscheint auf Ihrer Webseite und hinter Ihrem QR-Code. Dieser Schritt ist optional.",
         "descriptionLabel": "Beschreibung des Gerichts",
         "descriptionPlaceholder": "Beschreibung (optional)",
@@ -1668,6 +1677,9 @@
         "loading": "Vorschau wird geladen…",
         "qr": {
           "codeLabel": "QR-Code Ihrer Speisekarte",
+          "downloadFailed": "Das Bild konnte nicht erstellt werden. Versuchen Sie stattdessen die Datei für die Druckerei.",
+          "downloadPng": "Bild zum Drucken herunterladen (PNG)",
+          "downloadSvg": "Datei für die Druckerei (SVG)",
           "empty": "Ihre Speisekarte ist leer. Gehen Sie zurück zum Schritt „Speisekarte“, um Gerichte hinzuzufügen.",
           "noteDraft": "Dieser Code funktioniert erst, wenn Ihr Restaurant veröffentlicht ist.",
           "noteLive": "Dieser Code ist aktiv: Ihre Gäste können ihn sofort scannen.",

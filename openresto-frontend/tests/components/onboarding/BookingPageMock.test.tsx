@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen, within } from "@testing-library/react-native";
 import { BookingPageMock } from "@/components/onboarding/BookingPageMock";
 import { preview } from "@/tests/helpers/onboardingFixtures";
-import { BrandPaletteScope } from "@/context/BrandPaletteContext";
 import { brandPalette } from "@/theme/brandColors";
 
 jest.mock("@/context/BrandContext", () => ({
@@ -94,23 +93,23 @@ describe("BookingPageMock", () => {
     ).toBeTruthy();
   });
 
-  it("paints with the restaurant's colour, or the platform's when it has none", () => {
-    // The onboarding is the restaurateur's space, which shows the colour as chosen.
-    const inOnboarding = (p: ReturnType<typeof preview>) => (
-      <BrandPaletteScope mode="chosen">
-        <BookingPageMock preview={p} />
-      </BrandPaletteScope>
-    );
-    const { rerender } = render(inOnboarding(preview({ primaryColor: "#b45309" })));
+  it("paints with the restaurant's own colour when it has one", () => {
+    render(<BookingPageMock preview={preview({ primaryColor: "#b45309" })} />);
     expect(screen.getByText("Chez Paul")).toHaveStyle({ color: "#b45309" });
-    rerender(inOnboarding(preview({ primaryColor: null })));
-    expect(screen.getByText("Chez Paul")).toHaveStyle({ color: "#0a7ea4" });
   });
 
-  it("falls back to the platform's colour made readable where no scope says otherwise", () => {
+  it("falls back to the platform's colour made readable when the restaurant has none", () => {
     render(<BookingPageMock preview={preview({ primaryColor: null })} />);
     expect(screen.getByText("Chez Paul")).toHaveStyle({
       color: brandPalette("#0a7ea4", false).primary,
     });
+  });
+
+  it("writes the chosen party size white on a dark colour and black on a pale one", () => {
+    const { rerender } = render(<BookingPageMock preview={preview({ primaryColor: "#b45309" })} />);
+    expect(screen.getByText("2")).toHaveStyle({ color: "#ffffff" });
+
+    rerender(<BookingPageMock preview={preview({ primaryColor: "#facc15" })} />);
+    expect(screen.getByText("2")).toHaveStyle({ color: "#000000" });
   });
 });

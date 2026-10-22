@@ -15,13 +15,14 @@ import { useAppTheme } from "@/hooks/use-app-theme";
 import { MENU_DEFAULT_LOCALE } from "@/constants/locales";
 import { useRouteDefaultLocale } from "@/context/LocaleContext";
 import { useMenuFilter } from "@/hooks/use-menu-filter";
-import { filterCategories, isFilterActive } from "@/utils/menuFilter";
+import { declaresAnything, filterCategories, isFilterActive, NO_FILTER } from "@/utils/menuFilter";
 import { hexToRgba } from "@/utils/colors";
 import { styles } from "./PublicMenuScreen.styles";
 
 type Load = { status: "loading" } | PublicMenuOutcome;
 
-const BOOKING_PATH = "/locations" as Href;
+/** The booking page of the restaurant whose menu this is, not the list of every restaurant. */
+const bookingPath = (restaurantId: number) => `/locations/${restaurantId}` as Href;
 
 /** What the scroll content leaves free for the booking bar pinned over the bottom of the page. */
 const BOOK_BAR_CLEARANCE = 96;
@@ -70,8 +71,6 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
     }
   }, [restaurantName, t]);
 
-  const goBook = () => router.push(BOOKING_PATH);
-
   if (load.status === "loading") {
     return (
       <ThemedView style={styles.center}>
@@ -113,7 +112,11 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
 
   const { restaurant, table, menus } = load.menu;
   const menu = menus[Math.min(menuIndex, menus.length - 1)];
-  const categories = menu ? filterCategories(menu.categories, filter) : [];
+  const declares = menu ? declaresAnything(menu.categories) : false;
+  // A filter kept from another menu must not hide dishes here when this one gives it nothing to go on.
+  const activeFilter = declares ? filter : NO_FILTER;
+  const categories = menu ? filterCategories(menu.categories, activeFilter) : [];
+  const goBook = () => router.push(bookingPath(restaurant.id));
 
   return (
     <ThemedView style={styles.screen}>
@@ -181,11 +184,20 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
             </ThemedText>
           ) : null}
 
-          <MenuFilters filter={filter} onChange={setFilter} />
+          {declares ? (
+            <MenuFilters filter={filter} onChange={setFilter} />
+          ) : (
+            <ThemedText
+              testID="menu-no-declarations"
+              style={[styles.menuDescription, { color: colors.muted }]}
+            >
+              {t("restaurant.publicMenu.noDeclarations")}
+            </ThemedText>
+          )}
 
           {categories.length === 0 ? (
             <ThemedText testID="menu-empty" style={[styles.empty, { color: colors.muted }]}>
-              {isFilterActive(filter)
+              {isFilterActive(activeFilter)
                 ? t("restaurant.publicMenu.noMatch")
                 : t("restaurant.publicMenu.emptyMenu")}
             </ThemedText>

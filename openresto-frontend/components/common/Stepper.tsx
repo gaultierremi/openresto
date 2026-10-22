@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { haptics } from "@/utils/haptics";
 import { IconButton } from "@/components/common/IconButton";
 import { ThemedText } from "@/components/themed-text";
@@ -51,15 +51,26 @@ export default function Stepper({
     onChange(next.value);
   };
 
+  // `adjustable` is how a phone's screen reader swipes a value up and down. On the web it turns
+  // into an ARIA `slider`, which has to carry `aria-valuenow` and cannot contain buttons: this
+  // one holds two, so there it is a labelled group around them instead.
+  const semantics =
+    Platform.OS === "web"
+      ? ({ role: "group" } as const)
+      : ({
+          accessibilityRole: "adjustable",
+          accessibilityValue: { text: label },
+          accessibilityActions: [{ name: "increment" }, { name: "decrement" }],
+          onAccessibilityAction: (event: { nativeEvent: { actionName: string } }) =>
+            step(event.nativeEvent.actionName === "increment" ? 1 : -1),
+        } as const);
+
   return (
     <View
       style={[styles.container, { borderColor: colors.border, backgroundColor: colors.input }]}
       testID={testID}
-      accessibilityRole="adjustable"
       accessibilityLabel={accessibilityLabel}
-      accessibilityValue={{ text: label }}
-      accessibilityActions={[{ name: "increment" }, { name: "decrement" }]}
-      onAccessibilityAction={(event) => step(event.nativeEvent.actionName === "increment" ? 1 : -1)}
+      {...semantics}
     >
       <IconButton
         name="remove"

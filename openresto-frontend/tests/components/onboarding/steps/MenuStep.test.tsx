@@ -33,7 +33,14 @@ const SAVED = state({
         id: 1,
         name: "Entrées",
         items: [
-          { id: 11, name: "Croquettes", description: "Maison", priceMinor: 1450 },
+          {
+            id: 11,
+            name: "Croquettes",
+            description: "Maison",
+            priceMinor: 1450,
+            allergens: ["Gluten", "Crustaceans"],
+            dietaryTags: [],
+          },
           { id: 12, name: "Soupe", description: null, priceMinor: null },
         ],
       },
@@ -73,6 +80,71 @@ describe("MenuStep", () => {
     expect(screen.getByTestId("category-0-dish-0-price").props.value).toBe("14,50");
     expect(screen.getByTestId("category-0-dish-1-price").props.value).toBe("");
     expect(screen.getByTestId("category-1-name").props.value).toBe("Desserts");
+  });
+
+  describe("allergens and diets", () => {
+    const checked = (testID: string) => screen.getByTestId(testID).props.accessibilityState.checked;
+
+    it("keeps the chips folded, and counts what a saved dish already declares", () => {
+      render(<MenuStep {...stepProps({ state: SAVED })} />);
+
+      expect(screen.getByTestId("category-0-dish-0-declarations")).toHaveTextContent(
+        "Allergens and diets (2)"
+      );
+      expect(screen.getByTestId("category-0-dish-1-declarations")).toHaveTextContent(
+        "Allergens and diets"
+      );
+      expect(screen.queryByTestId("category-0-dish-0-allergen-Gluten")).toBeNull();
+    });
+
+    it("opens the chips with what the dish declares ticked, and folds them again", () => {
+      render(<MenuStep {...stepProps({ state: SAVED })} />);
+
+      fireEvent.press(screen.getByTestId("category-0-dish-0-declarations"));
+
+      expect(checked("category-0-dish-0-allergen-Gluten")).toBe(true);
+      expect(checked("category-0-dish-0-allergen-Crustaceans")).toBe(true);
+      expect(checked("category-0-dish-0-allergen-Eggs")).toBe(false);
+      expect(checked("category-0-dish-0-diet-Vegan")).toBe(false);
+
+      fireEvent.press(screen.getByTestId("category-0-dish-0-declarations"));
+      expect(screen.queryByTestId("category-0-dish-0-allergen-Gluten")).toBeNull();
+    });
+
+    it("opens one dish only", () => {
+      render(<MenuStep {...stepProps({ state: SAVED })} />);
+
+      fireEvent.press(screen.getByTestId("category-0-dish-0-declarations"));
+
+      expect(screen.queryByTestId("category-0-dish-1-allergen-Gluten")).toBeNull();
+    });
+
+    it("sends what was ticked with the dish", async () => {
+      mockSave.mockResolvedValue(ok(readyState()));
+      withNewDish("14,50");
+      fireEvent.press(screen.getByTestId("category-0-dish-0-declarations"));
+      fireEvent.press(screen.getByTestId("category-0-dish-0-allergen-Milk"));
+      fireEvent.press(screen.getByTestId("category-0-dish-0-allergen-Eggs"));
+      fireEvent.press(screen.getByTestId("category-0-dish-0-diet-Vegetarian"));
+
+      await press();
+
+      const dish = mockSave.mock.calls[0][1].categories[0].items[0];
+      expect(dish.allergens).toEqual(["Eggs", "Milk"]);
+      expect(dish.dietaryTags).toEqual(["Vegetarian"]);
+    });
+
+    it("sends an empty list for a dish whose allergens were all unticked", async () => {
+      mockSave.mockResolvedValue(ok(readyState()));
+      render(<MenuStep {...stepProps({ state: SAVED })} />);
+      fireEvent.press(screen.getByTestId("category-0-dish-0-declarations"));
+      fireEvent.press(screen.getByTestId("category-0-dish-0-allergen-Gluten"));
+      fireEvent.press(screen.getByTestId("category-0-dish-0-allergen-Crustaceans"));
+
+      await press();
+
+      expect(mockSave.mock.calls[0][1].categories[0].items[0].allergens).toEqual([]);
+    });
   });
 
   describe("prices", () => {
@@ -138,14 +210,36 @@ describe("MenuStep", () => {
           id: 1,
           name: "Entrées",
           items: [
-            { id: 11, name: "Croquettes", description: "Maison", priceMinor: 1450 },
-            { id: 12, name: "Soupe", description: null, priceMinor: null },
+            {
+              id: 11,
+              name: "Croquettes",
+              description: "Maison",
+              priceMinor: 1450,
+              allergens: ["Gluten", "Crustaceans"],
+              dietaryTags: [],
+            },
+            {
+              id: 12,
+              name: "Soupe",
+              description: null,
+              priceMinor: null,
+              allergens: [],
+              dietaryTags: [],
+            },
           ],
         },
         {
           id: 2,
           name: "Desserts",
-          items: [{ name: "Dame blanche", description: null, priceMinor: 850 }],
+          items: [
+            {
+              name: "Dame blanche",
+              description: null,
+              priceMinor: 850,
+              allergens: [],
+              dietaryTags: [],
+            },
+          ],
         },
       ],
     });
@@ -199,7 +293,16 @@ describe("MenuStep", () => {
       {
         id: 1,
         name: "Entrées",
-        items: [{ id: 12, name: "Soupe", description: null, priceMinor: null }],
+        items: [
+          {
+            id: 12,
+            name: "Soupe",
+            description: null,
+            priceMinor: null,
+            allergens: [],
+            dietaryTags: [],
+          },
+        ],
       },
     ]);
   });

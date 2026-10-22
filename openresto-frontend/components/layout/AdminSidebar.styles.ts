@@ -81,7 +81,6 @@ export const styles = StyleSheet.create({
   navBadgeText: {
     fontSize: 9,
     fontWeight: "700",
-    color: theme.colors.white,
   },
   navLabel: {
     fontSize: 14,

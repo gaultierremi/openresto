@@ -1,15 +1,41 @@
 import type { BookingDetailDto, SectionWithTables } from "@/api/admin";
 import type { TableGroupDto } from "@/api/restaurants";
+import i18n from "@/i18n";
 import { minutesInTimezone } from "@/utils/date";
+import { getActiveLocale } from "@/utils/locale";
 import { groupDisplayName } from "@/utils/tableGroups";
 
 const MINUTES_PER_DAY = 24 * 60;
 const MINUTES_PER_HOUR = 60;
 
-/** 12-hour clock labels, indexed by 24-hour hour. Midnight reads 12a, not 0a. */
-const HOUR_LABELS = Array.from({ length: 24 }, (_, h) =>
-  h === 0 ? "12a" : h < 12 ? `${h}a` : h === 12 ? "12p" : `${h - 12}p`
-);
+/**
+ * Whether the language in use writes the time on a 24-hour clock (French, Dutch, German and
+ * Spanish do, English does not), so the timetable reads "18:30" where a French staff member
+ * would be thrown by "6:30p".
+ *
+ * @see [bookingTimeline.test.ts](../tests/utils/bookingTimeline.test.ts) — pins the 24-hour
+ * labels under French and the 12-hour ones under English.
+ */
+function usesTwentyFourHourClock(): boolean {
+  const cycle = new Intl.DateTimeFormat(getActiveLocale(), {
+    hour: "numeric",
+  }).resolvedOptions().hourCycle;
+  return cycle === "h23" || cycle === "h24";
+}
+
+const twoDigits = (n: number): string => String(n).padStart(2, "0");
+
+/** The label of a whole hour on the timetable's header, indexed by 24-hour hour. */
+function hourLabel(hour24: number): string {
+  if (usesTwentyFourHourClock()) return `${twoDigits(hour24)}:00`;
+  return hour24 === 0
+    ? "12a"
+    : hour24 < 12
+      ? `${hour24}a`
+      : hour24 === 12
+        ? "12p"
+        : `${hour24 - 12}p`;
+}
 
 /** A row on the timetable: one bookable unit, or the catch-all for bookings that lost theirs. */
 export interface TimelineUnit {
@@ -272,7 +298,7 @@ export function buildTimeline({
   for (let offset = startOffset; offset < endOffset; offset += MINUTES_PER_HOUR) {
     const clockMinute =
       (((openMinutes + offset) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
-    ticks.push({ offset, label: HOUR_LABELS[Math.floor(clockMinute / MINUTES_PER_HOUR)] });
+    ticks.push({ offset, label: hourLabel(Math.floor(clockMinute / MINUTES_PER_HOUR)) });
   }
 
   return { startOffset, endOffset, ticks, placements, laneCount };
@@ -303,20 +329,22 @@ export function clockMinutesAt(openTime: string, offset: number): number {
   return parseClockMinutes(openTime) + offset;
 }
 
-/** Compact "1h 30m left" / "45m left" for what is left of a sitting. */
+/** What is left of a sitting, in the active language: "1h 30m left", "45m left", "ending". */
 export function formatRemaining(minutes: number): string {
-  if (minutes <= 0) return "ending";
+  if (minutes <= 0) return i18n.t("admin.bookings.timetable.remaining.ending");
   const hours = Math.floor(minutes / MINUTES_PER_HOUR);
   const mins = minutes % MINUTES_PER_HOUR;
-  if (hours === 0) return `${mins}m left`;
-  return mins === 0 ? `${hours}h left` : `${hours}h ${mins}m left`;
+  if (hours === 0) return i18n.t("admin.bookings.timetable.remaining.minutes", { minutes: mins });
+  if (mins === 0) return i18n.t("admin.bookings.timetable.remaining.hours", { hours });
+  return i18n.t("admin.bookings.timetable.remaining.hoursMinutes", { hours, minutes: mins });
 }
 
-/** Restaurant-local minutes since midnight rendered as a compact "6:30p". */
+/** Restaurant-local minutes since midnight as "18:30", or as the compact "6:30p" on a 12-hour clock. */
 export function formatClockMinutes(totalMinutes: number): string {
   const wrapped = ((totalMinutes % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
   const hour24 = Math.floor(wrapped / MINUTES_PER_HOUR);
   const minute = wrapped % MINUTES_PER_HOUR;
+  if (usesTwentyFourHourClock()) return `${twoDigits(hour24)}:${twoDigits(minute)}`;
   const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
-  return `${hour12}:${String(minute).padStart(2, "0")}${hour24 < 12 ? "a" : "p"}`;
+  return `${hour12}:${twoDigits(minute)}${hour24 < 12 ? "a" : "p"}`;
 }

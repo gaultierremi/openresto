@@ -30,7 +30,7 @@ export default function AdminDashboardScreen() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const { colors, primaryColor, isDark } = useAppTheme();
+  const { colors, primaryColor, onPrimary, isDark } = useAppTheme();
 
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
   const [actionModalVisible, setActionModalVisible] = useState(false);
@@ -213,10 +213,10 @@ export default function AdminDashboardScreen() {
                     <Icon
                       name={action.icon}
                       size="xxl"
-                      color={action.primary ? theme.colors.white : primaryColor}
+                      color={action.primary ? onPrimary : primaryColor}
                     />
                     <ThemedText
-                      style={[styles.actionTitle, action.primary && { color: theme.colors.white }]}
+                      style={[styles.actionTitle, action.primary && { color: onPrimary }]}
                     >
                       {action.title}
                     </ThemedText>
@@ -339,6 +339,7 @@ function OccupancyChart({
   counts?: number[];
 }) {
   const { t } = useTranslation();
+  const { onPrimary } = useAppTheme();
   const chartData = data?.length > 0 ? data : [0, 0, 0, 0, 0, 0, 0];
   const [labelMode, setLabelMode] = useState<"relative" | "calendar">("relative");
 
@@ -406,7 +407,7 @@ function OccupancyChart({
             <ThemedText
               style={[
                 styles.toggleText,
-                { color: labelMode === "relative" ? theme.colors.white : colors.muted },
+                { color: labelMode === "relative" ? onPrimary : colors.muted },
               ]}
             >
               {t("admin.dashboard.chart.toggle.relativeText")}
@@ -428,7 +429,7 @@ function OccupancyChart({
             <ThemedText
               style={[
                 styles.toggleText,
-                { color: labelMode === "calendar" ? theme.colors.white : colors.muted },
+                { color: labelMode === "calendar" ? onPrimary : colors.muted },
               ]}
             >
               {t("admin.dashboard.chart.toggle.datesText")}

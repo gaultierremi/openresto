@@ -789,6 +789,7 @@
         "disclaimer": "Los filtros se basan en la información del propio restaurante. Si tienes una alergia, avisa al personal antes de pedir."
       },
       "loading": "Cargando la carta…",
+      "noDeclarations": "Este restaurante no ha indicado los alérgenos ni las dietas de sus platos. Si tienes una alergia, pregunta al personal antes de pedir.",
       "noMatch": "Ningún plato coincide con tus filtros.",
       "notFound": {
         "body": "Esta carta no está disponible ahora mismo. Pídela al personal.",
@@ -976,6 +977,12 @@
         "unassignedUnit": "Sin mesa",
         "guestFallback": "Cliente",
         "peopleAbbrev": "{{count}}p",
+        "remaining": {
+          "ending": "a punto de terminar",
+          "hours": "quedan {{hours}} h",
+          "hoursMinutes": "quedan {{hours}} h {{minutes}} min",
+          "minutes": "quedan {{minutes}} min"
+        },
         "sittingLabel": "{{guest}}, {{seats}} cubiertos en {{unit}}, de {{start}} a {{end}}",
         "sittingLabelWithRemaining": "{{guest}}, {{seats}} cubiertos en {{unit}}, de {{start}} a {{end}}, {{remaining}}"
       },
@@ -1633,6 +1640,8 @@
         "addDish": "Añadir un plato",
         "categoryNameLabel": "Categoría",
         "categoryNamePlaceholder": "Entrantes, Principales, Postres…",
+        "declarations": "Alérgenos y dietas",
+        "declarationsCount": "Alérgenos y dietas ({{count}})",
         "description": "Crea tu primera carta: categorías y sus platos. Aparece en tu sitio web y tras tu código QR. Este paso es opcional.",
         "descriptionLabel": "Descripción del plato",
         "descriptionPlaceholder": "Descripción (opcional)",
@@ -1668,6 +1677,9 @@
         "loading": "Cargando la vista previa…",
         "qr": {
           "codeLabel": "Código QR de tu carta",
+          "downloadFailed": "No se pudo crear la imagen. Prueba con el archivo para la imprenta.",
+          "downloadPng": "Descargar la imagen para imprimir (PNG)",
+          "downloadSvg": "Archivo para la imprenta (SVG)",
           "empty": "Tu carta está vacía. Vuelve al paso «Carta» para añadir platos.",
           "noteDraft": "Este código solo funcionará una vez publicado tu restaurante.",
           "noteLive": "Este código está activo: tus clientes pueden escanearlo ahora mismo.",

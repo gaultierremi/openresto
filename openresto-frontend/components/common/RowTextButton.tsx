@@ -1,7 +1,7 @@
 import { Pressable, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { Icon, type IconName } from "@/components/common/Icon";
-import { theme } from "@/theme/theme";
+import { labelOn } from "@/utils/contrast";
 import { styles } from "./RowTextButton.styles";
 
 export interface RowTextButtonProps {
@@ -46,7 +46,7 @@ export function RowTextButton({
   radio = false,
   style,
 }: RowTextButtonProps) {
-  const contentColor = selected ? theme.colors.white : color;
+  const contentColor = selected ? labelOn(color) : color;
   const asRadio = radio && selected !== undefined;
   // react-native-web reads the `aria-*` prop, not `accessibilityState`, so a radio states its
   // choice through both.

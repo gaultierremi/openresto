@@ -32,6 +32,20 @@ interface Filterable {
   dietaryTags: readonly DietaryTag[];
 }
 
+/**
+ * Whether any dish of the menu declares an allergen or a diet. A menu where none does gives a
+ * filter nothing to work with: every dish would pass an allergen filter and none a diet one, so
+ * the page withholds the filters and says the information is missing instead.
+ *
+ * @see [menuFilter.test.ts](../tests/utils/menuFilter.test.ts) — pins that one declared
+ * allergen or diet anywhere is enough, and that a menu declaring nothing is not.
+ */
+export function declaresAnything(categories: readonly { items: readonly Filterable[] }[]): boolean {
+  return categories.some((category) =>
+    category.items.some((item) => item.allergens.length > 0 || item.dietaryTags.length > 0)
+  );
+}
+
 export function isFilterActive(filter: MenuFilter): boolean {
   return filter.avoid.length > 0 || filter.diets.length > 0;
 }

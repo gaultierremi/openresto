@@ -1,4 +1,5 @@
 import {
+  declaresAnything,
   filterCategories,
   isFilterActive,
   itemMatches,
@@ -107,6 +108,29 @@ describe("filterCategories", () => {
   it("drops a category left with no dish", () => {
     const result = filterCategories(categories, { avoid: ["Gluten"], diets: [] });
     expect(result.map((c) => c.name)).toEqual(["Starters"]);
+  });
+});
+
+describe("declaresAnything", () => {
+  const plain = { allergens: [] as Allergen[], dietaryTags: [] as DietaryTag[] };
+
+  it("is false for a menu where no dish declares an allergen or a diet", () => {
+    expect(declaresAnything([{ items: [plain, plain] }, { items: [plain] }])).toBe(false);
+  });
+
+  it("is false for a menu with no dish at all", () => {
+    expect(declaresAnything([])).toBe(false);
+    expect(declaresAnything([{ items: [] }])).toBe(false);
+  });
+
+  it("is true as soon as one dish declares an allergen", () => {
+    expect(
+      declaresAnything([{ items: [plain] }, { items: [{ ...plain, allergens: ["Eggs"] }] }])
+    ).toBe(true);
+  });
+
+  it("is true as soon as one dish declares a diet", () => {
+    expect(declaresAnything([{ items: [{ ...plain, dietaryTags: ["Vegan"] }] }])).toBe(true);
   });
 });
 

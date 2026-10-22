@@ -3,7 +3,7 @@ import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeabl
 import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/themed-text";
 import { hexToRgba } from "@/utils/colors";
-import { theme } from "@/theme/theme";
+import { getThemeColors } from "@/theme/theme";
 import type { AdminNotificationDto } from "@/api/notifications";
 import { TYPE_ICONS, getTypeLabels, formatBookingDate, relativeTime } from "@/utils/notifications";
 import { styles } from "@/components/admin/notifications/notifications.styles";
@@ -165,7 +165,7 @@ export function NotificationRow({
             testID={`delete-notif-${n.id}`}
             label={t("admin.notifications.row.delete")}
             icon="trash-outline"
-            color={theme.colors.error}
+            color={getThemeColors(isDark).error}
             onPress={() => onRequestDelete(n.id)}
             accessibilityLabel={t("admin.notifications.row.deleteLabel")}
           />

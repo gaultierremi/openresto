@@ -168,7 +168,7 @@ export default function AdminSidebar() {
   const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
-  const { colors, isDark, brand, primaryColor: PRIMARY } = useAppTheme();
+  const { colors, isDark, brand, primaryColor: PRIMARY, onPrimary } = useAppTheme();
   const { toggle } = useTheme();
   const { user, signOut, can } = useAuth();
   const navSections = getNavSections(t);
@@ -217,7 +217,7 @@ export default function AdminSidebar() {
     >
       <View style={styles.brand}>
         <View style={[styles.brandIcon, { backgroundColor: PRIMARY }]}>
-          <BrandGlyph iconId={brand.faviconIcon} size="md" color={theme.colors.white} />
+          <BrandGlyph iconId={brand.faviconIcon} size="md" color={onPrimary} />
         </View>
         <View style={styles.brandTextGroup}>
           <ThemedText style={styles.brandName} numberOfLines={1}>
@@ -268,7 +268,7 @@ export default function AdminSidebar() {
                       <Icon name={icon} size="lg" color={active ? PRIMARY : colors.muted} />
                       {showBadge && (
                         <View style={[styles.navBadge, { backgroundColor: PRIMARY }]}>
-                          <ThemedText style={styles.navBadgeText}>
+                          <ThemedText style={[styles.navBadgeText, { color: onPrimary }]}>
                             {unreadNotifCount > 99 ? "99+" : String(unreadNotifCount)}
                           </ThemedText>
                         </View>

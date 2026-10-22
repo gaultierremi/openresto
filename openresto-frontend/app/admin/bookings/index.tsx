@@ -118,7 +118,7 @@ export default function AdminBookingsScreen() {
     if (create === "1") setShowNewModal(true);
   }, [create]);
 
-  const { colors, isDark, primaryColor: PRIMARY } = useAppTheme();
+  const { colors, isDark, primaryColor: PRIMARY, onPrimary } = useAppTheme();
   const { width } = useWindowDimensions();
 
   const {
@@ -405,7 +405,7 @@ export default function AdminBookingsScreen() {
                   <ThemedText
                     style={
                       r.id === selectedRestaurantId
-                        ? styles.chipTextActive
+                        ? [styles.chipTextActive, { color: onPrimary }]
                         : [styles.chipText, { color: mutedColor }]
                     }
                   >
@@ -434,12 +434,12 @@ export default function AdminBookingsScreen() {
                   accessibilityLabel={t(`admin.bookings.viewToggle.${key}Label`)}
                   accessibilityState={{ checked: viewMode === key }}
                 >
-                  <Icon name={icon} size={15} color={viewMode === key ? "#fff" : mutedColor} />
+                  <Icon name={icon} size={15} color={viewMode === key ? onPrimary : mutedColor} />
                   {isWide && (
                     <ThemedText
                       style={[
                         styles.modeBtnText,
-                        { color: viewMode === key ? "#fff" : mutedColor },
+                        { color: viewMode === key ? onPrimary : mutedColor },
                       ]}
                     >
                       {t(`admin.bookings.viewToggle.${key}`)}

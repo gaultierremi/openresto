@@ -1,4 +1,5 @@
 import { DayHoursDto } from "@/api/restaurants";
+import { getActiveLocale } from "@/utils/locale";
 
 /**
  * Shared helpers for per-day opening hours. The API returns `openHours` as a
@@ -56,10 +57,19 @@ export function hasCustomHours(restaurant: HoursSource): boolean {
   return hours.some((h) => h.open !== hours[0].open || h.close !== hours[0].close);
 }
 
-const DAY_NAMES_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
+/**
+ * The short weekday name of an ISO day (1 is Monday) in the language in use: "Fri" in English,
+ * "ven." in French. 1 January 2024 was a Monday, so day N is the Nth of that month, which lets
+ * `Intl` name it without a table of every language's week. An out-of-range day has no name.
+ *
+ * @see [openingHours.test.ts](../tests/utils/openingHours.test.ts) — pins the English and French
+ * names, that the first day is Monday and the last Sunday, and the empty answer outside 1 to 7.
+ */
 export function isoDayShortName(isoDay: number): string {
-  return DAY_NAMES_SHORT[isoDay - 1] ?? "";
+  if (!Number.isInteger(isoDay) || isoDay < 1 || isoDay > 7) return "";
+  return new Intl.DateTimeFormat(getActiveLocale(), { weekday: "short", timeZone: "UTC" }).format(
+    new Date(Date.UTC(2024, 0, isoDay))
+  );
 }
 
 /**
