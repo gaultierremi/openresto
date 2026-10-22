@@ -37,8 +37,12 @@ jobs:
           cache-dependency-path: openresto-frontend/package-lock.json
       - name: Préparer les identifiants éphémères
         run: |
-          echo "OPENRESTO_TEST_JWT_KEY=$(openssl rand -hex 48)" >> "$GITHUB_ENV"
-          echo "OPENRESTO_TEST_ADMIN_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+          test_jwt_key=$(openssl rand -hex 48)
+          test_admin_password=$(openssl rand -hex 24)
+          echo "::add-mask::$test_jwt_key"
+          echo "::add-mask::$test_admin_password"
+          echo "OPENRESTO_TEST_JWT_KEY=$test_jwt_key" >> "$GITHUB_ENV"
+          echo "OPENRESTO_TEST_ADMIN_PASSWORD=$test_admin_password" >> "$GITHUB_ENV"
       - name: Construire et démarrer la pile de test
         run: docker compose up -d --build --wait --wait-timeout 180
       - name: Installer les outils de validation

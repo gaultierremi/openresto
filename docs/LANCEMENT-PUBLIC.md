@@ -55,6 +55,8 @@ Le test couvre la navigation sans JavaScript, le clavier, l’affichage mobile, 
 
 L’audit Lighthouse utilise le profil mobile standard et vérifie un minimum de 90 en performance et en accessibilité. Il couvre aussi le formulaire de réservation et la carte QR du restaurant publié par le test. Il produit les rapports HTML/JSON et les scores dans `openresto-frontend/lighthouse-launch/`. Le score SEO des formulaires et des modèles est volontairement réduit par leur directive `noindex`. Le sitemap inclut l’accueil canonique et les seuls sites de restaurant publiés ; les données structurées `Restaurant` restent celles des sites existants.
 
+Une collecte Lighthouse invalide (erreur de mesure ou score absent) est retentée au maximum deux fois et son rapport est conservé. Un score valide inférieur à 90 fait échouer le contrôle, sans nouvelle tentative destinée à améliorer ce score.
+
 Les rapports et captures des tests sont conservés dans l’artefact Actions `lancement-public-preuves`. Les captures de référence se trouvent dans `docs/captures/cx-o1/`.
 
 Aucune modification du schéma de données ni migration SQL n’est nécessaire. Aucune instance réelle n’a été modifiée par ce chantier.
