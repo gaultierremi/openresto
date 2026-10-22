@@ -3,7 +3,7 @@
  */
 import React from "react";
 import { render, screen, waitFor, fireEvent, act } from "@testing-library/react-native";
-import { Platform } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import NotificationsScreen from "@/app/admin/notifications";
 import * as notificationsApi from "@/api/notifications";
 import * as restaurantsApi from "@/api/restaurants";
@@ -49,6 +49,7 @@ jest.mock("@/hooks/use-app-theme", () => ({
       text: "#000",
     },
     primaryColor: "#0a7ea4",
+    onPrimary: "#112233",
     isDark: false,
   }),
 }));
@@ -252,6 +253,12 @@ describe("NotificationsScreen", () => {
     render(<NotificationsScreen />);
     // unreadCount = 1 since isRead=false
     await waitFor(() => expect(screen.getByText("1")).toBeTruthy());
+  });
+
+  it("writes the unread count in the label colour that reads on the brand fill, not in white", async () => {
+    render(<NotificationsScreen />);
+    const count = await screen.findByText("1");
+    expect(StyleSheet.flatten(count.props.style)).toMatchObject({ color: "#112233" });
   });
 
   it("pressing Mark all read calls markAllRead and shows toast", async () => {

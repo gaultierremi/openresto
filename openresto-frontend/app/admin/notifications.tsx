@@ -349,7 +349,7 @@ export default function NotificationsScreen() {
               <ThemedText type="h1">{t("admin.notifications.pageTitle")}</ThemedText>
               {unreadCount > 0 && (
                 <View style={[styles.unreadBadge, { backgroundColor: primaryColor }]}>
-                  <ThemedText style={styles.unreadBadgeText}>
+                  <ThemedText style={[styles.unreadBadgeText, { color: onPrimary }]}>
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </ThemedText>
                 </View>
