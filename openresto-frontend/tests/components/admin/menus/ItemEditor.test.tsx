@@ -106,6 +106,41 @@ beforeEach(() => {
 describe("ItemEditor autosave", () => {
   useFakeClock();
 
+  it("autosaves a translated dish and keeps its other language when the original language changes", async () => {
+    renderEditor(
+      item({
+        primaryLanguage: "fr",
+        translations: { en: { name: "Soup", description: "Vegetables" } },
+      })
+    );
+    fireEvent.changeText(screen.getByTestId("item-translation-nl-name"), "Soep");
+    await flush();
+    expect(update).toHaveBeenLastCalledWith(
+      RESTAURANT_ID,
+      1,
+      expect.objectContaining({
+        primaryLanguage: "fr",
+        translations: {
+          nl: { name: "Soep", description: null },
+          en: { name: "Soup", description: "Vegetables" },
+        },
+      })
+    );
+    fireEvent.press(screen.getByText("Français", { exact: true }));
+    fireEvent.press(screen.getByText("Nederlands", { exact: true }));
+    await flush();
+    expect(update).toHaveBeenLastCalledWith(
+      RESTAURANT_ID,
+      1,
+      expect.objectContaining({
+        primaryLanguage: "nl",
+        translations: expect.objectContaining({ en: { name: "Soup", description: "Vegetables" } }),
+      })
+    );
+    expect(screen.getByTestId("item-translation-en-name").props.value).toBe("Soup");
+    expect(screen.queryByTestId("item-translation-nl-name")).toBeNull();
+  });
+
   it("shows the dish as it stands and saves nothing until a field changes", async () => {
     renderEditor(item({ name: "Soup", description: "Hot", priceMinor: 850, allergens: ["Milk"] }));
     expect(screen.getByTestId("item-name").props.value).toBe("Soup");
