@@ -1,87 +1,107 @@
 {
-  "etat": "Sprint 4 en PR 8 : embarquement, espace plateforme, pages légales (modèles), néerlandais ; corrections de relecture appliquées. Kit d'hébergement corrigé après relecture ; CI du kit verte sur GitHub.",
+  "etat": "Palette client (#19), sécurité Codespace (#20), parcours restaurateur/client (#22), kit serveur partagé (#21) et prêt au lancement (#23) intégrés à main ; espace restaurateur #24 en contre-relecture et trilingue #26 prête à merger.",
   "sante": "actif",
-  "prochaine_etape": "Contre-relecture de la PR 8 par Astra, puis validation juridique des textes et portée admin par restaurant avant le premier vrai restaurant ; choix du modèle d'hébergement et des images du fork.",
+  "prochaine_etape": "Contre-relire #24, fusionner les chantiers prêts, faire valider les textes juridiques avant l'ouverture réelle et décider de l'installation sur le serveur partagé.",
   "chantiers": [
     {
-      "id": "deploy-kit",
-      "titre": "Mise en production : kit d'hébergement, sauvegardes, CI",
+      "id": "palette-client",
+      "titre": "Côté client sans friction : palette",
       "agent": "Claude",
-      "branche": "chore/deploy-kit",
-      "statut": "Prête à merger",
-      "pr": 4,
-      "etape": "Corrections P2 et P3 de la relecture poussées ; en attente d'un nouveau verdict.",
-      "maj": "2026-10-20T20:38:22+00:00"
+      "branche": "palette/openresto-client",
+      "statut": "Terminé",
+      "pr": 19,
+      "etape": "Fusionnée dans main ; regroupe les corrections client des PR #11 à #17.",
+      "maj": "2026-10-22T07:59:05+00:00"
     },
     {
-      "id": "menu-api",
-      "titre": "Module carte natif — API (#2, avec les écrans #5)",
+      "id": "securite-codespace",
+      "titre": "Sécuriser les identifiants de la démonstration Codespace",
       "agent": "Claude",
-      "branche": "feat/menu-api",
-      "statut": "Prête à merger",
-      "pr": 2,
-      "etape": "Relue MERGE (0282e76 pour #2, 15b7ef1 pour #5) ; main fusionné pour lever le conflit de status.json.",
-      "maj": "2026-10-21T15:24:40+00:00"
+      "branche": "fix/demo-jwt-key",
+      "statut": "Terminé",
+      "pr": 20,
+      "etape": "Fusionnée dans main ; la démonstration refuse les jetons signés avec la clé publique du dépôt.",
+      "maj": "2026-10-22T10:23:09+00:00"
     },
     {
-      "id": "site-vitrine",
-      "titre": "Sprint 3 — mini-site vitrine par restaurant (#7, rouvert vers main)",
-      "agent": "Claude",
-      "branche": "feat/site-vitrine",
-      "statut": "Prête à merger",
-      "pr": 18,
-      "etape": "Relue MERGE (948dc05) ; le travail de #7 avait été fusionné dans sa branche empilée, pas dans main.",
-      "maj": "2026-10-21T15:25:02+00:00"
-    },
-    {
-      "id": "bifrost-openresto",
-      "titre": "Brancher OpenResto sur Heimdall",
-      "agent": "Claude",
-      "branche": "chore/bifrost",
-      "statut": "Prête à merger",
-      "pr": 3,
-      "etape": "Fusionnée avec la chaîne #2, #7 (PR 18) pour se fusionner sans conflit après elles.",
-      "maj": "2026-10-21T15:26:01+00:00"
-    },
-    {
-      "id": "premier-restaurant",
-      "titre": "Sprint 4 — prêt pour le premier restaurant (embarquement, espace plateforme, légal, néerlandais)",
+      "id": "parcours-restaurateur-client",
+      "titre": "Parcours restaurateur et client : frictions corrigées",
       "agent": "Claude",
       "branche": "claude/festive-wozniak-b62txe",
-      "statut": "En relecture",
-      "pr": 8,
-      "etape": "Corrections de la relecture (CORRIGER) poussées ; branche mise à jour avec main et la chaîne #2, #7 (PR 18), #3 ; en attente d'une contre-relecture. Les textes légaux restent des modèles : un juriste doit les valider avant tout vrai restaurant.",
-      "maj": "2026-10-21T15:26:36+00:00"
+      "statut": "Terminé",
+      "pr": 22,
+      "etape": "Fusionnée dans main ; parcours rejoués, allergènes et QR corrigés, contrastes admin ajustés.",
+      "maj": "2026-10-22T12:34:15+00:00"
+    },
+    {
+      "id": "serveur-partage",
+      "titre": "Kit d'installation sur un serveur partagé",
+      "agent": "Claude",
+      "branche": "chore/serveur-partage",
+      "statut": "Terminé",
+      "pr": 21,
+      "etape": "Fusionnée dans main ; kit disponible, installation réelle encore à décider.",
+      "maj": "2026-10-22T12:46:06+00:00"
+    },
+    {
+      "id": "pret-au-lancement",
+      "titre": "Prêt au lancement : accueil, inscription et parcours clients",
+      "agent": "Codex",
+      "branche": "feat/cx-o1-pret-au-lancement",
+      "statut": "Terminé",
+      "pr": 23,
+      "etape": "Fusionnée dans main ; textes légaux encore à compléter et à faire valider avant l'ouverture réelle.",
+      "maj": "2026-10-23T07:02:11+00:00"
+    },
+    {
+      "id": "espace-restaurateur",
+      "titre": "Espace restaurateur pour le quotidien",
+      "agent": "Codex",
+      "branche": "feat/cx-o2",
+      "statut": "En cours",
+      "pr": 24,
+      "etape": "Corrections du quota des vues QR poussées ; PR ouverte, en attente de contre-relecture.",
+      "maj": "2026-10-23T06:33:21+00:00"
+    },
+    {
+      "id": "trilingue-fr-nl-en",
+      "titre": "Parcours trilingues FR/NL/EN",
+      "agent": "Codex",
+      "branche": "feat/n4-langues",
+      "statut": "Prête à merger",
+      "pr": 26,
+      "etape": "Verdict MERGE sur 1788245 ; contrôles CI réussis, sans fusion dans main.",
+      "relecture": {
+        "par": "Claude",
+        "verdict": "MERGE",
+        "at": "2026-10-23T06:24:20+00:00",
+        "sha": "1788245b100eddeeb02b9d196d579c4de71ca1ce"
+      },
+      "maj": "2026-10-23T06:24:20+00:00"
     }
   ],
   "decisions": [
     {
-      "id": "modele-hebergement",
-      "titre": "Une instance par restaurant client, ou une seule instance multi-lieux ?",
-      "pourquoi": "Les comptes admin, la marque et l'expéditeur de mails sont communs à toute une instance : des restaurateurs indépendants ne sont pas isolés (docs/HEBERGEMENT.md, §3).",
-      "urgence": "Cette semaine"
-    },
-    {
-      "id": "images-fork",
-      "titre": "Publier les images Docker du fork sur GHCR, ou tirer les images amont ?",
-      "pourquoi": "Les images amont 2.4.1 ne lisent pas SMTP_* ; il faut les images du fork pour cette fonction et pour tout ce qui diverge.",
-      "urgence": "Cette semaine"
-    },
-    {
       "id": "validation-juridique",
       "titre": "Faire valider les quatre textes légaux par un juriste belge",
-      "pourquoi": "Conditions, confidentialité, sous-traitance art. 28 et mentions légales sont des modèles à champs [entre crochets] : aucun vrai restaurant ne doit les accepter avant relecture (docs/PLATEFORME.md).",
-      "urgence": "Avant le premier restaurant"
+      "pourquoi": "Avant le premier restaurant et l'ouverture de l'inscription publique, compléter les champs des modèles juridiques et faire valider les quatre textes ; la fusion de #23 ne lève pas cette condition.",
+      "urgence": "Cette semaine"
     },
     {
       "id": "portee-admin-par-restaurant",
-      "titre": "Après publication, le restaurateur ne gère pas ses réservations ; les écrans admin montrent les clients à tout Owner/Manager",
-      "pourquoi": "Le Sprint 4 isole le restaurateur en l'excluant de l'admin au lieu de restreindre l'admin par restaurant : c'est le chantier suivant, à décider avant d'accueillir un restaurant indépendant.",
-      "urgence": "Avant le premier restaurant"
+      "titre": "Limiter l'accès aux données clients par restaurant avant l'accueil d'un restaurant indépendant ?",
+      "pourquoi": "Les écrans admin restent accessibles aux comptes Owner et Manager de l'instance ; #24 ajoute l'espace restaurateur isolé, mais reste non fusionnée et cette décision demeure ouverte avant le premier restaurant.",
+      "urgence": "Cette semaine"
+    },
+    {
+      "id": "installation-serveur-partage",
+      "titre": "Installer OpenResto sur le serveur partagé prévu ?",
+      "pourquoi": "Le kit est fusionné dans main, mais le choix de l'installation réelle reste ouvert et doit être confirmé avant toute intervention sur le serveur.",
+      "urgence": "Cette semaine"
     }
   ],
   "maj": {
-    "at": "2026-10-21T18:07:13+00:00",
-    "by": "Claude"
+    "at": "2026-10-23T09:28:07+00:00",
+    "by": "Codex"
   }
 }
