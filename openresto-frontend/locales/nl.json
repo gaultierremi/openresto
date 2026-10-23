@@ -1,4 +1,285 @@
 {
+  "admin": {
+    "settings": {
+      "weekdays": {
+        "monday": "Maandag",
+        "tuesday": "Dinsdag",
+        "wednesday": "Woensdag",
+        "thursday": "Donderdag",
+        "friday": "Vrijdag",
+        "saturday": "Zaterdag",
+        "sunday": "Zondag",
+        "mon": "Ma",
+        "tue": "Di",
+        "wed": "Wo",
+        "thu": "Do",
+        "fri": "Vr",
+        "sat": "Za",
+        "sun": "Zo"
+      }
+    },
+    "site": {
+      "themes": {
+        "label": "Stijl van de website",
+        "brasserie": {
+          "name": "Brasserie",
+          "description": "Warm en gastvrij: crèmekleurig papier en koppen met schreefletters."
+        },
+        "gastronomique": {
+          "name": "Gastronomisch",
+          "description": "Verfijnd en elegant: donkere achtergrond en ruime letterafstand."
+        },
+        "cafe": {
+          "name": "Café",
+          "description": "Licht en afgerond: kleuraccenten en goed leesbare tekst."
+        }
+      }
+    },
+    "menus": {
+      "item": {
+        "allergensHint": "Vermeld de allergenen van dit gerecht. Vraag bij twijfel uw leverancier.",
+        "allergensLabel": "Allergenen",
+        "dietaryLabel": "Voedingsvoorkeuren"
+      }
+    },
+    "onboarding": {
+      "badge": "Ruimte voor restaurateurs",
+      "branding": {
+        "colorClear": "Kleur van het platform",
+        "colorHint": "Kies een kleur of voer ze in als #rrggbb. Laat leeg om de platformkleur te gebruiken.",
+        "colorLabel": "Hoofdkleur",
+        "colorPlaceholder": "#b45309",
+        "description": "Een logo, stijl en kleur voor uw website. Deze stap is optioneel: u kunt alles later wijzigen.",
+        "logoAdd": "Logo toevoegen",
+        "logoHint": "JPEG, PNG of WebP, maximaal 6 MB.",
+        "logoLabel": "Logo",
+        "logoRemove": "Logo verwijderen",
+        "logoReplace": "Logo vervangen",
+        "note": "De gekozen kleur wordt gebruikt voor knoppen, links en accenten op uw website.",
+        "taglineHint": "Een korte slogan, maximaal 140 tekens.",
+        "taglineLabel": "Slogan",
+        "themeLabel": "Stijl van de website",
+        "title": "Uw huisstijl"
+      },
+      "common": {
+        "back": "Terug",
+        "continue": "Doorgaan",
+        "next": "Volgende",
+        "signOut": "Afmelden",
+        "skip": "Deze stap overslaan"
+      },
+      "documentTitle": "Uw vestiging instellen",
+      "errors": {
+        "network": "De server is niet bereikbaar. Controleer uw verbinding en probeer opnieuw.",
+        "requestFailed": "De aanvraag is mislukt. Probeer het straks opnieuw."
+      },
+      "home": {
+        "chooseBody": "Uw account beheert meerdere vestigingen. Welke wilt u instellen?",
+        "chooseTitle": "Kies een vestiging",
+        "emptyBody": "Uw account is nog niet aan een vestiging gekoppeld. Ze verschijnt hier zodra het platform u uitnodigt.",
+        "emptyTitle": "Nog geen vestiging",
+        "loading": "Laden…"
+      },
+      "hours": {
+        "closed": "Gesloten",
+        "copyHint": "Kopieert de uren van de eerste open dag naar alle open dagen; gesloten dagen blijven gesloten.",
+        "copyToAll": "Naar alle dagen kopiëren",
+        "description": "Geef uw openingsdagen en openingsuren op. Op een gesloten dag zijn geen reservaties mogelijk.",
+        "durationHint": "Hoelang een tafel voor een gezelschap gereserveerd blijft.",
+        "durationHours": "{{hours}} u",
+        "durationHoursMinutes": "{{hours}} u {{minutes}}",
+        "durationLabel": "Duur van een reservatie",
+        "durationMinutes": "{{minutes}} min",
+        "openSwitch": "{{day}}: open",
+        "title": "Uw openingsuren"
+      },
+      "info": {
+        "addressHint": "Straat en huisnummer, postcode, gemeente",
+        "addressLabel": "Adres",
+        "companyNumberHint": "Formaat 0123.456.749",
+        "companyNumberLabel": "Ondernemingsnummer (KBO)",
+        "companyTitle": "Uw onderneming",
+        "description": "Wie u bent en waar u te vinden bent. Deze informatie verschijnt op uw website, reservatiepagina en wettelijke vermeldingen.",
+        "emailHint": "Het adres dat uw klanten zien en waarop ze u kunnen bereiken.",
+        "emailLabel": "E-mailadres voor contact",
+        "legalNameHint": "De naam van de onderneming zoals ingeschreven in de KBO.",
+        "legalNameLabel": "Maatschappelijke benaming",
+        "nameLabel": "Naam van de vestiging",
+        "phoneLabel": "Telefoon",
+        "retentionHint": "Na deze termijn worden naam, e-mailadres en opmerkingen van klanten automatisch gewist; de reservatie blijft in uw statistieken.",
+        "retentionLabel": "Bewaring van reservatiegegevens (in maanden)",
+        "title": "Uw vestiging",
+        "vatHint": "Optioneel",
+        "vatLabel": "Btw-nummer"
+      },
+      "invitation": {
+        "confirmLabel": "Wachtwoord bevestigen",
+        "consent": "Ik heb {{document}} gelezen en aanvaard het",
+        "consentsTitle": "Te aanvaarden documenten",
+        "displayNameLabel": "Uw naam (optioneel)",
+        "displayNamePlaceholder": "Voornaam en achternaam",
+        "documents": {
+          "dpa": { "name": "de verwerkersovereenkomst" },
+          "privacy": { "name": "het privacybeleid" },
+          "terms": { "name": "de gebruiksvoorwaarden" }
+        },
+        "emailHint": "Dit adres gebruikt u om aan te melden.",
+        "emailLabel": "E-mailadres van het account",
+        "errorTitle": "Uitnodiging tijdelijk niet beschikbaar",
+        "hide": "Verbergen",
+        "hidePassword": "Wachtwoord verbergen",
+        "invalidAction": "Naar aanmelden",
+        "invalidBody": "Deze uitnodigingslink is niet meer geldig: hij is mogelijk verlopen, gebruikt of ingetrokken. Vraag het platform om een nieuwe uitnodiging.",
+        "invalidTitle": "Ongeldige of verlopen uitnodiging",
+        "loading": "Uw uitnodiging laden…",
+        "mismatch": "De wachtwoorden komen niet overeen.",
+        "passwordLabel": "Wachtwoord",
+        "passwordRule": "Minstens {{min}} tekens.",
+        "readDocument": "{{document}} lezen",
+        "restaurantLabel": "Vestiging",
+        "show": "Tonen",
+        "showPassword": "Wachtwoord tonen",
+        "submit": "Mijn account aanmaken",
+        "subtitle": "Maak uw account aan om uw vestiging in te stellen.",
+        "title": "Welkom"
+      },
+      "layout": {
+        "addRoom": "Zaal toevoegen",
+        "addTable": "Tafel toevoegen",
+        "defaultRoomName": "Zaal",
+        "description": "Beschrijf waar uw klanten zitten: een zaal, een terras… en de tafels die er staan. U hebt minstens één tafel nodig om reservaties te ontvangen.",
+        "fewerSeats": "Eén plaats minder",
+        "moreSeats": "Eén plaats meer",
+        "note": "Een tafel met een komende reservatie kan niet worden verwijderd.",
+        "removeRoom": "Zaal verwijderen",
+        "removeTable": "Tafel verwijderen",
+        "roomNameLabel": "Naam van de zaal",
+        "seatsLabel": "Aantal plaatsen",
+        "tableNameLabel": "Naam van de tafel",
+        "tableNamePlaceholder": "Naam (optioneel)",
+        "title": "Zalen en tafels"
+      },
+      "login": {
+        "emailLabel": "E-mailadres",
+        "forgotHint": "Wachtwoord vergeten? Vraag het platform om een nieuwe uitnodiging.",
+        "invalidCredentials": "Onjuist e-mailadres of wachtwoord.",
+        "notRestaurateur": "Dit is geen restaurateursaccount. Gebruik het e-mailadres waarop u de uitnodiging ontving.",
+        "passwordLabel": "Wachtwoord",
+        "sessionFailed": "U bent aangemeld, maar uw sessie kon niet worden geopend. Probeer opnieuw.",
+        "submit": "Aanmelden",
+        "subtitle": "Stel uw vestiging in.",
+        "title": "Aanmelden"
+      },
+      "menu": {
+        "addCategory": "Categorie toevoegen",
+        "addDish": "Gerecht toevoegen",
+        "categoryNameLabel": "Categorie",
+        "categoryNamePlaceholder": "Voorgerechten, Hoofdgerechten, Desserts…",
+        "declarations": "Allergenen en voedingsvoorkeuren",
+        "declarationsCount": "Allergenen en voedingsvoorkeuren ({{count}})",
+        "description": "Stel uw eerste menukaart samen: categorieën met hun gerechten. Ze verschijnt op uw website en achter uw QR-code. Deze stap is optioneel.",
+        "descriptionLabel": "Beschrijving van het gerecht",
+        "descriptionPlaceholder": "Beschrijving (optioneel)",
+        "dishNameLabel": "Gerecht",
+        "importHint": "Nog niet beschikbaar. Voer intussen uw gerechten hieronder in.",
+        "importSoon": "Binnenkort",
+        "importTitle": "Importeren uit een foto of PDF",
+        "moveCategoryDown": "Categorie omlaag",
+        "moveCategoryUp": "Categorie omhoog",
+        "moveDishDown": "Gerecht omlaag",
+        "moveDishUp": "Gerecht omhoog",
+        "nameLabel": "Naam van de menukaart",
+        "note": "De invoervolgorde is de weergavevolgorde. Bij een lege prijs verschijnt ‘prijs op aanvraag’.",
+        "priceInvalid": "Voer een prijs in euro in, bijvoorbeeld 12,50, of laat leeg voor ‘prijs op aanvraag’.",
+        "priceLabel": "Prijs (€)",
+        "pricePlaceholder": "12,50",
+        "removeCategory": "Categorie verwijderen",
+        "removeDish": "Gerecht verwijderen",
+        "title": "Uw menukaart"
+      },
+      "preview": {
+        "booking": {
+          "facts": "Tafels: {{tables}} · Duur: {{minutes}} min · Een tijdstip om de {{interval}} min",
+          "hours": "Openingsuren",
+          "label": "Voorbeeld — de echte pagina is beschikbaar na publicatie",
+          "noSlots": "Geen tijdstippen om te tonen: controleer uw openingsuren.",
+          "party": "Aantal personen",
+          "slots": "Tijdstippen",
+          "text": "De pagina waarop uw klanten hun tafel kiezen.",
+          "title": "Uw reservatiepagina"
+        },
+        "description": "Dit is wat uw klanten zullen zien. Lees alles na en publiceer zodra u klaar bent. U kunt de publicatie altijd intrekken.",
+        "loading": "Voorbeeld laden…",
+        "qr": {
+          "codeLabel": "QR-code van uw menukaart",
+          "downloadFailed": "De afbeelding kon niet worden gemaakt. Probeer het bestand voor de drukker.",
+          "downloadPng": "Afdrukbare afbeelding downloaden (PNG)",
+          "downloadSvg": "Bestand voor de drukker (SVG)",
+          "empty": "Uw menukaart is leeg. Ga terug naar de stap ‘Menukaart’ om gerechten toe te voegen.",
+          "noteDraft": "Deze code werkt pas wanneer uw vestiging gepubliceerd is.",
+          "noteLive": "Deze code is actief: uw klanten kunnen hem nu scannen.",
+          "priceOnRequest": "Prijs op aanvraag",
+          "text": "Druk deze code af zodat klanten uw menukaart op hun telefoon kunnen openen.",
+          "title": "Uw QR-menukaart"
+        },
+        "site": {
+          "desktop": "Computer",
+          "failed": "Het websitevoorbeeld kon niet worden geladen.",
+          "frameTitle": "Voorbeeld van de website",
+          "loading": "Websitevoorbeeld laden…",
+          "phone": "Telefoon",
+          "text": "Uw website zoals klanten hem zullen zien.",
+          "title": "Uw website"
+        },
+        "title": "Voorbeeld en publicatie"
+      },
+      "publish": {
+        "blockedBody": "Er zijn nog verplichte stappen af te ronden voordat u kunt publiceren.",
+        "blocker": "Af te ronden stap: {{step}}",
+        "bookingLink": "Uw reservatiepagina",
+        "liveBody": "Dit zijn de publieke adressen van uw vestiging.",
+        "liveTitle": "Uw vestiging staat online",
+        "menuLink": "Uw QR-menukaart",
+        "open": "Openen",
+        "publish": "Publiceren",
+        "publishConfirm": "Ja, publiceren",
+        "publishMessage": "Uw website, reservatiepagina en QR-menukaart worden voor iedereen toegankelijk.",
+        "publishTitle": "Uw vestiging publiceren?",
+        "readyBody": "Alles is klaar. Publiceer uw website, reservatiepagina en QR-menukaart.",
+        "siteLink": "Uw website",
+        "suspended": "Uw vestiging is geschorst. Publiceren of de publicatie intrekken kan pas wanneer het platform ze heropent.",
+        "title": "Publicatie",
+        "unpublish": "Publicatie intrekken",
+        "unpublishConfirm": "Ja, publicatie intrekken",
+        "unpublishMessage": "Uw website, reservatiepagina en QR-menukaart zijn niet meer toegankelijk voor klanten. U kunt ze altijd opnieuw publiceren.",
+        "unpublishTitle": "De publicatie van uw vestiging intrekken?"
+      },
+      "status": { "Draft": "Concept", "Published": "Gepubliceerd", "Suspended": "Geschorst" },
+      "stepper": {
+        "done": "Afgerond",
+        "label": "Instelstappen",
+        "skipped": "Overgeslagen",
+        "todo": "Te doen"
+      },
+      "steps": {
+        "branding": "Huisstijl",
+        "hours": "Openingsuren",
+        "info": "Informatie",
+        "layout": "Zalen en tafels",
+        "menu": "Menukaart",
+        "preview": "Voorbeeld en publicatie"
+      },
+      "wizard": {
+        "errorTitle": "Laden mislukt",
+        "loading": "Uw vestiging laden…",
+        "notFoundAction": "Terug naar mijn vestigingen",
+        "notFoundBody": "Deze vestiging bestaat niet of is niet aan uw account gekoppeld.",
+        "notFoundTitle": "Vestiging niet gevonden",
+        "suspended": "Uw vestiging is geschorst door het platform. Reden: {{reason}}. De formulieren zijn alleen-lezen.",
+        "suspendedNoReason": "Uw vestiging is geschorst door het platform. De formulieren zijn alleen-lezen; neem contact op met het platform om ze te heropenen."
+      }
+    }
+  },
   "booking": {
     "calendar": {
       "heading": "TOEVOEGEN AAN AGENDA",
@@ -347,6 +628,10 @@
         "Vegan": "Veganistisch",
         "Vegetarian": "Vegetarisch"
       },
+      "primaryLanguage": "Oorspronkelijke taal van het gerecht",
+      "translationHint": "Voer uw eigen vertalingen in. Lege velden gebruiken de oorspronkelijke tekst. Geen automatische vertaling.",
+      "translatedName": "Naam van het gerecht — {{language}}",
+      "translatedDescription": "Beschrijving — {{language}}",
       "free": "Gratis",
       "priceOnRequest": "Prijs op aanvraag"
     },
@@ -528,6 +813,7 @@
       "name_too_long": "De naam van de menukaart mag niet langer zijn dan {{max}} tekens.",
       "not_found": "Menukaart niet gevonden.",
       "price_invalid": "De prijs moet nul of meer zijn (hoogstens {{max}} in de kleinste eenheid van de munteenheid), of leeg blijven voor \"prijs op aanvraag\".",
+      "language_invalid": "Gerechten moeten in het Frans, Nederlands of Engels worden ingevoerd.",
       "reorder_ids_mismatch": "De nieuwe volgorde moet elk item precies één keer bevatten, zonder toevoegingen."
     },
     "platform": {

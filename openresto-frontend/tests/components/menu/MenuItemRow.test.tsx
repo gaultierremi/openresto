@@ -26,6 +26,37 @@ const dish = (over: Partial<PublicMenuItem> = {}): PublicMenuItem => ({
   ...over,
 });
 
+it("changes the dish text live with the UI language and keeps the original description as fallback", async () => {
+  await act(async () => {
+    await i18n.changeLanguage("fr");
+  });
+  render(
+    <MenuItemRow
+      currency="EUR"
+      item={dish({
+        name: "Soupe",
+        description: "Légumes",
+        primaryLanguage: "fr",
+        translations: {
+          nl: { name: "Soep", description: null },
+          en: { name: "Soup", description: "Vegetables" },
+        },
+      })}
+    />
+  );
+  expect(screen.getByText("Soupe")).toBeTruthy();
+  await act(async () => {
+    await i18n.changeLanguage("nl");
+  });
+  expect(screen.getByText("Soep")).toBeTruthy();
+  expect(screen.getByText("Légumes")).toBeTruthy();
+  await act(async () => {
+    await i18n.changeLanguage("en");
+  });
+  expect(screen.getByText("Soup")).toBeTruthy();
+  expect(screen.getByText("Vegetables")).toBeTruthy();
+});
+
 describe("usePriceLabel", () => {
   afterEach(async () => {
     await act(async () => {

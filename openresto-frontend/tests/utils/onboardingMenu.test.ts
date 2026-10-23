@@ -77,6 +77,33 @@ describe("draftFromMenu with rows that carry no id", () => {
 });
 
 describe("menuFromDraft", () => {
+  it.each([
+    { name: "Soep", description: null },
+    { name: null, description: "Groenten" },
+  ])(
+    "does not discard a new dish with only a translation: it asks for its original name",
+    (translation) => {
+      const draft = addCategory({ name: "Carte", categories: [] });
+      const category = draft.categories[0];
+      const dish = category.dishes[0];
+      category.name = "Plats";
+      dish.translations = { nl: translation };
+      expect(menuFromDraft(draft)).toEqual({
+        ok: false,
+        problem: { kind: "dishName", key: dish.key },
+      });
+    }
+  );
+
+  it("still drops a new untouched dish when its translations have been cleared", () => {
+    const draft = addCategory({ name: "Carte", categories: [] });
+    draft.categories[0].name = "Plats";
+    draft.categories[0].dishes[0].translations = { nl: { name: " ", description: null } };
+    expect(menuFromDraft(draft)).toEqual({
+      ok: true,
+      menu: { name: "Carte", categories: [{ name: "Plats", items: [] }] },
+    });
+  });
   it("sends prices as cents, ids for what exists, and the order of entry", () => {
     setActiveLocale("fr");
     const draft = draftFromMenu(SAVED);

@@ -212,6 +212,9 @@ public class OnboardingMenuCategoryDto
 
 public class OnboardingMenuItemDto
 {
+    public string? PrimaryLanguage { get; set; }
+    public Dictionary<string, MenuItemTranslationDto>? Translations { get; set; }
+
     public int? Id { get; set; }
 
     [StringLength(100)]

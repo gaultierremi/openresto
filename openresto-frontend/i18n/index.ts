@@ -13,8 +13,8 @@ import nl from "@/locales/nl.json";
  * round trip, and it keeps the runtime language switch instant (no fetch to wait on). Revisit
  * past ~8 languages.
  *
- * Dutch covers the guest surface only, so `nl` has no `admin` subtree: a Dutch viewer who
- * reaches an untranslated key reads French, then English, rather than a raw key.
+ * Dutch covers the guest and restaurateur surfaces. Platform administration keys that
+ * have no Dutch wording fall back to French, then English.
  *
  * @see [init.test.ts](../tests/i18n/init.test.ts) — pins the chain, and that an admin key
  * resolves to French under `nl` while a guest key stays Dutch.

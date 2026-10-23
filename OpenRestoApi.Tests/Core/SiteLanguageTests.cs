@@ -7,6 +7,7 @@ public class SiteLanguageTests
     [Theory]
     [InlineData("fr", null, "fr")]
     [InlineData("nl", null, "nl")]
+    [InlineData("en", "nl", "en")]
     [InlineData("nl", "fr-BE,fr;q=0.9", "nl")]
     [InlineData("fr", "nl-BE,nl;q=0.9", "fr")]
     public void Negotiate_LetsTheExplicitSwitchWin(string query, string? header, string expected)
@@ -14,7 +15,7 @@ public class SiteLanguageTests
 
     [Theory]
     [InlineData("de", "nl-BE,nl;q=0.9,fr;q=0.8", "nl")]
-    [InlineData("de", "en-US", "fr")]
+    [InlineData("de", "en-US", "en")]
     [InlineData("", "nl", "nl")]
     [InlineData("  ", "nl", "nl")]
     [InlineData("NL", "nl", "nl")]
@@ -34,7 +35,7 @@ public class SiteLanguageTests
     [InlineData("nl,fr", "nl")]
     [InlineData("fr,nl", "fr")]
     [InlineData("fr;q=0.8,nl;q=0.8", "fr")]
-    [InlineData("en-US,en;q=0.9,nl;q=0.5", "nl")]
+    [InlineData("en-US,en;q=0.9,nl;q=0.5", "en")]
     [InlineData("NL-be", "nl")]
     [InlineData("  nl  ;  q=0.7 ", "nl")]
     [InlineData("fr;q=0,nl;q=0.1", "nl")]
@@ -42,8 +43,6 @@ public class SiteLanguageTests
         => Assert.Equal(expected, SiteLanguage.Negotiate(null, header));
 
     [Theory]
-    [InlineData("en-US")]
-    [InlineData("en-US,en;q=0.9,de;q=0.8")]
     [InlineData("de")]
     [InlineData("*")]
     [InlineData("")]
@@ -77,21 +76,21 @@ public class SiteLanguageTests
     [Fact]
     public void Negotiate_ReadsOnlyTheFirstEntriesOfALongList()
     {
-        string manyEntries = string.Join(',', Enumerable.Repeat("en", 16)) + ",nl";
+        string manyEntries = string.Join(',', Enumerable.Repeat("de", 16)) + ",nl";
 
         Assert.Equal("fr", SiteLanguage.Negotiate(null, manyEntries));
-        Assert.Equal("nl", SiteLanguage.Negotiate(null, string.Join(',', Enumerable.Repeat("en", 15)) + ",nl"));
+        Assert.Equal("nl", SiteLanguage.Negotiate(null, string.Join(',', Enumerable.Repeat("de", 15)) + ",nl"));
     }
 
     [Theory]
     [InlineData("fr", true)]
     [InlineData("nl", true)]
     [InlineData("FR", false)]
-    [InlineData("en", false)]
+    [InlineData("en", true)]
     [InlineData("nl ", false)]
     [InlineData("", false)]
     [InlineData(null, false)]
-    public void IsSupported_AcceptsExactlyFrAndNl(string? language, bool expected)
+    public void IsSupported_AcceptsExactlyFrNlAndEn(string? language, bool expected)
         => Assert.Equal(expected, SiteLanguage.IsSupported(language));
 
     [Theory]

@@ -8,6 +8,9 @@ namespace OpenRestoApi.Core.Application.Utilities;
 /// </summary>
 public static class BookingLinks
 {
-    public static string Confirmation(string websiteUrl, Booking booking) =>
-        $"{websiteUrl.TrimEnd('/')}/booking-confirmation/{Uri.EscapeDataString(booking.BookingRef)}?email={Uri.EscapeDataString(booking.CustomerEmail ?? string.Empty)}";
+    public static string Confirmation(string websiteUrl, Booking booking)
+    {
+        string url = $"{websiteUrl.TrimEnd('/')}/booking-confirmation/{Uri.EscapeDataString(booking.BookingRef)}?email={Uri.EscapeDataString(booking.CustomerEmail ?? string.Empty)}";
+        return MenuTranslations.IsSupported(booking.Locale) ? $"{url}&lang={booking.Locale}" : url;
+    }
 }

@@ -1,4 +1,5 @@
 using System.Net;
+using OpenRestoApi.Core.Application.Site;
 
 namespace OpenRestoApi.Tests.Integration;
 
@@ -25,11 +26,12 @@ public sealed partial class SitesControllerTests
     [InlineData("nl", "fr-BE,fr;q=0.9", "nl")]
     [InlineData("fr", "nl-BE,nl;q=0.9", "fr")]
     [InlineData("de", "nl-BE,nl;q=0.9,fr;q=0.8", "nl")]
-    [InlineData("de", "en-US", "fr")]
-    [InlineData("NL", "en-US", "fr")]
+    [InlineData("de", "en-US", "en")]
+    [InlineData("NL", "en-US", "en")]
+    [InlineData("en", "nl-BE", "en")]
     [InlineData(null, "nl-BE,nl;q=0.9,fr;q=0.8", "nl")]
     [InlineData(null, "fr;q=0.5,nl;q=0.9", "nl")]
-    [InlineData(null, "en-US", "fr")]
+    [InlineData(null, "en-US", "en")]
     [InlineData(null, ";;;q=,,", "fr")]
     public async Task ThePublicPage_IsWrittenInTheLanguageTheVisitorAsksFor(string? lang, string? acceptLanguage, string expected)
     {
@@ -41,7 +43,7 @@ public sealed partial class SitesControllerTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains($"<html lang=\"{expected}\">", html, StringComparison.Ordinal);
-        Assert.Contains(expected == "nl" ? "Reserveer een tafel" : "Réserver une table", html, StringComparison.Ordinal);
+        Assert.Contains(SiteCopy.For(expected).BookTable, html, StringComparison.Ordinal);
         Assert.DoesNotContain(expected == "nl" ? "Réserver une table" : "Reserveer een tafel", html, StringComparison.Ordinal);
     }
 
@@ -90,6 +92,7 @@ public sealed partial class SitesControllerTests
     [Theory]
     [InlineData("nl")]
     [InlineData("fr")]
+    [InlineData("en")]
     public async Task Reserve_ForwardsASupportedLanguageToTheBookingPage(string lang)
     {
         Seeded r = await LiveSiteAsync();
@@ -154,6 +157,7 @@ public sealed partial class SitesControllerTests
     [Theory]
     [InlineData("/r/no-such-site", null, "Page introuvable")]
     [InlineData("/r/no-such-site?lang=nl", null, "Pagina niet gevonden")]
+    [InlineData("/r/no-such-site?lang=en", null, "Page not found")]
     [InlineData("/r/no-such-site", "nl-BE,nl;q=0.9", "Pagina niet gevonden")]
     [InlineData("/r/no-such-site?lang=fr", "nl", "Page introuvable")]
     [InlineData("/r/no-such-site/reserver?lang=nl", null, "Pagina niet gevonden")]

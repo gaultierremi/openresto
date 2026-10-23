@@ -22,6 +22,10 @@ jest.mock("@/utils/haptics", () => ({
 
 const mockOptOut = jest.fn();
 jest.mock("@/context/LocaleContext", () => ({ useBrowserLocaleOptOut: () => mockOptOut() }));
+jest.mock("@/components/common/LanguageSwitcher", () => {
+  const { View } = require("react-native");
+  return () => <View testID="language-switcher" />;
+});
 const mockNoIndex = jest.fn();
 jest.mock("@/hooks/use-noindex", () => ({ useNoIndex: () => mockNoIndex() }));
 
@@ -76,9 +80,10 @@ describe("OnboardingLayout off web", () => {
 });
 
 describe("OnboardingLayout on web", () => {
-  it("keeps the restaurateur off the browser's language and out of search engines", async () => {
+  it("follows the browser, offers a language switcher and stays out of search engines", async () => {
     await renderLayout();
-    expect(mockOptOut).toHaveBeenCalled();
+    expect(mockOptOut).not.toHaveBeenCalled();
+    expect(screen.getByTestId("language-switcher")).toBeTruthy();
     expect(mockNoIndex).toHaveBeenCalled();
   });
 

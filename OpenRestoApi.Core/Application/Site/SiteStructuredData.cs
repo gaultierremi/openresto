@@ -147,7 +147,7 @@ public static partial class SiteStructuredData
                 {
                     ["@type"] = "MenuSection",
                     ["name"] = m.Menus.Count > 1 ? $"{menu.Name} – {c.Name}" : c.Name,
-                    ["hasMenuItem"] = c.Items.Select(i => Item(i, menu.Currency)).ToList(),
+                    ["hasMenuItem"] = c.Items.Select(i => Item(i.In(m.Language), menu.Currency)).ToList(),
                 })).ToList(),
         };
     }

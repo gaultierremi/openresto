@@ -6,7 +6,7 @@ namespace OpenRestoApi.Tests.Core;
 
 public class SiteCopyTests
 {
-    public static TheoryData<string> Languages => new() { "fr", "nl" };
+    public static TheoryData<string> Languages => new() { "fr", "nl", "en" };
 
     [Theory]
     [MemberData(nameof(Languages))]
@@ -41,6 +41,7 @@ public class SiteCopyTests
     [Theory]
     [InlineData("nl", "nl")]
     [InlineData("fr", "fr")]
+    [InlineData("en", "en")]
     [InlineData("NL", "fr")]
     [InlineData("de", "fr")]
     [InlineData("", "fr")]

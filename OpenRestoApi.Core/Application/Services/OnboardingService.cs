@@ -587,6 +587,8 @@ public class OnboardingService(
                 Id = i.Id,
                 Name = i.Name,
                 Description = i.Description,
+                PrimaryLanguage = i.PrimaryLanguage,
+                Translations = i.Translations,
                 PriceMinor = i.PriceMinor,
                 Allergens = i.Allergens,
                 DietaryTags = i.DietaryTags,
@@ -703,6 +705,11 @@ public class OnboardingService(
 
     private static void ValidateMenu(List<OnboardingMenuCategoryDto> categories)
     {
+        foreach (var item in categories.SelectMany(c => c.Items))
+        {
+            if (item.PrimaryLanguage is not null) MenuTranslations.RequireLanguage(item.PrimaryLanguage);
+            _ = MenuTranslations.Validate(item.Translations);
+        }
         if (categories.Any(c => string.IsNullOrWhiteSpace(c.Name) || c.Items.Any(i => string.IsNullOrWhiteSpace(i.Name) || i.PriceMinor is < 0)))
         {
             throw new ValidationException("Every category and dish needs a name, and a price cannot be negative.") { Code = ErrorCodes.OnboardingMenuInvalid };
@@ -745,6 +752,8 @@ public class OnboardingService(
             var request = new SaveMenuItemRequest
             {
                 Name = item.Name.Trim(),
+                PrimaryLanguage = item.PrimaryLanguage,
+                Translations = item.Translations,
                 Description = string.IsNullOrWhiteSpace(item.Description) ? null : item.Description.Trim(),
                 PriceMinor = item.PriceMinor,
                 Allergens = item.Allergens,

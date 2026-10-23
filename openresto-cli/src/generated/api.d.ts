@@ -7219,6 +7219,10 @@ export interface components {
             id?: number | string;
             name?: string;
             description?: null | string;
+            primaryLanguage?: string;
+            translations?: {
+                [key: string]: components["schemas"]["MenuItemTranslationDto"];
+            };
             /** Format: int64 */
             priceMinor?: null | number | string;
             imageUrl?: null | string;
@@ -7227,6 +7231,10 @@ export interface components {
             dietaryTags?: string[];
             /** Format: int32 */
             sortOrder?: number | string;
+        };
+        MenuItemTranslationDto: {
+            name?: null | string;
+            description?: null | string;
         };
         MenuPublicTokensDto: {
             restaurantToken?: string;
@@ -7295,6 +7303,10 @@ export interface components {
             categories?: components["schemas"]["OnboardingMenuCategoryDto"][];
         };
         OnboardingMenuItemDto: {
+            primaryLanguage?: null | string;
+            translations?: null | {
+                [key: string]: components["schemas"]["MenuItemTranslationDto"];
+            };
             /** Format: int32 */
             id?: null | number | string;
             name?: string;
@@ -7507,6 +7519,10 @@ export interface components {
         PublicMenuItemDto: {
             name?: string;
             description?: null | string;
+            primaryLanguage?: string;
+            translations?: {
+                [key: string]: components["schemas"]["MenuItemTranslationDto"];
+            };
             /** Format: int64 */
             priceMinor?: null | number | string;
             imageUrl?: null | string;
@@ -7618,6 +7634,10 @@ export interface components {
         SaveMenuItemRequest: {
             name?: null | string;
             description?: null | string;
+            primaryLanguage?: null | string;
+            translations?: null | {
+                [key: string]: components["schemas"]["MenuItemTranslationDto"];
+            };
             /**
              * Format: int64
              * @description Minor units (cents). Null means "price on request".
