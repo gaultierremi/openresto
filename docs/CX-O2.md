@@ -15,9 +15,12 @@ couverts réservés ; elles sont exclues du remplissage.
 Le remplissage est le rapport entre les couverts-minutes réservés pendant les heures
 d’ouverture et les places-minutes disponibles. Les tables groupées ne gonflent pas
 la capacité : seules les places des tables physiques comptent. Les services de la
-veille qui continuent après minuit sont répartis sur les deux dates, et les durées
-réelles tiennent compte des changements d’heure. Une capacité nulle ou une journée
-fermée donne « — ». Le taux est borné à 100 %.
+veille qui continuent après minuit sont répartis sur les deux dates. Une capacité
+nulle ou une journée fermée donne « — ». Le taux est borné à 100 %.
+
+Limite connue : une borne de service située dans l’heure inexistante du passage à
+l’heure d’été peut empêcher le calcul du tableau de bord et du CSV cette semaine-là.
+La conversion suit actuellement les règles existantes de disponibilité.
 
 Les boutons de statut utilisent les transitions du serveur : une absence ne peut
 pas être déclarée avant le début de la réservation, hors tolérance existante. Une
@@ -79,6 +82,13 @@ a ni cookie de suivi, ni identifiant de visiteur, ni adresse IP conservée par c
 compteur. Les plats cachés, cartes non publiées et restaurants non publics ne peuvent
 pas être comptés. Le rendu HTML du mini-site et l’application native ne l’alimentent
 pas. La donnée publique reste opaque : aucun identifiant interne de plat n’est exposé.
+
+Les vues ont leur propre quota de 1 200 requêtes par minute et par IP, distinct du
+quota de lecture publique et du quota global de navigation, y compris lorsqu’il
+est épuisé. Cela permet par exemple 30 lectures de 40 plats par minute derrière
+une même connexion. Au-delà, les vues sont ignorées par le navigateur et la carte
+reste lisible. Le traitement reste un envoi par plat vu ; chaque envoi vérifie
+encore la publication et la visibilité de la carte.
 
 Le CSV de la semaine utilise UTF-8 avec BOM et le séparateur `;`. Les guillemets et
 retours à la ligne sont échappés ; les cellules pouvant devenir des formules sont
