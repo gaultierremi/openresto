@@ -13,8 +13,31 @@ permissions:
   deployments: write
 
 jobs:
+  configuration:
+    name: Vérifier la configuration du VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      configured: ${{ steps.configuration.outputs.configured }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Vérifier les secrets de déploiement
+        id: configuration
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+        run: node scripts/check-vps-config.mjs
+
   deploy:
     name: Deploy to VPS
+    needs: configuration
+    if: needs.configuration.outputs.configured == 'true'
     runs-on: ubuntu-latest
     env:
       ENVIRONMENT: "Demo - Main"
