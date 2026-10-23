@@ -50,6 +50,7 @@ const LOCALE_FILES: Record<string, Json> = { en, fr, es, de, nl };
  */
 const DUTCH_RESTAURATEUR_KEYS = [
   "admin.onboarding.",
+  "admin.operations.",
   "admin.settings.weekdays.",
   "admin.site.themes.",
   "admin.menus.item.allergensHint",
@@ -81,6 +82,7 @@ describe("i18n locale key parity", () => {
   it("lets Dutch omit platform admin keys while covering the restaurateur space", () => {
     expect(GUEST_ONLY_LOCALES).toEqual({ nl: ["admin"] });
     expect(nl.admin.onboarding).toBeDefined();
+    expect(nl.admin.operations).toBeDefined();
     for (const locale of NON_ENGLISH.filter((l) => l !== "nl")) {
       expect(Object.keys(LOCALE_FILES[locale])).toContain("admin");
     }

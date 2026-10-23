@@ -10,6 +10,6 @@ ALTER TABLE "Bookings" ADD "EmailReminderOutcome" TEXT NULL;
 ALTER TABLE "Bookings" ADD "EmailReminderProcessedAt" TEXT NULL;
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20261022175109_RestaurantOperations', '10.0.13');
+VALUES ('20261023095000_RestaurantOperations', '10.0.13');
 
 COMMIT;

@@ -404,6 +404,7 @@
     }
   },
   "errors": {
+    "operations": { "invalid": "Vérifiez les champs renseignés." },
     "admin": {
       "password_not_configured": "Admin:Password doit être configuré avant la première utilisation. Définissez-le via la variable d'environnement ADMIN_PASSWORD."
     },

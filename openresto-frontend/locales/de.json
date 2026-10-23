@@ -404,6 +404,7 @@
     }
   },
   "errors": {
+    "operations": { "invalid": "Prüfen Sie die Felder." },
     "admin": {
       "password_not_configured": "Admin:Password muss vor der ersten Nutzung konfiguriert werden. Legen Sie es über die Umgebungsvariable ADMIN_PASSWORD fest."
     },

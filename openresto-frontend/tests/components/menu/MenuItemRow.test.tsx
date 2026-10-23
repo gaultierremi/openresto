@@ -57,7 +57,7 @@ it("changes the dish text live with the UI language and keeps the original descr
   expect(screen.getByText("Vegetables")).toBeTruthy();
 });
 
-it("counts a browser view once, only when half the dish is visible", () => {
+it("counts a browser view once across language changes, only when half the dish is visible", async () => {
   const previousPlatform = Platform.OS;
   const previousObserver = global.IntersectionObserver;
   const viewed = jest.fn(),
@@ -71,7 +71,20 @@ it("counts a browser view once, only when half the dish is visible", () => {
       return { observe: jest.fn(), disconnect };
     }) as unknown as typeof IntersectionObserver;
   try {
-    const view = render(<MenuItemRow item={dish()} currency="EUR" onViewed={viewed} />);
+    const view = render(
+      <MenuItemRow
+        item={dish({
+          name: "Soupe",
+          primaryLanguage: "fr",
+          translations: {
+            nl: { name: "Soep", description: null },
+            en: { name: "Soup", description: null },
+          },
+        })}
+        currency="EUR"
+        onViewed={viewed}
+      />
+    );
     const visible = (intersectionRatio: number) =>
       act(() =>
         notify(
@@ -84,7 +97,15 @@ it("counts a browser view once, only when half the dish is visible", () => {
     visible(0);
     visible(0.49);
     expect(viewed).not.toHaveBeenCalled();
+    await act(async () => {
+      await i18n.changeLanguage("nl");
+    });
+    expect(screen.getByText("Soep")).toBeTruthy();
     visible(0.5);
+    await act(async () => {
+      await i18n.changeLanguage("fr");
+    });
+    expect(screen.getByText("Soupe")).toBeTruthy();
     visible(1);
     expect(viewed).toHaveBeenCalledTimes(1);
     view.unmount();
@@ -92,6 +113,9 @@ it("counts a browser view once, only when half the dish is visible", () => {
   } finally {
     Platform.OS = previousPlatform;
     global.IntersectionObserver = previousObserver;
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
   }
 });
 

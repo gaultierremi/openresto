@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { del, get, post, put } from "./client";
 import { request } from "./onboarding";
 import type { WaitlistBoard } from "./waitlist";
@@ -60,7 +61,8 @@ export const setOperationsStatus = (id: number, booking: number, status: string)
   request(() => put(`${root(id)}/bookings/${booking}/status`, { status }), nothing);
 export const addOperationsWaitlist = (id: number, name: string, seats: number, email: string) =>
   request(
-    () => post(`${root(id)}/waitlist`, { name, seats, email: email || null, locale: "fr" }),
+    () =>
+      post(`${root(id)}/waitlist`, { name, seats, email: email || null, locale: i18n.language }),
     nothing
   );
 export const actOnOperationsWaitlist = (id: number, entry: number, action: "seat" | "remove") =>

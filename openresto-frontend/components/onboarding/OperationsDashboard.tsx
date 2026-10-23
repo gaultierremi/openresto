@@ -11,7 +11,6 @@ import { Banner } from "./formParts";
 import { ExceptionForm, WaitlistForm } from "./OperationsForms";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useOnboardingSession } from "@/context/OnboardingSessionContext";
-import { useRouteDefaultLocale } from "@/context/LocaleContext";
 import * as api from "@/api/operations";
 import type { OnboardingResult } from "@/api/onboarding";
 import type { WaitlistBoard } from "@/api/waitlist";
@@ -30,7 +29,6 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
 
 export function OperationsDashboard({ restaurantId }: { restaurantId: number }) {
   const { t, i18n } = useTranslation();
-  useRouteDefaultLocale("fr");
   const { colors, primaryColor } = useAppTheme();
   const { expire, signOut } = useOnboardingSession();
   const router = useRouter();

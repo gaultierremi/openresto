@@ -3,7 +3,10 @@
 Un restaurant publié ouvre son tableau de bord depuis `/onboarding`. Un brouillon
 continue d’ouvrir l’assistant. Le bouton « Modifier mon restaurant » permet de
 retrouver les cinq étapes ; l’assistant propose aussi le retour au tableau de bord.
-L’espace fonctionne sur navigateur, téléphone compris.
+L’espace fonctionne sur navigateur, téléphone compris, en français, néerlandais et
+anglais. Le sélecteur de langue s’applique immédiatement au tableau de bord et aux
+formulaires ; le choix reste mémorisé après rechargement. Une inscription à la file
+d’attente reprend la langue choisie pour les prochains messages au client.
 
 ## Réservations et chiffres
 
@@ -109,6 +112,11 @@ champs de suivi du rappel à la réservation. Elle ne supprime aucune ligne et
 n’ajoute aucune suppression en cascade. Le SQL de mise à niveau est fourni pour
 lecture dans `docs/sql/restaurant-operations.sql` ; le démarrage applique la migration
 EF automatiquement, sans opération SQL manuelle à effectuer.
+
+Après intégration de `main`, l’ordre est `20261022210458_AddDishTranslations`, puis
+`20261023095000_RestaurantOperations`. Seule la migration CX-O2 non fusionnée a été
+redatée ; aucune migration déjà fusionnée n’a été modifiée. Le snapshot et le modèle
+cible CX-O2 conservent les traductions des plats ainsi que les compteurs QR.
 
 Le jeu de démonstration montre une fermeture dans deux semaines et des compteurs de
 plats pour la Senne Dorée. Les rappels y restent simulés.

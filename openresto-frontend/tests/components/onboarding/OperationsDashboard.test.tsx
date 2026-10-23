@@ -5,6 +5,7 @@ import { OperationsDashboard } from "@/components/onboarding/OperationsDashboard
 import * as api from "@/api/operations";
 import { downloadCsv } from "@/utils/downloadCsv";
 import { ok, refused } from "@/tests/helpers/onboardingFixtures";
+import i18n from "@/i18n";
 
 jest.mock("@/api/operations");
 jest.mock("@/utils/downloadCsv");
@@ -90,6 +91,49 @@ beforeEach(() => {
     mockApi[name].mockResolvedValue(ok(undefined));
   mockApi.exportOperations.mockResolvedValue(ok("csv"));
 });
+
+afterEach(async () => {
+  await act(async () => {
+    await i18n.changeLanguage("en");
+  });
+});
+
+it.each([
+  [
+    "fr",
+    "Votre service, en un coup d’œil",
+    "Horaires exceptionnels",
+    "Mode simulé : aucun mail envoyé",
+    "Ajouter l’exception",
+  ],
+  [
+    "nl",
+    "Uw service in één oogopslag",
+    "Afwijkende openingsuren",
+    "Simulatie: geen e-mail verstuurd",
+    "Uitzondering toevoegen",
+  ],
+  [
+    "en",
+    "Your service at a glance",
+    "Special opening hours",
+    "Simulation: no email sent",
+    "Add exception",
+  ],
+])(
+  "renders the dashboard and its forms in %s without falling back to another language",
+  async (language, title, hours, reminder, add) => {
+    await open();
+    await act(async () => {
+      await i18n.changeLanguage(language);
+    });
+    expect(screen.getByText(title)).toBeTruthy();
+    expect(screen.getByText(hours)).toBeTruthy();
+    expect(screen.getByText(reminder)).toBeTruthy();
+    expect(screen.getByText(add)).toBeTruthy();
+    expect(mockApi.getOperations).toHaveBeenCalledTimes(1);
+  }
+);
 
 it("shows local times, changes period, exports CSV, refreshes and opens setup", async () => {
   await open();

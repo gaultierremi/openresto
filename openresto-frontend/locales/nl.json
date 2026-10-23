@@ -1,5 +1,71 @@
 {
   "admin": {
+    "operations": {
+      "title": "Uw service in één oogopslag",
+      "intro": "De reservaties van deze week, de tafels om klaar te maken en de aandacht die gasten doet terugkomen.",
+      "today": "Vandaag",
+      "week": "Deze week",
+      "bookings": "Reservaties",
+      "covers": "Gasten",
+      "fill": "Bezetting",
+      "noShows": "Niet komen opdagen",
+      "fillHint": "Gasten × gereserveerde duur, vergeleken met de zitplaatsen en openingsuren. Annuleringen en afwezige gasten tellen niet mee. — betekent gesloten of geen capaciteit.",
+      "refresh": "Vernieuwen",
+      "setup": "Mijn restaurant aanpassen",
+      "signOut": "Afmelden",
+      "export": "Deze week exporteren (CSV)",
+      "empty": "Geen reservaties voor deze periode.",
+      "guest": "Geanonimiseerde gast",
+      "people": "{{count}} gasten",
+      "popular": "Gerechten die opvallen",
+      "popularHint": "Zichtbare weergaven op de QR-kaart sinds de teller is ingeschakeld. Geen identiteit of trackingcookies.",
+      "noViews": "De eerste weergaven verschijnen hier.",
+      "exceptions": "Afwijkende openingsuren",
+      "exceptionsHint": "Een uitzondering vervangt de service die op die datum begint. Bestaande reservaties blijven behouden: verwittig de betrokken gasten.",
+      "date": "Datum (JJJJ-MM-DD)",
+      "open": "Opening (UU:mm)",
+      "close": "Sluiting (UU:mm)",
+      "closed": "Die dag gesloten",
+      "special": "Afwijkende uren",
+      "addException": "Uitzondering toevoegen",
+      "remove": "Verwijderen",
+      "noExceptions": "Geen uitzonderingen gepland.",
+      "reminders": "Een herinnering voor uw gasten",
+      "reminderHint": "Eén e-mail binnen 24 uur vóór de reservatie, elke minuut gecontroleerd. Geen automatische nieuwe poging na een fout.",
+      "simulated": "Simulatie: geen e-mail verstuurd",
+      "live": "Echte e-mails via de ingestelde mailserver",
+      "enableLive": "Echte e-mails inschakelen",
+      "enableSimulation": "Terug naar simulatie",
+      "liveConfirm": "De volgende herinneringen worden naar de gasten gemaild. Het platform moet de mailserver instellen.",
+      "confirmLive": "Echte e-mails bevestigen",
+      "cancel": "Annuleren",
+      "waitlist": "Komt er een tafel vrij?",
+      "waitlistHint": "Voeg gasten hier toe wanneer alles volzet is. Geef ze een plaats zodra een geschikte tafel vrijkomt.",
+      "name": "Naam",
+      "email": "E-mail (optioneel)",
+      "seats": "Aantal personen",
+      "addWaitlist": "Toevoegen aan de wachtlijst",
+      "seat": "Gasten een plaats geven",
+      "noWaiting": "Niemand wacht. U bent helemaal bij.",
+      "retry": "Opnieuw proberen",
+      "loading": "Uw dashboard wordt voorbereid…",
+      "saved": "Opgeslagen.",
+      "invalid": "Controleer de velden.",
+      "status": {
+        "Booked": "Gereserveerd",
+        "Arrived": "Aangekomen",
+        "Seated": "Aan tafel",
+        "Finished": "Afgerond",
+        "NoShow": "Niet opgedaagd",
+        "Cancelled": "Geannuleerd"
+      },
+      "reminderState": {
+        "simulated": "Herinnering gesimuleerd",
+        "sent": "Herinnering verstuurd",
+        "pending": "Wordt verstuurd",
+        "failed": "Herinnering niet verstuurd"
+      }
+    },
     "settings": {
       "weekdays": {
         "monday": "Maandag",
@@ -685,6 +751,7 @@
     }
   },
   "errors": {
+    "operations": { "invalid": "Controleer de velden." },
     "admin": {
       "password_not_configured": "Admin:Password moet ingesteld zijn vóór het eerste gebruik. Stel het in via de omgevingsvariabele ADMIN_PASSWORD."
     },

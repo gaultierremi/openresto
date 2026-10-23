@@ -404,6 +404,7 @@
     }
   },
   "errors": {
+    "operations": { "invalid": "Check the fields." },
     "admin": {
       "password_not_configured": "Admin:Password must be configured before first use. Set it via ADMIN_PASSWORD env var."
     },

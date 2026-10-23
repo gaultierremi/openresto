@@ -11,7 +11,7 @@ using OpenRestoApi.Infrastructure.Persistence;
 namespace OpenRestoApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261022175109_RestaurantOperations")]
+    [Migration("20261023095000_RestaurantOperations")]
     partial class RestaurantOperations
     {
         /// <inheritdoc />
@@ -740,11 +740,21 @@ namespace OpenRestoApi.Migrations
                     b.Property<long?>("PriceMinor")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("PrimaryLanguage")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(2)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("fr");
+
                     b.Property<long>("QrViews")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("TranslationsJson")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

@@ -1,5 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from "./helpers";
+import en from "../locales/en.json";
+import fr from "../locales/fr.json";
+import nl from "../locales/nl.json";
 
 test.describe("Le quotidien du restaurateur", () => {
   test("tableau de bord, fermeture, file d’attente, carte QR, CSV et téléphone", async ({
@@ -99,6 +102,14 @@ test.describe("Le quotidien du restaurateur", () => {
                     {
                       name: "Carbonade à la bière brune",
                       description: "Frites maison et salade de saison",
+                      primaryLanguage: "fr",
+                      translations: {
+                        nl: {
+                          name: "Stoofvlees met bruin bier",
+                          description: "Huisgemaakte frieten",
+                        },
+                        en: { name: "Beef stew with brown beer", description: "Homemade chips" },
+                      },
                       priceMinor: 2400,
                     },
                     {
@@ -131,7 +142,8 @@ test.describe("Le quotidien du restaurateur", () => {
       }
       const page = await owner.newPage();
       await page.addInitScript(() => {
-        localStorage.setItem("openresto.locale", "fr");
+        if (!localStorage.getItem("openresto.locale"))
+          localStorage.setItem("openresto.locale", "fr");
         localStorage.setItem("theme", "light");
       });
       await page.goto(`/onboarding/dashboard/${id}`);
@@ -175,10 +187,11 @@ test.describe("Le quotidien du restaurateur", () => {
       const qr = await browser.newContext({
         baseURL: "http://localhost:5062",
         viewport: { width: 390, height: 844 },
+        locale: "nl-BE",
       });
       const menuPage = await qr.newPage();
       await menuPage.goto(`/menu/r/${menuToken}`);
-      await expect(menuPage.getByText("Carbonade à la bière brune")).toBeVisible();
+      await expect(menuPage.getByText("Stoofvlees met bruin bier")).toBeVisible();
       await expect
         .poll(
           async () => (await (await owner.request.get(root() + "/operations")).json()).dishes.length
@@ -216,6 +229,30 @@ test.describe("Le quotidien du restaurateur", () => {
         path: test.info().outputPath("restaurateur-horaires.png"),
         contentType: "image/png",
       });
+      for (const [language, label, copy] of [
+        ["nl", "Nederlands", nl],
+        ["en", "English", en],
+        ["fr", "Français", fr],
+      ] as const) {
+        await page.getByRole("combobox").click();
+        await page.getByRole("option", { name: label, exact: true }).click();
+        await expect(page.getByText(copy.admin.operations.title, { exact: true })).toBeVisible();
+        await page.reload();
+        await expect(page.getByText(copy.admin.operations.title, { exact: true })).toBeVisible();
+        await expect(page.getByTestId("exception-add")).toHaveText(
+          copy.admin.operations.addException
+        );
+        await expect(page.getByTestId("waitlist-add")).toHaveText(
+          copy.admin.operations.addWaitlist
+        );
+        expect(
+          await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)
+        ).toBe(true);
+        await test.info().attach(`Téléphone-${language}`, {
+          body: await page.screenshot({ fullPage: true }),
+          contentType: "image/png",
+        });
+      }
       // No other restaurateur can export these guests.
       const other = await browser.newContext({ baseURL: "http://localhost:5062" });
       expect((await other.request.get(root() + "/operations/export.csv")).status()).toBe(401);
