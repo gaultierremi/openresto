@@ -67,6 +67,7 @@ export function pickerRange(allowPast?: boolean): { minimumDate: Date; maximumDa
  * unread rather than making every call site branch on platform (#423).
  */
 export interface DatePickerProps {
+  dateOpen?: (date: string) => boolean;
   selectedDate?: string;
   onSelect: (date: string) => void;
   /**

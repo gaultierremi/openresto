@@ -65,6 +65,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Restaurant>(rb =>
         {
             rb.HasKey(r => r.Id);
+            rb.Property(r => r.SimulateEmailReminders).HasDefaultValue(true);
             rb.Property(r => r.Name).IsRequired();
             rb.HasMany(r => r.Sections)
               .WithOne(s => s.Restaurant)

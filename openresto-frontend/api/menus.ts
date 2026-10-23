@@ -80,6 +80,7 @@ export interface PublicTokens {
 export interface PublicMenuItem {
   primaryLanguage?: DishLanguage;
   translations?: DishTranslations;
+  viewToken?: string;
   name: string;
   description: string | null;
   priceMinor: number | null;
@@ -118,6 +119,16 @@ export interface PublicMenuResponse {
 
 /** Which QR a guest scanned: the restaurant's (`r`) or one table's (`t`). */
 export type PublicMenuKind = "r" | "t";
+
+export async function recordDishView(kind: PublicMenuKind, token: string, viewToken: string) {
+  try {
+    await post(
+      `/menus/${kind}/${encodeURIComponent(token)}/views/${encodeURIComponent(viewToken)}`
+    );
+  } catch {
+    /* A failed counter must not prevent reading the menu. */
+  }
+}
 
 export type MenuResult<T> = { ok: true; value: T } | { ok: false; message: string };
 

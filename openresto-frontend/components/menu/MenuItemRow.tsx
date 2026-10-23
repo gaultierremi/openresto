@@ -1,4 +1,5 @@
-import { View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Platform, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/themed-text";
 import { MenuPhoto } from "@/components/menu/MenuPhoto";
@@ -31,7 +32,42 @@ export function usePriceLabel() {
  * three price states, the sold-out mark and greying without opacity, and that allergens and
  * diets are listed.
  */
-export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency: string }) {
+export function MenuItemRow({
+  item,
+  currency,
+  onViewed,
+}: {
+  item: PublicMenuItem;
+  currency: string;
+  onViewed?: () => void;
+}) {
+  const row = useRef<View>(null);
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (
+      Platform.OS !== "web" ||
+      !onViewed ||
+      viewed.current ||
+      !row.current ||
+      typeof IntersectionObserver === "undefined"
+    )
+      return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.5) &&
+          !viewed.current
+        ) {
+          viewed.current = true;
+          onViewed();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(row.current as unknown as Element);
+    return () => observer.disconnect();
+  }, [onViewed]);
   const { t, i18n } = useTranslation();
   const text = menuTranslation(item, i18n.language);
   const { colors, primaryColor } = useAppTheme();
@@ -39,7 +75,7 @@ export function MenuItemRow({ item, currency }: { item: PublicMenuItem; currency
   const soldOut = item.availability === "SoldOut";
 
   return (
-    <View testID="menu-item" style={[styles.row, { borderBottomColor: colors.border }]}>
+    <View ref={row} testID="menu-item" style={[styles.row, { borderBottomColor: colors.border }]}>
       <View style={styles.body}>
         <View style={styles.titleLine}>
           <ThemedText style={[styles.name, soldOut && { color: colors.muted }]}>

@@ -30,7 +30,7 @@ public sealed class AvailabilityService(
         DateTime localDate = bookingDate.Date;
         int isoDay = IsoDay.Of(localDate);
 
-        if (WalkInPolicy.IsWalkInOnlyOn(restaurant, isoDay) || !ServiceWindowHelper.IsOpenOn(restaurant, isoDay))
+        if (WalkInPolicy.IsWalkInOnlyOn(restaurant, isoDay) || !ServiceWindowHelper.IsOpenOn(restaurant, localDate))
         {
             return NoSlots(restaurantId, bookingDate);
         }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Services;
+using OpenRestoApi.Extensions;
 
 namespace OpenRestoApi.Controllers;
 
@@ -18,6 +19,14 @@ namespace OpenRestoApi.Controllers;
 public class PublicMenusController(MenuService menuService) : ControllerBase
 {
     private readonly MenuService _menus = menuService;
+
+    [HttpPost("{kind}/{token}/views/{viewToken}")]
+    [EnableRateLimiting(ServiceCollectionExtensions.DishViewsPolicy)]
+    public async Task<IActionResult> RecordView(string kind, string token, string viewToken)
+    {
+        await _menus.RecordDishViewAsync(kind, token, viewToken);
+        return NoContent();
+    }
 
     [HttpGet("r/{restaurantToken}")]
     public async Task<ActionResult<PublicMenuResponse>> GetByRestaurant(string restaurantToken)

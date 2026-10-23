@@ -75,12 +75,14 @@ export function GuestsField({
 export function DateField({
   date,
   openDays,
+  dateOpen,
   walkInDays,
   onChange,
 }: {
   date: string;
   /** ISO days the location is open. A closed day is not a candidate, so it is not listed. */
   openDays?: number[];
+  dateOpen?: (date: string) => boolean;
   /** Open days that take no online bookings. Listed but unpickable, so the reason is visible. */
   walkInDays?: number[];
   onChange: (date: string) => void;
@@ -94,6 +96,7 @@ export function DateField({
         selectedDate={date}
         onSelect={onChange}
         openDays={openDays}
+        dateOpen={dateOpen}
         unavailableDays={walkInDays}
         unavailableReason={t("booking.form.walkInsOnlyReason")}
       />

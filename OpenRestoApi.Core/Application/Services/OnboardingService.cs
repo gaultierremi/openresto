@@ -789,7 +789,7 @@ public class OnboardingService(
     /// answer the same 404; a suspended restaurant can still be read, so the restaurateur sees
     /// why, but takes no write.
     /// </summary>
-    private async Task<Restaurant> RequireRestaurantAsync(int restaurantId, bool forWrite = true)
+    public async Task<Restaurant> RequireRestaurantAsync(int restaurantId, bool forWrite = true)
     {
         int userId = RequireUserId();
         Restaurant restaurant = await _repo.FindMemberRestaurantAsync(userId, restaurantId) ?? throw RestaurantNotFound();
