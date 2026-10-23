@@ -1,0 +1,82 @@
+name: Lancement public
+
+on:
+  pull_request:
+    paths:
+      - "OpenRestoApi*/**"
+      - "openresto-frontend/**"
+      - "nginx/**"
+      - "docker-compose*.yml"
+      - ".github/workflows/public-launch.yml"
+  push:
+    branches: [main]
+    paths:
+      - "OpenRestoApi*/**"
+      - "openresto-frontend/**"
+      - "nginx/**"
+      - "docker-compose*.yml"
+      - ".github/workflows/public-launch.yml"
+
+concurrency:
+  group: public-launch-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  public-launch:
+    name: Parcours public, accessibilité et Lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      COMPOSE_FILE: docker-compose.yml:docker-compose.e2e.yml:docker-compose.launch.yml
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: openresto-frontend/package-lock.json
+      - name: Préparer les identifiants éphémères
+        run: |
+          test_jwt_key=$(openssl rand -hex 48)
+          test_admin_password=$(openssl rand -hex 24)
+          echo "::add-mask::$test_jwt_key"
+          echo "::add-mask::$test_admin_password"
+          echo "OPENRESTO_TEST_JWT_KEY=$test_jwt_key" >> "$GITHUB_ENV"
+          echo "OPENRESTO_TEST_ADMIN_PASSWORD=$test_admin_password" >> "$GITHUB_ENV"
+      - name: Construire et démarrer la pile de test
+        run: docker compose up -d --build --wait --wait-timeout 180
+      - name: Installer les outils de validation
+        working-directory: openresto-frontend
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Tester le parcours français complet
+        working-directory: openresto-frontend
+        run: npx playwright test -c playwright.launch.config.ts
+      - name: Mesurer les pages publiques sur mobile (seuil 90)
+        working-directory: openresto-frontend
+        run: node scripts/audit-public-launch.mjs
+      - name: Vérifier la confidentialité des journaux du proxy
+        run: |
+          curl -sS -o /dev/null http://localhost:5062/onboarding/invitation/privacy-probe-token
+          curl -sS -o /dev/null 'http://localhost:5062/api/bookings/ref/privacy-probe-reference?email=privacy-probe%40example.test'
+          curl -sS -o /dev/null -X DELETE http://localhost:5062/api/holds/privacy-probe-hold
+          curl -sS -o /dev/null http://localhost:5062/api/waitlist/privacy-probe-api-waitlist
+          curl -sS -o /dev/null http://localhost:5062/waitlist/privacy-probe-guest-waitlist
+          docker compose logs --no-color reverse-proxy > /tmp/openresto-privacy.log
+          if grep -Eq 'privacy-probe-token|privacy-probe-reference|privacy-probe-hold|privacy-probe-api-waitlist|privacy-probe-guest-waitlist|privacy-probe%40example.test|privacy-probe@example.test' /tmp/openresto-privacy.log; then
+            echo 'Le journal du proxy contient une adresse ou un lien personnel.'
+            exit 1
+          fi
+      - name: Conserver les preuves
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lancement-public-preuves
+          path: |
+            openresto-frontend/playwright-report-launch/
+            openresto-frontend/test-results/
+            openresto-frontend/lighthouse-launch/
+      - name: Arrêter la pile de test
+        if: always()
+        run: docker compose down -v

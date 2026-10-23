@@ -15,6 +15,7 @@ import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createReadStream, existsSync, statSync } from "node:fs";
+import { createGzip } from "node:zlib";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 5062);
@@ -43,6 +44,14 @@ const TYPES = {
 
 /** The backend answers these; everything else is the web export. Mirrors nginx/default.conf.template. */
 const BACKEND_PATHS = [
+  /^\/$/,
+  /^\/decouvrir$/,
+  /^\/inscription(\/envoyee)?$/,
+  /^\/legal(\/[a-z-]+)?$/,
+  /^\/locations(\/[0-9]+)?$/,
+  /^\/lookup$/,
+  /^\/booking-confirmation\/[^/]+$/,
+  /^\/menu\/[rt]\/[^/]+$/,
   /^\/api\//,
   /^\/openapi\//,
   /^\/r\/[a-z0-9-]+(\/reserver)?$/,
@@ -50,14 +59,21 @@ const BACKEND_PATHS = [
   /^\/robots\.txt$/,
 ];
 
-function sendFile(res, file) {
+function sendFile(res, file, acceptEncoding = "") {
   const stream = createReadStream(file);
   stream.on("open", () => {
+    const type = TYPES[path.extname(file)] ?? "application/octet-stream";
+    const gzip =
+      /\bgzip\b/.test(acceptEncoding) &&
+      /^(text\/|application\/(javascript|json)|font\/ttf)/.test(type);
     res.writeHead(200, {
-      "content-type": TYPES[path.extname(file)] ?? "application/octet-stream",
-      "cache-control": "no-cache",
+      "content-type": type,
+      "cache-control": res.getHeader("cache-control") ?? "no-cache",
+      vary: "Accept-Encoding",
+      ...(gzip ? { "content-encoding": "gzip" } : {}),
     });
-    stream.pipe(res);
+    if (gzip) stream.pipe(createGzip()).pipe(res);
+    else stream.pipe(res);
   });
   stream.on("error", () => {
     res.writeHead(404);
@@ -84,6 +100,16 @@ http
           headers: { ...req.headers, host: req.headers.host, "x-forwarded-proto": "http" },
         },
         (up) => {
+          if (
+            up.statusCode === 404 &&
+            (pathname === "/" || up.headers["x-openresto-legacy"] === "true")
+          ) {
+            up.resume();
+            const file =
+              resolveWithin(DIST_DIR, `${pathname.replace(/\/$/, "")}.html`) ??
+              path.join(DIST_DIR, "index.html");
+            return sendFile(res, file, req.headers["accept-encoding"]);
+          }
           res.writeHead(up.statusCode ?? 502, up.headers);
           up.pipe(res);
         }
@@ -98,15 +124,20 @@ http
 
     if (pathname.startsWith("/media/")) {
       const file = resolveWithin(MEDIA_DIR, pathname.slice("/media/".length));
-      if (file) return sendFile(res, file);
+      if (file) return sendFile(res, file, req.headers["accept-encoding"]);
       res.writeHead(404);
       return res.end();
     }
 
+    if (pathname.startsWith("/onboarding")) {
+      res.setHeader("Cache-Control", "no-store");
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      res.setHeader("Referrer-Policy", "no-referrer");
+    }
     const asset =
       resolveWithin(DIST_DIR, pathname) ??
       resolveWithin(DIST_DIR, `${pathname.replace(/\/$/, "")}.html`) ??
       resolveWithin(DIST_DIR, path.join(pathname, "index.html"));
-    sendFile(res, asset ?? path.join(DIST_DIR, "index.html"));
+    sendFile(res, asset ?? path.join(DIST_DIR, "index.html"), req.headers["accept-encoding"]);
   })
   .listen(PORT, () => console.log(`stack on http://localhost:${PORT} (backend ${BACKEND.origin})`));

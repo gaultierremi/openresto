@@ -79,7 +79,16 @@ export default function Navbar({ onScrollToTop, onOpenShortcuts }: NavbarProps) 
             </Pressable>
           )}
 
-          {pathname === "/" && onScrollToTop ? (
+          {Platform.OS === "web" && brand.publicLaunchEnabled ? (
+            <a href="/" style={{ textDecoration: "none" }}>
+              <ThemedText
+                style={[styles.brandText, { color: primaryColor }, isTiny && { fontSize: 18 }]}
+                numberOfLines={1}
+              >
+                {brand.appName}
+              </ThemedText>
+            </a>
+          ) : pathname === "/" && onScrollToTop ? (
             <Pressable
               style={styles.brand}
               onPress={onScrollToTop}

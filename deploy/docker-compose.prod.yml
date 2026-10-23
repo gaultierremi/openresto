@@ -106,6 +106,7 @@ services:
       CONNECTION_STRING: Data Source=/data/openresto.db
       DATA_PROTECTION_KEYS_PATH: /data/dp-keys
       OPENRESTO_DEFAULT_LOCALE: ${OPENRESTO_DEFAULT_LOCALE:-fr}
+      PublicLaunch__Enabled: ${OPENRESTO_PUBLIC_LAUNCH:-false}
       # SMTP: seeded into the admin's email settings on first boot only (see docs/HEBERGEMENT.md).
       EmailSettings__Host: ${SMTP_HOST:-}
       EmailSettings__Port: ${SMTP_PORT:-587}

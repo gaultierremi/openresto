@@ -32,7 +32,7 @@ public sealed record LegalDocument(string Key, string Title, IReadOnlyList<Legal
 public static class LegalCatalog
 {
     /// <summary>Moves when any wording changes; an acceptance made under an older one is refused at sign-up.</summary>
-    public const string Version = "2026-10-21";
+    public const string Version = "2026-10-22";
 
     public const string Language = "fr";
 

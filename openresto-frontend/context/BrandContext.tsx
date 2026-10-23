@@ -35,6 +35,7 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
             highlightsSubheading: data.highlightsSubheading || undefined,
             headerImageFit: data.headerImageFit || undefined,
             defaultLocale: data.defaultLocale || DEFAULT_BRAND.defaultLocale,
+            publicLaunchEnabled: data.publicLaunchEnabled === true,
             cliPackageUrl: data.cliPackageUrl || undefined,
             apiDocsUrl: data.apiDocsUrl || undefined,
             repositoryUrl: data.repositoryUrl || undefined,

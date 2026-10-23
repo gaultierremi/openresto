@@ -27,6 +27,8 @@ app-example
 /android
 test-results/
 playwright-report/
+playwright-report-launch/
+lighthouse-launch/
 blob-report/
 playwright/.cache/
 e2e/.auth/

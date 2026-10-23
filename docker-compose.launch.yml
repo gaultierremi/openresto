@@ -1,0 +1,27 @@
+services:
+  backend:
+    environment:
+      PublicLaunch__Enabled: "true"
+      Website__Url: https://launch.example
+      CONNECTION_STRING: Data Source=/tmp/openresto-launch.db
+      Jwt__Key: ${OPENRESTO_TEST_JWT_KEY:?Generate a test key}
+      Admin__Email: launch-owner@example.test
+      Admin__Password: ${OPENRESTO_TEST_ADMIN_PASSWORD:?Generate a test password}
+      EmailSettings__Host: registration-mailbox
+      EmailSettings__Port: "1025"
+      EmailSettings__Username: test@example.test
+      EmailSettings__Password: test-only
+      EmailSettings__FromEmail: test@example.test
+      EmailSettings__EnableSsl: "false"
+      Logging__LogLevel__Microsoft: Warning
+    depends_on:
+      registration-mailbox:
+        condition: service_started
+
+  registration-mailbox:
+    image: node:24-alpine
+    command: ["node", "/test/registration-mailbox.mjs"]
+    volumes:
+      - ./openresto-frontend/e2e/fixtures/registration-mailbox.mjs:/test/registration-mailbox.mjs:ro
+    ports:
+      - "127.0.0.1:1085:1085"

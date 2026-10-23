@@ -47,6 +47,7 @@ public class BrandController(
             PrivacyPolicyUrl = brand.PrivacyPolicyUrl,
             MinimumAppVersion = brand.MinimumAppVersion,
             DefaultLocale = _brand.GetDefaultLocale(brand),
+            PublicLaunchEnabled = _brand.PublicLaunchEnabled,
             CliPackageUrl = _brand.GetCliPackageUrl(),
             ApiDocsUrl = _brand.GetApiDocsUrl(),
             RepositoryUrl = _brand.GetRepositoryUrl(),
@@ -234,6 +235,8 @@ public class BrandResponse
     public string? MinimumAppVersion { get; set; }
 
     public string DefaultLocale { get; set; } = SupportedLocales.Default;
+
+    public bool PublicLaunchEnabled { get; set; }
 
     /// <summary>Where the CLI this server's API keys drive is published. See <see cref="BrandService.GetCliPackageUrl"/>.</summary>
     public string? CliPackageUrl { get; set; }

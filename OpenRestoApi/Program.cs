@@ -1,3 +1,4 @@
+using OpenRestoApi.Core.Application.Legal;
 using OpenRestoApi.Extensions;
 using OpenRestoApi.Infrastructure.Auditing;
 using OpenRestoApi.Infrastructure.Exceptions;
@@ -31,6 +32,9 @@ string connectionString = builder.Configuration.GetAppConnectionString(builder.E
 builder.Services.AddDatabaseSetup(connectionString, builder.Environment);
 
 WebApplication app = builder.Build();
+
+if (builder.Configuration.GetValue<bool>("PublicLaunch:Enabled") && LegalCatalog.NeedsLegalReview)
+    app.Logger.LogWarning("Lancement public activé avec des modèles juridiques incomplets : compléter et faire valider les textes avant toute inscription réelle.");
 
 // Outermost on purpose: the audit entry is written after everything else has finished with the
 // request, so the status code it records is the one the caller actually received — including the

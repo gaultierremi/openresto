@@ -1,3 +1,13 @@
+map $uri $openresto_log_path {
+    ~*^/(?:api/)?onboarding/invitations?/ /onboarding/invitation/[masque];
+    ~*^/(?:api/bookings/ref|booking-confirmation)/ /bookings/[masque];
+    ~*^/api/holds/ /api/holds/[masque];
+    ~*^/(?:api/)?waitlist/ /waitlist/[masque];
+    ~*^/(?:api/)?menus?/[rt]/ /menu/[masque];
+    default $uri;
+}
+log_format openresto_privacy '$remote_addr [$time_local] "$request_method $openresto_log_path $server_protocol" $status $body_bytes_sent';
+
 server {
     listen ${PORT};
     server_tokens off;
@@ -5,8 +15,8 @@ server {
     resolver ${RESOLVER} valid=10s ipv6=off;
     resolver_timeout 5s;
 
-    access_log /dev/stdout;
-    error_log /dev/stderr warn;
+    access_log /dev/stdout openresto_privacy;
+    error_log /dev/stderr crit;
 
     gzip on;
     gzip_vary on;
@@ -15,7 +25,7 @@ server {
     gzip_proxied any;
     gzip_types text/plain text/css application/json application/javascript text/xml
                application/xml image/svg+xml font/woff font/woff2
-               application/font-woff application/font-woff2;
+               application/font-woff application/font-woff2 font/ttf application/x-font-ttf;
 
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
@@ -115,7 +125,7 @@ server {
 
     # Restaurant websites — server-rendered HTML, so the backend answers, not the Expo app.
     # Cache-Control is left as the backend set it (one minute) so an unpublish shows up fast.
-    location ~ ^/(?:r/[a-z0-9-]+(?:/reserver)?|sitemap\.xml|robots\.txt)$ {
+    location ~ ^/(?:r/[a-z0-9-]+(?:/reserver)?|sitemap\.xml|robots\.txt|decouvrir|inscription(?:/envoyee)?|legal(?:/[a-z-]+)?)$ {
         include /etc/nginx/conf.d/security-headers.conf;
 
         set $backend_host ${BACKEND_HOST};
@@ -123,6 +133,49 @@ server {
     }
 
     # Frontend — Proxy to Static Server
+    location = / {
+        include /etc/nginx/conf.d/security-headers.conf;
+        set $backend_host ${BACKEND_HOST};
+        proxy_pass http://$backend_host:${BACKEND_PORT};
+        proxy_intercept_errors on;
+        error_page 404 = @legacy_home;
+    }
+
+    location ~ ^/(?:locations(?:/[0-9]+)?|lookup|booking-confirmation/[^/]+|menu/[rt]/[^/]+)$ {
+        include /etc/nginx/conf.d/security-headers.conf;
+        set $backend_host ${BACKEND_HOST};
+        proxy_pass http://$backend_host:${BACKEND_PORT};
+        proxy_intercept_errors on;
+        error_page 404 = @public_guest_fallback;
+    }
+
+    location @public_guest_fallback {
+        include /etc/nginx/conf.d/security-headers.conf;
+        set $guest_host ${BACKEND_HOST};
+        set $guest_port ${BACKEND_PORT};
+        if ($upstream_http_x_openresto_legacy = "true") {
+            set $guest_host ${FRONTEND_HOST};
+            set $guest_port ${FRONTEND_PORT};
+        }
+        proxy_pass http://$guest_host:$guest_port;
+    }
+
+    location @legacy_home {
+        include /etc/nginx/conf.d/security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+        set $frontend_host ${FRONTEND_HOST};
+        proxy_pass http://$frontend_host:${FRONTEND_PORT};
+    }
+
+    location /onboarding {
+        include /etc/nginx/conf.d/security-headers.conf;
+        add_header Cache-Control "no-store" always;
+        add_header X-Robots-Tag "noindex, nofollow" always;
+        add_header Referrer-Policy "no-referrer" always;
+        set $frontend_host ${FRONTEND_HOST};
+        proxy_pass http://$frontend_host:${FRONTEND_PORT};
+    }
+
     location / {
         include /etc/nginx/conf.d/security-headers.conf;
         proxy_hide_header Cache-Control;

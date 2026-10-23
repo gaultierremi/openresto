@@ -293,5 +293,24 @@ describe("BrandContext", () => {
     await waitFor(() => expect(brand?.appName).toBe("Test"));
     expect(brand?.wallet).toBeUndefined();
     expect(brand?.webPushPublicKey).toBeUndefined();
+    expect(brand?.publicLaunchEnabled).toBe(false);
+  });
+
+  it("maps public launch only when the server explicitly enables it", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ publicLaunchEnabled: true }),
+    });
+    let brand: Brand | undefined;
+    function Probe() {
+      brand = useBrand();
+      return null;
+    }
+    render(
+      <BrandProvider>
+        <Probe />
+      </BrandProvider>
+    );
+    await waitFor(() => expect(brand?.publicLaunchEnabled).toBe(true));
   });
 });

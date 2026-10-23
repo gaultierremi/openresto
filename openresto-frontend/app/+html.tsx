@@ -13,6 +13,10 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
         <meta name="theme-color" content="#0a7ea4" />
+        <meta
+          name="description"
+          content="Consultez les restaurants, leurs cartes et leurs disponibilités. Réservez une table et retrouvez votre réservation avec OpenResto."
+        />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

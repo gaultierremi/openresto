@@ -1,4 +1,4 @@
-const CACHE_NAME = "openresto-v6";
+const CACHE_NAME = "openresto-v7";
 const STATIC_ASSETS = ["/", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
@@ -85,7 +85,13 @@ self.addEventListener("notificationclick", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  if (url.pathname.startsWith("/api/")) {
+  if (
+    event.request.method !== "GET" ||
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/onboarding") ||
+    url.pathname.startsWith("/inscription") ||
+    url.pathname.startsWith("/admin")
+  ) {
     return;
   }
 
@@ -100,7 +106,10 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        if (event.request.method === "GET" && response.status === 200) {
+        if (
+          response.status === 200 &&
+          !/no-store/i.test(response.headers.get("cache-control") ?? "")
+        ) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }

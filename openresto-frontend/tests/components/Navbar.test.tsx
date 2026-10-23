@@ -9,7 +9,7 @@ jest.mock("react-native/Libraries/Utilities/useWindowDimensions", () => ({
 }));
 
 import { render, screen, fireEvent } from "@testing-library/react-native";
-import { useWindowDimensions } from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
 import Navbar from "@/components/layout/Navbar";
 
 const mockBack = jest.fn();
@@ -70,6 +70,28 @@ describe("Navbar", () => {
     render(<Navbar />);
     expect(screen.getByText("Test App")).toBeTruthy();
   });
+
+  it.each([300, 1024])(
+    "loads the server home from the brand link in public launch mode at %s px",
+    (width) => {
+      const original = Platform.OS;
+      Object.defineProperty(Platform, "OS", { configurable: true, value: "web" });
+      try {
+        const theme = (useAppTheme as jest.Mock)();
+        (useAppTheme as jest.Mock).mockReturnValue({
+          ...theme,
+          brand: { ...theme.brand, publicLaunchEnabled: true },
+        });
+        (useWindowDimensions as jest.Mock).mockReturnValue({ width, height: 768 });
+        render(<Navbar />);
+        let node = screen.getByText("Test App").parent;
+        while (node && node.type !== "a") node = node.parent;
+        expect(node?.props.href).toBe("/");
+      } finally {
+        Object.defineProperty(Platform, "OS", { configurable: true, value: original });
+      }
+    }
+  );
 
   it("renders brand name as text (no logo image)", () => {
     (useAppTheme as jest.Mock).mockReturnValue({

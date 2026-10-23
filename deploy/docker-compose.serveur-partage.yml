@@ -129,6 +129,7 @@ services:
       CONNECTION_STRING: Data Source=/data/openresto.db
       DATA_PROTECTION_KEYS_PATH: /data/dp-keys
       OPENRESTO_DEFAULT_LOCALE: ${OPENRESTO_LANGUE:-fr}
+      PublicLaunch__Enabled: ${OPENRESTO_PUBLIC_LAUNCH:-false}
       EmailSettings__Host: ${SMTP_HOST:-}
       EmailSettings__Port: ${SMTP_PORT:-587}
       EmailSettings__Username: ${SMTP_USERNAME:-}

@@ -109,6 +109,30 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
 
     public void AddInvitation(RestaurantInvitation invitation) => _db.RestaurantInvitations.Add(invitation);
 
+    public async Task<RestaurantInvitation?> FindPublicRegistrationAsync(string email)
+        => (await _db.RestaurantInvitations.Include(i => i.Restaurant)
+            .Where(i => i.Email == email && i.CreatedByUserId == null && i.AcceptedAt == null
+                && i.Restaurant!.Status == RestaurantStatus.Draft && !i.Restaurant.IsArchived
+                && !_db.RestaurantMembers.Any(m => m.RestaurantId == i.RestaurantId))
+            .ToListAsync()).OrderByDescending(i => i.CreatedAt).ThenByDescending(i => i.Id).FirstOrDefault();
+
+    public async Task<int> DeleteExpiredRegistrationsAsync(DateTime cutoffUtc)
+    {
+        List<RestaurantInvitation> pending = await _db.RestaurantInvitations
+            .Where(i => i.CreatedByUserId == null && i.AcceptedAt == null && i.CreatedAt < cutoffUtc)
+            .ToListAsync();
+        int[] ids = [.. pending.Select(i => i.RestaurantId).Distinct()];
+        return await _db.Restaurants.Where(r => ids.Contains(r.Id) && r.Status == RestaurantStatus.Draft
+            && r.PublishedAt == null && !_db.RestaurantMembers.Any(m => m.RestaurantId == r.Id)
+            && !_db.Bookings.Any(b => b.RestaurantId == r.Id)
+            && !_db.RestaurantInvitations.Any(i => i.RestaurantId == r.Id && i.CreatedAt >= cutoffUtc))
+            .ExecuteDeleteAsync();
+    }
+
+    public Task<int> CountPublicRegistrationRequestsAsync(string email, DateTime sinceUtc)
+        => _db.RestaurantInvitations.CountAsync(i => i.Email == email
+            && i.CreatedByUserId == null && i.CreatedAt > sinceUtc);
+
     public void AddAcceptance(LegalAcceptance acceptance) => _db.LegalAcceptances.Add(acceptance);
 
     public async Task<List<LegalAcceptance>> GetAcceptancesAsync(int restaurantId)

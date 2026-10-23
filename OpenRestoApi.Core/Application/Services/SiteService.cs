@@ -304,7 +304,7 @@ public class SiteService(
     public async Task<string> BuildSitemapAsync()
     {
         List<RestaurantSite> sites = await _repo.GetPublishedAsync();
-        return SiteSitemap.Build(await BaseUrlAsync(), sites.Select(s => (s.Slug, s.UpdatedAt)));
+        return SiteSitemap.Build(await BaseUrlAsync(), sites.Select(s => (s.Slug, s.UpdatedAt)), _brand.PublicLaunchEnabled ? "/" : null);
     }
 
     public async Task<string> BuildRobotsAsync() => SiteSitemap.Robots(await BaseUrlAsync());
