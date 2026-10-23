@@ -1,7 +1,7 @@
 {
-  "etat": "Palette client (#19), sécurité Codespace (#20), parcours restaurateur/client (#22) et kit serveur partagé (#21) intégrés à main ; lancement, espace restaurateur et FR/NL/EN en cours, déploiement CI en échec.",
+  "etat": "Palette client (#19), sécurité Codespace (#20), parcours restaurateur/client (#22), kit serveur partagé (#21) et prêt au lancement (#23) intégrés à main ; espace restaurateur #24 en contre-relecture et trilingue #26 prête à merger.",
   "sante": "actif",
-  "prochaine_etape": "Finaliser #23, #24 et le trilingue FR/NL/EN, puis décider de l'installation sur le serveur partagé avant toute mise en service réelle.",
+  "prochaine_etape": "Contre-relire #24, fusionner les chantiers prêts, faire valider les textes juridiques avant l'ouverture réelle et décider de l'installation sur le serveur partagé.",
   "chantiers": [
     {
       "id": "palette-client",
@@ -48,10 +48,10 @@
       "titre": "Prêt au lancement : accueil, inscription et parcours clients",
       "agent": "Codex",
       "branche": "feat/cx-o1-pret-au-lancement",
-      "statut": "En cours",
+      "statut": "Terminé",
       "pr": 23,
-      "etape": "PR ouverte, non fusionnée ; textes légaux encore à compléter et à faire valider avant l'ouverture réelle.",
-      "maj": "2026-10-22T21:09:53+00:00"
+      "etape": "Fusionnée dans main ; textes légaux encore à compléter et à faire valider avant l'ouverture réelle.",
+      "maj": "2026-10-23T07:02:11+00:00"
     },
     {
       "id": "espace-restaurateur",
@@ -60,20 +60,39 @@
       "branche": "feat/cx-o2",
       "statut": "En cours",
       "pr": 24,
-      "etape": "PR ouverte, non fusionnée ; corrections de relecture encore attendues sur le comptage des vues de la carte QR.",
-      "maj": "2026-10-22T21:09:53+00:00"
+      "etape": "Corrections du quota des vues QR poussées ; PR ouverte, en attente de contre-relecture.",
+      "maj": "2026-10-23T06:33:21+00:00"
     },
     {
       "id": "trilingue-fr-nl-en",
       "titre": "Parcours trilingues FR/NL/EN",
       "agent": "Codex",
-      "branche": null,
-      "statut": "En cours",
-      "pr": null,
-      "maj": "2026-10-22T21:09:53+00:00"
+      "branche": "feat/n4-langues",
+      "statut": "Prête à merger",
+      "pr": 26,
+      "etape": "Verdict MERGE sur 1788245 ; contrôles CI réussis, sans fusion dans main.",
+      "relecture": {
+        "par": "Claude",
+        "verdict": "MERGE",
+        "at": "2026-10-23T06:24:20+00:00",
+        "sha": "1788245b100eddeeb02b9d196d579c4de71ca1ce"
+      },
+      "maj": "2026-10-23T06:24:20+00:00"
     }
   ],
   "decisions": [
+    {
+      "id": "validation-juridique",
+      "titre": "Faire valider les quatre textes légaux par un juriste belge",
+      "pourquoi": "Avant le premier restaurant et l'ouverture de l'inscription publique, compléter les champs des modèles juridiques et faire valider les quatre textes ; la fusion de #23 ne lève pas cette condition.",
+      "urgence": "Cette semaine"
+    },
+    {
+      "id": "portee-admin-par-restaurant",
+      "titre": "Limiter l'accès aux données clients par restaurant avant l'accueil d'un restaurant indépendant ?",
+      "pourquoi": "Les écrans admin restent accessibles aux comptes Owner et Manager de l'instance ; #24 ajoute l'espace restaurateur isolé, mais reste non fusionnée et cette décision demeure ouverte avant le premier restaurant.",
+      "urgence": "Cette semaine"
+    },
     {
       "id": "installation-serveur-partage",
       "titre": "Installer OpenResto sur le serveur partagé prévu ?",
@@ -82,7 +101,7 @@
     }
   ],
   "maj": {
-    "at": "2026-10-22T21:09:53+00:00",
+    "at": "2026-10-23T09:28:07+00:00",
     "by": "Codex"
   }
 }
