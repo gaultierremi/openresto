@@ -11,6 +11,7 @@ import { RowTextButton } from "@/components/common/RowTextButton";
 import { Banner, Field } from "@/components/onboarding/formParts";
 import { StepShell } from "@/components/onboarding/StepShell";
 import { DishTranslationFields } from "@/components/menu/DishTranslationFields";
+import { DishServiceControls } from "@/components/onboarding/DishServiceControls";
 import { saveMenu, skipStep } from "@/api/onboarding";
 import { useOnboardingCall } from "@/hooks/use-onboarding-call";
 import { useAppTheme } from "@/hooks/use-app-theme";
@@ -285,6 +286,8 @@ export function MenuStep({
                       testID={`${at}-description`}
                     />
                     <DishTranslationFields
+                      sourceName={dish.name}
+                      sourceDescription={dish.description}
                       primaryLanguage={dish.primaryLanguage ?? "fr"}
                       translations={dish.translations ?? {}}
                       disabled={readOnly}
@@ -298,6 +301,18 @@ export function MenuStep({
                         )
                       }
                     />
+                    {dish.id ? (
+                      <DishServiceControls
+                        restaurantId={restaurantId}
+                        itemId={dish.id}
+                        imageUrl={dish.imageUrl}
+                        availability={dish.availability}
+                        disabled={readOnly || busy}
+                        onExpired={onExpired}
+                      />
+                    ) : (
+                      <ThemedText>{t("common.menu.saveBeforePhoto")}</ThemedText>
+                    )}
                     <View style={styles.declarations}>
                       <RowTextButton
                         label={
