@@ -44,6 +44,7 @@ jobs:
         run: |
           shellcheck -x -P SCRIPTDIR deploy/backup/*.sh deploy/update.sh deploy/smoke.sh deploy/install.sh deploy/health.sh deploy/tests/*.sh
           shellcheck -x -P SCRIPTDIR deploy/installer.sh deploy/verifier.sh deploy/mettre-a-jour.sh deploy/sauvegarder.sh deploy/restaurer.sh deploy/serveur-partage/lib.sh
+          shellcheck deploy/demo.sh
 
       # These run against stand-ins for the machine (no Docker daemon, no root, no network), so
       # they cost seconds, not the stack job's build.
@@ -58,6 +59,9 @@ jobs:
 
       - name: Shared-server kit behaves (stand-ins for the machine)
         run: deploy/tests/serveur-partage.test.sh
+
+      - name: Demo keeps the neighbour's networks
+        run: python3 deploy/tests/demo-compose.test.py
 
       - name: Compose files resolve
         env:
@@ -172,6 +176,13 @@ jobs:
           OPENRESTO_TEST_FRONTEND: local/openresto-frontend:ci
           OPENRESTO_TEST_NGINX: local/openresto-nginx:ci
         run: deploy/tests/serveur-partage.stack.test.sh
+
+      - name: Demonstration behind an existing Caddy
+        run: |
+          docker tag local/openresto-backend:ci localhost/openresto-demo-backend:local
+          docker tag local/openresto-frontend:ci localhost/openresto-demo-frontend:local
+          docker tag local/openresto-nginx:ci localhost/openresto-demo-nginx:local
+          deploy/tests/demo.stack.test.sh
 
       - name: Container logs on failure
         if: failure()

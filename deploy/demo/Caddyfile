@@ -1,0 +1,22 @@
+{
+	auto_https off
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+:80 {
+	basic_auth {
+		demo {$DEMO_PASSWORD_HASH}
+	}
+	header {
+		X-Robots-Tag "noindex, nofollow, noarchive"
+		Cache-Control "private, no-store"
+	}
+	request_body {
+		max_size 12MB
+	}
+	reverse_proxy reverse-proxy:80 {
+		header_up -Authorization
+	}
+}
