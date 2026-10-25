@@ -6,7 +6,11 @@
 }
 
 :80 {
-	basic_auth {
+	@protege not {
+		method GET
+		path_regexp ^/api/menus/[rt]/[A-Za-z0-9_-]+$
+	}
+	basic_auth @protege {
 		demo {$DEMO_PASSWORD_HASH}
 	}
 	header {

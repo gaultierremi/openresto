@@ -5,7 +5,8 @@ Adresse : **https://openresto.134-209-92-233.sslip.io**. Apprenti garde
 Seul Gaultier lance les commandes ci-dessous sur le serveur. Aucun déploiement automatique.
 
 Prévoir **10 minutes de manipulation**, plus la construction initiale des images
-(5 à 15 minutes selon le serveur ; au moins 3 Go de mémoire et 5 Go de disque libres).
+(5 à 15 minutes selon le serveur ; conserver au moins 3 Go de mémoire disponible
+pour le build, en plus de la mémoire utilisée par Apprenti, et 5 Go de disque libre).
 Prérequis : Ubuntu avec Git, Python 3, Docker et Docker Compose v2. Le DNS sslip.io
 pointe ces deux noms vers 134.209.92.233 ; le Caddy existant obtient le certificat
 du nouveau nom. Aucun nouveau port à ouvrir, aucune adresse e-mail à configurer.
@@ -15,14 +16,22 @@ du nouveau nom. Aucun nouveau port à ouvrir, aucune adresse e-mail à configure
 Dans votre session SSH habituelle sur `134.209.92.233` :
 
 ```bash
+(
 set -euo pipefail
+free -m
 cd ~
 git clone --branch feat/v5-demo-en-ligne https://github.com/gaultierremi/openresto.git openresto-demo
 cd openresto-demo
 ./deploy/demo.sh preparer
 ./deploy/demo.sh construire
 ./deploy/demo.sh demarrer
+)
 ```
+
+Le sous-shell garde votre session SSH ouverte si une commande échoue. Vérifiez la
+colonne `available` de `free -m` avant de construire. Le script construit l'API,
+puis le frontend, puis nginx, l'un après l'autre, pour limiter le pic de mémoire
+sur ce serveur partagé. Un export web à froid peut utiliser environ 2,4 Go à lui seul.
 
 Après fusion de cette PR, utiliser `--branch main` pour une nouvelle installation.
 Ne réutilisez pas un clone ou un fichier `.env` d'Apprenti. Le script utilise
@@ -46,28 +55,46 @@ Pas de réservation préexistante, aucun vrai client ni vrai restaurateur.
 
 ## 2. Raccorder le Caddy existant, sans redémarrer Apprenti
 
-Toujours depuis `~/openresto-demo`, même shell Bash :
+Depuis votre session SSH, valider une copie avant d'écrire dans la configuration
+réelle. Le sous-shell ci-dessous conserve la session ouverte en cas d'erreur :
 
 ```bash
+(
+set -euo pipefail
+cd ~/openresto-demo
 CADDY="$(docker ps --filter publish=443 --format '{{.Names}}')"
-test -n "$CADDY" && test "$(printf '%s\n' "$CADDY" | wc -l)" -eq 1
+test -n "$CADDY"
+test "$(printf '%s\n' "$CADDY" | wc -l)" -eq 1
 docker inspect "$CADDY" --format 'Caddy : {{.Name}} ; service : {{index .Config.Labels "com.docker.compose.service"}}'
 CADDYFILE="$(docker inspect "$CADDY" --format '{{range .Mounts}}{{if eq .Destination "/etc/caddy/Caddyfile"}}{{.Source}}{{end}}{{end}}')"
 if [ -z "$CADDYFILE" ]; then
   CADDYDIR="$(docker inspect "$CADDY" --format '{{range .Mounts}}{{if eq .Destination "/etc/caddy"}}{{.Source}}{{end}}{{end}}')"
-  test -n "$CADDYDIR" && CADDYFILE="$CADDYDIR/Caddyfile"
+  test -n "$CADDYDIR"
+  CADDYFILE="$CADDYDIR/Caddyfile"
 fi
-test -f "$CADDYFILE" && test ! -e "$CADDYFILE.avant-openresto"
+test -f "$CADDYFILE"
+test ! -e "$CADDYFILE.avant-openresto"
+CANDIDAT="$(mktemp)"
+trap 'rm -f "$CANDIDAT"' EXIT
+sudo cat "$CADDYFILE" | tee "$CANDIDAT" >/dev/null
+cat deploy/demo/caddy-existant.caddy >> "$CANDIDAT"
+docker exec -i -w /etc/caddy "$CADDY" caddy validate --config - --adapter caddyfile < "$CANDIDAT"
 sudo cp -a "$CADDYFILE" "$CADDYFILE.avant-openresto"
 docker network connect openresto-demo-caddy "$CADDY"
-cat deploy/demo/caddy-existant.caddy | sudo tee -a "$CADDYFILE" >/dev/null
-docker exec "$CADDY" caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
-docker exec "$CADDY" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+if ! { cat "$CANDIDAT" | sudo tee "$CADDYFILE" >/dev/null &&
+  docker exec "$CADDY" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile; }; then
+  sudo cat "$CADDYFILE.avant-openresto" | sudo tee "$CADDYFILE" >/dev/null
+  docker exec "$CADDY" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+  exit 1
+fi
+)
 ```
 
-Exécutez les commandes dans l'ordre, **arrêtez-vous si une commande échoue**.
-Ne rechargez pas une configuration dont la validation a échoué : appliquez
-alors le retour arrière du §5. Si le serveur utilise un autre chemin de Caddyfile,
+Si la validation de la copie échoue, le fichier réel et le Caddy actif restent
+intacts. Le bloc commence par une ligne vide : il fonctionne aussi lorsque le
+fichier d'origine n'a pas de retour à la ligne final. Si l'écriture ou le rechargement échoue,
+la copie d'origine est rétablie immédiatement. Le réseau peut alors rester raccordé ;
+le §5 permet de le retirer. Si le serveur utilise un autre chemin de Caddyfile,
 adaptez uniquement ce chemin d'après les montages du conteneur ; ne remplacez
 jamais la configuration d'Apprenti. Le bloc ajouté est simplement :
 
@@ -77,8 +104,12 @@ openresto.134-209-92-233.sslip.io {
 }
 ```
 
-La protection par mot de passe reste **dans la pile OpenResto**, sur toutes les
-routes, API, médias et admin compris. Le réseau externe `openresto-demo-caddy`
+La protection par mot de passe reste **dans la pile OpenResto** : pages HTML,
+médias, admin et API, avec une seule exception, la lecture `GET /api/menus/r/<jeton>`
+ou `GET /api/menus/t/<jeton>`. Ces cartes fictives sont publiques par leur jeton
+aléatoire de 128 bits, afin que la requête du navigateur sans identifiants HTTP
+puisse les charger. Un POST sur ces chemins reste protégé, tout comme la page HTML
+`/menu/r/<jeton>` ou `/menu/t/<jeton>`. Le réseau externe `openresto-demo-caddy`
 relie seulement le Caddy existant à `openresto-demo-acces`. Ne raccordez jamais
 la base, l'API ou le frontend à ce réseau. Aucun service OpenResto ne publie de port.
 Les réseaux `facade` et `interne` sont internes à Docker ; SQLite, les clés de
@@ -118,13 +149,24 @@ Pour les prochaines mises à jour d'Apprenti, ajouter aussi
 ses réseaux actuels. Ne lancez aucun `up`, `down` ou `restart` sur Apprenti pour
 installer cette démonstration.
 
+Lors de la première mise à jour future avec cette surcharge, Compose recréera
+le conteneur Caddy : prévoir quelques secondes d'interruption à un moment calme
+et conserver son volume `/data` pour les certificats. Si Apprenti utilise déjà
+des réseaux explicites, cette surcharge ajoute également `default` à Caddy.
+Si le réseau externe a été supprimé, recréez-le avec
+`docker network create openresto-demo-caddy` avant cette mise à jour, ou retirez
+la surcharge des commandes Apprenti si la démonstration n'est plus utilisée.
+
 ## 4. Vérifier et montrer la démonstration
 
 ```bash
+(
+set -euo pipefail
 cd ~/openresto-demo
 ./deploy/demo.sh verifier
 curl -s -o /dev/null -w '%{http_code}\n' https://openresto.134-209-92-233.sslip.io/
 curl -s -o /dev/null -w '%{http_code}\n' https://134-209-92-233.sslip.io/
+)
 ```
 
 La première URL répond **401** sans mot de passe ; la seconde doit garder son
@@ -132,7 +174,8 @@ comportement habituel. Dans le navigateur : saisir **demo** et le mot de passe
 visiteur, puis ouvrir `/locations/1` pour réserver avec une identité inventée et
 une adresse `visiteur@openresto-demo.example`. Depuis `/admin/login`, utiliser
 l'identifiant admin indiqué au §1 et son mot de passe distinct ; aller dans
-**QR codes**, ouvrir la carte du restaurant et passer de FR à NL puis EN.
+**QR codes**, copier l'adresse affichée sous le code du restaurant dans un nouvel
+onglet, puis passer de FR à NL et EN. Il n'y a pas de bouton d'ouverture de la carte.
 Les trois noms de plats et leurs descriptions changent ; les titres de carte et
 de catégorie sont volontairement trilingues.
 
@@ -147,19 +190,33 @@ de démonstration et ne publiez pas de copie de sa base.
 
 ## 5. Retour arrière (moins d'une minute)
 
-Dans le shell du §2, **restaurer d'abord Caddy** puis arrêter OpenResto :
+Depuis la session SSH, **restaurer d'abord Caddy** puis arrêter OpenResto. La
+détection des chemins est répétée, sans dépendre des variables du sous-shell du §2 :
 
 ```bash
+(
+set -euo pipefail
+CADDY="$(docker ps --filter publish=443 --format '{{.Names}}')"
+test -n "$CADDY"
+test "$(printf '%s\n' "$CADDY" | wc -l)" -eq 1
+CADDYFILE="$(docker inspect "$CADDY" --format '{{range .Mounts}}{{if eq .Destination "/etc/caddy/Caddyfile"}}{{.Source}}{{end}}{{end}}')"
+if [ -z "$CADDYFILE" ]; then
+  CADDYDIR="$(docker inspect "$CADDY" --format '{{range .Mounts}}{{if eq .Destination "/etc/caddy"}}{{.Source}}{{end}}{{end}}')"
+  test -n "$CADDYDIR"
+  CADDYFILE="$CADDYDIR/Caddyfile"
+fi
+test -f "$CADDYFILE.avant-openresto"
+sudo cat "$CADDYFILE.avant-openresto" | docker exec -i -w /etc/caddy "$CADDY" caddy validate --config - --adapter caddyfile
 sudo cat "$CADDYFILE.avant-openresto" | sudo tee "$CADDYFILE" >/dev/null
 docker exec "$CADDY" caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 docker exec "$CADDY" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
 docker network disconnect openresto-demo-caddy "$CADDY"
 cd ~/openresto-demo
 ./deploy/demo.sh arreter
+)
 ```
 
-Si le shell a été fermé, retrouver `CADDY` et `CADDYFILE` avec les commandes du §2,
-sans refaire la sauvegarde. Retirer ensuite la surcharge
+Retirer ensuite la surcharge
 `compose.openresto-demo.yml` des futures commandes Apprenti et supprimer ce fichier.
 Si Caddy a été modifié pour un autre besoin entre-temps, retirer seulement le bloc
 OpenResto au lieu de restaurer toute l'ancienne copie. Les volumes OpenResto restent
@@ -168,12 +225,12 @@ de volume Apprenti n'est nécessaire.
 
 ## Choix de cette PR
 
-- Source : `main` à jour, sans dépendre des PR #24 et #27. La base est SQLite,
+- Source : `main` à jour au démarrage du chantier, sans dépendre des autres PR. La base est SQLite,
   conformément au projet ; aucun serveur PostgreSQL ajouté, aucune migration nouvelle.
 - Le profil `scripts/demo_online_data.py` réutilise l'assemblage et l'émission SQL
-  de `scripts/demo_data.py`, sans modifier ce dernier (également touché par la PR #24).
+  de `scripts/demo_data.py`, sans modifier ce dernier, pour éviter les conflits de chantier.
   Le SQL est envoyé directement à SQLite, sans fichier SQL numéroté à attribuer.
-- `.bifrost/status.json` reste intact : la PR ouverte #25 le touche déjà.
+- `.bifrost/status.json` reste intact : au démarrage du chantier, la PR #25 le touchait déjà.
   L'erreur signalée correspond bien à `En relecture`, valeur absente de l'énumération
   Heimdall (`En cours`, `Prête à merger`, `Terminé`, `Bloqué`). Sa correction appartient
   à cette PR dédiée, conformément à la consigne de non-concurrence.

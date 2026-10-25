@@ -63,6 +63,12 @@ jobs:
       - name: Demo keeps the neighbour's networks
         run: python3 deploy/tests/demo-compose.test.py
 
+      - name: Demo builds sequentially and stops on failure
+        run: python3 deploy/tests/demo-build.test.py
+
+      - name: Demo Caddy append and rollback keep the neighbour running
+        run: deploy/tests/demo-caddy.test.sh
+
       - name: Compose files resolve
         env:
           DOMAIN: reservations.example.be
@@ -177,7 +183,21 @@ jobs:
           OPENRESTO_TEST_NGINX: local/openresto-nginx:ci
         run: deploy/tests/serveur-partage.stack.test.sh
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: openresto-frontend/package-lock.json
+
+      - name: Install demo browser checks
+        run: |
+          npm ci --ignore-scripts --prefix openresto-frontend
+          cd openresto-frontend
+          npx playwright install --with-deps chromium
+
       - name: Demonstration behind an existing Caddy
+        env:
+          OPENRESTO_DEMO_BROWSER: "1"
         run: |
           docker tag local/openresto-backend:ci localhost/openresto-demo-backend:local
           docker tag local/openresto-frontend:ci localhost/openresto-demo-frontend:local

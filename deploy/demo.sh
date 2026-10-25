@@ -22,7 +22,9 @@ case "${1:-}" in
     compose config -q
     ;;
   construire)
-    compose build
+    compose build backend
+    compose build frontend
+    compose build reverse-proxy
     ;;
   demarrer)
     docker network inspect openresto-demo-caddy >/dev/null 2>&1 || docker network create openresto-demo-caddy
