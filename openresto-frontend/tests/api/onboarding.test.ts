@@ -16,6 +16,20 @@ const lastCall = () => {
 
 beforeEach(() => mockFetch.mockReset());
 
+it("uses restaurant-scoped service routes for tokens, availability and photo removal", async () => {
+  ok({ restaurantToken: "general", tables: [] });
+  await api.getMenuTokens(7);
+  expect(lastCall().url).toContain("/onboarding/restaurants/7/menu/tokens");
+  ok({ availability: "SoldOut" });
+  await api.setMenuAvailability(7, 9, "SoldOut");
+  expect(lastCall().url).toContain("/onboarding/restaurants/7/menu/items/9/availability");
+  expect(JSON.parse(lastCall().init.body as string)).toEqual({ availability: "SoldOut" });
+  ok({ imageUrl: null });
+  await api.deleteMenuPhoto(7, 9);
+  expect(lastCall().init.method).toBe("DELETE");
+  expect(lastCall().url).toContain("/onboarding/restaurants/7/menu/items/9/photo");
+});
+
 describe("request plumbing", () => {
   it("returns the parsed value on success, with the session cookie", async () => {
     ok(state());

@@ -617,6 +617,40 @@ MENUS = {
     ],
 }
 
+DEMO_DISH_TRANSLATIONS = {
+    "Croquettes aux crevettes grises": ("Garnaalkroketten", "Twee stuks, gefrituurde peterselie en citroen.", "Grey shrimp croquettes", "Two croquettes, fried parsley and lemon."),
+    "Croquettes au fromage de Herve": ("Kroketten met Hervekaas", "Hervekaas met perenconfituur.", "Herve cheese croquettes", "Herve cheese with pear jam."),
+    "Asperges à la flamande": ("Asperges op Vlaamse wijze", "Witte asperges, ei en gebruinde boter.", "Flemish-style asparagus", "White asparagus, egg and brown butter."),
+    "Velouté de saison": ("Seizoenssoep", "Marktgroenten en room.", "Seasonal soup", "Market vegetables and cream."),
+    "Moules-frites": ("Mosselen met friet", "Mosselen op zeemanswijze met huisgemaakte frieten.", "Mussels and fries", "Mussels marinière with homemade fries."),
+    "Carbonade flamande": ("Vlaamse stoverij", "Rundvlees in donker bier met peperkoek en frieten.", "Flemish beef stew", "Beef in dark beer with gingerbread and fries."),
+    "Waterzooi de poulet": ("Waterzooi van kip", "Kip, groenten, room, eigeel en gestoomde aardappelen.", "Chicken waterzooi", "Chicken, vegetables, cream, egg yolk and steamed potatoes."),
+    "Américain préparé": ("Filet americain", "Rundertartaar met kappertjes, ui en frieten.", "Belgian steak tartare", "Beef tartare with capers, onion and fries."),
+    "Stoemp aux carottes et saucisse": ("Wortelstoemp met worst", "Aardappel-wortelpuree met gegrilde worst.", "Carrot mash and sausage", "Potato and carrot mash with grilled sausage."),
+    "Légumes rôtis et houmous": ("Geroosterde groenten en hummus", "Geroosterde seizoensgroenten, hummus en zaden.", "Roasted vegetables and hummus", "Roasted seasonal vegetables, hummus and seeds."),
+    "Poisson du jour": ("Vis van de dag", "Volgens de visaanvoer. Vraag het aan de bediening.", "Fish of the day", "Depending on the catch. Ask the team."),
+    "Dame blanche": ("Dame blanche", "Vanille-ijs, warme Belgische chocolade en slagroom.", "Vanilla ice cream with chocolate", "Vanilla ice cream, hot Belgian chocolate and whipped cream."),
+    "Gaufre de Bruxelles": ("Brusselse wafel", "Poedersuiker, rood fruit of slagroom.", "Brussels waffle", "Icing sugar, red berries or whipped cream."),
+    "Tarte au sucre": ("Suikertaart", "Huisgemaakte taart met bruine suiker.", "Brown sugar tart", "Homemade brown sugar tart."),
+    "Café liégeois": ("Luikse ijskoffie", "IJskoffie, koffie-ijs en slagroom.", "Liège iced coffee", "Iced coffee, coffee ice cream and whipped cream."),
+    "Bière blonde, pression 25 cl": ("Blond bier van het vat, 25 cl", "Gebrouwen in België.", "Blond draught beer, 25 cl", "Brewed in Belgium."),
+    "Bière d'abbaye brune, 33 cl": ("Donker abdijbier, 33 cl", "Rond en warm, 7%.", "Dark abbey beer, 33 cl", "Round and warming, 7%."),
+    "Kriek, 25 cl": ("Kriek, 25 cl", "Kersenbier.", "Kriek, 25 cl", "Cherry beer."),
+    "Eau pétillante, 50 cl": ("Bruiswater, 50 cl", None, "Sparkling water, 50 cl", None),
+    "Jus de pomme de Wallonie": ("Waals appelsap", "Geperst in Haspengouw.", "Walloon apple juice", "Pressed in Hesbaye."),
+    "Café": ("Koffie", None, "Coffee", None),
+    "Boulets sauce lapin": ("Luikse gehaktballen", "Gehaktballen met pruimensaus en frieten.", "Liège meatballs", "Meatballs with prune sauce and fries."),
+}
+
+
+def dish_translations(name):
+    text = DEMO_DISH_TRANSLATIONS.get(name)
+    return {} if text is None else {
+        "nl": {"name": text[0], "description": text[1]},
+        "en": {"name": text[2], "description": text[3]},
+    }
+
+
 # ─── Websites ────────────────────────────────────────────────────────────────
 # The one-page site generated for a location (RestaurantSites), keyed by location name. The
 # Belgian brasserie has the whole surface: published, a theme, a tagline, a logo, a cover, a
@@ -939,6 +973,8 @@ def build_dataset(now_utc):
                             "CategoryId": cid,
                             "Name": name,
                             "Description": desc,
+                            "PrimaryLanguage": "fr" if spec["name"] == "Brasserie de la Senne Dorée" else "en",
+                            "TranslationsJson": json.dumps(dish_translations(name), ensure_ascii=False),
                             "PriceMinor": price,
                             "Availability": availability,
                             "Allergens": flag_bits(allergens, ALLERGEN_BITS),

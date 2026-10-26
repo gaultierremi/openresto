@@ -6,6 +6,8 @@ import { dishPriceText, parseDishPrice } from "@/utils/onboardingPrice";
 import { ALLERGENS, DIETARY_TAGS, type Allergen, type DietaryTag } from "@/constants/menu";
 
 export interface DraftDish {
+  imageUrl?: string | null;
+  availability?: import("@/constants/menu").Availability;
   primaryLanguage?: DishLanguage;
   translations?: DishTranslations;
   key: string;
@@ -40,6 +42,8 @@ export function draftFromMenu(menu: OnboardingMenu): DraftMenu {
         key: newKey(),
         id: item.id ?? null,
         name: item.name,
+        imageUrl: item.imageUrl,
+        availability: item.availability,
         description: item.description ?? "",
         primaryLanguage: item.primaryLanguage,
         translations: item.translations,

@@ -52,6 +52,26 @@ public class OnboardingController(OnboardingService onboarding) : ControllerBase
     public async Task<ActionResult<OnboardingStateDto>> SaveBranding(int restaurantId, [FromBody] SaveOnboardingBrandingRequest req)
         => Ok(await _onboarding.SaveBrandingAsync(restaurantId, req));
 
+    [HttpGet("restaurants/{restaurantId:int}/menu/tokens")]
+    public async Task<ActionResult<MenuPublicTokensDto>> MenuTokens(int restaurantId)
+        => Ok(await _onboarding.GetMenuTokensAsync(restaurantId));
+
+    [HttpPut("restaurants/{restaurantId:int}/menu/items/{itemId:int}/availability")]
+    public async Task<ActionResult<MenuItemDto>> SetMenuAvailability(int restaurantId, int itemId, SetMenuAvailabilityRequest req)
+        => Ok(await _onboarding.SetMenuAvailabilityAsync(restaurantId, itemId, req.Availability));
+
+    [HttpPost("restaurants/{restaurantId:int}/menu/items/{itemId:int}/photo")]
+    [RequestSizeLimit(2 * 1024 * 1024 + 8192)]
+    public async Task<ActionResult<MenuItemDto>> UploadMenuPhoto(int restaurantId, int itemId, IFormFile file)
+    {
+        await using Stream stream = file.OpenReadStream();
+        return Ok(await _onboarding.SetMenuPhotoAsync(restaurantId, itemId, stream, file.ContentType));
+    }
+
+    [HttpDelete("restaurants/{restaurantId:int}/menu/items/{itemId:int}/photo")]
+    public async Task<ActionResult<MenuItemDto>> DeleteMenuPhoto(int restaurantId, int itemId)
+        => Ok(await _onboarding.DeleteMenuPhotoAsync(restaurantId, itemId));
+
     [HttpPost("restaurants/{restaurantId:int}/logo")]
     [RequestSizeLimit(SiteFields.MaxImageBytes + 8192)]
     public async Task<ActionResult<OnboardingStateDto>> UploadLogo(int restaurantId, IFormFile file)
