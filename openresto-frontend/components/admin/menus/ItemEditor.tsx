@@ -242,6 +242,8 @@ export function ItemEditor({
       </View>
 
       <DishTranslationFields
+        sourceName={name}
+        sourceDescription={description}
         primaryLanguage={primaryLanguage ?? "fr"}
         translations={translations ?? {}}
         onChange={(language, values) => {

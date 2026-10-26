@@ -81,6 +81,11 @@ public class ReorderMenuEntriesRequest
     public List<int> Ids { get; set; } = [];
 }
 
+public class SetMenuAvailabilityRequest
+{
+    public string? Availability { get; set; }
+}
+
 public class MenuPublicTokensDto
 {
     public string RestaurantToken { get; set; } = null!;

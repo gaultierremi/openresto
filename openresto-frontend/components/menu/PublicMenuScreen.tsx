@@ -23,6 +23,7 @@ import { useMenuFilter } from "@/hooks/use-menu-filter";
 import { declaresAnything, filterCategories, isFilterActive, NO_FILTER } from "@/utils/menuFilter";
 import { hexToRgba } from "@/utils/colors";
 import { styles } from "./PublicMenuScreen.styles";
+import { menuPrintHtml, openPrintPreview } from "@/utils/menuPrint";
 
 type Load = { status: "loading" } | PublicMenuOutcome;
 
@@ -46,7 +47,7 @@ const BOOK_BAR_CLEARANCE = 96;
  * rendered dishes, and the booking button.
  */
 export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors, primaryColor, onPrimary } = useAppTheme();
@@ -187,6 +188,22 @@ export function PublicMenuScreen({ kind, token }: { kind: PublicMenuKind; token:
             <ThemedText style={[styles.menuDescription, { color: colors.muted }]}>
               {menu.description}
             </ThemedText>
+          ) : null}
+
+          {Platform.OS === "web" && menu ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              testID="public-menu-print"
+              onPress={() =>
+                openPrintPreview(
+                  restaurant.name,
+                  menuPrintHtml(restaurant.name, menu, i18n.language)
+                )
+              }
+            >
+              {t("common.menu.printMenu")}
+            </Button>
           ) : null}
 
           {declares ? (
