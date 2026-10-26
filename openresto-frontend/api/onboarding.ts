@@ -101,6 +101,8 @@ export interface OnboardingLayout {
 }
 
 export interface OnboardingMenuItem {
+  imageUrl?: string | null;
+  availability?: import("@/constants/menu").Availability;
   primaryLanguage?: import("./menus").DishLanguage;
   translations?: import("./menus").DishTranslations;
   id?: number | null;
@@ -114,12 +116,14 @@ export interface OnboardingMenuItem {
 }
 
 export interface OnboardingMenuCategory {
+  isVisible?: boolean;
   id?: number | null;
   name: string;
   items: OnboardingMenuItem[];
 }
 
 export interface OnboardingMenu {
+  currency?: string;
   menuId: number | null;
   name: string;
   categories: OnboardingMenuCategory[];
@@ -265,6 +269,39 @@ export const saveLayout = (id: number, input: OnboardingLayout) =>
 
 export const saveMenu = (id: number, input: SaveMenuInput) =>
   request(() => put(`${restaurantPath(id)}/menu`, input), stateOf);
+
+export const getMenuTokens = (id: number) =>
+  request(() => get(`${restaurantPath(id)}/menu/tokens`), json<import("./menus").PublicTokens>);
+
+export const setMenuAvailability = (
+  id: number,
+  itemId: number,
+  availability: import("@/constants/menu").Availability
+) =>
+  request(
+    () => put(`${restaurantPath(id)}/menu/items/${itemId}/availability`, { availability }),
+    json<import("./menus").MenuItemDto>
+  );
+
+export const uploadMenuPhoto = (id: number, itemId: number, file: File) => {
+  const form = new FormData();
+  form.append("file", file);
+  return request(
+    () =>
+      fetch(buildUrl(`${restaurantPath(id)}/menu/items/${itemId}/photo`), {
+        method: "POST",
+        credentials: "include",
+        body: form,
+      }),
+    json<import("./menus").MenuItemDto>
+  );
+};
+
+export const deleteMenuPhoto = (id: number, itemId: number) =>
+  request(
+    () => del(`${restaurantPath(id)}/menu/items/${itemId}/photo`),
+    json<import("./menus").MenuItemDto>
+  );
 
 export const saveBranding = (id: number, input: SaveBrandingInput) =>
   request(() => put(`${restaurantPath(id)}/branding`, input), stateOf);

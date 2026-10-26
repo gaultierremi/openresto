@@ -1,0 +1,4 @@
+
+openresto.134-209-92-233.sslip.io {
+	reverse_proxy openresto-demo-acces:80
+}

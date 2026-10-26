@@ -8,6 +8,7 @@ import { BookingPageMock } from "@/components/onboarding/BookingPageMock";
 import { OnboardingSitePreview } from "@/components/onboarding/OnboardingSitePreview";
 import { PublishPanel } from "@/components/onboarding/PublishPanel";
 import { QrMenuPanel } from "@/components/onboarding/QrMenuPanel";
+import { MenuPrintActions } from "@/components/onboarding/MenuPrintActions";
 import { getPreview, type OnboardingPreview, type OnboardingState } from "@/api/onboarding";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import type { Stage } from "@/constants/onboarding";
@@ -119,6 +120,12 @@ export function PreviewStage({
               menu={load.preview.menu}
               menuToken={state.links.menuToken}
               published={state.status === "Published"}
+            />
+            <MenuPrintActions
+              restaurantId={restaurantId}
+              name={state.name}
+              menu={load.preview.menu}
+              onExpired={onExpired}
             />
           </Panel>
           <Panel

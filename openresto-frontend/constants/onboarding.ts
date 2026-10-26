@@ -49,7 +49,7 @@ export const DEFAULT_TABLE_SEATS = 2;
 
 export const MAX_MENU_NAME_LENGTH = 80;
 export const MAX_CATEGORY_NAME_LENGTH = 80;
-export const MAX_DISH_NAME_LENGTH = 100;
+export const MAX_DISH_NAME_LENGTH = 80;
 export const MAX_DISH_DESCRIPTION_LENGTH = 300;
 export const MENU_CURRENCY = "EUR";
 
