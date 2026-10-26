@@ -4954,6 +4954,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/menus/{kind}/{token}/views/{viewToken}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    kind: string;
+                    token: string;
+                    viewToken: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/menus/r/{restaurantToken}": {
         parameters: {
             query?: never;
@@ -5313,6 +5350,341 @@ export interface paths {
                 };
             };
         };
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RestaurantOperationsDto"];
+                        "application/json": components["schemas"]["RestaurantOperationsDto"];
+                        "text/json": components["schemas"]["RestaurantOperationsDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/operations/export.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/operations/exceptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveServiceExceptionRequest"];
+                    "text/json": components["schemas"]["SaveServiceExceptionRequest"];
+                    "application/*+json": components["schemas"]["SaveServiceExceptionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/operations/exceptions/{date}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    date: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/operations/reminders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReminderModeRequest"];
+                    "text/json": components["schemas"]["ReminderModeRequest"];
+                    "application/*+json": components["schemas"]["ReminderModeRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/operations/bookings/{bookingId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    bookingId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["BookingStatusRequest"];
+                    "text/json": components["schemas"]["BookingStatusRequest"];
+                    "application/*+json": components["schemas"]["BookingStatusRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/operations/waitlist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WaitlistBoardDto"];
+                        "application/json": components["schemas"]["WaitlistBoardDto"];
+                        "text/json": components["schemas"]["WaitlistBoardDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["JoinWaitlistRequest"];
+                    "text/json": components["schemas"]["JoinWaitlistRequest"];
+                    "application/*+json": components["schemas"]["JoinWaitlistRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/operations/waitlist/{entryId}/{operation}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    entryId: number;
+                    operation: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -7117,6 +7489,9 @@ export interface components {
             locale?: null | string;
         };
         bookingStatus: number;
+        BookingStatusRequest: {
+            status: string;
+        };
         BrandRequest: {
             appName?: null | string;
             primaryColor?: null | string;
@@ -7225,6 +7600,11 @@ export interface components {
             day?: number | string;
             open?: string;
             close?: string;
+        };
+        DishViewsDto: {
+            name: string;
+            /** Format: int64 */
+            views: number | string;
         };
         EmailSettingsRequest: {
             host?: string;
@@ -7550,6 +7930,32 @@ export interface components {
             /** Format: int32 */
             seats?: number | string;
         };
+        OperationsBookingDto: {
+            /** Format: int32 */
+            id: number | string;
+            reference: string;
+            name: null | string;
+            email: null | string;
+            /** Format: date-time */
+            date: string;
+            /** Format: int32 */
+            seats: number | string;
+            status: string;
+            cancelled: boolean;
+            reminder: null | string;
+            nextStatuses: string[];
+        };
+        OperationsDayDto: {
+            date: string;
+            /** Format: int32 */
+            bookings: number | string;
+            /** Format: int32 */
+            covers: number | string;
+            /** Format: int32 */
+            noShows: number | string;
+            /** Format: double */
+            fillRate: null | number | string;
+        };
         PauseRestaurantRequest: {
             /** Format: int32 */
             minutes?: number | string;
@@ -7676,6 +8082,7 @@ export interface components {
             categories?: components["schemas"]["PublicMenuCategoryDto"][];
         };
         PublicMenuItemDto: {
+            viewToken?: string;
             name?: string;
             description?: null | string;
             primaryLanguage?: string;
@@ -7713,6 +8120,9 @@ export interface components {
         RegeneratedTokenDto: {
             token?: string;
         };
+        ReminderModeRequest: {
+            simulated: boolean;
+        };
         ReorderMenuEntriesRequest: {
             /** @description Every sibling's id, in the new order: no additions, removals or duplicates. */
             ids?: (number | string)[];
@@ -7735,6 +8145,7 @@ export interface components {
             newPassword?: string;
         };
         RestaurantDto: {
+            serviceExceptions?: components["schemas"]["ServiceException"][];
             /** Format: int32 */
             id?: number | string;
             name?: string;
@@ -7784,6 +8195,17 @@ export interface components {
             sections?: components["schemas"]["SectionDto"][];
             /** @description Combinable-table groups defined for this restaurant (#271). Empty when none. */
             groups?: components["schemas"]["TableGroupDto"][];
+        };
+        RestaurantOperationsDto: {
+            name: string;
+            timezone: string;
+            status: string;
+            today: string;
+            days: components["schemas"]["OperationsDayDto"][];
+            bookings: components["schemas"]["OperationsBookingDto"][];
+            dishes: components["schemas"]["DishViewsDto"][];
+            exceptions: components["schemas"]["ServiceException"][];
+            simulateEmailReminders: boolean;
         };
         SaveMenuCategoryRequest: {
             name?: null | string;
@@ -7855,6 +8277,12 @@ export interface components {
         SavePhotoAltRequest: {
             alt?: null | string;
         };
+        SaveServiceExceptionRequest: {
+            date: string;
+            closed: boolean;
+            open: string;
+            close: string;
+        };
         /**
          * @description The whole editable text of a site, replaced on every save: a null or blank value clears that
          *     field. The exception is string? SaveSiteRequest.Slug, where null or blank keeps the current address.
@@ -7891,6 +8319,12 @@ export interface components {
             /** @description Another address to invite instead of the one on the previous invitation. */
             email?: null | string;
             locale?: null | string;
+        };
+        ServiceException: {
+            date: string;
+            closed: boolean;
+            open: string;
+            close: string;
         };
         SetBookingStatusRequest: {
             /** @description Booked, Arrived, Seated, Finished or NoShow, case-insensitive. */
@@ -8114,6 +8548,40 @@ export interface components {
         VerifyPvqRequest: {
             email?: string;
             answer?: string;
+        };
+        WaitlistBoardDto: {
+            /** Format: int32 */
+            restaurantId?: number | string;
+            /** @description Whether guests can join from the public site right now (a walk-in-only, open sitting). */
+            acceptingGuests?: boolean;
+            entries?: components["schemas"]["WaitlistEntryDto"][];
+        };
+        WaitlistEntryDto: {
+            /** Format: int32 */
+            id?: number | string;
+            /** Format: int32 */
+            number?: number | string;
+            name?: null | string;
+            email?: null | string;
+            /** Format: int32 */
+            seats?: number | string;
+            status?: string;
+            /** Format: date-time */
+            joinedAt?: string;
+            /** Format: date-time */
+            notifiedAt?: null | string;
+            /** Format: int32 */
+            partiesAhead?: number | string;
+            /** Format: int32 */
+            estimatedWaitMinutes?: null | number | string;
+            /** @description True when a table or group can take the party this minute. */
+            canSeatNow?: boolean;
+            /**
+             * Format: int32
+             * @description When the party can be seated now but is quoted a wait, the ticket number of the first party
+             *     ahead it would overtake.
+             */
+            skipsNumber?: null | number | string;
         };
         /** @description The device a guest wants pushed when their table is ready. */
         WaitlistPushRequest: {

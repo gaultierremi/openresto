@@ -199,7 +199,7 @@ export interface OnboardingPreview {
 export type OnboardingResult<T> =
   { ok: true; value: T } | { ok: false; message: string; code?: string; status: number };
 
-async function request<T>(
+export async function request<T>(
   call: () => Promise<Response>,
   read: (res: Response) => Promise<T>
 ): Promise<OnboardingResult<T>> {

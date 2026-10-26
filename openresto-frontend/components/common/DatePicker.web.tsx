@@ -72,6 +72,7 @@ export default function DatePicker({
   selectedDate,
   onSelect,
   openDays,
+  dateOpen,
   unavailableDays,
   unavailableReason,
   allowPast,
@@ -82,6 +83,7 @@ export default function DatePicker({
   onSelect: (date: string) => void;
   /** ISO day numbers that are open (1=Mon..7=Sun). If omitted, all days allowed. */
   openDays?: number[];
+  dateOpen?: (date: string) => boolean;
   /**
    * ISO days the venue is open on but takes no bookings for (walk-in only). Their cells are
    * unpickable like a closed day's, but they are NOT closed: folding them into `openDays`
@@ -125,8 +127,9 @@ export default function DatePicker({
 
   const isClosedDay = !!(
     selectedDate &&
-    openDays &&
-    !openDays.includes(isoDayOf(new Date(selectedDate + "T12:00:00")))
+    (dateOpen
+      ? !dateOpen(selectedDate)
+      : openDays && !openDays.includes(isoDayOf(new Date(selectedDate + "T12:00:00"))))
   );
 
   const [open, setOpen] = useState(false);
@@ -147,7 +150,10 @@ export default function DatePicker({
   const isUnpickable = (dateStr: string) => {
     if (dateStr < minDateStr || dateStr > maxDateStr) return true;
     const isoDay = isoDayOf(new Date(dateStr + "T12:00:00"));
-    return (!!openDays && !openDays.includes(isoDay)) || !!unavailableDays?.includes(isoDay);
+    return (
+      (dateOpen ? !dateOpen(dateStr) : !!openDays && !openDays.includes(isoDay)) ||
+      !!unavailableDays?.includes(isoDay)
+    );
   };
 
   const commit = (dateStr: string) => {
@@ -355,7 +361,9 @@ export default function DatePicker({
                       return <View key={col} style={styles.cell} role={GRIDCELL_ROLE} />;
                     const cellDate = new Date(viewYear, viewMonth, dayNum);
                     const cellStr = toDateStr(cellDate);
-                    const closedWeekday = !!openDays && !openDays.includes(isoDayOf(cellDate));
+                    const closedWeekday = dateOpen
+                      ? !dateOpen(toDateStr(cellDate))
+                      : !!openDays && !openDays.includes(isoDayOf(cellDate));
                     const unbookableWeekday = !!unavailableDays?.includes(isoDayOf(cellDate));
                     const disabled = isUnpickable(cellStr);
                     const isSelected = cellStr === selectedDate;

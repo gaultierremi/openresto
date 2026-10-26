@@ -1,17 +1,21 @@
+using System.Net;
+using System.Net.Http.Json;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using OpenRestoApi.Controllers;
+using OpenRestoApi.Core.Application.DTOs;
+using OpenRestoApi.Core.Domain;
+using OpenRestoApi.Infrastructure.Persistence;
 
 namespace OpenRestoApi.Tests.Integration;
 
 /// <summary>
-/// The public menu endpoints are anonymous and keyed by a token a guest can try as often as they
-/// like, so they sit on the <c>public</c> per-address limiter. The policy is one attribute on the
-/// controller, which a refactor drops silently and nothing else would notice — an anonymous,
-/// unthrottled token probe. These pin that every action is covered and that the named policy is
-/// registered, since a policy nobody registered fails only when a request reaches the endpoint.
+/// Anonymous token probes stay bounded; dish analytics cannot consume the browsing quota.
 /// </summary>
 public class PublicMenusRateLimitTests(TestWebAppFactory factory) : IClassFixture<TestWebAppFactory>
 {
@@ -23,17 +27,65 @@ public class PublicMenusRateLimitTests(TestWebAppFactory factory) : IClassFixtur
             .Where(m => m.GetCustomAttributes().OfType<IActionHttpMethodProvider>().Any());
 
     [Fact]
-    public void TheControllerIsAnonymous_AndEveryActionIsUnderThePublicLimiter()
+    public void TheControllerIsAnonymous_AndOnlyViewsHaveADedicatedLimiter()
     {
         Assert.NotEmpty(Actions());
         Assert.Equal("public", typeof(PublicMenusController).GetCustomAttribute<EnableRateLimitingAttribute>()?.PolicyName);
         Assert.NotNull(typeof(PublicMenusController).GetCustomAttribute<AllowAnonymousAttribute>());
-        // No action may opt out of the controller's policy, and none may swap in a looser one.
         Assert.All(Actions(), action =>
         {
             Assert.Null(action.GetCustomAttribute<DisableRateLimitingAttribute>());
-            Assert.Null(action.GetCustomAttribute<EnableRateLimitingAttribute>());
+            Assert.Equal(action.Name == nameof(PublicMenusController.RecordView) ? "dish-views" : null,
+                action.GetCustomAttribute<EnableRateLimitingAttribute>()?.PolicyName);
         });
+    }
+
+    [Theory]
+    [InlineData("Development")]
+    [InlineData("Production")]
+    public async Task DishViews_HaveTheirOwnBoundedQuota_AndCannotExhaustPublicBrowsing(string environment)
+    {
+        using var app = _factory.WithWebHostBuilder(builder => builder.UseEnvironment(environment));
+        using IServiceScope scope = app.Services.CreateScope();
+        AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var restaurant = new Restaurant { Name = "Carte et quota" };
+        var table = new Table { Name = "T1", Seats = 2, Section = new Section { Name = "Salle", Restaurant = restaurant } };
+        var dish = new MenuItem { Name = "Plat", Category = new MenuCategory
+            { Name = "Plats", Menu = new Menu { Name = "Carte", IsPublished = true, Restaurant = restaurant } } };
+        db.AddRange(table, dish);
+        await db.SaveChangesAsync();
+        using HttpClient client = app.CreateClient();
+        string menuPath = $"/api/menus/r/{restaurant.PublicToken}";
+        PublicMenuResponse menu = (await client.GetFromJsonAsync<PublicMenuResponse>(menuPath))!;
+        string viewToken = Assert.Single(Assert.Single(Assert.Single(menu.Menus).Categories).Items).ViewToken;
+        string viewPath = $"{menuPath}/views/{viewToken}";
+
+        for (int i = 0; i < 1200; i++)
+        {
+            using HttpResponseMessage recorded = await client.PostAsync(viewPath, null);
+            Assert.Equal(HttpStatusCode.NoContent, recorded.StatusCode);
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            using HttpResponseMessage refused = await client.PostAsync(viewPath, null);
+            Assert.Equal(HttpStatusCode.TooManyRequests, refused.StatusCode);
+        }
+        Assert.Equal(1200, await db.MenuItems.Where(i => i.Id == dish.Id).Select(i => i.QrViews).SingleAsync());
+
+        foreach (string path in new[] { menuPath, $"/api/menus/t/{table.PublicToken}", "/api/restaurants" })
+        {
+            using HttpResponseMessage readable = await client.GetAsync(path);
+            Assert.Equal(HttpStatusCode.OK, readable.StatusCode);
+        }
+
+        for (int i = 4; i < 120; i++)
+        {
+            using HttpResponseMessage readable = await client.GetAsync(menuPath);
+            Assert.Equal(HttpStatusCode.OK, readable.StatusCode);
+        }
+        using HttpResponseMessage browsingRefused = await client.GetAsync(menuPath);
+        Assert.Equal(HttpStatusCode.TooManyRequests, browsingRefused.StatusCode);
+        Assert.Equal(1200, await db.MenuItems.Where(i => i.Id == dish.Id).Select(i => i.QrViews).SingleAsync());
     }
 
     [Theory]

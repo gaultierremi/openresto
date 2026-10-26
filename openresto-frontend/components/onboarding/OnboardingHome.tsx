@@ -26,7 +26,10 @@ export function OnboardingHome() {
   const only = restaurants.length === 1 ? restaurants[0] : null;
 
   useEffect(() => {
-    if (only) router.replace(`/onboarding/restaurant/${only.id}`);
+    if (only)
+      router.replace(
+        `/onboarding/${only.status === "Draft" ? "restaurant" : "dashboard"}/${only.id}`
+      );
   }, [only, router]);
 
   if (!me || only) {
@@ -63,7 +66,11 @@ export function OnboardingHome() {
                 size="md"
                 variant="secondary"
                 fullWidth
-                onPress={() => router.push(`/onboarding/restaurant/${restaurant.id}`)}
+                onPress={() =>
+                  router.push(
+                    `/onboarding/${restaurant.status === "Draft" ? "restaurant" : "dashboard"}/${restaurant.id}`
+                  )
+                }
                 testID={`onboarding-home-restaurant-${restaurant.id}`}
               >
                 {restaurant.name}

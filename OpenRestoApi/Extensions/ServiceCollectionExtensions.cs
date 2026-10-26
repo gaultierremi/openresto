@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.Services;
@@ -159,11 +160,19 @@ public static class ServiceCollectionExtensions
     [ExternalAccessAllowed]
     internal const int PublicLimit = 120;
 
+    /// <summary>Dish analytics use a separate per-IP bucket, including in the global limiter.</summary>
+    /// <seealso>PublicMenusRateLimitTests.DishViews_HaveTheirOwnBoundedQuota_AndCannotExhaustPublicBrowsing</seealso>
+    [OnlyAccessibleBy("OpenRestoApi.Extensions.*")]
+    [OnlyAccessibleBy("OpenRestoApi.Controllers.PublicMenusController")]
+    [ExternalAccessAllowed]
+    internal const string DishViewsPolicy = "dish-views";
+
     public static IServiceCollection AddCustomRateLimiting(this IServiceCollection services, IWebHostEnvironment env)
     {
         bool isTesting = env.EnvironmentName == "Testing";
         int authLimit = isTesting ? TestingLimit : AuthLimit;
         int publicLimit = isTesting ? TestingLimit : PublicLimit;
+        int dishViewsLimit = isTesting ? TestingLimit : 1200;
         int bookingLookupLimit = isTesting ? TestingLimit : BookingLookupLimit;
         int globalLimit = isTesting ? TestingLimit : 300;  // per IP: overall ceiling
         int apiKeyLimit = isTesting ? TestingLimit : 1000; // per key: a headless CLI is one caller, not one browser tab
@@ -199,14 +208,25 @@ public static class ServiceCollectionExtensions
                     QueueLimit = 0,
                 }));
 
+            options.AddPolicy(DishViewsPolicy, ctx =>
+                RateLimitPartition.GetFixedWindowLimiter(IpKey(ctx), _ => new FixedWindowRateLimiterOptions
+                {
+                    AutoReplenishment = true,
+                    PermitLimit = dishViewsLimit,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                }));
+
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
             {
+                bool isDishView = ctx.GetEndpoint()?.Metadata.GetMetadata<EnableRateLimitingAttribute>()?.PolicyName == DishViewsPolicy;
                 string partitionKey = GlobalPartitionKey(ctx);
+                if (isDishView) partitionKey = $"dish-views-ip:{IpKey(ctx)}";
                 bool isApiKeyPartition = partitionKey.StartsWith(ApiKeyIpPartitionPrefix, StringComparison.Ordinal);
                 return RateLimitPartition.GetFixedWindowLimiter(partitionKey, _ => new FixedWindowRateLimiterOptions
                 {
                     AutoReplenishment = true,
-                    PermitLimit = isApiKeyPartition ? apiKeyLimit : globalLimit,
+                    PermitLimit = isDishView ? dishViewsLimit : isApiKeyPartition ? apiKeyLimit : globalLimit,
                     QueueLimit = 0,
                     Window = TimeSpan.FromMinutes(1),
                 });
@@ -424,6 +444,10 @@ public static class ServiceCollectionExtensions
             options.Cookie.HttpOnly = true;
         });
         services.AddScoped<OnboardingService>();
+        services.AddScoped<RestaurantOperationsService>();
+        services.AddScoped<IRestaurantOperationsRepository, RestaurantOperationsRepository>();
+        services.AddScoped<EmailReminderService>();
+        services.AddHostedService<OpenRestoApi.Infrastructure.Notifications.EmailReminderWorker>();
         services.AddScoped<BookingRetentionService>();
         services.AddHostedService<OpenRestoApi.Infrastructure.Retention.BookingRetentionWorker>();
         services.AddScoped<NativeAppStatusService>();

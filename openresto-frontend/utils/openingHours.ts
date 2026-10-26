@@ -13,6 +13,7 @@ export interface HoursSource {
   closeTime?: string | null;
   openHours?: DayHoursDto[] | null;
   openDays?: string | null;
+  serviceExceptions?: { date: string; closed: boolean; open: string; close: string }[];
 }
 
 const DEFAULT_OPEN = "09:00";
@@ -39,7 +40,16 @@ export function getHoursForDate(
   restaurant: HoursSource,
   date: string
 ): { open: string; close: string } {
+  const special = restaurant.serviceExceptions?.find((e) => e.date === date);
+  if (special && !special.closed) return { open: special.open, close: special.close };
   return getHoursForDay(restaurant, getIsoDayFromDateString(date));
+}
+
+export function isOpenOnDate(restaurant: HoursSource, date: string): boolean {
+  const special = restaurant.serviceExceptions?.find((e) => e.date === date);
+  return special
+    ? !special.closed
+    : parseOpenDays(restaurant.openDays).includes(getIsoDayFromDateString(date));
 }
 
 export function parseOpenDays(openDays?: string | null): number[] {

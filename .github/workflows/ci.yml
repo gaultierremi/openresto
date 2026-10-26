@@ -616,7 +616,9 @@ jobs:
         env:
           ADMIN_EMAIL: admin@openresto.com
           ADMIN_PASSWORD: change-me-before-use
-        run: npm run test:e2e:smoke
+        run: |
+          npm run test:e2e:smoke
+          npx playwright test restaurant-operations.spec.ts
 
       - name: Upload Playwright Report
         if: always()

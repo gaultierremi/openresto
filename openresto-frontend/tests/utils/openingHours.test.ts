@@ -1,6 +1,7 @@
 import {
   getHoursForDay,
   getHoursForDate,
+  isOpenOnDate,
   getIsoDayFromDateString,
   getNextOpening,
   hasCustomHours,
@@ -15,6 +16,23 @@ const uniformRestaurant = {
   closeTime: "22:00",
   openHours: [1, 2, 3, 4, 5, 6, 7].map((day) => ({ day, open: "09:00", close: "22:00" })),
 };
+
+it("date exceptions override both weekly closures and weekly hours", () => {
+  const source = {
+    openDays: "1",
+    openTime: "12:00",
+    closeTime: "22:00",
+    serviceExceptions: [
+      { date: "2026-10-24", closed: false, open: "18:00", close: "02:00" },
+      { date: "2026-10-26", closed: true, open: "00:00", close: "00:00" },
+    ],
+  };
+  expect(isOpenOnDate(source, "2026-10-24")).toBe(true);
+  expect(getHoursForDate(source, "2026-10-24")).toEqual({ open: "18:00", close: "02:00" });
+  expect(isOpenOnDate(source, "2026-10-26")).toBe(false);
+  expect(isOpenOnDate(source, "2026-11-02")).toBe(true);
+  expect(isOpenOnDate(source, "2026-11-03")).toBe(false);
+});
 
 const customRestaurant = {
   openTime: "09:00",

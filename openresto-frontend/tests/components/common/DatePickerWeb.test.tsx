@@ -48,6 +48,27 @@ function pinClockMidMonth(): void {
 describe("DatePicker (web)", () => {
   const onSelect = jest.fn();
 
+  it("offers an exceptional opening and refuses an exceptional closure", () => {
+    pinClockMidMonth();
+    const dateOpen = (date: string) => date === "2026-04-16";
+    render(
+      <DatePickerWeb
+        onSelect={onSelect}
+        selectedDate="2026-04-15"
+        openDays={[]}
+        dateOpen={dateOpen}
+      />
+    );
+    fireEvent.press(screen.getByTestId("date-picker-trigger"));
+    expect(screen.getByTestId("date-picker-day-2026-04-15").props.accessibilityState.disabled).toBe(
+      true
+    );
+    fireEvent.press(screen.getByTestId("date-picker-day-2026-04-15"));
+    expect(onSelect).not.toHaveBeenCalled();
+    fireEvent.press(screen.getByTestId("date-picker-day-2026-04-16"));
+    expect(onSelect).toHaveBeenCalledWith("2026-04-16");
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

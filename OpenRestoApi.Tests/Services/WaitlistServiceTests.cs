@@ -11,6 +11,20 @@ namespace OpenRestoApi.Tests.Services;
 
 public class WaitlistServiceTests
 {
+    [Fact]
+    public async Task JoinAsync_AcceptsBookingLocationOnlyWhenEverySuitableTableIsTaken()
+    {
+        _restaurant = WalkInRestaurant(walkInOnly: false);
+        _bookedTables.Add(1);
+        _bookedTables.Add(2);
+        Assert.True((await CreateService().GetQuoteAsync(1, 2)).AcceptingGuests);
+        await CreateService().JoinAsync(1, Party());
+        Assert.Single(_waitlist.Entries);
+        _bookedTables.Remove(2);
+        Assert.False((await CreateService().GetQuoteAsync(1, 2)).AcceptingGuests);
+        await Assert.ThrowsAsync<ConflictException>(() => CreateService().JoinAsync(1, Party()));
+        Assert.Single(_waitlist.Entries);
+    }
     /// <summary>A Saturday evening, inside the 11:00–23:00 UTC hours every test restaurant keeps.</summary>
     private static readonly DateTime Now = new(2026, 9, 26, 19, 0, 0, DateTimeKind.Utc);
 

@@ -383,6 +383,7 @@ test.describe("A restaurant's first week, from both sides", { tag: "@smoke" }, (
 
     const page = await restaurateur.newPage();
     await page.goto("/onboarding");
+    await page.getByRole("button", { name: "Modifier mon restaurant", exact: true }).click();
     await page.getByTestId("stepper-hours").click();
     await expect(page.getByTestId("step-hours")).toBeVisible();
     await page.getByRole("switch", { name: `${weekdayOf(closedDate)} : ouvert` }).click();

@@ -8,12 +8,13 @@ import { useTableHold } from "./useTableHold";
 import HoldStatusBanner from "./HoldStatusBanner";
 import { useBookingDock, useHasBookingDock, usePublishBookingDock } from "./BookingDockContext";
 import PopularTimesPicker from "./PopularTimesPicker";
+import { FullWaitlistNotice } from "./FullWaitlistNotice";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { getNowInTimezone, formatCurrentTimeInTimezone, isViewerInTimezone } from "@/utils/date";
 import { isValidEmail } from "@/utils/validation";
 import { groupDisplayName } from "@/utils/tableGroups";
 import { confirm } from "@/utils/confirm";
-import { getHoursForDate } from "@/utils/openingHours";
+import { getHoursForDate, isOpenOnDate } from "@/utils/openingHours";
 import { getRestaurantDate } from "@/utils/restaurantTime";
 import { isWalkInOnlyOnDay, isWalkInOnlyOnDate, walkInDaysLabel } from "@/utils/walkIn";
 import WalkInNotice from "./WalkInNotice";
@@ -116,9 +117,7 @@ export default function BookingForm({
   const [time, setTime] = useState<string>(() => initialTime ?? suggestTime(restaurant, timezone));
 
   const openDaysList = restaurant.openDays?.split(",").map(Number) ?? [1, 2, 3, 4, 5, 6, 7];
-  const selectedJsDay = date ? new Date(date + "T12:00:00").getDay() : -1;
-  const selectedIsoDay = selectedJsDay === 0 ? 7 : selectedJsDay;
-  const isClosedDay = date ? !openDaysList.includes(selectedIsoDay) : false;
+  const isClosedDay = date ? !isOpenOnDate(restaurant, date) : false;
   const isWalkInDay = date ? isWalkInOnlyOnDate(restaurant, date) : false;
   // Walk-in days stay in the date picker, greyed out and labelled: the location is open on
   // them, so "you can't book, but you can walk in" is the useful thing to say. Dropping them
@@ -361,6 +360,7 @@ export default function BookingForm({
     <DateField
       date={date}
       openDays={openDaysList}
+      dateOpen={(value) => isOpenOnDate(restaurant, value)}
       walkInDays={walkInIsoDays}
       onChange={changeDate}
     />
@@ -462,14 +462,19 @@ export default function BookingForm({
       onJoinWaitlist={date === getRestaurantDate(timezone) ? onJoinWaitlist : undefined}
     />
   ) : (
-    <PopularTimesPicker
-      slots={availabilitySlots}
-      selectedTime={time}
-      onSelectTime={setTime}
-      selectedDate={date}
-      timezone={timezone}
-      wrap={isDrawer}
-    />
+    <>
+      <PopularTimesPicker
+        slots={availabilitySlots}
+        selectedTime={time}
+        onSelectTime={setTime}
+        selectedDate={date}
+        timezone={timezone}
+        wrap={isDrawer}
+      />
+      {onJoinWaitlist && date === getRestaurantDate(timezone) && (
+        <FullWaitlistNotice restaurantId={restaurant.id} seats={seats} onJoin={onJoinWaitlist} />
+      )}
+    </>
   );
 
   const timesBlock = (label: string) => (

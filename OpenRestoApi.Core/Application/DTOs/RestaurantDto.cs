@@ -245,6 +245,7 @@ public class TurnTimeDto
 
 public class RestaurantDto
 {
+    public List<ServiceException> ServiceExceptions { get; set; } = [];
     public int Id { get; set; }
     public string Name { get; set; } = null!;
     public string? Address { get; set; }

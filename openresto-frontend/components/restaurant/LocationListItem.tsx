@@ -7,6 +7,7 @@ import { useAppTheme } from "@/hooks/use-app-theme";
 import { RestaurantDto } from "@/api/restaurants";
 import {
   getHoursForDate,
+  isOpenOnDate,
   getIsoDayFromDateString,
   getNextOpening,
   isoDayShortName,
@@ -78,7 +79,9 @@ export default function LocationListItem({
   const isToday = date === today;
   const dayHours = getHoursForDate(restaurant, date);
   const openDaysList = getOpenDaysList(restaurant);
-  const closedOnDate = !openDaysList.includes(selectedIsoDay);
+  const closedOnDate = restaurant.serviceExceptions?.some((e) => e.date === date)
+    ? !isOpenOnDate(restaurant, date)
+    : !openDaysList.includes(selectedIsoDay);
   const walkInLocation = !!restaurant.walkInOnly;
   const walkInOnDate = !walkInLocation && isWalkInOnlyOnDay(restaurant, selectedIsoDay);
   const walkInBadgeText = walkInBadgeLabel(restaurant);

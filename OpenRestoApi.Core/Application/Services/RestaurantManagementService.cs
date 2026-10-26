@@ -266,6 +266,7 @@ public class RestaurantManagementService(
             OpenTime = r.OpenTime,
             CloseTime = r.CloseTime,
             OpenHours = OpeningHoursHelper.ResolveWeek(r),
+            ServiceExceptions = ServiceException.Read(r),
             OpenDays = r.OpenDays,
             Timezone = r.Timezone,
             Tags = string.IsNullOrEmpty(r.Tags)
@@ -879,6 +880,7 @@ public class RestaurantManagementService(
         OpenTime = r.OpenTime,
         CloseTime = r.CloseTime,
         OpenHours = OpeningHoursHelper.ResolveWeek(r),
+        ServiceExceptions = ServiceException.Read(r),
         OpenDays = r.OpenDays,
         Timezone = r.Timezone,
         Tags = string.IsNullOrEmpty(r.Tags)

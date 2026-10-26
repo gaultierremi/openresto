@@ -887,6 +887,11 @@ def build_dataset(now_utc):
                     "TurnTimesJson": turn_times_json,
                     "BookingSlotIntervalMinutes": spec["slot_interval"],
                     "OpenHoursJson": open_hours_json,
+                    "ServiceExceptionsJson": json.dumps([
+                        {"Date": (now_utc.astimezone(ZoneInfo(spec["timezone"])).date() + timedelta(days=14)).isoformat(),
+                         "Closed": True, "Open": "00:00", "Close": "00:00"},
+                    ]) if spec["name"] == DEMO_RESTAURATEUR_LOCATION else None,
+                    "SimulateEmailReminders": True,
                     "WalkInOnly": bool(spec.get("walk_in_only")),
                     "WalkInDays": spec.get("walk_in_days"),
                     "Description": spec.get("description"),
@@ -980,6 +985,7 @@ def build_dataset(now_utc):
                             "Allergens": flag_bits(allergens, ALLERGEN_BITS),
                             "DietaryTags": flag_bits(tags, DIETARY_BITS),
                             "SortOrder": item_order,
+                            "QrViews": max(0, 120 - item_order * 17) if spec["name"] == DEMO_RESTAURATEUR_LOCATION else 0,
                         }
                     )
 
