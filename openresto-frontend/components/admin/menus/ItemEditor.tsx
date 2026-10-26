@@ -8,6 +8,7 @@ import { ButtonRow } from "@/components/common/ButtonRow";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import { FilterChip } from "@/components/menu/MenuFilters";
 import { MenuPhoto } from "@/components/menu/MenuPhoto";
+import { DishTranslationFields } from "@/components/menu/DishTranslationFields";
 import { SaveStatus } from "@/components/admin/settings/SaveStatus";
 import {
   adminDeleteItem,
@@ -18,6 +19,8 @@ import {
   itemToInput,
   type MenuItemDto,
   type SaveItemInput,
+  type DishLanguage,
+  type DishTranslations,
 } from "@/api/menus";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useAutosave } from "@/hooks/use-autosave";
@@ -42,6 +45,8 @@ const PHOTO_PREVIEW_SIZE = 96;
 
 /** The form's text and ticks back into the payload the API takes, in the API's canonical order. */
 function toPayload(fields: {
+  primaryLanguage?: DishLanguage;
+  translations?: DishTranslations;
   name: string;
   description: string;
   priceText: string;
@@ -52,6 +57,8 @@ function toPayload(fields: {
   availability: Availability;
 }): SaveItemInput {
   return {
+    primaryLanguage: fields.primaryLanguage,
+    translations: fields.translations,
     name: fields.name.trim(),
     description: fields.description.trim() || null,
     priceMinor: fields.onRequest ? null : parsePrice(fields.priceText, fields.currency),
@@ -91,6 +98,8 @@ export function ItemEditor({
 
   const [name, setName] = useState(item.name);
   const [description, setDescription] = useState(item.description ?? "");
+  const [primaryLanguage, setPrimaryLanguage] = useState(item.primaryLanguage);
+  const [translations, setTranslations] = useState(item.translations);
   const [onRequest, setOnRequest] = useState(item.priceMinor === null);
   const [priceText, setPriceText] = useState(
     item.priceMinor === null ? "" : priceToInput(item.priceMinor, currency)
@@ -113,6 +122,8 @@ export function ItemEditor({
   const canSave = name.trim().length > 0 && priceValid;
 
   const values = toPayload({
+    primaryLanguage,
+    translations,
     name,
     description,
     priceText,
@@ -138,6 +149,8 @@ export function ItemEditor({
       return null;
     },
     onRestore: (previous) => {
+      setPrimaryLanguage(previous.primaryLanguage);
+      setTranslations(previous.translations);
       setName(previous.name);
       setDescription(previous.description ?? "");
       setOnRequest(previous.priceMinor === null);
@@ -227,6 +240,18 @@ export function ItemEditor({
           testID="item-description"
         />
       </View>
+
+      <DishTranslationFields
+        sourceName={name}
+        sourceDescription={description}
+        primaryLanguage={primaryLanguage ?? "fr"}
+        translations={translations ?? {}}
+        onChange={(language, values) => {
+          setPrimaryLanguage(language);
+          setTranslations(values);
+        }}
+        testID="item"
+      />
 
       <View style={styles.field}>
         <ThemedText style={styles.label}>

@@ -7,7 +7,8 @@ import { ButtonRow } from "@/components/common/ButtonRow";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { MENU_CURRENCY } from "@/constants/onboarding";
 import { formatPrice } from "@/utils/menuPrice";
-import { menuUrl, qrToSvg, svgToDataUri } from "@/utils/qrCode";
+import { menuUrl, qrBaseUrl, qrToSvg, svgToDataUri } from "@/utils/qrCode";
+import { useBrand } from "@/context/BrandContext";
 import { downloadQrPng, downloadQrSvg, fileSlug } from "@/utils/qrDownload";
 import type { OnboardingMenu } from "@/api/onboarding";
 import { styles } from "./QrMenuPanel.styles";
@@ -38,9 +39,12 @@ export function QrMenuPanel({
 }) {
   const { t } = useTranslation();
   const { colors } = useAppTheme();
+  const brand = useBrand();
   const [downloadFailed, setDownloadFailed] = useState(false);
 
-  const url = menuToken ? menuUrl(window.location.origin, "r", menuToken) : null;
+  const url = menuToken
+    ? menuUrl(qrBaseUrl(brand.websiteUrl, window.location.origin), "r", menuToken)
+    : null;
   const svg = useMemo(() => (url ? qrToSvg(url) : null), [url]);
   const dataUri = useMemo(() => (svg ? svgToDataUri(svg) : null), [svg]);
   const filename = fileSlug(name, "carte");
@@ -121,7 +125,7 @@ export function QrMenuPanel({
                   >
                     {item.priceMinor === null
                       ? t("admin.onboarding.preview.qr.priceOnRequest")
-                      : formatPrice(item.priceMinor, MENU_CURRENCY)}
+                      : formatPrice(item.priceMinor, menu.currency ?? MENU_CURRENCY)}
                   </ThemedText>
                 </View>
               ))}

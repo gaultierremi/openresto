@@ -4162,6 +4162,233 @@
         }
       }
     },
+    "/api/onboarding/restaurants/{restaurantId}/menu/tokens": {
+      "get": {
+        "tags": [
+          "Onboarding"
+        ],
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuPublicTokensDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuPublicTokensDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuPublicTokensDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/onboarding/restaurants/{restaurantId}/menu/items/{itemId}/availability": {
+      "put": {
+        "tags": [
+          "Onboarding"
+        ],
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetMenuAvailabilityRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetMenuAvailabilityRequest"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/SetMenuAvailabilityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/onboarding/restaurants/{restaurantId}/menu/items/{itemId}/photo": {
+      "post": {
+        "tags": [
+          "Onboarding"
+        ],
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Onboarding"
+        ],
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItemDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/onboarding/restaurants/{restaurantId}/logo": {
       "post": {
         "tags": [
@@ -8354,6 +8581,15 @@
               "string"
             ]
           },
+          "primaryLanguage": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MenuItemTranslationDto"
+            }
+          },
           "priceMinor": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -8391,6 +8627,23 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "MenuItemTranslationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -8583,6 +8836,9 @@
       "OnboardingMenuCategoryDto": {
         "type": "object",
         "properties": {
+          "isVisible": {
+            "type": "boolean"
+          },
           "id": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -8608,6 +8864,9 @@
       "OnboardingMenuDto": {
         "type": "object",
         "properties": {
+          "currency": {
+            "type": "string"
+          },
           "menuId": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -8631,6 +8890,33 @@
       "OnboardingMenuItemDto": {
         "type": "object",
         "properties": {
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "availability": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "primaryLanguage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "translations": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MenuItemTranslationDto"
+            }
+          },
           "id": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -8641,7 +8927,7 @@
             "format": "int32"
           },
           "name": {
-            "maxLength": 100,
+            "maxLength": 80,
             "minLength": 0,
             "type": "string"
           },
@@ -9299,6 +9585,15 @@
               "string"
             ]
           },
+          "primaryLanguage": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MenuItemTranslationDto"
+            }
+          },
           "priceMinor": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -9672,6 +9967,21 @@
               "string"
             ]
           },
+          "primaryLanguage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "translations": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MenuItemTranslationDto"
+            }
+          },
           "priceMinor": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -10041,6 +10351,17 @@
           "status": {
             "type": "string",
             "description": "Booked, Arrived, Seated, Finished or NoShow, case-insensitive."
+          }
+        }
+      },
+      "SetMenuAvailabilityRequest": {
+        "type": "object",
+        "properties": {
+          "availability": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },

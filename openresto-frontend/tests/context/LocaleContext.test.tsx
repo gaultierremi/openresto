@@ -62,6 +62,26 @@ function setBrowserLanguages(languages: readonly string[] | undefined, language?
 const shownLocale = () => screen.getByTestId("locale").props.children;
 
 describe("LocaleContext", () => {
+  it("keeps a new pick on a language-bearing link after remounting", async () => {
+    window.history.replaceState(null, "", "/locations/1?lang=nl&other=1#top");
+    const first = render(
+      <LocaleProvider>
+        <TestConsumer />
+      </LocaleProvider>
+    );
+    await waitFor(() => expect(shownLocale()).toBe("nl"));
+    fireEvent.press(screen.getByTestId("switch-to-fr"));
+    expect(window.location.search).toBe("?lang=fr&other=1");
+    expect(window.location.hash).toBe("#top");
+    first.unmount();
+    render(
+      <LocaleProvider>
+        <TestConsumer />
+      </LocaleProvider>
+    );
+    await waitFor(() => expect(shownLocale()).toBe("fr"));
+    window.history.replaceState(null, "", "/");
+  });
   beforeEach(() => {
     localStorage.clear();
     jest.clearAllMocks();

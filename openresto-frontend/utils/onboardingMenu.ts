@@ -1,10 +1,15 @@
 import type { OnboardingMenu, SaveMenuInput } from "@/api/onboarding";
+import type { DishLanguage, DishTranslations } from "@/api/menus";
 import { moveId } from "@/utils/reorder";
 import { newKey } from "@/utils/onboardingLayout";
 import { dishPriceText, parseDishPrice } from "@/utils/onboardingPrice";
 import { ALLERGENS, DIETARY_TAGS, type Allergen, type DietaryTag } from "@/constants/menu";
 
 export interface DraftDish {
+  imageUrl?: string | null;
+  availability?: import("@/constants/menu").Availability;
+  primaryLanguage?: DishLanguage;
+  translations?: DishTranslations;
   key: string;
   id: number | null;
   name: string;
@@ -37,7 +42,11 @@ export function draftFromMenu(menu: OnboardingMenu): DraftMenu {
         key: newKey(),
         id: item.id ?? null,
         name: item.name,
+        imageUrl: item.imageUrl,
+        availability: item.availability,
         description: item.description ?? "",
+        primaryLanguage: item.primaryLanguage,
+        translations: item.translations,
         priceText: dishPriceText(item.priceMinor),
         allergens: item.allergens ?? [],
         dietaryTags: item.dietaryTags ?? [],
@@ -59,6 +68,9 @@ const isUntouchedNewDish = (dish: DraftDish): boolean =>
   dish.id === null &&
   dish.name.trim() === "" &&
   dish.description.trim() === "" &&
+  !Object.values(dish.translations ?? {}).some(
+    (value) => value?.name?.trim() || value?.description?.trim()
+  ) &&
   dish.priceText.trim() === "" &&
   dish.allergens.length === 0 &&
   dish.dietaryTags.length === 0;
@@ -82,6 +94,8 @@ export function menuFromDraft(draft: DraftMenu): MenuRequest {
       const price = parseDishPrice(dish.priceText);
       if (!price.ok) return { ok: false, problem: { kind: "dishPrice", key: dish.key } };
       items.push({
+        primaryLanguage: dish.primaryLanguage,
+        translations: dish.translations,
         ...(dish.id === null ? {} : { id: dish.id }),
         name: dish.name.trim(),
         description: dish.description.trim() === "" ? null : dish.description.trim(),
@@ -211,7 +225,9 @@ export const patchDish = (
   draft: DraftMenu,
   categoryKey: string,
   dishKey: string,
-  patch: Partial<Pick<DraftDish, "name" | "description" | "priceText">>
+  patch: Partial<
+    Pick<DraftDish, "name" | "description" | "priceText" | "primaryLanguage" | "translations">
+  >
 ): DraftMenu =>
   mapCategory(draft, categoryKey, (category) => ({
     ...category,

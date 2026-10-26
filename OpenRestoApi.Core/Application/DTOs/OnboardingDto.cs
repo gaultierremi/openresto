@@ -195,6 +195,7 @@ public class SaveOnboardingLayoutRequest
 
 public class OnboardingMenuDto
 {
+    public string Currency { get; set; } = "EUR";
     public int? MenuId { get; set; }
     public string Name { get; set; } = null!;
     public List<OnboardingMenuCategoryDto> Categories { get; set; } = [];
@@ -202,6 +203,7 @@ public class OnboardingMenuDto
 
 public class OnboardingMenuCategoryDto
 {
+    public bool IsVisible { get; set; } = true;
     public int? Id { get; set; }
 
     [StringLength(80)]
@@ -212,9 +214,14 @@ public class OnboardingMenuCategoryDto
 
 public class OnboardingMenuItemDto
 {
+    public string? ImageUrl { get; set; }
+    public string? Availability { get; set; }
+    public string? PrimaryLanguage { get; set; }
+    public Dictionary<string, MenuItemTranslationDto>? Translations { get; set; }
+
     public int? Id { get; set; }
 
-    [StringLength(100)]
+    [StringLength(80)]
     public string Name { get; set; } = null!;
 
     [StringLength(300)]

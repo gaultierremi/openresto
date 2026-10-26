@@ -347,6 +347,20 @@
         "Vegan": "Végan",
         "Vegetarian": "Végétarien"
       },
+      "allergenNote": "Allergènes déclarés par le restaurant. En cas d’allergie, prévenez l’équipe avant de commander.",
+      "primaryLanguage": "Langue principale du plat",
+      "translationHint": "Saisissez vos traductions ou proposez une formulation du lexique culinaire local. Vérifiez-la avant de la valider. Un champ vide reprend le texte principal.",
+      "suggestTranslation": "Proposer en {{language}}",
+      "reviewTranslation": "Relisez et corrigez cette proposition. Elle reste privée jusqu’à votre validation, puis à l’enregistrement de la carte.",
+      "validateTranslation": "Valider cette traduction",
+      "suggestionUnavailable": "Le lexique local ne couvre pas tout ce texte. Complétez la traduction vous-même ; aucun texte n’est envoyé à un service externe.",
+      "saveBeforePhoto": "Enregistrez la carte pour ajouter une photo et gérer la disponibilité du plat.",
+      "printMenu": "Imprimer la carte / PDF",
+      "printQrs": "Imprimer tous les QR / PDF",
+      "printPdf": "Imprimer / Enregistrer en PDF",
+      "printBlocked": "Autorisez la fenêtre d’aperçu pour imprimer ou enregistrer en PDF.",
+      "translatedName": "Nom du plat — {{language}}",
+      "translatedDescription": "Description — {{language}}",
       "free": "Offert",
       "priceOnRequest": "Prix sur demande"
     },
@@ -528,6 +542,7 @@
       "name_too_long": "Le nom de la carte ne peut pas dépasser {{max}} caractères.",
       "not_found": "Carte introuvable.",
       "price_invalid": "Le prix doit être positif ou nul (au plus {{max}} dans la plus petite unité de la devise), ou laissé vide pour « prix sur demande ».",
+      "language_invalid": "Les langues des plats doivent être le français, le néerlandais ou l’anglais.",
       "reorder_ids_mismatch": "Le nouvel ordre doit reprendre chaque élément une seule fois, sans ajout."
     },
     "platform": {

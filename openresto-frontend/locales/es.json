@@ -347,6 +347,20 @@
         "Vegan": "Vegano",
         "Vegetarian": "Vegetariano"
       },
+      "allergenNote": "Alérgenos declarados por el restaurante. Avise al personal de cualquier alergia antes de pedir.",
+      "primaryLanguage": "Idioma original del plato",
+      "translationHint": "Introduzca sus traducciones. Revise las propuestas del glosario local antes de confirmarlas. Los campos vacíos usan el original.",
+      "suggestTranslation": "Proponer en {{language}}",
+      "reviewTranslation": "Revise esta propuesta. Es privada hasta confirmarla y guardar la carta.",
+      "validateTranslation": "Confirmar traducción",
+      "suggestionUnavailable": "El glosario local no cubre todo el texto. Complete la traducción; no se envía a ningún servicio externo.",
+      "saveBeforePhoto": "Guarde la carta para añadir fotos y gestionar la disponibilidad.",
+      "printMenu": "Imprimir carta / PDF",
+      "printQrs": "Imprimir todos los QR / PDF",
+      "printPdf": "Imprimir / Guardar PDF",
+      "printBlocked": "Permita la ventana de vista previa para imprimir.",
+      "translatedName": "Nombre del plato — {{language}}",
+      "translatedDescription": "Descripción — {{language}}",
       "free": "Gratis",
       "priceOnRequest": "Precio a consultar"
     },
@@ -528,6 +542,7 @@
       "name_too_long": "El nombre de la carta no puede superar los {{max}} caracteres.",
       "not_found": "Carta no encontrada.",
       "price_invalid": "El precio debe ser cero o más (como máximo {{max}} en la unidad mínima de la moneda), o quedar vacío para «precio a consultar».",
+      "language_invalid": "Los idiomas de los platos deben ser francés, neerlandés o inglés.",
       "reorder_ids_mismatch": "El nuevo orden debe incluir cada elemento una sola vez, sin añadidos."
     },
     "platform": {

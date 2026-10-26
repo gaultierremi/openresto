@@ -10,6 +10,8 @@ import Input from "@/components/common/Input";
 import { RowTextButton } from "@/components/common/RowTextButton";
 import { Banner, Field } from "@/components/onboarding/formParts";
 import { StepShell } from "@/components/onboarding/StepShell";
+import { DishTranslationFields } from "@/components/menu/DishTranslationFields";
+import { DishServiceControls } from "@/components/onboarding/DishServiceControls";
 import { saveMenu, skipStep } from "@/api/onboarding";
 import { useOnboardingCall } from "@/hooks/use-onboarding-call";
 import { useAppTheme } from "@/hooks/use-app-theme";
@@ -283,6 +285,34 @@ export function MenuStep({
                       accessibilityLabel={t("admin.onboarding.menu.descriptionLabel")}
                       testID={`${at}-description`}
                     />
+                    <DishTranslationFields
+                      sourceName={dish.name}
+                      sourceDescription={dish.description}
+                      primaryLanguage={dish.primaryLanguage ?? "fr"}
+                      translations={dish.translations ?? {}}
+                      disabled={readOnly}
+                      testID={at}
+                      onChange={(primaryLanguage, translations) =>
+                        change(
+                          patchDish(draft, category.key, dish.key, {
+                            primaryLanguage,
+                            translations,
+                          })
+                        )
+                      }
+                    />
+                    {dish.id ? (
+                      <DishServiceControls
+                        restaurantId={restaurantId}
+                        itemId={dish.id}
+                        imageUrl={dish.imageUrl}
+                        availability={dish.availability}
+                        disabled={readOnly || busy}
+                        onExpired={onExpired}
+                      />
+                    ) : (
+                      <ThemedText>{t("common.menu.saveBeforePhoto")}</ThemedText>
+                    )}
                     <View style={styles.declarations}>
                       <RowTextButton
                         label={

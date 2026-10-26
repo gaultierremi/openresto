@@ -49,6 +49,8 @@ public class MenuItem
 
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
+    public string PrimaryLanguage { get; set; } = "fr";
+    public string? TranslationsJson { get; set; }
 
     /// <summary>
     /// Price in the menu currency's minor unit (cents for EUR). Null means "price on request",

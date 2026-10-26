@@ -4210,6 +4210,161 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/onboarding/restaurants/{restaurantId}/menu/tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuPublicTokensDto"];
+                        "application/json": components["schemas"]["MenuPublicTokensDto"];
+                        "text/json": components["schemas"]["MenuPublicTokensDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/menu/items/{itemId}/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    itemId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetMenuAvailabilityRequest"];
+                    "text/json": components["schemas"]["SetMenuAvailabilityRequest"];
+                    "application/*+json": components["schemas"]["SetMenuAvailabilityRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuItemDto"];
+                        "application/json": components["schemas"]["MenuItemDto"];
+                        "text/json": components["schemas"]["MenuItemDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/menu/items/{itemId}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    itemId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file?: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuItemDto"];
+                        "application/json": components["schemas"]["MenuItemDto"];
+                        "text/json": components["schemas"]["MenuItemDto"];
+                    };
+                };
+            };
+        };
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                    itemId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MenuItemDto"];
+                        "application/json": components["schemas"]["MenuItemDto"];
+                        "text/json": components["schemas"]["MenuItemDto"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/onboarding/restaurants/{restaurantId}/logo": {
         parameters: {
             query?: never;
@@ -7219,6 +7374,10 @@ export interface components {
             id?: number | string;
             name?: string;
             description?: null | string;
+            primaryLanguage?: string;
+            translations?: {
+                [key: string]: components["schemas"]["MenuItemTranslationDto"];
+            };
             /** Format: int64 */
             priceMinor?: null | number | string;
             imageUrl?: null | string;
@@ -7227,6 +7386,10 @@ export interface components {
             dietaryTags?: string[];
             /** Format: int32 */
             sortOrder?: number | string;
+        };
+        MenuItemTranslationDto: {
+            name?: null | string;
+            description?: null | string;
         };
         MenuPublicTokensDto: {
             restaurantToken?: string;
@@ -7283,18 +7446,26 @@ export interface components {
             restaurants?: components["schemas"]["OnboardingRestaurantSummaryDto"][];
         };
         OnboardingMenuCategoryDto: {
+            isVisible?: boolean;
             /** Format: int32 */
             id?: null | number | string;
             name?: string;
             items?: components["schemas"]["OnboardingMenuItemDto"][];
         };
         OnboardingMenuDto: {
+            currency?: string;
             /** Format: int32 */
             menuId?: null | number | string;
             name?: string;
             categories?: components["schemas"]["OnboardingMenuCategoryDto"][];
         };
         OnboardingMenuItemDto: {
+            imageUrl?: null | string;
+            availability?: null | string;
+            primaryLanguage?: null | string;
+            translations?: null | {
+                [key: string]: components["schemas"]["MenuItemTranslationDto"];
+            };
             /** Format: int32 */
             id?: null | number | string;
             name?: string;
@@ -7507,6 +7678,10 @@ export interface components {
         PublicMenuItemDto: {
             name?: string;
             description?: null | string;
+            primaryLanguage?: string;
+            translations?: {
+                [key: string]: components["schemas"]["MenuItemTranslationDto"];
+            };
             /** Format: int64 */
             priceMinor?: null | number | string;
             imageUrl?: null | string;
@@ -7618,6 +7793,10 @@ export interface components {
         SaveMenuItemRequest: {
             name?: null | string;
             description?: null | string;
+            primaryLanguage?: null | string;
+            translations?: null | {
+                [key: string]: components["schemas"]["MenuItemTranslationDto"];
+            };
             /**
              * Format: int64
              * @description Minor units (cents). Null means "price on request".
@@ -7716,6 +7895,9 @@ export interface components {
         SetBookingStatusRequest: {
             /** @description Booked, Arrived, Seated, Finished or NoShow, case-insensitive. */
             status?: string;
+        };
+        SetMenuAvailabilityRequest: {
+            availability?: null | string;
         };
         SetRetentionRequest: {
             /**

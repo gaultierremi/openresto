@@ -361,6 +361,9 @@ public class OnboardingService(
         ValidateMenu(categories);
 
         MenuDto? menu = (await _menus.GetMenusAsync(restaurantId)).FirstOrDefault();
+        ValidateMenuReferences(menu, categories);
+        if (req.Name?.Trim().Length > MenuFields.MaxNameLength)
+            throw new ValidationException("Menu name is too long.") { Code = ErrorCodes.OnboardingMenuInvalid };
         var details = new SaveMenuRequest { Name = string.IsNullOrWhiteSpace(req.Name) ? DefaultMenuName : req.Name.Trim() };
         menu = menu is null
             ? await _menus.CreateMenuAsync(restaurantId, details)
@@ -392,6 +395,53 @@ public class OnboardingService(
         Describe(restaurant, "Saved the first menu");
         return await BuildStateAsync(restaurant);
     }
+
+    public async Task<MenuPublicTokensDto> GetMenuTokensAsync(int restaurantId)
+    {
+        await RequireRestaurantAsync(restaurantId, forWrite: false);
+        return await _menus.GetPublicTokensAsync(restaurantId);
+    }
+
+    public async Task<MenuItemDto> SetMenuAvailabilityAsync(int restaurantId, int itemId, string? availability)
+    {
+        await RequireRestaurantAsync(restaurantId);
+        MenuItemDto item = await RequireMenuItemAsync(restaurantId, itemId);
+        if (availability is null || !MenuFields.TryParseAvailability(availability, out _))
+            throw new ValidationException("Unknown dish availability.") { Code = ErrorCodes.MenuAvailabilityInvalid };
+        return await _menus.UpdateItemAsync(restaurantId, itemId, new SaveMenuItemRequest
+        {
+            Name = item.Name,
+            Description = item.Description,
+            PriceMinor = item.PriceMinor,
+            Allergens = item.Allergens,
+            DietaryTags = item.DietaryTags,
+            Availability = availability,
+        });
+    }
+
+    public async Task<MenuItemDto> SetMenuPhotoAsync(int restaurantId, int itemId, Stream content, string contentType)
+    {
+        await RequireRestaurantAsync(restaurantId);
+        await RequireMenuItemAsync(restaurantId, itemId);
+        if (content.Length > 2 * 1024 * 1024)
+            throw new ValidationException("Dish photo must be under 2 MB.") { Code = ErrorCodes.MenuItemImageTooLarge };
+        if (!await ImageSignature.MatchesAsync(content, contentType))
+            throw new ValidationException("Only JPEG, PNG, and WebP images are accepted.") { Code = ErrorCodes.MediaUnsupportedImageType };
+        return await _menus.UploadItemPhotoAsync(restaurantId, itemId, content, contentType);
+    }
+
+    public async Task<MenuItemDto> DeleteMenuPhotoAsync(int restaurantId, int itemId)
+    {
+        await RequireRestaurantAsync(restaurantId);
+        await RequireMenuItemAsync(restaurantId, itemId);
+        await _menus.DeleteItemPhotoAsync(restaurantId, itemId);
+        return await RequireMenuItemAsync(restaurantId, itemId);
+    }
+
+    private async Task<MenuItemDto> RequireMenuItemAsync(int restaurantId, int itemId)
+        => (await _menus.GetMenusAsync(restaurantId)).SelectMany(m => m.Categories).SelectMany(c => c.Items)
+            .FirstOrDefault(i => i.Id == itemId)
+            ?? throw new NotFoundException("Menu not found.") { Code = ErrorCodes.MenuNotFound };
 
     // ── Step 5: logo and colours ─────────────────────────────────────────────
 
@@ -576,18 +626,24 @@ public class OnboardingService(
 
     private static OnboardingMenuDto ToMenuDto(MenuDto? menu) => new()
     {
+        Currency = menu?.Currency ?? "EUR",
         MenuId = menu?.Id,
         Name = menu?.Name ?? DefaultMenuName,
         Categories = [.. (menu?.Categories ?? []).Select(c => new OnboardingMenuCategoryDto
         {
             Id = c.Id,
             Name = c.Name,
+            IsVisible = c.IsVisible,
             Items = [.. c.Items.Select(i => new OnboardingMenuItemDto
             {
                 Id = i.Id,
                 Name = i.Name,
                 Description = i.Description,
+                PrimaryLanguage = i.PrimaryLanguage,
+                Translations = i.Translations,
                 PriceMinor = i.PriceMinor,
+                ImageUrl = i.ImageUrl,
+                Availability = i.Availability,
                 Allergens = i.Allergens,
                 DietaryTags = i.DietaryTags,
             })],
@@ -703,14 +759,44 @@ public class OnboardingService(
 
     private static void ValidateMenu(List<OnboardingMenuCategoryDto> categories)
     {
-        if (categories.Any(c => string.IsNullOrWhiteSpace(c.Name) || c.Items.Any(i => string.IsNullOrWhiteSpace(i.Name) || i.PriceMinor is < 0)))
+        foreach (var item in categories.SelectMany(c => c.Items))
         {
-            throw new ValidationException("Every category and dish needs a name, and a price cannot be negative.") { Code = ErrorCodes.OnboardingMenuInvalid };
+            if (item.PrimaryLanguage is not null) MenuTranslations.RequireLanguage(item.PrimaryLanguage);
+            _ = MenuTranslations.Validate(item.Translations);
+        }
+        if (categories.Any(c => InvalidMenuName(c.Name) || c.Items.Any(InvalidMenuItem)))
+        {
+            throw new ValidationException("Every category and dish needs a valid name, description and price.") { Code = ErrorCodes.OnboardingMenuInvalid };
         }
 
         if (categories.SelectMany(c => c.Items).Any(i => !MenuFields.TryParseFlags(i.Allergens, out Allergens _) || !MenuFields.TryParseFlags(i.DietaryTags, out DietaryTags _)))
         {
             throw new ValidationException("A dish's allergens must be names from the 14 EU allergens and its diets Vegetarian, Vegan or GlutenFree.") { Code = ErrorCodes.OnboardingMenuInvalid };
+        }
+    }
+
+    private static bool InvalidMenuName(string? name)
+        => string.IsNullOrWhiteSpace(name) || name.Trim().Length > MenuFields.MaxNameLength;
+
+    private static bool InvalidMenuItem(OnboardingMenuItemDto item)
+        => InvalidMenuName(item.Name)
+            || item.Description?.Trim().Length > MenuFields.MaxDescriptionLength
+            || item.PriceMinor is < 0 or > MenuFields.MaxPriceMinor;
+
+    private static void ValidateMenuReferences(MenuDto? menu, List<OnboardingMenuCategoryDto> categories)
+    {
+        var seenCategories = new HashSet<int>();
+        var seenItems = new HashSet<int>();
+        foreach (OnboardingMenuCategoryDto category in categories)
+        {
+            MenuCategoryDto? known = category.Id is { } id ? menu?.Categories.FirstOrDefault(c => c.Id == id) : null;
+            if (category.Id.HasValue && (known is null || !seenCategories.Add(category.Id.Value)))
+                throw new ValidationException("Unknown or repeated category.") { Code = ErrorCodes.OnboardingMenuInvalid };
+            foreach (OnboardingMenuItemDto item in category.Items.Where(i => i.Id.HasValue))
+            {
+                if (known is null || !known.Items.Any(i => i.Id == item.Id) || !seenItems.Add(item.Id!.Value))
+                    throw new ValidationException("Unknown or repeated dish.") { Code = ErrorCodes.OnboardingMenuInvalid };
+            }
         }
     }
 
@@ -745,6 +831,8 @@ public class OnboardingService(
             var request = new SaveMenuItemRequest
             {
                 Name = item.Name.Trim(),
+                PrimaryLanguage = item.PrimaryLanguage,
+                Translations = item.Translations,
                 Description = string.IsNullOrWhiteSpace(item.Description) ? null : item.Description.Trim(),
                 PriceMinor = item.PriceMinor,
                 Allergens = item.Allergens,

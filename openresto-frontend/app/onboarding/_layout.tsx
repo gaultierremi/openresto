@@ -9,7 +9,7 @@ import {
   useOnboardingSession,
 } from "@/context/OnboardingSessionContext";
 import { useBrand } from "@/context/BrandContext";
-import { useBrowserLocaleOptOut } from "@/context/LocaleContext";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import { useNoIndex } from "@/hooks/use-noindex";
 import { styles } from "@/styles/onboarding/layout.styles";
 
@@ -38,7 +38,6 @@ export default function OnboardingLayout() {
 }
 
 function OnboardingLayoutWeb() {
-  useBrowserLocaleOptOut();
   useNoIndex();
   return (
     <OnboardingSessionProvider>
@@ -68,6 +67,9 @@ function OnboardingGate() {
   if (isPublic) {
     return (
       <View style={styles.root}>
+        <View style={styles.languageBar}>
+          <LanguageSwitcher />
+        </View>
         <Slot />
       </View>
     );
@@ -82,6 +84,9 @@ function OnboardingGate() {
 
   return (
     <View style={styles.root}>
+      <View style={styles.languageBar}>
+        <LanguageSwitcher />
+      </View>
       <Slot />
     </View>
   );

@@ -1,0 +1,9 @@
+services:
+  caddy:
+    networks:
+      default: {}
+      openresto-demo-caddy: {}
+networks:
+  openresto-demo-caddy:
+    external: true
+    name: openresto-demo-caddy

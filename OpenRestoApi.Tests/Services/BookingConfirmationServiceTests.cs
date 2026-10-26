@@ -302,12 +302,14 @@ public class BookingConfirmationServiceTests
     [Theory]
     [InlineData("nl", "fr", "Reservatie bevestigd – Testaurant", "Referentie")]
     [InlineData("fr", "nl", "Réservation confirmée – Testaurant", "Référence")]
+    [InlineData("en", "nl", "Booking confirmed – Testaurant", "Reference")]
     public async Task SendConfirmationAsync_WritesTheSubjectInTheLanguageTheGuestBookedIn(string bookingLocale, string instanceDefault, string subject, string bodyWord)
     {
         (string sent, string body) = await SendInAsync(nameof(SendConfirmationAsync_WritesTheSubjectInTheLanguageTheGuestBookedIn) + bookingLocale, bookingLocale, instanceDefault);
 
         Assert.Equal(subject, sent);
         Assert.Contains(bodyWord, body, StringComparison.Ordinal);
+        Assert.Contains($"lang={bookingLocale}", body, StringComparison.Ordinal);
     }
 
     [Theory]

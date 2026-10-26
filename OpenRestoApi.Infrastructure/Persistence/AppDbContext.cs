@@ -172,6 +172,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             ib.HasKey(i => i.Id);
             ib.Property(i => i.Name).IsRequired().HasMaxLength(MenuFields.MaxNameLength);
             ib.Property(i => i.Description).HasMaxLength(MenuFields.MaxDescriptionLength);
+            ib.Property(i => i.PrimaryLanguage).HasMaxLength(2).HasDefaultValue("fr");
             ib.Property(i => i.Availability).HasConversion<string>().HasMaxLength(MenuFields.MaxAvailabilityLength);
             ib.HasIndex(i => new { i.CategoryId, i.SortOrder });
         });

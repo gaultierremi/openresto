@@ -30,6 +30,8 @@ public class MenuItemDto
     public int Id { get; set; }
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
+    public string PrimaryLanguage { get; set; } = "fr";
+    public Dictionary<string, MenuItemTranslationDto> Translations { get; set; } = [];
     public long? PriceMinor { get; set; }
     public string? ImageUrl { get; set; }
     public string Availability { get; set; } = null!;
@@ -57,6 +59,8 @@ public class SaveMenuItemRequest
 {
     public string? Name { get; set; }
     public string? Description { get; set; }
+    public string? PrimaryLanguage { get; set; }
+    public Dictionary<string, MenuItemTranslationDto>? Translations { get; set; }
 
     /// <summary>Minor units (cents). Null means "price on request".</summary>
     public long? PriceMinor { get; set; }
@@ -75,6 +79,11 @@ public class ReorderMenuEntriesRequest
 {
     /// <summary>Every sibling's id, in the new order: no additions, removals or duplicates.</summary>
     public List<int> Ids { get; set; } = [];
+}
+
+public class SetMenuAvailabilityRequest
+{
+    public string? Availability { get; set; }
 }
 
 public class MenuPublicTokensDto
@@ -143,6 +152,8 @@ public class PublicMenuItemDto
 {
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
+    public string PrimaryLanguage { get; set; } = "fr";
+    public Dictionary<string, MenuItemTranslationDto> Translations { get; set; } = [];
     public long? PriceMinor { get; set; }
     public string? ImageUrl { get; set; }
 
@@ -150,4 +161,10 @@ public class PublicMenuItemDto
     public string Availability { get; set; } = null!;
     public List<string> Allergens { get; set; } = [];
     public List<string> DietaryTags { get; set; } = [];
+}
+
+public class MenuItemTranslationDto
+{
+    public string? Name { get; set; }
+    public string? Description { get; set; }
 }

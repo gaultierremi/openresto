@@ -1,8 +1,58 @@
 {
-  "etat": "Palette client (#19), sécurité Codespace (#20), parcours restaurateur/client (#22), kit serveur partagé (#21) et prêt au lancement (#23) intégrés à main ; espace restaurateur #24 en contre-relecture et trilingue #26 prête à merger.",
-  "sante": "actif",
-  "prochaine_etape": "Contre-relire #24, fusionner les chantiers prêts, faire valider les textes juridiques avant l'ouverture réelle et décider de l'installation sur le serveur partagé.",
+  "etat": "Démonstration (#28) et carte QR (#29) intégrées ; main fusionné dans #27 et #24, 174 parcours locaux réussis pour #24, mais CI GitHub bloquée par facturation.",
+  "sante": "bloqué",
+  "prochaine_etape": "Rétablir la facturation GitHub Actions, relancer la CI de #27 et #24, puis contre-relire les mises à jour avant fusion ; Gaultier lance la démonstration.",
   "chantiers": [
+    {
+      "id": "deploy-kit",
+      "titre": "Mise en production : kit d'hébergement, sauvegardes, CI",
+      "agent": "Claude",
+      "branche": "chore/deploy-kit",
+      "statut": "Terminé",
+      "pr": 4,
+      "etape": "Fusionnée dans main ; historique conservé lors de l’actualisation Bifröst.",
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
+    {
+      "id": "menu-api",
+      "titre": "Module carte natif — API (#2, avec les écrans #5)",
+      "agent": "Claude",
+      "branche": "feat/menu-api",
+      "statut": "Terminé",
+      "pr": 2,
+      "etape": "Fusionnée dans main ; historique conservé lors de l’actualisation Bifröst.",
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
+    {
+      "id": "site-vitrine",
+      "titre": "Sprint 3 — mini-site vitrine par restaurant (#7, rouvert vers main)",
+      "agent": "Claude",
+      "branche": "feat/site-vitrine",
+      "statut": "Terminé",
+      "pr": 18,
+      "etape": "Fusionnée dans main ; historique conservé lors de l’actualisation Bifröst.",
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
+    {
+      "id": "bifrost-openresto",
+      "titre": "Brancher OpenResto sur Heimdall",
+      "agent": "Claude",
+      "branche": "chore/bifrost",
+      "statut": "Terminé",
+      "pr": 3,
+      "etape": "Fusionnée dans main ; historique conservé lors de l’actualisation Bifröst.",
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
+    {
+      "id": "premier-restaurant",
+      "titre": "Sprint 4 — prêt pour le premier restaurant (embarquement, espace plateforme, légal, néerlandais)",
+      "agent": "Claude",
+      "branche": "claude/festive-wozniak-b62txe",
+      "statut": "Terminé",
+      "pr": 8,
+      "etape": "Fusionnée dans main ; historique conservé lors de l’actualisation Bifröst.",
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
     {
       "id": "palette-client",
       "titre": "Côté client sans friction : palette",
@@ -58,26 +108,66 @@
       "titre": "Espace restaurateur pour le quotidien",
       "agent": "Codex",
       "branche": "feat/cx-o2",
-      "statut": "En cours",
+      "statut": "Bloqué",
       "pr": 24,
-      "etape": "Corrections du quota des vues QR poussées ; PR ouverte, en attente de contre-relecture.",
-      "maj": "2026-10-23T06:33:21+00:00"
+      "etape": "main 872e543 fusionné en 7adcc961 ; 174 E2E et backend/iOS réussis, Android 1 échec puis 24/24 au retest ; CI refusée pour facturation.",
+      "maj": "2026-10-26T13:01:30+01:00"
     },
     {
       "id": "trilingue-fr-nl-en",
       "titre": "Parcours trilingues FR/NL/EN",
       "agent": "Codex",
       "branche": "feat/n4-langues",
-      "statut": "Prête à merger",
+      "statut": "Terminé",
       "pr": 26,
-      "etape": "Verdict MERGE sur 1788245 ; contrôles CI réussis, sans fusion dans main.",
+      "etape": "Fusionnée dans main (9016f754) ; parcours FR/NL/EN intégrés.",
       "relecture": {
         "par": "Claude",
         "verdict": "MERGE",
         "at": "2026-10-23T06:24:20+00:00",
         "sha": "1788245b100eddeeb02b9d196d579c4de71ca1ce"
       },
-      "maj": "2026-10-23T06:24:20+00:00"
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
+    {
+      "id": "ci-vps-optionnel",
+      "titre": "CI : ne pas déployer sans serveur configuré",
+      "agent": "Codex",
+      "branche": "ci/deploiement-vps-optionnel",
+      "statut": "Bloqué",
+      "pr": 27,
+      "etape": "main 872e543 fusionné en 78e37fc9 ; 20 tests et statiques réussis ; CI refusée avant les tests pour verrou de facturation.",
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
+    {
+      "id": "demo-en-ligne",
+      "titre": "OpenResto en démonstration derrière le Caddy existant",
+      "agent": "Codex",
+      "branche": "feat/v5-demo-en-ligne",
+      "statut": "Terminé",
+      "pr": 28,
+      "etape": "Fusionnée dans main ; kit, données fictives, protection des cartes et retour arrière disponibles, sans déploiement par un agent.",
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
+    {
+      "id": "carte-qr-native",
+      "titre": "Carte QR native pour les restaurateurs",
+      "agent": "Codex",
+      "branche": "feat/carte-qr-native-n4",
+      "statut": "Terminé",
+      "pr": 29,
+      "etape": "Fusionnée dans main ; édition multilingue, service des plats et impressions PDF disponibles.",
+      "maj": "2026-10-26T13:01:30+01:00"
+    },
+    {
+      "id": "statut-bifrost",
+      "titre": "Actualiser le statut Bifröst et rétablir le schéma Heimdall",
+      "agent": "Codex",
+      "branche": "chore/statut-bifrost-a-jour",
+      "statut": "Bloqué",
+      "pr": 25,
+      "etape": "Main reste non conforme ; schéma validé localement sur cette branche. Facturation GitHub bloquante pour les contrôles.",
+      "maj": "2026-10-26T13:01:30+01:00"
     }
   ],
   "decisions": [
@@ -98,10 +188,16 @@
       "titre": "Installer OpenResto sur le serveur partagé prévu ?",
       "pourquoi": "Le kit est fusionné dans main, mais le choix de l'installation réelle reste ouvert et doit être confirmé avant toute intervention sur le serveur.",
       "urgence": "Cette semaine"
+    },
+    {
+      "id": "facturation-github-actions",
+      "titre": "Rétablir la facturation GitHub Actions pour relancer les vérifications ?",
+      "pourquoi": "GitHub refuse les runners avant toute étape : compte verrouillé pour facturation. Les CI de #27 et #24 ne peuvent pas être vertes ; les contrôles locaux sont détaillés dans leurs commentaires.",
+      "urgence": "Cette semaine"
     }
   ],
   "maj": {
-    "at": "2026-10-23T09:28:07+00:00",
+    "at": "2026-10-26T13:01:30+01:00",
     "by": "Codex"
   }
 }
