@@ -40,6 +40,44 @@ const press = async () => {
 beforeEach(() => jest.clearAllMocks());
 
 describe("LayoutStep", () => {
+  it("prepares the actual capacity as editable tables without saving until Continue", async () => {
+    mockSave.mockResolvedValue(ok(readyState()));
+    render(<LayoutStep {...stepProps()} />);
+    fireEvent.changeText(screen.getByTestId("capacity-tables"), "5");
+    fireEvent.changeText(screen.getByTestId("capacity-seats"), "4");
+    fireEvent.press(screen.getByTestId("capacity-apply"));
+    expect(mockSave).not.toHaveBeenCalled();
+    expect(screen.getByTestId("room-0-table-4")).toBeTruthy();
+    await press();
+    expect(mockSave.mock.calls[0][1].sections[0].tables).toHaveLength(5);
+    expect(
+      mockSave.mock.calls[0][1].sections[0].tables.every(
+        (table: { seats: number }) => table.seats === 4
+      )
+    ).toBe(true);
+  });
+
+  it.each([
+    ["0", "2"],
+    ["41", "2"],
+    ["1.5", "2"],
+    ["5", "0"],
+    ["5", "51"],
+  ])("refuses invalid capacity %s × %s without changing the layout", (count, seats) => {
+    render(<LayoutStep {...stepProps()} />);
+    fireEvent.changeText(screen.getByTestId("capacity-tables"), count);
+    fireEvent.changeText(screen.getByTestId("capacity-seats"), seats);
+    expect(screen.getByTestId("capacity-apply")).toBeDisabled();
+    fireEvent.press(screen.getByTestId("capacity-apply"));
+    expect(screen.queryByTestId("room-0-table-1")).toBeNull();
+    expect(mockSave).not.toHaveBeenCalled();
+  });
+
+  it("never offers bulk replacement over a stored layout", () => {
+    render(<LayoutStep {...stepProps({ state: SAVED })} />);
+    expect(screen.queryByTestId("quick-capacity")).toBeNull();
+  });
+
   it("starts a restaurant with no layout on one room holding one table", () => {
     render(<LayoutStep {...stepProps()} />);
     expect(screen.getByTestId("room-0-name").props.value).toBe("Dining room");

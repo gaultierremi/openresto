@@ -1518,6 +1518,28 @@
     },
     "onboarding": {
       "badge": "Restaurateur space",
+      "x3": {
+        "importTitle": "Import your menu in one go",
+        "importHint": "Paste one dish per line, with its euro price at the end (e.g. Soup 8.50). End category headings with a colon. Or choose a clear photo, JPEG/PNG/WebP, up to 6 MB. No external service is used.",
+        "language": "Language of the source menu",
+        "text": "Paste your menu",
+        "photo": "Choose a menu photo",
+        "propose": "Suggest dishes",
+        "review": "Check names and prices. No allergens, diets or translations are inferred. Nothing is saved yet.",
+        "accept": "Add to the editable draft",
+        "inbox": "Reservations received",
+        "inboxHint": "Latest 100 reservations, newest received first. Updates every 15 seconds while this space is open. Alerts work here, with no background notification.",
+        "newBookings": "New reservations: {{count}}",
+        "dismiss": "Mark as read",
+        "empty": "Your first reservation will appear here. Share your public booking link.",
+        "seats": "guests",
+        "cancelled": "Cancelled",
+        "capacity": "Quick capacity setup",
+        "tables": "Number of tables",
+        "perTable": "Seats per table",
+        "applyCapacity": "Prepare these tables",
+        "capacityHint": "Only for a new layout. Enter your actual tables; you can adjust each one below."
+      },
       "branding": {
         "colorClear": "Platform colour",
         "colorHint": "Pick a colour or type one as #rrggbb. Leave it empty to use the platform's colour.",

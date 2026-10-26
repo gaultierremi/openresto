@@ -153,6 +153,10 @@ internal class PlatformRepository(AppDbContext db) : IPlatformRepository
     public async Task<int> CountBookingsAsync(int restaurantId)
         => await _db.Bookings.CountAsync(b => b.RestaurantId == restaurantId);
 
+    public Task<List<Booking>> GetInboxBookingsAsync(int restaurantId)
+        => _db.Bookings.AsNoTracking().Where(b => b.RestaurantId == restaurantId)
+            .OrderByDescending(b => b.Id).Take(100).ToListAsync();
+
     /// <seealso>PlatformRepositoryTests.ANotificationStaysIntact_WhileItsBookingIsInsideTheRetention_AndLosesTheNameOneSecondAfter</seealso>
     /// <seealso>PlatformRepositoryTests.TheNotificationOfAFutureBooking_OrAnotherRestaurantsExpiredOne_IsNeverTouched</seealso>
     public async Task<RetentionOutcome> AnonymizeBeforeAsync(int restaurantId, DateTime cutoffUtc, DateTime nowUtc)

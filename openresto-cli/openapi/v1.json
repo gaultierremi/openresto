@@ -3857,6 +3857,177 @@
         }
       }
     },
+    "/api/onboarding/restaurants/{restaurantId}/inbox": {
+      "get": {
+        "tags": [
+          "Onboarding"
+        ],
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantInboxDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantInboxDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantInboxDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/onboarding/restaurants/{restaurantId}/menu/import": {
+      "post": {
+        "tags": [
+          "Onboarding"
+        ],
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MenuImportRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MenuImportRequest"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/MenuImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveOnboardingMenuRequest"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveOnboardingMenuRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveOnboardingMenuRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/onboarding/restaurants/{restaurantId}/menu/import/photo": {
+      "post": {
+        "tags": [
+          "Onboarding"
+        ],
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "$ref": "#/components/schemas/IFormFile"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "language": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveOnboardingMenuRequest"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveOnboardingMenuRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveOnboardingMenuRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/onboarding/restaurants/{restaurantId}/info": {
       "put": {
         "tags": [
@@ -8561,6 +8732,24 @@
           }
         }
       },
+      "MenuImportRequest": {
+        "required": [
+          "text",
+          "language"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "maxLength": 20000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "language": {
+            "pattern": "^(fr|nl|en)$",
+            "type": "string"
+          }
+        }
+      },
       "MenuItemDto": {
         "type": "object",
         "properties": {
@@ -8693,8 +8882,7 @@
         "type": "object",
         "properties": {
           "menuImport": {
-            "type": "boolean",
-            "description": "Reserved: importing the first menu from a photo or a PDF. False until it exists."
+            "type": "boolean"
           }
         }
       },
@@ -9929,6 +10117,83 @@
               "$ref": "#/components/schemas/TableGroupDto"
             },
             "description": "Combinable-table groups defined for this restaurant (#271). Empty when none."
+          }
+        }
+      },
+      "RestaurantInboxBookingDto": {
+        "required": [
+          "id",
+          "date",
+          "bookingRef",
+          "customerName",
+          "customerEmail",
+          "seats",
+          "specialRequests",
+          "isCancelled"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "bookingRef": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "customerEmail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "seats": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "specialRequests": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isCancelled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RestaurantInboxDto": {
+        "required": [
+          "timezone",
+          "bookings"
+        ],
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "type": "string"
+          },
+          "bookings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantInboxBookingDto"
+            }
           }
         }
       },

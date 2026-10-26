@@ -160,6 +160,22 @@ public class OnboardingService(
     public async Task<OnboardingStateDto> GetStateAsync(int restaurantId)
         => await BuildStateAsync(await RequireRestaurantAsync(restaurantId, forWrite: false));
 
+    public async Task<RestaurantInboxDto> GetInboxAsync(int restaurantId)
+    {
+        Restaurant restaurant = await RequireRestaurantAsync(restaurantId, forWrite: false);
+        List<Booking> bookings = await _repo.GetInboxBookingsAsync(restaurantId);
+        return new(restaurant.Timezone, [.. bookings.Select(b => new RestaurantInboxBookingDto(
+            b.Id, b.Date, b.BookingRef, b.CustomerName, b.CustomerEmail, b.Seats, b.SpecialRequests, b.IsCancelled))]);
+    }
+
+    public async Task CheckMenuImportAsync(int restaurantId) => _ = await RequireRestaurantAsync(restaurantId);
+
+    public async Task<SaveOnboardingMenuRequest> ImportMenuAsync(int restaurantId, string text, string language)
+    {
+        await CheckMenuImportAsync(restaurantId);
+        return MenuImport.Propose(text, language);
+    }
+
     public async Task<OnboardingPreviewDto> GetPreviewAsync(int restaurantId)
     {
         Restaurant restaurant = await RequireRestaurantAsync(restaurantId, forWrite: false);
@@ -615,7 +631,7 @@ public class OnboardingService(
                 MenuPath = live ? $"/menu/r/{restaurant.PublicToken}" : null,
                 MenuToken = restaurant.PublicToken,
             },
-            Capabilities = new OnboardingCapabilitiesDto { MenuImport = false },
+            Capabilities = new OnboardingCapabilitiesDto { MenuImport = true },
         };
     }
 

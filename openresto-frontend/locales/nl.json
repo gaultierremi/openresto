@@ -43,6 +43,28 @@
       }
     },
     "onboarding": {
+      "x3": {
+        "importTitle": "Importeer uw kaart in één keer",
+        "importHint": "Plak één gerecht per regel, met de europrijs achteraan (bv. Soep 8,50). Sluit categorietitels af met een dubbele punt. Of kies een scherpe JPEG/PNG/WebP-foto van maximaal 6 MB. Geen externe dienst.",
+        "language": "Taal van de oorspronkelijke kaart",
+        "text": "Plak uw kaart",
+        "photo": "Kies een foto van de kaart",
+        "propose": "Gerechten voorstellen",
+        "review": "Controleer namen en prijzen. Allergenen, diëten en vertalingen worden niet afgeleid. Er is nog niets opgeslagen.",
+        "accept": "Aan het bewerkbare concept toevoegen",
+        "inbox": "Ontvangen reserveringen",
+        "inboxHint": "De laatste 100 reserveringen, de nieuwste eerst. Vernieuwt elke 15 seconden zolang deze ruimte openstaat. Meldingen verschijnen hier, zonder achtergrondmelding.",
+        "newBookings": "Nieuwe reserveringen: {{count}}",
+        "dismiss": "Als gelezen markeren",
+        "empty": "Uw eerste reservering verschijnt hier. Deel uw openbare reserveringslink.",
+        "seats": "gasten",
+        "cancelled": "Geannuleerd",
+        "capacity": "Snel de capaciteit voorbereiden",
+        "tables": "Aantal tafels",
+        "perTable": "Plaatsen per tafel",
+        "applyCapacity": "Deze tafels voorbereiden",
+        "capacityHint": "Alleen voor een nieuwe indeling. Voer uw echte tafels in en pas ze hieronder afzonderlijk aan."
+      },
       "badge": "Ruimte voor restaurateurs",
       "branding": {
         "colorClear": "Kleur van het platform",

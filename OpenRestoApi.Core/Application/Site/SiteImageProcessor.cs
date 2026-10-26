@@ -9,6 +9,7 @@ public enum SiteImageKind
     Cover,
     Gallery,
     Logo,
+    MenuImport,
 }
 
 /// <param name="Extension">Without the dot: <c>jpg</c> or <c>png</c>.</param>
@@ -89,6 +90,7 @@ public static class SiteImageProcessor
     {
         SiteImageKind.Cover => (1600, 1200),
         SiteImageKind.Gallery => (1200, 1200),
+        SiteImageKind.MenuImport => (2400, 3200),
         _ => (480, 480),
     };
 

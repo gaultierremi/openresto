@@ -284,9 +284,20 @@ public class OnboardingLinksDto
 
 public class OnboardingCapabilitiesDto
 {
-    /// <summary>Reserved: importing the first menu from a photo or a PDF. False until it exists.</summary>
     public bool MenuImport { get; set; }
 }
+
+public class MenuImportRequest
+{
+    [Required, StringLength(20000)]
+    public string Text { get; set; } = "";
+    [Required, RegularExpression("^(fr|nl|en)$")]
+    public string Language { get; set; } = "fr";
+}
+
+public sealed record RestaurantInboxDto(string Timezone, List<RestaurantInboxBookingDto> Bookings);
+public sealed record RestaurantInboxBookingDto(int Id, DateTime Date, string BookingRef,
+    string? CustomerName, string? CustomerEmail, int Seats, string? SpecialRequests, bool IsCancelled);
 
 /// <summary>What step 5 shows: the menu page and the booking page as a guest will meet them.</summary>
 public class OnboardingPreviewDto

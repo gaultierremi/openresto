@@ -28,7 +28,7 @@ WORKDIR /app
 
 # Install curl for healthchecks
 USER root
-RUN apt-get update && apt-get install -y curl sqlite3 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends curl sqlite3 tesseract-ocr tesseract-ocr-fra tesseract-ocr-nld tesseract-ocr-eng && rm -rf /var/lib/apt/lists/*
 
 # Copy the published app
 COPY --from=publish /app/publish .

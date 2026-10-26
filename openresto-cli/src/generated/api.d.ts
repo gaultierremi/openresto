@@ -3985,6 +3985,137 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/onboarding/restaurants/{restaurantId}/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RestaurantInboxDto"];
+                        "application/json": components["schemas"]["RestaurantInboxDto"];
+                        "text/json": components["schemas"]["RestaurantInboxDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/menu/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MenuImportRequest"];
+                    "text/json": components["schemas"]["MenuImportRequest"];
+                    "application/*+json": components["schemas"]["MenuImportRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SaveOnboardingMenuRequest"];
+                        "application/json": components["schemas"]["SaveOnboardingMenuRequest"];
+                        "text/json": components["schemas"]["SaveOnboardingMenuRequest"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboarding/restaurants/{restaurantId}/menu/import/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    restaurantId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file?: components["schemas"]["IFormFile"];
+                    } & {
+                        language?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SaveOnboardingMenuRequest"];
+                        "application/json": components["schemas"]["SaveOnboardingMenuRequest"];
+                        "text/json": components["schemas"]["SaveOnboardingMenuRequest"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/onboarding/restaurants/{restaurantId}/info": {
         parameters: {
             query?: never;
@@ -7369,6 +7500,10 @@ export interface components {
             updatedAt?: string;
             categories?: components["schemas"]["MenuCategoryDto"][];
         };
+        MenuImportRequest: {
+            text: string;
+            language: string;
+        };
         MenuItemDto: {
             /** Format: int32 */
             id?: number | string;
@@ -7404,7 +7539,6 @@ export interface components {
             logoUrl?: null | string;
         };
         OnboardingCapabilitiesDto: {
-            /** @description Reserved: importing the first menu from a photo or a PDF. False until it exists. */
             menuImport?: boolean;
         };
         OnboardingHoursDto: {
@@ -7784,6 +7918,23 @@ export interface components {
             sections?: components["schemas"]["SectionDto"][];
             /** @description Combinable-table groups defined for this restaurant (#271). Empty when none. */
             groups?: components["schemas"]["TableGroupDto"][];
+        };
+        RestaurantInboxBookingDto: {
+            /** Format: int32 */
+            id: number | string;
+            /** Format: date-time */
+            date: string;
+            bookingRef: string;
+            customerName: null | string;
+            customerEmail: null | string;
+            /** Format: int32 */
+            seats: number | string;
+            specialRequests: null | string;
+            isCancelled: boolean;
+        };
+        RestaurantInboxDto: {
+            timezone: string;
+            bookings: components["schemas"]["RestaurantInboxBookingDto"][];
         };
         SaveMenuCategoryRequest: {
             name?: null | string;

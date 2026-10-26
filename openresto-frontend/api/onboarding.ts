@@ -246,6 +246,41 @@ export const getMe = () => request(() => get("/onboarding/me"), json<OnboardingM
 
 export const getState = (id: number) => request(() => get(restaurantPath(id)), stateOf);
 
+export interface RestaurantInbox {
+  timezone: string;
+  bookings: {
+    id: number;
+    date: string;
+    bookingRef: string;
+    customerName: string | null;
+    customerEmail: string | null;
+    seats: number;
+    specialRequests: string | null;
+    isCancelled: boolean;
+  }[];
+}
+
+export const getInbox = (id: number) =>
+  request(() => get(`${restaurantPath(id)}/inbox`), json<RestaurantInbox>);
+
+export const importMenuText = (id: number, text: string, language: string) =>
+  request(() => post(`${restaurantPath(id)}/menu/import`, { text, language }), json<SaveMenuInput>);
+
+export const importMenuPhoto = (id: number, file: File, language: string) => {
+  const body = new FormData();
+  body.append("file", file);
+  body.append("language", language);
+  return request(
+    () =>
+      fetch(buildUrl(`${restaurantPath(id)}/menu/import/photo`), {
+        method: "POST",
+        credentials: "include",
+        body,
+      }),
+    json<SaveMenuInput>
+  );
+};
+
 export const getPreview = (id: number) =>
   request(() => get(`${restaurantPath(id)}/preview`), json<OnboardingPreview>);
 

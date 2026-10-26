@@ -16,6 +16,32 @@ const lastCall = () => {
 
 beforeEach(() => mockFetch.mockReset());
 
+it("imports source text without saving it and reads only the selected restaurant inbox", async () => {
+  const proposal = { name: "Carte", categories: [] };
+  ok(proposal);
+  expect(await api.importMenuText(7, "Soupe 8,50", "fr")).toEqual({ ok: true, value: proposal });
+  expect(lastCall().url).toContain("/onboarding/restaurants/7/menu/import");
+  expect(JSON.parse(lastCall().init.body as string)).toEqual({
+    text: "Soupe 8,50",
+    language: "fr",
+  });
+  const inbox = { timezone: "Europe/Brussels", bookings: [] };
+  ok(inbox);
+  expect(await api.getInbox(7)).toEqual({ ok: true, value: inbox });
+  expect(lastCall().url).toContain("/onboarding/restaurants/7/inbox");
+  expect(lastCall().init.credentials).toBe("include");
+});
+
+it("sends a source photo and its language as multipart with the session cookie", async () => {
+  ok({ name: "Menu", categories: [] });
+  await api.importMenuPhoto(7, new File(["example"], "menu.png", { type: "image/png" }), "nl");
+  expect(lastCall().url).toContain("/onboarding/restaurants/7/menu/import/photo");
+  expect(lastCall().init.method).toBe("POST");
+  expect(lastCall().init.credentials).toBe("include");
+  expect((lastCall().init.body as FormData).get("language")).toBe("nl");
+  expect((lastCall().init.body as FormData).get("file")).toBeInstanceOf(File);
+});
+
 it("uses restaurant-scoped service routes for tokens, availability and photo removal", async () => {
   ok({ restaurantToken: "general", tables: [] });
   await api.getMenuTokens(7);

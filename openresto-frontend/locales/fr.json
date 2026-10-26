@@ -1518,6 +1518,28 @@
     },
     "onboarding": {
       "badge": "Espace restaurateur",
+      "x3": {
+        "importTitle": "Importez votre carte en une fois",
+        "importHint": "Collez un plat par ligne, avec son prix en euros à la fin (ex. Soupe 8,50). Terminez les titres de catégories par deux-points. Ou choisissez une photo nette, JPEG/PNG/WebP, de 6 Mo maximum. Aucun service externe.",
+        "language": "Langue de la carte source",
+        "text": "Collez votre carte",
+        "photo": "Choisir une photo de la carte",
+        "propose": "Proposer les plats",
+        "review": "Vérifiez noms et prix. Aucun allergène, régime ou traduction n’est déduit. Rien n’est encore enregistré.",
+        "accept": "Ajouter au brouillon modifiable",
+        "inbox": "Réservations reçues",
+        "inboxHint": "Les 100 dernières réservations, par ordre de réception. Actualisation toutes les 15 secondes tant que cet espace est ouvert. Les alertes s’affichent ici, sans notification en arrière-plan.",
+        "newBookings": "Nouvelles réservations : {{count}}",
+        "dismiss": "Marquer comme lu",
+        "empty": "Votre première réservation apparaîtra ici. Partagez votre lien de réservation public.",
+        "seats": "couverts",
+        "cancelled": "Annulée",
+        "capacity": "Préparer rapidement la capacité",
+        "tables": "Nombre de tables",
+        "perTable": "Places par table",
+        "applyCapacity": "Préparer ces tables",
+        "capacityHint": "Pour un nouveau plan uniquement. Indiquez vos vraies tables, puis ajustez-les individuellement ci-dessous."
+      },
       "branding": {
         "colorClear": "Couleur de la plateforme",
         "colorHint": "Choisissez une couleur ou saisissez-en une au format #rrggbb. Laissez vide pour utiliser la couleur de la plateforme.",
