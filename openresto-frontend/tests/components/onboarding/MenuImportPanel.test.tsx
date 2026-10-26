@@ -109,16 +109,14 @@ it("disables importing for a read-only restaurant", async () => {
 
 it("falls back to French for an unsupported source language and preserves a price on request", async () => {
   await i18n.changeLanguage("de");
-  jest
-    .mocked(importMenuText)
-    .mockResolvedValue(
-      ok({
-        name: "Carte",
-        categories: [
-          { name: "Plats", items: [{ name: "Eau", priceMinor: null, description: null }] },
-        ],
-      })
-    );
+  jest.mocked(importMenuText).mockResolvedValue(
+    ok({
+      name: "Carte",
+      categories: [
+        { name: "Plats", items: [{ name: "Eau", priceMinor: null, description: null }] },
+      ],
+    })
+  );
   render(<MenuImportPanel {...props()} />);
   fireEvent.changeText(screen.getByTestId("import-text"), "Eau");
   await press("import-propose");
