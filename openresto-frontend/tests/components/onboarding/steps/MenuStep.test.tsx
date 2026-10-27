@@ -347,25 +347,22 @@ describe("MenuStep", () => {
   });
 
   describe("the import card", () => {
-    it("is there, disabled and marked as coming soon, while the server says it cannot import", () => {
+    it("hides the import when the server does not offer it", () => {
       render(<MenuStep {...stepProps()} />);
-      const card = screen.getByTestId("menu-import");
-      expect(screen.getByText("Import from a photo or a PDF")).toBeTruthy();
-      expect(card.props.accessibilityState.disabled).toBe(true);
-      expect(screen.getByTestId("menu-import-soon")).toHaveTextContent("Soon");
+      expect(screen.queryByTestId("menu-import")).toBeNull();
     });
 
     it("does nothing when pressed", () => {
       const props = stepProps();
       render(<MenuStep {...props} />);
-      fireEvent.press(screen.getByTestId("menu-import"));
+      expect(screen.queryByTestId("import-propose")).toBeNull();
       expect(mockSave).not.toHaveBeenCalled();
       expect(props.onAdvance).not.toHaveBeenCalled();
     });
 
     it("is enabled, and no longer soon, once the server says it can import", () => {
       render(<MenuStep {...stepProps({ state: state({ capabilities: { menuImport: true } }) })} />);
-      expect(screen.getByTestId("menu-import").props.accessibilityState.disabled).toBe(false);
+      expect(screen.getByTestId("menu-import")).toBeTruthy();
       expect(screen.queryByTestId("menu-import-soon")).toBeNull();
     });
   });

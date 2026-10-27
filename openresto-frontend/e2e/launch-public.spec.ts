@@ -21,7 +21,9 @@ test("les pages publiques fonctionnent sans JavaScript, au clavier et sur mobile
   const page = await context.newPage();
   await page.goto("/");
   await expect(page).toHaveTitle(/OpenResto.*Réservations/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Votre salle se remplit");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Gratuit pour les restaurateurs"
+  );
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Aller au contenu" })).toBeFocused();
   await page.keyboard.press("Enter");

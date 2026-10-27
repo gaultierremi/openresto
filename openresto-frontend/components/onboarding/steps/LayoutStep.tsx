@@ -64,6 +64,17 @@ export function LayoutStep({
     draftFromLayout(state.layout, t("admin.onboarding.layout.defaultRoomName"))
   );
   const [unnamed, setUnnamed] = useState<string | null>(null);
+  const [quickTables, setQuickTables] = useState("10");
+  const [quickSeats, setQuickSeats] = useState("2");
+  const count = Number(quickTables);
+  const seats = Number(quickSeats);
+  const validCapacity =
+    Number.isInteger(count) &&
+    count >= 1 &&
+    count <= 40 &&
+    Number.isInteger(seats) &&
+    seats >= 1 &&
+    seats <= MAX_SEATS;
   const { busy, error, run, clear } = useOnboardingCall(onExpired);
 
   const noTable = tableCount(rooms) === 0;
@@ -96,6 +107,59 @@ export function LayoutStep({
       onBack={onBack}
     >
       {error ? <Banner testID="step-layout-banner">{error.message}</Banner> : null}
+      {state.layout.sections.length === 0 ? (
+        <View style={styles.rooms} testID="quick-capacity">
+          <ThemedText type="h3">{t("admin.onboarding.x3.capacity")}</ThemedText>
+          <ThemedText>{t("admin.onboarding.x3.capacityHint")}</ThemedText>
+          <Field label={t("admin.onboarding.x3.tables")}>
+            <Input
+              value={quickTables}
+              onChangeText={setQuickTables}
+              keyboardType="number-pad"
+              maxLength={2}
+              editable={!readOnly}
+              accessibilityLabel={t("admin.onboarding.x3.tables")}
+              testID="capacity-tables"
+            />
+          </Field>
+          <Field label={t("admin.onboarding.x3.perTable")}>
+            <Input
+              value={quickSeats}
+              onChangeText={setQuickSeats}
+              keyboardType="number-pad"
+              maxLength={2}
+              editable={!readOnly}
+              accessibilityLabel={t("admin.onboarding.x3.perTable")}
+              testID="capacity-seats"
+            />
+          </Field>
+          <Button
+            size="md"
+            variant="secondary"
+            disabled={readOnly || !validCapacity}
+            onPress={() => {
+              if (readOnly || !validCapacity) return;
+              setRooms(
+                draftFromLayout(
+                  {
+                    sections: [
+                      {
+                        name: t("admin.onboarding.layout.defaultRoomName"),
+                        tables: Array.from({ length: count }, () => ({ name: null, seats })),
+                      },
+                    ],
+                  },
+                  ""
+                )
+              );
+            }}
+            testID="capacity-apply"
+          >
+            {t("admin.onboarding.x3.applyCapacity")}
+            {validCapacity ? ` · ${count * seats}` : ""}
+          </Button>
+        </View>
+      ) : null}
 
       <View style={styles.rooms}>
         {rooms.map((room, roomIndex) => (

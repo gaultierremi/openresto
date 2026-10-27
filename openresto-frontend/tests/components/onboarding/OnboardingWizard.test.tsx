@@ -26,6 +26,9 @@ jest.mock("@/utils/haptics", () => ({
   haptics: { selection: jest.fn(), press: jest.fn(), outcome: jest.fn() },
 }));
 jest.mock("@/api/onboarding", () => ({
+  getInbox: jest
+    .fn()
+    .mockResolvedValue({ ok: true, value: { timezone: "Europe/Brussels", bookings: [] } }),
   getState: jest.fn(),
   getPreview: jest.fn(),
   saveInfo: jest.fn(),

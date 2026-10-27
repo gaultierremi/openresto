@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,21 +27,25 @@ internal sealed class PlatformHarness : IDisposable
 
     private readonly TestWebAppFactory _root;
 
-    public PlatformHarness(TestWebAppFactory root)
+    public PlatformHarness(TestWebAppFactory root, Action<IWebHostBuilder>? configure = null)
     {
         _root = root;
         Mail = new CapturingEmail();
-        App = root.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
+        App = root.WithWebHostBuilder(builder =>
         {
-            foreach (ServiceDescriptor d in services.Where(d => d.ServiceType == typeof(IEmailService)).ToList())
+            configure?.Invoke(builder);
+            builder.ConfigureServices(services =>
             {
-                services.Remove(d);
-            }
+                foreach (ServiceDescriptor d in services.Where(d => d.ServiceType == typeof(IEmailService)).ToList())
+                {
+                    services.Remove(d);
+                }
 
-            services.AddSingleton(Mail);
-            services.AddScoped<IEmailService>(sp => sp.GetRequiredService<CapturingEmail>());
-            services.AddSingleton<IMediaStore, InMemoryMediaStore>();
-        }));
+                services.AddSingleton(Mail);
+                services.AddScoped<IEmailService>(sp => sp.GetRequiredService<CapturingEmail>());
+                services.AddSingleton<IMediaStore, InMemoryMediaStore>();
+            });
+        });
     }
 
     public WebApplicationFactory<Program> App { get; }

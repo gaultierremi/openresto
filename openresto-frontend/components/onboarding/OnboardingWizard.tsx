@@ -11,6 +11,7 @@ import { OnboardingPage } from "@/components/onboarding/OnboardingPage";
 import { PreviewStage } from "@/components/onboarding/PreviewStage";
 import { WizardHeader } from "@/components/onboarding/WizardHeader";
 import { WizardStepper } from "@/components/onboarding/WizardStepper";
+import { ReservationInbox } from "@/components/onboarding/ReservationInbox";
 import { BrandingStep } from "@/components/onboarding/steps/BrandingStep";
 import { HoursStep } from "@/components/onboarding/steps/HoursStep";
 import { InfoStep } from "@/components/onboarding/steps/InfoStep";
@@ -145,6 +146,9 @@ export function OnboardingWizard({ restaurantId }: { restaurantId: number }) {
     <OnboardingPage width="wide">
       <View style={styles.wizard}>
         <WizardHeader name={state.name} status={state.status} onSignOut={signOut} />
+        {state.status === "Published" ? (
+          <ReservationInbox key={restaurantId} restaurantId={restaurantId} onExpired={expire} />
+        ) : null}
         {state.status === "Suspended" ? (
           <Banner tone="warning" testID="wizard-suspended">
             {state.suspensionReason

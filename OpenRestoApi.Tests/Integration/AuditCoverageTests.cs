@@ -143,6 +143,7 @@ public class AuditCoverageTests
         "RestaurantsController.GetScheduleConflicts",
         "NotificationsController.GetNotifications",
         "EmailStatusController.GetFailures",
+        "OnboardingController.Inbox",
     ];
 
     private static readonly Type[] GuestIdentityTypes =
@@ -152,6 +153,7 @@ public class AuditCoverageTests
         typeof(OpenRestoApi.Core.Application.DTOs.ScheduleConflictDto),
         typeof(OpenRestoApi.Core.Application.DTOs.WaitlistEntryDto),
         typeof(OpenRestoApi.Core.Application.DTOs.AdminNotificationDto),
+        typeof(OpenRestoApi.Core.Application.DTOs.RestaurantInboxDto),
     ];
 
     private static IEnumerable<(string Name, MethodInfo Method, Type Controller)> AdminReads()

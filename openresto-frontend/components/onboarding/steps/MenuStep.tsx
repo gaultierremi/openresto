@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/themed-text";
 import Button from "@/components/common/Button";
 import { ButtonRow } from "@/components/common/ButtonRow";
-import { Icon } from "@/components/common/Icon";
+import { MenuImportPanel } from "@/components/onboarding/MenuImportPanel";
 import { IconButton } from "@/components/common/IconButton";
 import Input from "@/components/common/Input";
 import { RowTextButton } from "@/components/common/RowTextButton";
@@ -52,13 +52,12 @@ const toggled = (keys: ReadonlySet<string>, key: string): ReadonlySet<string> =>
 /**
  * Step 4: the first menu, as categories of dishes in the order they are entered. A price is
  * typed in euros (`12,50` or `12.5`) and an empty one means "price on request"; a price that is
- * not an amount is refused beside its dish with nothing sent. The import card holds the place
- * of the later photo or PDF import: it is bound to the server's `menuImport` capability and
- * stays off while that is false. The step is optional, so it can also be skipped.
+ * not an amount is refused beside its dish with nothing sent. Import proposals are appended
+ * to the editable draft and are saved only when the restaurateur continues.
  *
  * @see [MenuStep.test.tsx](../../../tests/components/onboarding/steps/MenuStep.test.tsx) — pins
  * the cents sent for a typed price, a garbage or negative price being refused with nothing
- * sent, the order of entry, the disabled import card, and skip.
+ * sent, the order of entry, the import capability, and skip.
  */
 export function MenuStep({
   restaurantId,
@@ -122,36 +121,17 @@ export function MenuStep({
     >
       {error ? <Banner testID="step-menu-banner">{error.message}</Banner> : null}
 
-      <Pressable
-        disabled={!importAvailable}
-        accessibilityRole="button"
-        accessibilityLabel={t("admin.onboarding.menu.importTitle")}
-        accessibilityState={{ disabled: !importAvailable }}
-        style={[
-          styles.importCard,
-          { borderColor: colors.border, opacity: importAvailable ? 1 : 0.6 },
-        ]}
-        testID="menu-import"
-      >
-        <Icon
-          name="camera-outline"
-          size="xxl"
-          color={importAvailable ? primaryColor : colors.muted}
+      {importAvailable ? (
+        <MenuImportPanel
+          restaurantId={restaurantId}
+          readOnly={readOnly}
+          onExpired={onExpired}
+          onAccept={(menu) => {
+            const imported = draftFromMenu({ ...menu, menuId: null });
+            change({ ...draft, categories: [...draft.categories, ...imported.categories] });
+          }}
         />
-        <View style={styles.importText}>
-          <ThemedText style={styles.importTitle}>
-            {t("admin.onboarding.menu.importTitle")}
-          </ThemedText>
-          <ThemedText style={[styles.importHint, { color: colors.muted }]}>
-            {t("admin.onboarding.menu.importHint")}
-          </ThemedText>
-        </View>
-        {!importAvailable ? (
-          <ThemedText style={[styles.soon, { color: colors.muted }]} testID="menu-import-soon">
-            {t("admin.onboarding.menu.importSoon")}
-          </ThemedText>
-        ) : null}
-      </Pressable>
+      ) : null}
 
       <Field label={t("admin.onboarding.menu.nameLabel")} testID="menu-name-field">
         <Input

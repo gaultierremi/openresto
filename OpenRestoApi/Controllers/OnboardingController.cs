@@ -1,10 +1,17 @@
+using System.Security.Cryptography;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Net.Http.Headers;
+using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Services;
 using OpenRestoApi.Core.Application.Site;
 using OpenRestoApi.Core.Application.Utilities;
 using OpenRestoApi.Infrastructure.Auth;
+using OpenRestoApi.Infrastructure.Auditing;
+using OpenRestoApi.Extensions;
 
 namespace OpenRestoApi.Controllers;
 
@@ -31,6 +38,42 @@ public class OnboardingController(OnboardingService onboarding) : ControllerBase
     [HttpGet("restaurants/{restaurantId:int}")]
     public async Task<ActionResult<OnboardingStateDto>> GetState(int restaurantId)
         => Ok(await _onboarding.GetStateAsync(restaurantId));
+
+    [HttpGet("restaurants/{restaurantId:int}/inbox")]
+    [ReadsGuestData("restaurant-inbox")]
+    [ProducesResponseType<RestaurantInboxDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status304NotModified)]
+    public async Task<ActionResult<RestaurantInboxDto>> Inbox(int restaurantId)
+    {
+        RestaurantInboxDto inbox = await _onboarding.GetInboxAsync(restaurantId);
+        Response.Headers.CacheControl = "no-store";
+        var etag = new EntityTagHeaderValue($"\"{Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(inbox)))}\"");
+        Response.GetTypedHeaders().ETag = etag;
+        if (Request.GetTypedHeaders().IfNoneMatch?.Any(tag => tag.Tag == "*" || tag.Compare(etag, useStrongComparison: false)) == true)
+            return StatusCode(StatusCodes.Status304NotModified);
+        this.NoteGuestDataLocation(restaurantId);
+        return Ok(inbox);
+    }
+
+    [HttpPost("restaurants/{restaurantId:int}/menu/import")]
+    [RequestSizeLimit(100000)]
+    public async Task<ActionResult<SaveOnboardingMenuRequest>> ImportMenu(int restaurantId, MenuImportRequest request)
+        => Ok(await _onboarding.ImportMenuAsync(restaurantId, request.Text, request.Language));
+
+    [HttpPost("restaurants/{restaurantId:int}/menu/import/photo")]
+    [EnableRateLimiting(ServiceCollectionExtensions.MenuPhotoImportPolicy)]
+    [RequestSizeLimit(SiteFields.MaxImageBytes + 8192)]
+    public async Task<ActionResult<SaveOnboardingMenuRequest>> ImportPhoto(int restaurantId, IFormFile file,
+        [FromForm] string language, [FromServices] IMenuPhotoReader reader)
+    {
+        await _onboarding.CheckMenuImportAsync(restaurantId);
+        if (await CheckImageAsync(file) is { } refusal) return refusal;
+        await using var copy = new MemoryStream();
+        await file.CopyToAsync(copy, HttpContext.RequestAborted);
+        copy.Position = 0;
+        string text = await reader.ReadAsync(copy, file.ContentType, language, HttpContext.RequestAborted);
+        return Ok(await _onboarding.ImportMenuAsync(restaurantId, text, language));
+    }
 
     [HttpPut("restaurants/{restaurantId:int}/info")]
     public async Task<ActionResult<OnboardingStateDto>> SaveInfo(int restaurantId, [FromBody] SaveOnboardingInfoRequest req)

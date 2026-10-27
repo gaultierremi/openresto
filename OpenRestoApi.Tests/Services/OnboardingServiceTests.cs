@@ -271,6 +271,9 @@ public sealed class OnboardingServiceTests(TestWebAppFactory factory) : IClassFi
         var operations = new Dictionary<string, Func<OnboardingService, Task>>
         {
             ["state"] = s => s.GetStateAsync(id),
+            ["inbox"] = s => s.GetInboxAsync(id),
+            ["import text"] = s => s.ImportMenuAsync(id, "Soupe 8,50", "fr"),
+            ["import photo gate"] = s => s.CheckMenuImportAsync(id),
             ["preview"] = s => s.GetPreviewAsync(id),
             ["site preview"] = s => s.PreviewSiteAsync(id, null),
             ["info"] = s => s.SaveInfoAsync(id, InfoRequest(r => r.Name = "Piraté")),

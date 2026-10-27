@@ -18,11 +18,16 @@ public static class LaunchPageRenderer
 
     public static LaunchPage Home(string baseUrl, string homePath, bool noIndex = false) => Page(HomeTitle, HomeDescription, baseUrl, homePath, """
         <section class="hero" aria-labelledby="intro">
-          <p class="eyebrow">Le service commence avant l’arrivée</p>
-          <h1 id="intro">Votre salle se remplit.<br>Votre journée s’allège.</h1>
-          <p class="lead">Les réservations, la carte QR et le site de votre restaurant, au même endroit. Moins d’allers-retours, plus de temps pour vos clients.</p>
-          <div class="actions"><a class="cta" href="/inscription">Inscrire mon restaurant</a><a class="cta secondary" href="/locations?lang=fr">Trouver une table</a></div>
+          <p class="eyebrow">Votre restaurant en ligne depuis votre téléphone</p>
+          <h1 id="intro">Gratuit pour les restaurateurs</h1>
+          <p class="lead">Votre carte QR, votre page de réservation et vos réservations reçues au même endroit. Objectif : cinq minutes, votre carte et vos informations légales sous la main.</p>
+          <div class="actions"><a class="cta" href="/inscription">Inscrire mon restaurant</a><a class="cta secondary" href="#demo">Voir la démonstration</a></div>
           <p class="small">Votre premier établissement est gratuit. Sans commission sur les réservations.</p>
+        </section>
+        <section id="demo" aria-labelledby="demo-title"><p class="eyebrow">Démonstration · données fictives</p><h2 id="demo-title">De votre carte à la première réservation</h2>
+          <div class="grid"><article class="card"><span class="number">1 / VOTRE CARTE</span><h3>Le Jardin Démo</h3><p>Soupe du jour · 8,50 €<br>Plat du jardin · 18 €</p><p class="small">Photo ou texte collé → propositions à vérifier. Carte disponible en FR, NL et EN avec vos traductions.</p></article>
+          <article class="card"><span class="number">2 / CÔTÉ CLIENT</span><h3>Une table pour deux</h3><p>Demain · 19:00 · 2 couverts</p><details><summary>Simuler la réception</summary><p role="status"><strong>Nouvelle réservation reçue</strong><br>Client Démo · 2 couverts · 19:00</p><p class="small">Exemple uniquement : aucune réservation créée, aucun e-mail envoyé.</p></details></article>
+          <article class="card"><span class="number">3 / DANS VOTRE ESPACE</span><h3>Vous êtes prêt à recevoir</h3><p>Un lien public à partager, des QR à télécharger et imprimer, et les réservations dans votre espace sur téléphone.</p><a href="/inscription">Créer mon accès gratuit</a></article></div>
         </section>
         <section aria-labelledby="tools"><p class="eyebrow">Pour les restaurateurs</p><h2 id="tools">L’essentiel, à portée de main.</h2>
           <div class="grid">

@@ -73,6 +73,8 @@ public interface IPlatformRepository
 
     Task<int> CountBookingsAsync(int restaurantId);
 
+    Task<List<Booking>> GetInboxBookingsAsync(int restaurantId);
+
     /// <summary>
     /// Strips name, address and notes from the restaurant's bookings that ended before
     /// <paramref name="cutoffUtc"/>, drops the reminder devices and failed-mail records that
