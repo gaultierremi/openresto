@@ -201,10 +201,12 @@ export type OnboardingResult<T> =
 
 async function request<T>(
   call: () => Promise<Response>,
-  read: (res: Response) => Promise<T>
+  read: (res: Response) => Promise<T>,
+  onNotModified?: () => T
 ): Promise<OnboardingResult<T>> {
   try {
     const res = await call();
+    if (res.status === 304 && onNotModified) return { ok: true, value: onNotModified() };
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       return {
@@ -247,6 +249,7 @@ export const getMe = () => request(() => get("/onboarding/me"), json<OnboardingM
 export const getState = (id: number) => request(() => get(restaurantPath(id)), stateOf);
 
 export interface RestaurantInbox {
+  etag?: string;
   timezone: string;
   bookings: {
     id: number;
@@ -260,8 +263,15 @@ export interface RestaurantInbox {
   }[];
 }
 
-export const getInbox = (id: number) =>
-  request(() => get(`${restaurantPath(id)}/inbox`), json<RestaurantInbox>);
+export const getInbox = (id: number, etag?: string) =>
+  request<RestaurantInbox | null>(
+    () => get(`${restaurantPath(id)}/inbox`, { headers: etag ? { "If-None-Match": etag } : {} }),
+    async (res) => ({
+      ...(await json<RestaurantInbox>(res)),
+      etag: res.headers.get("ETag") ?? undefined,
+    }),
+    () => null
+  );
 
 export const importMenuText = (id: number, text: string, language: string) =>
   request(() => post(`${restaurantPath(id)}/menu/import`, { text, language }), json<SaveMenuInput>);

@@ -131,6 +131,16 @@ for (const [language, dish] of [
     expect(state.menu.categories[0].items[0].primaryLanguage).toBe(language);
     expect((await request.get(state.links.menuPath)).status()).toBe(200);
     await capture("en-ligne");
+    if (language === "fr") {
+      const unchanged = await page.waitForResponse(
+        (response) =>
+          response.url().endsWith(`/api/onboarding/restaurants/${id}/inbox`) &&
+          response.status() === 304,
+        { timeout: 25000 }
+      );
+      expect(unchanged.headers()["cache-control"]).toBe("no-store");
+      await expect(page.getByTestId("reservation-inbox")).toBeVisible();
+    }
     // A second, unauthenticated visitor reserves through the public form.
     const guest = await browser.newContext({
       baseURL: process.env.LAUNCH_BASE_URL ?? "http://localhost:5062",

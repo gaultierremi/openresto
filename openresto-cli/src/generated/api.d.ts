@@ -4014,6 +4014,13 @@ export interface paths {
                         "text/json": components["schemas"]["RestaurantInboxDto"];
                     };
                 };
+                /** @description Not Modified */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         put?: never;

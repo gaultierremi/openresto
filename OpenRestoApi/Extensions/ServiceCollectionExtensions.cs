@@ -51,6 +51,7 @@ public static class ServiceCollectionExtensions
                     builder.WithOrigins(origins)
                            .AllowAnyMethod()
                            .AllowAnyHeader()
+                           .WithExposedHeaders("ETag")
                            .AllowCredentials();
                 });
         });
@@ -159,12 +160,20 @@ public static class ServiceCollectionExtensions
     [ExternalAccessAllowed]
     internal const int PublicLimit = 120;
 
+    /// <summary>A separate upload budget keeps menu photos out of the sign-in quota.</summary>
+    /// <seealso>RestaurantQuickStartRateLimitTests.PhotoQuotaIsSeparateFromLogin_AndNeverSavesProposals</seealso>
+    [OnlyAccessibleBy("OpenRestoApi.Extensions.*")]
+    [OnlyAccessibleBy("OpenRestoApi.Controllers.OnboardingController")]
+    [ExternalAccessAllowed]
+    internal const string MenuPhotoImportPolicy = "menu-photo-import";
+
     public static IServiceCollection AddCustomRateLimiting(this IServiceCollection services, IWebHostEnvironment env)
     {
         bool isTesting = env.EnvironmentName == "Testing";
         int authLimit = isTesting ? TestingLimit : AuthLimit;
         int publicLimit = isTesting ? TestingLimit : PublicLimit;
         int bookingLookupLimit = isTesting ? TestingLimit : BookingLookupLimit;
+        int menuPhotoLimit = isTesting ? TestingLimit : 10;
         int globalLimit = isTesting ? TestingLimit : 300;  // per IP: overall ceiling
         int apiKeyLimit = isTesting ? TestingLimit : 1000; // per key: a headless CLI is one caller, not one browser tab
 
@@ -186,6 +195,15 @@ public static class ServiceCollectionExtensions
                 {
                     AutoReplenishment = true,
                     PermitLimit = publicLimit,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                }));
+
+            options.AddPolicy(MenuPhotoImportPolicy, ctx =>
+                RateLimitPartition.GetFixedWindowLimiter(IpKey(ctx), _ => new FixedWindowRateLimiterOptions
+                {
+                    AutoReplenishment = true,
+                    PermitLimit = menuPhotoLimit,
                     Window = TimeSpan.FromMinutes(1),
                     QueueLimit = 0,
                 }));

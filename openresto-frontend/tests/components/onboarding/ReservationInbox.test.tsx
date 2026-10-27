@@ -64,6 +64,24 @@ it("keeps cancellations visible, reports failed refreshes and retries", async ()
   expect(screen.queryByText("Unavailable")).toBeNull();
 });
 
+it("keeps the displayed guests on unchanged polls and still alerts on the next new booking", async () => {
+  jest
+    .mocked(getInbox)
+    .mockResolvedValueOnce(ok({ ...inbox().value, etag: '"version-1"' }))
+    .mockResolvedValueOnce(ok(null))
+    .mockResolvedValueOnce(inbox([{ ...booking, id: 11 }]));
+  render(<ReservationInbox restaurantId={7} onExpired={jest.fn()} />);
+  await flush();
+  expect(getInbox).toHaveBeenNthCalledWith(1, 7, undefined);
+  await poll();
+  expect(getInbox).toHaveBeenNthCalledWith(2, 7, '"version-1"');
+  expect(screen.getByTestId("inbox-booking-10")).toHaveTextContent(/Client Example/);
+  expect(screen.queryByTestId("inbox-notification")).toBeNull();
+  await poll();
+  expect(screen.getByTestId("inbox-booking-11")).toBeTruthy();
+  expect(screen.getByTestId("inbox-notification")).toHaveTextContent(/New reservations: 1/);
+});
+
 it("drops guest data and stops polling when the session ends", async () => {
   jest.mocked(getInbox).mockResolvedValueOnce(inbox()).mockResolvedValue(refused("Expired", 401));
   const expired = jest.fn();

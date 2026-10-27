@@ -26,11 +26,13 @@ export function ReservationInbox({
   const newest = useRef<number | null>(null);
   useEffect(() => {
     let cancelled = false;
+    let etag: string | undefined;
     let timer: ReturnType<typeof setTimeout>;
     const refresh = async () => {
-      const result = await getInbox(restaurantId);
+      const result = await getInbox(restaurantId, etag);
       if (cancelled) return;
       if (!result.ok) {
+        etag = undefined;
         setInbox(null);
         if (result.status === 401) {
           setInbox(null);
@@ -38,7 +40,8 @@ export function ReservationInbox({
           return;
         }
         setError(result.message);
-      } else {
+      } else if (result.value) {
+        etag = result.value.etag;
         const ids = result.value.bookings.map((b) => b.id);
         if (newest.current !== null) {
           const previous = newest.current;

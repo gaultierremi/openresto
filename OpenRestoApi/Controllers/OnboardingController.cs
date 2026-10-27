@@ -1,6 +1,9 @@
+using System.Security.Cryptography;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Net.Http.Headers;
 using OpenRestoApi.Core.Application.Interfaces;
 using OpenRestoApi.Core.Application.DTOs;
 using OpenRestoApi.Core.Application.Services;
@@ -38,10 +41,16 @@ public class OnboardingController(OnboardingService onboarding) : ControllerBase
 
     [HttpGet("restaurants/{restaurantId:int}/inbox")]
     [ReadsGuestData("restaurant-inbox")]
+    [ProducesResponseType<RestaurantInboxDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status304NotModified)]
     public async Task<ActionResult<RestaurantInboxDto>> Inbox(int restaurantId)
     {
         RestaurantInboxDto inbox = await _onboarding.GetInboxAsync(restaurantId);
         Response.Headers.CacheControl = "no-store";
+        var etag = new EntityTagHeaderValue($"\"{Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(inbox)))}\"");
+        Response.GetTypedHeaders().ETag = etag;
+        if (Request.GetTypedHeaders().IfNoneMatch?.Any(tag => tag.Tag == "*" || tag.Compare(etag, useStrongComparison: false)) == true)
+            return StatusCode(StatusCodes.Status304NotModified);
         this.NoteGuestDataLocation(restaurantId);
         return Ok(inbox);
     }
@@ -52,7 +61,7 @@ public class OnboardingController(OnboardingService onboarding) : ControllerBase
         => Ok(await _onboarding.ImportMenuAsync(restaurantId, request.Text, request.Language));
 
     [HttpPost("restaurants/{restaurantId:int}/menu/import/photo")]
-    [EnableRateLimiting("auth")]
+    [EnableRateLimiting(ServiceCollectionExtensions.MenuPhotoImportPolicy)]
     [RequestSizeLimit(SiteFields.MaxImageBytes + 8192)]
     public async Task<ActionResult<SaveOnboardingMenuRequest>> ImportPhoto(int restaurantId, IFormFile file,
         [FromForm] string language, [FromServices] IMenuPhotoReader reader)

@@ -5,7 +5,12 @@ const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
 const ok = (body: unknown) =>
-  mockFetch.mockResolvedValueOnce({ ok: true, status: 200, json: async () => body });
+  mockFetch.mockResolvedValueOnce({
+    ok: true,
+    status: 200,
+    headers: new Headers(),
+    json: async () => body,
+  });
 const refuse = (body: unknown, status = 400) =>
   mockFetch.mockResolvedValueOnce({ ok: false, status, json: async () => body });
 
@@ -15,6 +20,25 @@ const lastCall = () => {
 };
 
 beforeEach(() => mockFetch.mockReset());
+
+it("passes the private inbox validator and handles an unchanged response without parsing a body", async () => {
+  const body = { timezone: "Europe/Brussels", bookings: [] };
+  mockFetch.mockResolvedValueOnce({
+    ok: true,
+    status: 200,
+    headers: new Headers({ ETag: '"example-version"' }),
+    json: async () => body,
+  });
+  expect(await api.getInbox(7)).toEqual({
+    ok: true,
+    value: { ...body, etag: '"example-version"' },
+  });
+  const json = jest.fn();
+  mockFetch.mockResolvedValueOnce({ ok: false, status: 304, json });
+  expect(await api.getInbox(7, '"example-version"')).toEqual({ ok: true, value: null });
+  expect(lastCall().init.headers).toMatchObject({ "If-None-Match": '"example-version"' });
+  expect(json).not.toHaveBeenCalled();
+});
 
 it("imports source text without saving it and reads only the selected restaurant inbox", async () => {
   const proposal = { name: "Carte", categories: [] };
@@ -39,6 +63,14 @@ it("sends a source photo and its language as multipart with the session cookie",
   expect(lastCall().init.method).toBe("POST");
   expect(lastCall().init.credentials).toBe("include");
   expect((lastCall().init.body as FormData).get("language")).toBe("nl");
+  expect((lastCall().init.body as FormData).get("file")).toBeInstanceOf(File);
+});
+
+it("uploads a dish photo through its existing route", async () => {
+  ok({ imageUrl: "/media/example.png" });
+  await api.uploadMenuPhoto(7, 9, new File(["example"], "dish.png", { type: "image/png" }));
+  expect(lastCall().url).toContain("/onboarding/restaurants/7/menu/items/9/photo");
+  expect(lastCall().init.credentials).toBe("include");
   expect((lastCall().init.body as FormData).get("file")).toBeInstanceOf(File);
 });
 
